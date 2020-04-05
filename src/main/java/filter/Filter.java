@@ -1,3 +1,5 @@
+package filter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,5 +17,13 @@ public class Filter {
         for (FilterItem s : filters)
             filter+=s.getString()+" and ";
         return  filter.substring(0,filter.length()-5);
+    }
+
+    public void clear() {
+        filters.clear();
+    }
+
+    public List<FilterItem> getFilterItems() {
+        return filters;
     }
 }

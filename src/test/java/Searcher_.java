@@ -1,17 +1,14 @@
+import filter.Filter;
+import filter.filterItems.FilterItemStartWith;
+import model.Product;
 import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.format.ContentType;
 import org.junit.Before;
 import org.junit.Test;
+import services.Searcher;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.olingo.client.core.ODataClientFactory.getClient;

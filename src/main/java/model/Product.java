@@ -1,3 +1,5 @@
+package model;
+
 import java.lang.reflect.Field;
 
 public class Product {
@@ -71,7 +73,7 @@ public class Product {
     }
 
     public String getInfo() {
-        return "Product{" +
+        return "model.Product{" +
                 "Id='" + Id + '\'' + '\n'+
                  ", ContentLength=" + ContentLength +'\n'+
                 ", Name='" + Name + '\'' +'\n'+

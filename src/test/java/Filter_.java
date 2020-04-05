@@ -1,3 +1,6 @@
+import filter.Filter;
+import filter.filterItems.*;
+import filter.operators.ComparisonOperators;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +40,7 @@ public class Filter_ {
     @Test
     public void add_date_filter_item() {
         filter.add(new FilterItemStartWith("Name","S1"));
-        filter.add(new FilterItemDate(DateFunction.YEAR,"CreationDate",ComparisonOperators.GE,"2020"));
+        filter.add(new FilterItemDate(DateFunction.YEAR,"CreationDate", ComparisonOperators.GE,"2020"));
         assertThat(filter.evaluate()).isEqualTo("startswith(Name,'S1') and year(CreationDate) ge 2020");
     }
 
@@ -50,6 +53,18 @@ public class Filter_ {
         filter.add(new FilterItemDateTime("CreationDate",ComparisonOperators.GE,now));
         assertThat(filter.evaluate()).isEqualTo("startswith(Name,'S1') and CreationDate ge " +of);
     }
+
+    @Test
+    public void clear_filter_should_remove_all_filter_item() {
+        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime of = OffsetDateTime.of(now,
+                ZoneOffset.ofHoursMinutes(6, 30));
+        filter.add(new FilterItemStartWith("Name","S1"));
+        filter.add(new FilterItemDateTime("CreationDate",ComparisonOperators.GE,now));
+        filter.clear();
+        assertThat(filter.getFilterItems().size()).isEqualTo(0);
+    }
+
 }
 
 

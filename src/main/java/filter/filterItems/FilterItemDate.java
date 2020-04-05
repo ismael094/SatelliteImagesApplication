@@ -1,4 +1,9 @@
-class FilterItemDate implements FilterItem {
+package filter.filterItems;
+
+import filter.FilterItem;
+import filter.operators.ComparisonOperators;
+
+public class FilterItemDate implements FilterItem {
     private final String property;
     private final ComparisonOperators operator;
     private final String value;
