@@ -1,8 +1,10 @@
 import java.lang.reflect.Field;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class Product {
     private String Id;
-    private int ContentLength ;
+    private long ContentLength ;
     private String Name;
     private String CreationDate;
     private String IngestionDate;
@@ -14,30 +16,16 @@ public class Product {
 
     }
 
-    public void setIntField(String fieldName, int value) {
-        try {
-            Field field = getClass().getDeclaredField(fieldName);
-            field.setInt(this, value);
-        } catch (Exception e) {
-
-        }
-
-    }
-
-    public void setStringField(String fieldName, String value) {
-        try {
-            Field field = getClass().getDeclaredField(fieldName);
-            field.set(this, value);
-        } catch (Exception e) {
-
-        }
+    public void setField(String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getClass().getDeclaredField(fieldName);
+        field.set(this, value);
     }
 
     public String getId() {
         return Id;
     }
 
-    public int getContentLength() {
+    public long getContentLength() {
         return ContentLength;
     }
 
@@ -73,7 +61,7 @@ public class Product {
     public String getInfo() {
         return "Product{" +
                 "Id='" + Id + '\'' + '\n'+
-                 ", ContentLength=" + ContentLength +'\n'+
+                 ", ContentLength=" + getGigaBytes() + " Gb" + '\n'+
                 ", Name='" + Name + '\'' +'\n'+
                 ", CreationDate='" + CreationDate + '\'' +'\n'+
                 ", IngestionDate='" + IngestionDate + '\'' +'\n'+
@@ -86,4 +74,11 @@ public class Product {
     public String getUrlImg() {
         return "https://scihub.copernicus.eu/dhus/odata/v1/Products('"+getId()+"')/Products('Quicklook')/$value";
     }
+
+    public double getGigaBytes() {
+        DecimalFormat df = new DecimalFormat("#.###");
+        df.setRoundingMode(RoundingMode.DOWN);
+        return Double.parseDouble(df.format((double)(((long) this.getContentLength()) / 1000000000.0)).replace(',','.'));
+    }
+
 }
