@@ -49,4 +49,11 @@ public class ProductList {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "ProductList {" +
+                "name='" + name + '\'' +
+                ", description='" + description;
+    }
 }

@@ -1,11 +1,12 @@
 package controller;
 
-import gui.dialog.CreateListDialog;
+import gui.dialog.CreateProductListDialog;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -14,21 +15,23 @@ import model.ProductList;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ListViewController {
     @FXML
-    public ListView<ProductList> productList;
+    private ListView<ProductList> productList;
 
     @FXML
-    public ListView<Product> productInList;
+    private ListView<Product> productInList;
 
     @FXML
-    public Button deleteList;
+    private Button deleteList;
 
     @FXML
-    public Button createList;
+    private Button createList;
 
     @FXML
     private MenuBar menuBar;
@@ -38,16 +41,36 @@ public class ListViewController {
 
     private SearcherController searcherController;
     private Stage searcherStage;
+    private List<ProductList> userProductList;
 
     public void initialize()  {
-
+        userProductList = new ArrayList<>();
         createList.setOnAction(e -> {
-            System.out.println("Esto es una prueba");
-            ProductList pl = new ProductList("Nmae","descriptoin");
-            productList.getItems().add(pl);
+            CreateProductListDialog createProductListDialog = new CreateProductListDialog();
+            createProductListDialog.setOnHidden(event -> {
+                addProductListAndRefresh(createProductListDialog.getProductList());
+            });
+            createProductListDialog.init();
+            createProductListDialog.show();
         });
 
+        productList.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> clearAndAddProductsToProductInList(productList.getSelectionModel().getSelectedItem()));
+
         borderPane.setTop(new VBox(getMenu()));
+    }
+
+    private void addProductListAndRefresh(ProductList pl) {
+        if (pl != null) {
+            userProductList.add(pl);
+            productList.getItems().add(pl);
+            productList.refresh();
+        }
+    }
+
+    private void clearAndAddProductsToProductInList(ProductList selectedItem) {
+        productInList.getItems().clear();
+        productInList.getItems().addAll(selectedItem.getProducts());
+        productInList.refresh();
     }
 
 
@@ -77,7 +100,7 @@ public class ListViewController {
             try {
                 Parent root1 = (Parent) fxmlLoader.load();
                 searcherController = fxmlLoader.getController();
-                searcherController.setProductList(productList);
+                searcherController.setProductList(userProductList);
                 searcherStage = new Stage();
                 searcherStage.setScene(new Scene(root1));
                 searcherStage.setOnCloseRequest(event -> {
@@ -92,7 +115,8 @@ public class ListViewController {
     }
 
     private void reloadLists() {
-        productList.refresh();
+        productList.getItems().clear();
+        productList.getItems().addAll(userProductList);
         productInList.getItems().clear();
     }
 

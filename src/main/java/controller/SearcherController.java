@@ -4,25 +4,15 @@ import filter.Filter;
 import filter.filterItems.FilterItemDateTime;
 import filter.filterItems.FilterItemStartWith;
 import filter.operators.ComparisonOperators;
-import gui.dialog.CreateListDialog;
+import gui.dialog.AddProductToProductListDialog;
 import gui.dialog.ProductDialog;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import model.Product;
 import model.ProductList;
 import services.Searcher;
@@ -34,29 +24,30 @@ import java.util.ResourceBundle;
 
 public class SearcherController {
     @FXML
-    public ImageView image;
+    private ImageView image;
     private Searcher searcher;
     private Filter filter;
     private ContextMenu productContextMenu;
-    private ListView<ProductList> productList;
+    private List<ProductList> productList;
+    private AddProductToProductListDialog addProductToProductListDialog;
     @FXML
-    public ListView<Product> list;
+    private ListView<Product> list;
     @FXML
-    public TextArea textArea;
+    private TextArea textArea;
 
     @FXML
-    public ChoiceBox<String> sateliteList;
+    private ChoiceBox<String> sateliteList;
 
     @FXML
-    public DatePicker dateStart;
+    private DatePicker dateStart;
 
     @FXML
-    public DatePicker dateFinish;
+    private DatePicker dateFinish;
     @FXML
-    public URL location;
+    private URL location;
 
     @FXML
-    public ResourceBundle resources;
+    private ResourceBundle resources;
 
     public SearcherController() {
         searcher = new Searcher();
@@ -136,20 +127,35 @@ public class SearcherController {
             pd.show();
         });
         replaceCardMenuItem2.setOnAction(event -> {
-            CreateListDialog pd = new CreateListDialog(productList);
-            pd.init();
-            pd.show();
+            initCreateListDialog();
         });
         productContextMenu.getItems().add(replaceCardMenuItem);
         productContextMenu.getItems().add(replaceCardMenuItem2);
     }
 
-    public void showProduct(MouseEvent mouseEvent) {
-        Product selectedItem = list.getSelectionModel().getSelectedItem();
-
+    private void initCreateListDialog() {
+        addProductToProductListDialog = new AddProductToProductListDialog(productList);
+        addProductToProductListDialog.init();
+        addProductToProductListDialog.setOnHidden(ev -> {
+            if (addProductToProductListDialog.getSelectedItem() > -1)
+            addSelectedProductToProductList(productList.get(addProductToProductListDialog.getSelectedItem()));
+        });
+        addProductToProductListDialog.show();
     }
 
-    public void setProductList(ListView<ProductList> list) {
+    private void addSelectedProductToProductList(ProductList productList) {
+        productList.addProduct(list.getSelectionModel().getSelectedItem());
+    }
+
+    public void showProduct(MouseEvent mouseEvent) {
+        Product selectedItem = list.getSelectionModel().getSelectedItem();
+    }
+
+    public void setProductList(List<ProductList> list) {
         this.productList = list;
+    }
+
+    public List<ProductList> getUserProductList() {
+        return productList;
     }
 }
