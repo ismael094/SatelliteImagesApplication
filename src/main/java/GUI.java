@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.geotools.map.MapContent;
 
 import java.io.File;
 import java.net.URL;
@@ -24,6 +25,8 @@ public class GUI  extends Application{
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        MapContent map = new MapContent();
+
     }
 
     public static void main(String[] args) {
