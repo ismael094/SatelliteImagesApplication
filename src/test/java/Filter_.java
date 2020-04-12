@@ -21,6 +21,7 @@ public class Filter_ {
 
     @Test
     public void no_filter_should_return_empty() {
+
         assertThat(filter.evaluate()).isEqualTo("");
     }
 

@@ -12,6 +12,7 @@ import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
 import org.apache.olingo.commons.api.format.ContentType;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,14 +85,18 @@ public class Searcher {
     private Product parseProduct(ClientEntity entity) {
         Product product = new Product();
         for (ClientProperty property : entity.getProperties()) {
-            if (getPropertyType(property).equals("String")) {
-                product.setStringField(property.getName(), property.getValue().toString());
-            } else if (getPropertyType(property).equals("Int32")) {
-                try {
-                    product.setIntField(property.getName(), property.getValue().asPrimitive().toCastValue(Integer.class).intValue());
-                } catch (EdmPrimitiveTypeException e) {
-                    e.printStackTrace();
+            try {
+                if (product.getClass().getDeclaredField(property.getName()) == null)
+                    continue;
+                if (getPropertyType(property).equals("String"))
+                    product.setField(property.getName(),property.getValue().toString());
+                else if (getPropertyType(property).equals("Int32"))
+                    product.setField(property.getName(),property.getValue().asPrimitive().toCastValue(Integer.class));
+                else if (getPropertyType(property).equals("Int64")) {
+                    product.setField(property.getName(),property.getValue().asPrimitive().toCastValue(Long.class));
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return product;
