@@ -1,8 +1,13 @@
+package model.filter.filterItems;
+
+import model.filter.FilterItem;
+import model.filter.operators.ComparisonOperators;
+
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-class FilterItemDateTime implements FilterItem {
+public class FilterItemDateTime implements FilterItem {
     private final String property;
     private final ComparisonOperators operator;
     private final LocalDateTime value;

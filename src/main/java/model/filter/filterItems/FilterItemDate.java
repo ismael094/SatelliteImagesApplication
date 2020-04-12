@@ -1,4 +1,9 @@
-class FilterItemDate implements FilterItem {
+package model.filter.filterItems;
+
+import model.filter.FilterItem;
+import model.filter.operators.ComparisonOperators;
+
+public class FilterItemDate implements FilterItem {
     private final String property;
     private final ComparisonOperators operator;
     private final String value;

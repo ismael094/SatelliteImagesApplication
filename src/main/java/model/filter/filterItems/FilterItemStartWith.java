@@ -1,4 +1,8 @@
-public class FilterItemStartWith implements FilterItem{
+package model.filter.filterItems;
+
+import model.filter.FilterItem;
+
+public class FilterItemStartWith implements FilterItem {
     private final String property;
     private final String value;
 

@@ -1,4 +1,8 @@
-class FilterItemSubstringOf implements FilterItem {
+package model.filter.filterItems;
+
+import model.filter.FilterItem;
+
+public class FilterItemSubstringOf implements FilterItem {
     private final String property;
     private final String value;
 
