@@ -72,7 +72,7 @@ public class Test_ {
         //System.out.println(oObjectOFunctionRequest.execute().count());
         OQueryRequest<OEntity> products = build.getEntities("Attributes");
 
-        Enumerable<OEntity> execute = products.filter("Id eq 'd046d2c8-edc8-4fd1-919e-71ce14b8b1ed'").execute();
+        Enumerable<OEntity> execute = products.model.filter("Id eq 'd046d2c8-edc8-4fd1-919e-71ce14b8b1ed'").execute();
         // list category names
         for (OEntity category : execute) {
             List<OProperty<?>> properties = category.getProperties();

@@ -1,6 +1,6 @@
 package services;
 
-import filter.Filter;
+import model.filter.Filter;
 import model.Product;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;

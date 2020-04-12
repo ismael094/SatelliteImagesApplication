@@ -1,7 +1,7 @@
-package filter.filterItems;
+package model.filter.filterItems;
 
-import filter.FilterItem;
-import filter.operators.ComparisonOperators;
+import model.filter.FilterItem;
+import model.filter.operators.ComparisonOperators;
 
 public class FilterItemDate implements FilterItem {
     private final String property;

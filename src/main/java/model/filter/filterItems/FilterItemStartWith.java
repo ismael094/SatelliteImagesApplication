@@ -1,6 +1,6 @@
-package filter.filterItems;
+package model.filter.filterItems;
 
-import filter.FilterItem;
+import model.filter.FilterItem;
 
 public class FilterItemStartWith implements FilterItem {
     private final String property;

@@ -1,5 +1,5 @@
-import filter.Filter;
-import filter.filterItems.FilterItemStartWith;
+import model.filter.Filter;
+import model.filter.filterItems.FilterItemStartWith;
 import model.Product;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;

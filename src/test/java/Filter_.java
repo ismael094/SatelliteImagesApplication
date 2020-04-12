@@ -1,6 +1,6 @@
-import filter.Filter;
-import filter.filterItems.*;
-import filter.operators.ComparisonOperators;
+import model.filter.Filter;
+import model.filter.filterItems.*;
+import model.filter.operators.ComparisonOperators;
 import org.junit.Before;
 import org.junit.Test;
 

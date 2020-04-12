@@ -1,5 +1,3 @@
-package utils;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,10 +18,6 @@ public class SatelliteApplication extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    public static FXMLLoader getResource(String resource) {
-        return new FXMLLoader(SatelliteApplication.class.getResource(resource));
     }
 
     public static void main(String[] args) {

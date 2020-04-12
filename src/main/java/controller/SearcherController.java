@@ -1,9 +1,9 @@
 package controller;
 
-import filter.Filter;
-import filter.filterItems.FilterItemDateTime;
-import filter.filterItems.FilterItemStartWith;
-import filter.operators.ComparisonOperators;
+import model.filter.Filter;
+import model.filter.filterItems.FilterItemDateTime;
+import model.filter.filterItems.FilterItemStartWith;
+import model.filter.operators.ComparisonOperators;
 import gui.dialog.AddProductToProductListDialog;
 import gui.dialog.ProductDialog;
 import javafx.collections.FXCollections;
@@ -65,7 +65,7 @@ public class SearcherController {
         //if (dateStart.getValue() != null && dateFinish.getValue() != null && dateFinish.getValue().compareTo(dateStart.getValue()) > 0) {
         clearListAndFilter();
         addFilters();
-        //System.out.println(filter.evaluate());
+        //System.out.println(model.filter.evaluate());
         list.getItems().addAll(searcher.getImages(filter));
         addContextMenu();
     }
