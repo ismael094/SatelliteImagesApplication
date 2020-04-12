@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.geotools.map.MapContent;
 
 import java.net.URL;
 
@@ -18,6 +19,8 @@ public class SatelliteApplication extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        MapContent map = new MapContent();
+
     }
 
     public static void main(String[] args) {
