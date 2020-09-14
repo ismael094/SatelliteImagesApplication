@@ -1,8 +1,11 @@
 package controller;
 
+import gui.MapGUI;
 import model.filter.Filter;
 import model.filter.filterItems.FilterItemDateTime;
 import model.filter.filterItems.FilterItemStartWith;
+import model.filter.filterItems.FilterItemSubstringOf;
+import model.filter.filterItems.FootPrintFilter;
 import model.filter.operators.ComparisonOperators;
 import gui.dialog.AddProductToProductListDialog;
 import gui.dialog.ProductDialog;
@@ -13,9 +16,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import model.Product;
+import model.ProductOData;
 import model.ProductList;
-import services.Searcher;
+import services.ODataSearcher;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -23,20 +26,23 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class SearcherController {
+
     @FXML
     private ImageView image;
-    private Searcher searcher;
+    private ODataSearcher ODataSearcher;
     private Filter filter;
     private ContextMenu productContextMenu;
     private List<ProductList> productList;
     private AddProductToProductListDialog addProductToProductListDialog;
     @FXML
-    private ListView<Product> list;
+    private ListView<ProductOData> list;
     @FXML
     private TextArea textArea;
 
     @FXML
     private ChoiceBox<String> sateliteList;
+    @FXML
+    public ChoiceBox<String> instrumentList;
 
     @FXML
     private DatePicker dateStart;
@@ -49,8 +55,11 @@ public class SearcherController {
     @FXML
     private ResourceBundle resources;
 
+    @FXML
+    public MapGUI mapGui;
+
     public SearcherController() {
-        searcher = new Searcher();
+        ODataSearcher = new ODataSearcher();
         filter = new Filter();
     }
 
@@ -58,6 +67,9 @@ public class SearcherController {
         sateliteList.setItems(FXCollections.observableArrayList(
                 "S1", "S2", "S3"));
         sateliteList.setValue("S1");
+        instrumentList.setItems(FXCollections.observableArrayList(
+                "GRD", "IW"));
+        instrumentList.setValue("GRD");
         //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
         buildContextMenu();
     }
@@ -66,7 +78,7 @@ public class SearcherController {
         clearListAndFilter();
         addFilters();
         //System.out.println(model.filter.evaluate());
-        list.getItems().addAll(searcher.getImages(filter));
+        list.getItems().addAll(ODataSearcher.getImages(filter));
         addContextMenu();
     }
 
@@ -77,10 +89,21 @@ public class SearcherController {
 
     private void addFilters() {
         addNameFilter(sateliteList.getValue());
+        addWKTFilter(mapGui.getWKT());
+        addInstrumentFilter(instrumentList.getValue());
         if (rangeIsValid()) {
             addDateRangeLower(dateStart.getValue());
             addDateRangeUpper(dateFinish.getValue());
         }
+    }
+
+    private void addInstrumentFilter(String instrument) {
+        filter.add(new FilterItemSubstringOf("Name",instrument));
+    }
+
+    private void addWKTFilter(String wkt) {
+        if (wkt.length()>0)
+            filter.add(new FootPrintFilter(wkt));
     }
 
     private boolean rangeIsValid() {
@@ -103,17 +126,17 @@ public class SearcherController {
 
     private void addContextMenu() {
         list.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            Product product = getSelectedItem();
+            ProductOData productOData = getSelectedItem();
             if (event.getButton().equals(MouseButton.SECONDARY)) {
                 productContextMenu.show(list, event.getScreenX(), event.getScreenY());
             } else {
-                textArea.setText(product.getInfo());
+                textArea.setText(productOData.getInfo());
                 productContextMenu.hide();
             }
         });
     }
 
-    private Product getSelectedItem() {
+    private ProductOData getSelectedItem() {
         return list.getSelectionModel().getSelectedItems().get(0);
     }
 
@@ -148,7 +171,7 @@ public class SearcherController {
     }
 
     public void showProduct(MouseEvent mouseEvent) {
-        Product selectedItem = list.getSelectionModel().getSelectedItem();
+        ProductOData selectedItem = list.getSelectionModel().getSelectedItem();
     }
 
     public void setProductList(List<ProductList> list) {

@@ -1,7 +1,5 @@
 package gui.dialog;
 
-import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -10,23 +8,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import model.Product;
+import model.ProductOData;
 
 public class ProductDialog extends Stage {
-    private Product product;
+    private ProductOData productOData;
     private VBox group;
 
-    public ProductDialog(Product product) {
-        this.product = product;
+    public ProductDialog(ProductOData productOData) {
+        this.productOData = productOData;
         this.group = new VBox();
     }
 
     public void init() {
         initStyle(StageStyle.UTILITY);
-        addLabelAndText("Name",product.getName());
-        addLabelAndText("ID",product.getId());
-        addLabelAndText("CreationDate",product.getCreationDate());
-        addLabelAndText("URL",product.getUrlImg());
+        addLabelAndText("Name", productOData.getName());
+        addLabelAndText("ID", productOData.getId());
+        addLabelAndText("CreationDate", productOData.getCreationDate());
+        addLabelAndText("URL", productOData.getUrlImg());
 
         Scene scene = new Scene(group);
         setSize();

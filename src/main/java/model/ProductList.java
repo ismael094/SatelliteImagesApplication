@@ -6,32 +6,32 @@ import java.util.List;
 public class ProductList {
     private String name;
     private String description;
-    private List<Product> products;
+    private List<ProductOData> productOData;
 
     public ProductList(String name, String description) {
         this.name = name;
         this.description = description;
-        products = new ArrayList<>();
+        productOData = new ArrayList<>();
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public List<ProductOData> getProducts() {
+        return productOData;
     }
 
-    public Product getProductById(String id) {
-        for (Product product : products)
-            if (product.getId().equals(id))
-                return product;
+    public ProductOData getProductById(String id) {
+        for (ProductOData productOData : this.productOData)
+            if (productOData.getId().equals(id))
+                return productOData;
 
         return null;
     }
 
     public int count() {
-        return products.size();
+        return productOData.size();
     }
 
-    public void addProduct(Product product) {
-        this.products.add(product);
+    public void addProduct(ProductOData productOData) {
+        this.productOData.add(productOData);
     }
 
     public String getName() {

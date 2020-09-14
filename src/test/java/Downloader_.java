@@ -49,7 +49,7 @@ public class Downloader_ {
     public void test2() throws IOException {
         URL url = null;
         try {
-            url = new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('b31dd4b9-3812-4eaa-824c-87f8fb7e397f')/$value");
+            url = new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('79eadf28-84eb-4eea-a937-fc48d78fd4d6')/$value");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

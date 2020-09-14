@@ -1,0 +1,306 @@
+{
+  "feed": {
+    "xmlns:opensearch": "http://a9.com/-/spec/opensearch/1.1/",
+    "xmlns": "http://www.w3.org/2005/Atom",
+    "title": "Sentinels Scientific Data Hub search results for: *",
+    "subtitle": "Displaying 0 to 99 of 30432470 total results. Request done in 0.484 seconds.",
+    "updated": "2020-09-10T14:24:47.870Z",
+    "author": {
+      "name": "Sentinels Scientific Data Hub"
+    },
+    "id": "https://scihub.copernicus.eu/dhus/search?q=*",
+    "opensearch:totalResults": "30432470",
+    "opensearch:startIndex": "0",
+    "opensearch:itemsPerPage": "100",
+    "opensearch:Query": {
+      "role": "request",
+      "searchTerms": "*",
+      "startPage": "1"
+    },
+    "entry": [
+      {
+        "title": "S3B_SL_2_LST____20200910T113704_20200910T114004_20200910T135333_0179_043_180_1260_LN2_O_NR_004",
+        "id": "d72b3472-6679-4b73-84a9-ce2d4d8288d4",
+        "summary": "Date: 2020-09-10T11:37:04.317Z, Instrument: SLSTR, Mode: , Satellite: Sentinel-3, Size: 57.49 MB",
+        "date": [
+          {
+            "name": "creationdate",
+            "content": "2020-09-10T13:53:33Z"
+          },
+          {
+            "name": "beginposition",
+            "content": "2020-09-10T11:37:04.317Z"
+          },
+          {
+            "name": "endposition",
+            "content": "2020-09-10T11:40:04.317Z"
+          },
+          {
+            "name": "ingestiondate",
+            "content": "2020-09-10T14:24:00.54Z"
+          }
+        ],
+        "int": [
+          {
+            "name": "orbitnumber",
+            "content": "12387"
+          },
+          {
+            "name": "relativeorbitnumber",
+            "content": "180"
+          }
+        ],
+        "str": [
+          {
+            "name": "sensoroperationalmode",
+            "content": "Earth Observation"
+          },
+          {
+            "name": "instrumentname",
+            "content": "Sea and Land Surface Temperature Radiometer"
+          },
+          {
+            "name": "footprint",
+            "content": "MULTIPOLYGON (((115.241 70.1099, 115.628 70.2295, 116.659 70.5289, 117.723 70.8303, 118.804 71.12, 119.905 71.4009, 121.055 71.6711, 122.255 71.9415, 123.455 72.207, 124.715 72.4605, 126.002 72.7043, 127.321 72.9397, 128.678 73.1672, 130.082 73.3869, 131.513 73.5957, 132.967 73.7945, 134.485 73.9849, 136.012 74.1639, 137.551 74.3327, 139.172 74.4909, 140.795 74.6395, 142.464 74.7685, 144.131 74.8898, 145.84 75.0005, 147.553 75.0964, 149.322 75.1638, 151.089 75.2338, 152.86 75.2909, 154.656 75.339, 156.466 75.3597, 158.273 75.3751, 158.187 77.988, 158.272 80.5996, 158.722 83.2096, 159.76675933512814 85.05115, 124.4370802238807 85.05115, 121.453 84.8941, 117.449 84.6202, 113.874 84.3261, 110.575 84.0127, 107.682 83.6772, 105.023 83.3351, 102.669 82.9741, 100.545 82.6038, 98.6238 82.2254, 96.8855 81.8401, 95.2963 81.4471, 93.828 81.0447, 92.4954 80.6394, 91.2776 80.2314, 90.1521 79.8181, 89.1083 79.399, 88.1897 78.9774, 87.2932 78.5592, 86.4489 78.1309, 85.7004 77.7034, 84.9922 77.2728, 84.3201 76.8389, 83.6785 76.4064, 83.4549 76.239, 93.4696 75.1986, 102.136 73.7657, 109.324 72.0447, 115.241 70.1099)))"
+          },
+          {
+            "name": "platformidentifier",
+            "content": "2018-039A"
+          },
+          {
+            "name": "passdirection",
+            "content": "ascending"
+          },
+          {
+            "name": "procfacilityname",
+            "content": "Land SLSTR and SYN Processing and Archiving Centre [LN2]"
+          },
+          {
+            "name": "procfacilityorg",
+            "content": "European Space Agency"
+          },
+          {
+            "name": "processinglevel",
+            "content": "2"
+          },
+          {
+            "name": "processingname",
+            "content": "Data Processing"
+          },
+          {
+            "name": "productlevel",
+            "content": "L2"
+          },
+          {
+            "name": "producttype",
+            "content": "SL_2_LST___"
+          },
+          {
+            "name": "relorbitdir",
+            "content": "ascending"
+          },
+          {
+            "name": "relpassnumber",
+            "content": "359"
+          },
+          {
+            "name": "relpassdirection",
+            "content": "ascending"
+          },
+          {
+            "name": "platformname",
+            "content": "Sentinel-3"
+          },
+          {
+            "name": "size",
+            "content": "57.49 MB"
+          },
+          {
+            "name": "timeliness",
+            "content": "Near Real Time"
+          },
+          {
+            "name": "pdualongtrackcoord",
+            "content": "1260"
+          },
+          {
+            "name": "identifier",
+            "content": "S3B_SL_2_LST____20200910T113704_20200910T114004_20200910T135333_0179_043_180_1260_LN2_O_NR_004"
+          },
+          {
+            "name": "uuid",
+            "content": "d72b3472-6679-4b73-84a9-ce2d4d8288d4"
+          }
+        ]
+      },
+      {
+        "title": "S3B_SL_1_RBT____20200910T120104_20200910T120404_20200910T135948_0179_043_180_2700_LN2_O_NR_004",
+        "link": [
+          {
+            "href": "https://scihub.copernicus.eu/dhus/odata/v1/Products('b6216a70-6fbd-4d6d-98e0-e8c479b98686')/$value"
+          },
+          {
+            "rel": "alternative",
+            "href": "https://scihub.copernicus.eu/dhus/odata/v1/Products('b6216a70-6fbd-4d6d-98e0-e8c479b98686')/"
+          },
+          {
+            "rel": "icon",
+            "href": "https://scihub.copernicus.eu/dhus/odata/v1/Products('b6216a70-6fbd-4d6d-98e0-e8c479b98686')/Products('Quicklook')/$value"
+          }
+        ],
+        "id": "b6216a70-6fbd-4d6d-98e0-e8c479b98686",
+        "summary": "Date: 2020-09-10T12:01:04.317Z, Instrument: SLSTR, Mode: , Satellite: Sentinel-3, Size: 402.69 MB",
+        "date": [
+          {
+            "name": "creationdate",
+            "content": "2020-09-10T13:59:48Z"
+          },
+          {
+            "name": "beginposition",
+            "content": "2020-09-10T12:01:04.317Z"
+          },
+          {
+            "name": "endposition",
+            "content": "2020-09-10T12:04:04.317Z"
+          },
+          {
+            "name": "ingestiondate",
+            "content": "2020-09-10T14:23:59.875Z"
+          }
+        ],
+        "int": [
+          {
+            "name": "orbitnumber",
+            "content": "12387"
+          },
+          {
+            "name": "relativeorbitnumber",
+            "content": "180"
+          }
+        ],
+        "str": [
+          {
+            "name": "ecmwf",
+            "content": "FORECAST"
+          },
+          {
+            "name": "filename",
+            "content": "S3B_SL_1_RBT____20200910T120104_20200910T120404_20200910T135948_0179_043_180_2700_LN2_O_NR_004.SEN3"
+          },
+          {
+            "name": "gmlfootprint",
+            "content": "<gml:Polygon srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\" xmlns:gml=\"http://www.opengis.net/gml\">\n   <gml:outerBoundaryIs>\n      <gml:LinearRing>\n         <gml:coordinates>10.4624,-38.5934 10.3731,-38.1365 10.281,-37.6784 10.1873,-37.2199 10.1055,-36.7705 10.005,-36.309 9.91937,-35.8581 9.81796,-35.4019 9.73141,-34.9466 9.63456,-34.4863 9.53908,-34.0329 9.45101,-33.5808 9.34517,-33.1235 9.25232,-32.6732 9.15274,-32.2158 9.05726,-31.7686 8.95688,-31.3145 8.85547,-30.8593 8.76388,-30.4067 8.66148,-29.9517 8.56088,-29.5066 8.45775,-29.0522 8.3548,-28.6042 8.25088,-28.1503 8.15503,-27.6983 8.04974,-27.2466 7.94329,-26.7944 7.843,-26.3478 7.7325,-25.8989 7.63036,-25.4409 7.59002,-25.2674 10.2025,-24.6435 12.8571,-23.9916 15.5095,-23.3196 18.1591,-22.6247 18.2011,-22.8073 18.3214,-23.2775 18.4299,-23.7488 18.5369,-24.2132 18.6494,-24.6836 18.7602,-25.1518 18.8601,-25.6255 18.9678,-26.0978 19.0735,-26.5661 19.1791,-27.0417 19.2811,-27.5069 19.3846,-27.9842 19.4851,-28.4558 19.5778,-28.9356 19.6774,-29.4122 19.7748,-29.8885 19.8668,-30.359 19.9595,-30.8356 20.0515,-31.316 20.1468,-31.7922 20.2416,-32.2737 20.3233,-32.7466 20.4116,-33.2345 20.4934,-33.7121 20.5885,-34.1915 20.6647,-34.6732 20.7377,-35.1536 20.8238,-35.6408 20.9037,-36.1195 20.9813,-36.6028 18.3408,-37.0848 15.7,-37.5781 13.0592,-38.0836 10.4624,-38.5934</gml:coordinates>\n      </gml:LinearRing>\n   </gml:outerBoundaryIs>\n</gml:Polygon>"
+          },
+          {
+            "name": "format",
+            "content": "SAFE"
+          },
+          {
+            "name": "instrumentshortname",
+            "content": "SLSTR"
+          },
+          {
+            "name": "sensoroperationalmode",
+            "content": "Earth Observation"
+          },
+          {
+            "name": "instrumentname",
+            "content": "Sea and Land Surface Temperature Radiometer"
+          },
+          {
+            "name": "footprint",
+            "content": "MULTIPOLYGON (((-25.2674 7.59002, -24.6435 10.2025, -23.9916 12.8571, -23.3196 15.5095, -22.6247 18.1591, -22.8073 18.2011, -23.2775 18.3214, -23.7488 18.4299, -24.2132 18.5369, -24.6836 18.6494, -25.1518 18.7602, -25.6255 18.8601, -26.0978 18.9678, -26.5661 19.0735, -27.0417 19.1791, -27.5069 19.2811, -27.9842 19.3846, -28.4558 19.4851, -28.9356 19.5778, -29.4122 19.6774, -29.8885 19.7748, -30.359 19.8668, -30.8356 19.9595, -31.316 20.0515, -31.7922 20.1468, -32.2737 20.2416, -32.7466 20.3233, -33.2345 20.4116, -33.7121 20.4934, -34.1915 20.5885, -34.6732 20.6647, -35.1536 20.7377, -35.6408 20.8238, -36.1195 20.9037, -36.6028 20.9813, -37.0848 18.3408, -37.5781 15.7, -38.0836 13.0592, -38.5934 10.4624, -38.1365 10.3731, -37.6784 10.281, -37.2199 10.1873, -36.7705 10.1055, -36.309 10.005, -35.8581 9.91937, -35.4019 9.81796, -34.9466 9.73141, -34.4863 9.63456, -34.0329 9.53908, -33.5808 9.45101, -33.1235 9.34517, -32.6732 9.25232, -32.2158 9.15274, -31.7686 9.05726, -31.3145 8.95688, -30.8593 8.85547, -30.4067 8.76388, -29.9517 8.66148, -29.5066 8.56088, -29.0522 8.45775, -28.6042 8.3548, -28.1503 8.25088, -27.6983 8.15503, -27.2466 8.04974, -26.7944 7.94329, -26.3478 7.843, -25.8989 7.7325, -25.4409 7.63036, -25.2674 7.59002)))"
+          },
+          {
+            "name": "mode",
+            "content": "EO"
+          },
+          {
+            "name": "platformidentifier",
+            "content": "2018-039A"
+          },
+          {
+            "name": "onlinequalitycheck",
+            "content": "PASSED"
+          },
+          {
+            "name": "orbitdirection",
+            "content": "descending"
+          },
+          {
+            "name": "pduduration",
+            "content": "179"
+          },
+          {
+            "name": "passnumber",
+            "content": "24774"
+          },
+          {
+            "name": "passdirection",
+            "content": "descending"
+          },
+          {
+            "name": "procfacilityname",
+            "content": "Land SLSTR and SYN Processing and Archiving Centre [LN2]"
+          },
+          {
+            "name": "procfacilityorg",
+            "content": "European Space Agency"
+          },
+          {
+            "name": "processinglevel",
+            "content": "1"
+          },
+          {
+            "name": "processingname",
+            "content": "Data Processing"
+          },
+          {
+            "name": "productlevel",
+            "content": "L1"
+          },
+          {
+            "name": "producttype",
+            "content": "SL_1_RBT___"
+          },
+          {
+            "name": "relorbitdir",
+            "content": "descending"
+          },
+          {
+            "name": "relpassnumber",
+            "content": "360"
+          },
+          {
+            "name": "relpassdirection",
+            "content": "descending"
+          },
+          {
+            "name": "platformname",
+            "content": "Sentinel-3"
+          },
+          {
+            "name": "size",
+            "content": "402.69 MB"
+          },
+          {
+            "name": "timeliness",
+            "content": "Near Real Time"
+          },
+          {
+            "name": "pdualongtrackcoord",
+            "content": "2700"
+          },
+          {
+            "name": "identifier",
+            "content": "S3B_SL_1_RBT____20200910T120104_20200910T120404_20200910T135948_0179_043_180_2700_LN2_O_NR_004"
+          },
+          {
+            "name": "uuid",
+            "content": "b6216a70-6fbd-4d6d-98e0-e8c479b98686"
+          }
+        ]
+      }
+    ]
+  }
+}
