@@ -1,14 +1,18 @@
 package services;
 
-import model.OpenSearchParameter;
+import model.exception.NotAuthenticatedException;
+import model.openSearcher.OpenSearchQueryParameter;
 import model.exception.AuthenticationException;
+import model.openSearcher.OpenSearchResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import utils.HTTPAuthManager;
+import utils.ProductMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +28,7 @@ public class OpenSearcher_ {
     public static final String INVALID_USERNAME = "usernameError";
     public static final String INVALID_PASSWORD = "passw11";
     public OpenSearcher openSearcher;
+    public OpenSearcher openSearcherMock;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -32,7 +37,7 @@ public class OpenSearcher_ {
     @Before
     public void initMockup() throws AuthenticationException {
         openSearcher = new OpenSearcher();
-        //openSearcher = mock(OpenSearcher.class);
+        //openSearcherMock = mock(OpenSearcher.class);
         /*doReturn(CONTENT_LENGTH).when(product).getContentLength();
         doReturn(ID).when(product).getId();
         doReturn(NAME).when(product).getName();
@@ -40,9 +45,9 @@ public class OpenSearcher_ {
 
     }
 
-    @Test()
+    @Test(expected = AuthenticationException.class)
     public void with_invalid_credentials_should_throw_exception() throws AuthenticationException {
-        OpenSearcher openSearcher = new OpenSearcher(INVALID_USERNAME, VALID_PASSWORD);
+        new OpenSearcher(INVALID_USERNAME, VALID_PASSWORD);
 
     }
 
@@ -66,62 +71,58 @@ public class OpenSearcher_ {
 
     @Test
     public void with_platform_name_sentinel1_should_return_query_in_path() {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
         assertThat(openSearcher.getSearchParametersAsString()).isEqualTo("platformname:Sentinel-1");
     }
 
     @Test
     public void with_multiple_search_parameter_should_return_path_with_all_parameter_with_AND_between_then() throws MalformedURLException {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
-        openSearcher.addSearchParameter(OpenSearchParameter.PRODUCT_TYPE,"SLC");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,"SLC");
         assertThat(openSearcher.getSearchParameters().size()).isEqualTo(2);
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1 AND producttype:SLC)");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1 AND producttype:SLC)");
     }
 
     @Test
     public void multiple_parameters_with_same_name_and_value_should_not_be_stored() throws MalformedURLException {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
         assertThat(openSearcher.getSearchParameters().size()).isEqualTo(1);
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1)");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1)");
     }
 
     @Test
     public void clear_search_parameters_should_delete_all_parameters_stored() throws MalformedURLException {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
-        openSearcher.addSearchParameter(OpenSearchParameter.PRODUCT_TYPE,"SLC");
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1 AND producttype:SLC)");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,"SLC");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1 AND producttype:SLC)");
         openSearcher.clearSearchParameters();
         assertThat(openSearcher.getSearchParameters().size()).isEqualTo(0);
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(*)");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(*)");
     }
 
     @Test
     public void get_URL_of_query_with_setted_product_per_page_and_number_page() throws MalformedURLException {
         openSearcher.setProductPerPage(1);
         openSearcher.setPage(1);
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=1&rows=1&q=(*)");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=1&rows=1&q=(*)");
         openSearcher.setProductPerPage(100);
         openSearcher.setPage(0);
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(*)");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(*)");
     }
 
     @Test
     public void get_URL_of_query_with_one_search_parameter() throws MalformedURLException {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1)");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,"Sentinel-1");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1)");
         openSearcher.clearSearchParameters();
-        openSearcher.addSearchParameter(OpenSearchParameter.PRODUCT_TYPE,"SLC");
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(producttype:SLC)");
+        openSearcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,"SLC");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(producttype:SLC)");
     }
 
-    @Test
-    public void search_with() throws MalformedURLException {
-        openSearcher.addSearchParameter(OpenSearchParameter.PLATFORM_NAME,"Sentinel-1");
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(platformname:Sentinel-1)");
-        openSearcher.clearSearchParameters();
-        openSearcher.addSearchParameter(OpenSearchParameter.PRODUCT_TYPE,"SLC");
-        assertThat(openSearcher.getURl().toString()).isEqualTo(URL+"start=0&rows=100&q=(producttype:SLC)");
+    @Test(expected = NotAuthenticatedException.class)
+    public void search_with_default_query_should_return_an_open_response() throws IOException, AuthenticationException, NotAuthenticatedException {
+        assertThat(openSearcher.search().getNumOfProducts()).isEqualTo(0);
     }
 }
 
@@ -132,7 +133,7 @@ class OpenSearcher {
     private HTTPAuthManager httpManager;
     private int productsPerPage;
     private int page;
-    private final Map<OpenSearchParameter, String> searchParameters;
+    private final Map<OpenSearchQueryParameter, String> searchParameters;
 
     private static OpenSearcher openSearcher;
 
@@ -168,7 +169,7 @@ class OpenSearcher {
         this.productsPerPage = productsPerPage;
     }
 
-    private void login(String username, String password) throws AuthenticationException {
+    public void login(String username, String password) throws AuthenticationException {
         long startTime = currentTimeMillis();
         this.httpManager = new HTTPAuthManager(username,password);
         try {
@@ -179,7 +180,7 @@ class OpenSearcher {
         }
     }
 
-    public URL getURl() throws MalformedURLException {
+    public URL getURL() throws MalformedURLException {
         return new URL(URL + startPage() + rowsPerPage() + searchParameter());
     }
 
@@ -211,19 +212,25 @@ class OpenSearcher {
         return page;
     }
 
-    public void addSearchParameter(OpenSearchParameter parameterName, String value) {
+    public void addSearchParameter(OpenSearchQueryParameter parameterName, String value) {
         this.searchParameters.put(parameterName, value);
     }
 
-    private String joinParameterNameValue(OpenSearchParameter parameterName, String value) {
+    private String joinParameterNameValue(OpenSearchQueryParameter parameterName, String value) {
         return parameterName.getParameterName()+":"+value;
     }
 
-    public Map<OpenSearchParameter,String> getSearchParameters() {
+    public Map<OpenSearchQueryParameter,String> getSearchParameters() {
         return this.searchParameters;
     }
 
     public void clearSearchParameters() {
         this.searchParameters.clear();
+    }
+
+    public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
+        if (httpManager == null)
+            throw new NotAuthenticatedException("Not autenticated in OpenSearch");
+        return ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
     }
 }

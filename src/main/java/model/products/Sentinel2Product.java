@@ -1,8 +1,8 @@
-package model;
+package model.products;
 
-import java.util.Date;
+import model.products.Product;
 
-public class Sentinel2Product extends Product{
+public class Sentinel2Product extends Product {
     private double cloudCoverPercentage;
     private double vegetationPercentageCoverage;
     private double notVegetationPercentageCoverage;

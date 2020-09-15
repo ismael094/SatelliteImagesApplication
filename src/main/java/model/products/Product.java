@@ -1,12 +1,12 @@
-package model;
+package model.products;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import utils.ProductDeserializer;
+import utils.OpenSearchProductDeserializer;
 
 import java.util.Calendar;
 
-@JsonDeserialize(using = ProductDeserializer.class)
+@JsonDeserialize(using = OpenSearchProductDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     private Calendar ingestionDate;

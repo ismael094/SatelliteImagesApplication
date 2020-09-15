@@ -1,8 +1,8 @@
-package model;
+package model.products;
 
-import java.util.Date;
+import model.products.Product;
 
-public class Sentinel1Product extends Product{
+public class Sentinel1Product extends Product {
     private String sensorOperationalMode;
     private String polarizationMode;
 

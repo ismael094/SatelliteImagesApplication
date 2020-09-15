@@ -2,8 +2,11 @@ package utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.*;
 import model.openSearcher.OpenSearchResponse;
+import model.products.Product;
+import model.products.ProductProperties;
+import model.products.Sentinel1Product;
+import model.products.Sentinel2Product;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -78,7 +81,11 @@ public class ProductMapper_ {
     public void given_a_json_data_should_return_OpenDataResultPOJO() throws JAXBException, IOException {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContent);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
-        assertThat(response.getProducts().size()).isEqualTo(2);
+        assertThat(response.getProducts().size()).isEqualTo(4);
+        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
+        assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
+        assertThat(response.getProducts().get(1)).isInstanceOf(Sentinel2Product.class);
+        assertThat(((Sentinel2Product)response.getProducts().get(1)).getCloudCoverPercentage()).isEqualTo(51.9229d);
     }
 
 

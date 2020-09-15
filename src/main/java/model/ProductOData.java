@@ -61,7 +61,7 @@ public class ProductOData {
     }
 
     public String getInfo() {
-        return "model.Product{" +
+        return "model.products.Product{" +
                 "Id='" + Id + '\'' + '\n'+
                  ", ContentLength=" + getGigaBytes() + " Gb" + '\n'+
                 ", Name='" + Name + '\'' +'\n'+

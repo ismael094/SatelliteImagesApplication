@@ -1,5 +1,6 @@
 package model;
 
+import model.products.Sentinel1Product;
 import org.junit.Before;
 import org.junit.Test;
 
