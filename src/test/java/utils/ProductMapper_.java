@@ -18,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -86,6 +88,15 @@ public class ProductMapper_ {
         assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
         assertThat(response.getProducts().get(1)).isInstanceOf(Sentinel2Product.class);
         assertThat(((Sentinel2Product)response.getProducts().get(1)).getCloudCoverPercentage()).isEqualTo(51.9229d);
+    }
+
+    @Test
+    public void given_a_json_data_with_no_entries_should_return_an_empty_OpenDataResultPOJO() throws JAXBException, IOException {
+        InputStream jsonWithNoEntries = new FileInputStream(Paths.get("src/test/java/utils/empty.json").toFile());
+        OpenSearchResponse response = ProductMapper.getResponse(jsonWithNoEntries);
+        assertThat(response.getNumOfProducts()).isEqualTo(0);
+        assertThat(response.getProducts().size()).isEqualTo(0);
+        jsonWithNoEntries.close();
     }
 
 

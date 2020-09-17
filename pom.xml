@@ -28,7 +28,25 @@
                     <target>11</target>
                     <release>11</release>
                     <mainClass>SatelliteApplication</mainClass>
+                    <options>
+                        <option>--add-opens</option><option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.base/com.sun.javafx.binding=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+                        <option>--add-opens</option><option>javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.base/com.sun.javafx.binding=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+                        <option>--add-exports</option><option>javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</option>
+
+
+                    </options>
                 </configuration>
+
             </plugin>
         </plugins>
     </build>
@@ -66,6 +84,12 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>14</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jfoenix</groupId>
+            <artifactId>jfoenix</artifactId>
+            <version>9.0.10</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx -->

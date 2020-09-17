@@ -7,6 +7,7 @@ import model.products.Product;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "feed")
@@ -15,9 +16,9 @@ import java.util.List;
 public class OpenSearchResponse {
 
     @JsonProperty("opensearch:totalResults")
-    private int numOfProducts;
+    private int numOfProducts = 0;
     @JsonProperty("entry")
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     public int getNumOfProducts() {
         return numOfProducts;

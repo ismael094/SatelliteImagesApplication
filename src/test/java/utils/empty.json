@@ -1,0 +1,43 @@
+{
+  "feed": {
+    "xmlns:opensearch": "http://a9.com/-/spec/opensearch/1.1/",
+    "xmlns": "http://www.w3.org/2005/Atom",
+    "title": "Sentinels Scientific Data Hub search results for: footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))",
+    "subtitle": "Displaying  results. Request done in 0 seconds.",
+    "updated": "2020-09-15T19:11:51.389Z",
+    "author": {
+      "name": "Sentinels Scientific Data Hub"
+    },
+    "id": "https://scihub.copernicus.eu/dhus/search?q=footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))",
+    "opensearch:totalResults": null,
+    "opensearch:startIndex": "0",
+    "opensearch:itemsPerPage": "10",
+    "opensearch:Query": {
+      "role": "request",
+      "searchTerms": "footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))",
+      "startPage": "1"
+    },
+    "link": [
+      {
+        "rel": "self",
+        "type": "application/atom+xml",
+        "href": "https://scihub.copernicus.eu/dhus/search?q=footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))&start=0&rows=10"
+      },
+      {
+        "rel": "first",
+        "type": "application/atom+xml",
+        "href": "https://scihub.copernicus.eu/dhus/search?q=footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))&start=0&rows=10"
+      },
+      {
+        "rel": "last",
+        "type": "application/atom+xml",
+        "href": "https://scihub.copernicus.eu/dhus/search?q=footprint:POLYGON((-4.53 29.85,26.75 29.85,26.75 46.80,-4.53 46.80,-4.53 29.85))&start=NaN&rows=10"
+      },
+      {
+        "rel": "search",
+        "type": "application/opensearchdescription+xml",
+        "href": "opensearch_description.xml"
+      }
+    ]
+  }
+}

@@ -18,20 +18,21 @@ public class MapGUI extends Pane {
 
     private final MapCanvas canvas;
 
-    public MapGUI() {
-        this.canvas = new MapCanvas(418, 374);
-
-        Pane pane = new	Pane(canvas.getCanvas());
-
-
+    public MapGUI(double width, double height) {
+        this.canvas = new MapCanvas((int) width, (int) height);
+        Pane mapPane = new	Pane(canvas.getCanvas());
         BorderPane border = new BorderPane();
-        HBox hbox = addHBox(canvas);
-        border.setTop(hbox);
-        border.setCenter(pane);
+        HBox controlBar = controlBar(canvas);
+        border.setTop(controlBar);
+        border.setCenter(mapPane);
         border.setBottom(addBottomHBox(canvas));
         Scene scene = new Scene(border);
 
         getChildren().add(border);
+    }
+
+    public void drawProductWKT(String wkt) throws ParseException {
+        canvas.drawSquare(wkt);
     }
 
     public HBox addBottomHBox(MapCanvas canvas) {
@@ -45,10 +46,8 @@ public class MapGUI extends Pane {
             } else {
                 try {
                     l.setText(canvas.WKTToGML2());
-                } catch (IOException ioException) {
+                } catch (IOException | ParseException ioException) {
                     ioException.printStackTrace();
-                } catch (ParseException parseException) {
-                    parseException.printStackTrace();
                 }
             }
         });
@@ -58,7 +57,7 @@ public class MapGUI extends Pane {
         return hbox;
     }
 
-    public HBox addHBox(MapCanvas canvas) {
+    public HBox controlBar(MapCanvas canvas) {
         HBox hbox = new HBox();
         /*hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);

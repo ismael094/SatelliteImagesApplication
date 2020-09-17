@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class SearcherController {
+public class ODataSearcherController {
 
     @FXML
     private ImageView image;
@@ -58,7 +58,7 @@ public class SearcherController {
     @FXML
     public MapGUI mapGui;
 
-    public SearcherController() {
+    public ODataSearcherController() {
         ODataSearcher = new ODataSearcher();
         filter = new Filter();
     }

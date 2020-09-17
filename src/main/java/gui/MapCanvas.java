@@ -19,9 +19,7 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
-import org.geotools.map.MapContent;
+import org.geotools.map.*;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
@@ -88,6 +86,36 @@ public class MapCanvas {
         }
     }
 
+    public void drawSquare(String wktCoordinates) throws ParseException {
+
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("MyFeatureType");
+        builder.setCRS( DefaultGeographicCRS.WGS84 ); // set crs
+        if (wktCoordinates.contains("MULTIPOLYGON"))
+            builder.add("location", MultiPolygon.class); // add geometry
+        else
+            builder.add("location", Polygon.class); // add geometry
+        // build the type
+        SimpleFeatureType TYPE = builder.buildFeatureType();
+
+        // create features using the type defined
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
+
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        WKTReader reader = new WKTReader(geometryFactory);
+        featureBuilder.add(reader.read(wktCoordinates));
+        SimpleFeature feature = featureBuilder.buildFeature("FeaturePoint");
+        List<SimpleFeature> featureCollection = new ArrayList<>();
+        featureCollection.add(feature);
+        Style PointStyle = SLD.createPolygonStyle(Color.BLUE, null,  0.5f);
+
+        Layer layer = new FeatureLayer(DataUtilities.collection(featureCollection), PointStyle);
+        layer.setTitle("ProductLayer");
+        map.addLayer(layer);
+        ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
+        doSetDisplayArea(env);
+    }
+
     public void drawSquare(Coordinate[] coordinates) {
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -119,10 +147,12 @@ public class MapCanvas {
         //Style PointStyle = SLD.createLineStyle(Color.RED,(float) 5);
 
         Layer layer = new FeatureLayer(DataUtilities.collection(featureCollection), PointStyle);
-        layer.setTitle("NewPointLayer");
+        layer.setTitle("searchArea");
+
         List<Layer> layers = map.layers();
-        if (layers.size()>1)
-            map.removeLayer(layers.get(1));
+        layers.stream()
+                .filter(l -> l.getTitle() != null && l.getTitle().equals("searchArea"))
+                .findFirst().ifPresent(l -> map.removeLayer(l));
         map.addLayer(layer);
         ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
         doSetDisplayArea(env);

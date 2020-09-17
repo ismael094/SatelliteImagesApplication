@@ -1,3 +1,4 @@
+import controller.ListViewController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -27,10 +28,9 @@ public class SatelliteApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         URL location = getClass().getResource("/ListView.fxml");
-        System.out.println(location.toString());
         FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Scene scene = new Scene(fxmlLoader.load());
 
+        Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setScene(scene);
         primaryStage.show();
 
