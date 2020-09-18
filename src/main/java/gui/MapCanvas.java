@@ -9,173 +9,187 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.util.Duration;
+import org.apache.commons.collections.ArrayStack;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.gml2.GML;
 import org.geotools.map.*;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
-import org.geotools.xsd.Configuration;
-import org.geotools.xsd.Encoder;
 import org.jfree.fx.FXGraphics2D;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-
-import static java.lang.Math.abs;
 
 
 public class MapCanvas {
-    private final Canvas canvas;
-    private final GraphicsContext gc;
-    private MapContent map;
+    public static final String SEARCH_AREA = "SearchArea";
+    private final Canvas geotoolsCanvas;
+    private final GraphicsContext graphicsContext;
+    private List<SimpleFeature> featureCollection;
+    private MapContent mapContent;
     private boolean repaint = true;
     private Geometry wktSquare;
+    private FeatureLayer selectedLayer;
 
     public MapCanvas(int width, int height) {
-        canvas = new Canvas(width, height);
-        gc = canvas.getGraphicsContext2D();
+        geotoolsCanvas = new Canvas(width, height);
+        graphicsContext = geotoolsCanvas.getGraphicsContext2D();
         initMap();
         initEvent();
         initPaintThread();
-        drawMap(gc);
+        drawMap(graphicsContext);
     }
 
     public Node getCanvas() {
-        return canvas;
-    }
-
-    public MapContent getMap() {
-        return map;
+        return geotoolsCanvas;
     }
 
     private void initMap() {
         try {
-            URL resource = this.getClass().getResource("/countries.shp");
-            File file = new File(resource.getPath());
-            FileDataStore store = FileDataStoreFinder.getDataStore(file);
-            SimpleFeatureSource featureSource = store.getFeatureSource();
-            map = new MapContent();
-            map.setTitle("Quickstart");
+            SimpleFeatureSource featureSource = loadFileDataStore("/countries.shp").getFeatureSource();
+
             Style style = SLD.createSimpleStyle(featureSource.getSchema());
             FeatureLayer layer = new FeatureLayer(featureSource, style);
-            map.addLayer(layer);
-            map.getViewport().setScreenArea(new Rectangle((int) canvas.getWidth(), (int) canvas.getHeight()));
+
+            mapContent = new MapContent();
+            mapContent.setTitle("Geotool map");
+            mapContent.addLayer(layer);
+            mapContent.getViewport().setScreenArea(new Rectangle((int) geotoolsCanvas.getWidth(), (int) geotoolsCanvas.getHeight()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void drawSquare(String wktCoordinates) throws ParseException {
-
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("MyFeatureType");
-        builder.setCRS( DefaultGeographicCRS.WGS84 ); // set crs
-        if (wktCoordinates.contains("MULTIPOLYGON"))
-            builder.add("location", MultiPolygon.class); // add geometry
-        else
-            builder.add("location", Polygon.class); // add geometry
-        // build the type
-        SimpleFeatureType TYPE = builder.buildFeatureType();
-
-        // create features using the type defined
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
-
-        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-        WKTReader reader = new WKTReader(geometryFactory);
-        featureBuilder.add(reader.read(wktCoordinates));
-        SimpleFeature feature = featureBuilder.buildFeature("FeaturePoint");
-        List<SimpleFeature> featureCollection = new ArrayList<>();
-        featureCollection.add(feature);
-        Style PointStyle = SLD.createPolygonStyle(Color.BLUE, null,  0.5f);
-
-        Layer layer = new FeatureLayer(DataUtilities.collection(featureCollection), PointStyle);
-        layer.setTitle("ProductLayer");
-        map.addLayer(layer);
-        ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
-        doSetDisplayArea(env);
+    private FileDataStore loadFileDataStore(String url) throws IOException {
+        URL resource = this.getClass().getResource(url);
+        File file = new File(resource.getPath());
+        return FileDataStoreFinder.getDataStore(file);
     }
 
-    public void drawSquare(Coordinate[] coordinates) {
+    public void drawGeometryFromWKT(String wktCoordinates, String id) throws ParseException {
 
+        SimpleFeatureBuilder featureBuilder;
+        if (wktCoordinates.contains("MULTIPOLYGON"))
+            featureBuilder = getSimpleFeatureBuilder(MultiPolygon.class);
+        else
+            featureBuilder = getSimpleFeatureBuilder(Polygon.class);
+
+        featureBuilder.add(readWKTString(wktCoordinates));
+        if (featureCollection == null) {
+            System.out.println("Created layer");
+            featureCollection = new ArrayList<>();
+            //createProductResultsLayer(Color.BLACK,null,1f);
+        }
+        featureCollection.add(featureBuilder.buildFeature(id));
+        //doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
+    }
+
+    public void showProductArea(String id) throws IOException {
+        //if (selectedLayer != null)
+            //selectedLayer.setStyle(getPolygonStyle(Color.BLACK,null,1f));
+        selectedLayer = (FeatureLayer) mapContent.layers().stream()
+                .filter(l -> l.getTitle() != null && l.getTitle().equals("ResultsLayer"))
+                .findFirst().orElse(null);
+        if (selectedLayer!=null) {
+            Object[] features =  ((Layer) selectedLayer).getFeatureSource().getFeatures().toArray();
+            SimpleFeature sF = (SimpleFeature)features[0];
+            System.out.println(sF.getID());
+            /*Arrays.stream(features)
+                    .filter(f -> f.getID().equals(id))
+                    .findFirst().ifPresent(simpleFeature -> System.out.println("ESTÁ"));*/
+            selectedLayer.setStyle(getPolygonStyle(Color.RED,Color.ORANGE,1f));
+        }
+
+        doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
+    }
+
+    public void drawGeometryFromCoordinates(Coordinate[] coordinates) throws ParseException {
+
+        SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
+        Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
+        wktSquare = readWKTString(polygon.toText());
+        featureBuilder.add(wktSquare);
+
+        removeSearchAreaLayer(mapContent.layers());
+
+        addFeatureToMapContent(featureBuilder,Color.RED,null,0.5f, SEARCH_AREA);
+
+        doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
+    }
+
+    public void createAndDrawProductsLayer() {
+        Layer resultsLayer = createLayer(featureCollection,
+                getPolygonStyle(Color.BLACK, null, 0.5f), "ResultsLayer");
+        FeatureLayer f = (FeatureLayer)resultsLayer;
+        mapContent.addLayer(resultsLayer);
+        doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
+    }
+
+    private void addFeatureToMapContent(SimpleFeatureBuilder featureBuilder, Color outlineColor, Color fillColor, float opacity, String title) {
+        List<SimpleFeature> collection = new ArrayList<>();
+        collection.add(featureBuilder.buildFeature("Search"));
+        Layer searchAreaLayer = createLayer(collection, getPolygonStyle(outlineColor, fillColor, opacity), title);
+        mapContent.addLayer(searchAreaLayer);
+    }
+
+    private Layer createLayer(List<SimpleFeature> featureCollection, Style pointStyle, String title) {
+        Layer layer = new FeatureLayer(DataUtilities.collection(featureCollection), pointStyle);
+        layer.setTitle(title);
+        return layer;
+    }
+
+    private Geometry readWKTString(String wktCoordinates) throws ParseException {
+        return new WKTReader(JTSFactoryFinder.getGeometryFactory()).read(wktCoordinates);
+
+    }
+
+    private Style getPolygonStyle(Color outlineColor, Color fillColor, float opacity) {
+        return SLD.createPolygonStyle(outlineColor,fillColor, opacity);
+    }
+
+    private void removeSearchAreaLayer(List<Layer> layers) {
+        layers.stream()
+                .filter(l -> l.getTitle() != null && l.getTitle().equals(SEARCH_AREA))
+                .findFirst().ifPresent(l -> mapContent.removeLayer(l));
+    }
+
+
+    private SimpleFeatureBuilder getSimpleFeatureBuilder(Class geometry) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("MyFeatureType");
         builder.setCRS( DefaultGeographicCRS.WGS84 ); // set crs
-        builder.add("location", Polygon.class); // add geometry
-
-        // build the type
-        SimpleFeatureType TYPE = builder.buildFeatureType();
-
-        // create features using the type defined
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
-
-        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-        Polygon point = geometryFactory.createPolygon(coordinates);
-        //LineString point = geometryFactory.createLineString(coordinates);
-
-        WKTReader reader = new WKTReader(geometryFactory);
-        try {
-            wktSquare = reader.read(point.toText());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        featureBuilder.add(point);
-        SimpleFeature feature = featureBuilder.buildFeature("FeaturePoint");
-        List<SimpleFeature> featureCollection = new ArrayList<>();
-        featureCollection.add(feature); // Add feature 1, 2, 3, etc
-        Style PointStyle = SLD.createPolygonStyle(Color.RED, null,  0.5f);
-        //Style PointStyle = SLD.createLineStyle(Color.RED,(float) 5);
-
-        Layer layer = new FeatureLayer(DataUtilities.collection(featureCollection), PointStyle);
-        layer.setTitle("searchArea");
-
-        List<Layer> layers = map.layers();
-        layers.stream()
-                .filter(l -> l.getTitle() != null && l.getTitle().equals("searchArea"))
-                .findFirst().ifPresent(l -> map.removeLayer(l));
-        map.addLayer(layer);
-        ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
-        doSetDisplayArea(env);
+        builder.add("location", geometry); // add geometry
+        return new SimpleFeatureBuilder(builder.buildFeatureType());
     }
 
     public String getWKT() {
         return wktSquare == null ? "" : wktSquare.toText();
-    }
-
-    public String getGML() {
-        return wktSquare == null ? "" : wktSquare.toText();
-    }
-
-    public String WKTToGML2() throws IOException, ParseException {
-        WKTReader wktR = new WKTReader();
-        Geometry geom = wktR.read(getGML());
-
-        Configuration configuration = new org.geotools.gml2.GMLConfiguration();
-        Encoder encoder = new Encoder( configuration );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        encoder.encode(geom, GML._Geometry,out);
-        return out.toString();
-
     }
 
     public void drawMap(GraphicsContext gc) {
@@ -184,18 +198,18 @@ public class MapCanvas {
         }
         repaint = false;
         StreamingRenderer draw = new StreamingRenderer();
-        draw.setMapContent(map);
+        draw.setMapContent(mapContent);
         FXGraphics2D graphics = new FXGraphics2D(gc);
         graphics.setBackground(java.awt.Color.WHITE);
-        graphics.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
-        Rectangle rectangle = new Rectangle((int) canvas.getWidth(), (int) canvas.getHeight());
-        draw.paint(graphics, rectangle, map.getViewport().getBounds());
+        graphics.clearRect(0, 0, (int) geotoolsCanvas.getWidth(), (int) geotoolsCanvas.getHeight());
+        Rectangle rectangle = new Rectangle((int) geotoolsCanvas.getWidth(), (int) geotoolsCanvas.getHeight());
+        draw.paint(graphics, rectangle, mapContent.getViewport().getBounds());
     }
 
     private double[] transformSceneToWorldCoordinate(double x, double y) {
         DirectPosition2D geoCoords = new DirectPosition2D(x, y);
         DirectPosition2D result = new DirectPosition2D();
-        map.getViewport().getScreenToWorld().transform(geoCoords, result);
+        mapContent.getViewport().getScreenToWorld().transform(geoCoords, result);
         return result.getCoordinate();
     }
 
@@ -207,7 +221,7 @@ public class MapCanvas {
     private double sceneX;
     private double sceneY;
 
-    private void setInitalCoordinateOfSquare(double x, double y) {
+    private void setInitialCoordinateOfSquare(double x, double y) {
         lineStart = transformSceneToWorldCoordinate(x,y);
         sceneX = x;
         sceneY = y;
@@ -215,41 +229,74 @@ public class MapCanvas {
     }
 
     private void initEvent() {
-        /*
-         * setting the original coordinate
-         */
-        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
-            baseDrageX = e.getSceneX();
-            baseDrageY = e.getSceneY();
-            if (e.isSecondaryButtonDown() && lineStart == null) {
-                setInitalCoordinateOfSquare(e.getX(),e.getY());
-            } else if(e.isSecondaryButtonDown()) {
-                getCoordinatesAndDrawSquare(e.getX(),e.getY());
-                resetSquare();
+        mousePressedEvent();
+
+        mouseReleasedEvent();
+
+        mouseMovedEvent();
+
+        mouseDraggedEvent();
+
+        mouseClickedEvent();
+
+        scrollEvent();
+    }
+
+    private void scrollEvent() {
+        geotoolsCanvas.addEventHandler(ScrollEvent.SCROLL, this::scrollEvent);
+    }
+
+    private void mouseClickedEvent() {
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        geotoolsCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+
+            String geometryAttributeName = null;
+            if (t.getClickCount() > 1) {
+                /*Rectangle screenRect = new Rectangle((int)(t.getX() - 2), (int)(t.getY() - 2), 5, 5);
+                AffineTransform screenToWorld = mapContent.getViewport().getScreenToWorld();
+                Rectangle2D worldRect = screenToWorld.createTransformedShape(screenRect).getBounds2D();
+                ReferencedEnvelope bbox =
+                        new ReferencedEnvelope(
+                                worldRect, mapContent.getCoordinateReferenceSystem());
+                Filter filter = ff.intersects(ff.property(""), ff.literal(bbox));
+                mapContent.layers()
+                        .forEach(l-> {
+                            try {
+                                l.getFeatureSource().getFeatures(filter).;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                try {
+                    SimpleFeatureCollection selectedFeatures = mapContent.
+
+                    Set<FeatureId> IDs = new HashSet<>();
+                    try (SimpleFeatureIterator iter = selectedFeatures.features()) {
+                        while (iter.hasNext()) {
+                            SimpleFeature feature = iter.next();
+                            IDs.add(feature.getIdentifier());
+
+                            System.out.println("   " + feature.getIdentifier());
+                        }
+                    }
+
+                    if (IDs.isEmpty()) {
+                        System.out.println("   no feature selected");
+                    }
+
+                    displaySelectedFeatures(IDs);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }*/
+                doSetDisplayArea(mapContent.getMaxBounds());
             }
-            e.consume();
+            t.consume();
         });
+    }
 
-        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
-            if(e.isSecondaryButtonDown() && lineStart != null) {
-                getCoordinatesAndDrawSquare(e.getX(),e.getY());
-                resetSquare();
-            }
-            e.consume();
-        });
-
-        canvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-            if (lineStart != null) {
-                getCoordinatesAndDrawSquare(e.getX(),e.getY());
-            }
-            e.consume();
-        });
-
-
-        /*
-         * translate according to the mouse drag
-         */
-        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
+    private void mouseDraggedEvent() {
+        geotoolsCanvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
             if (!e.isSecondaryButtonDown()) {
                 dragMapEvent(e);
             } else {
@@ -260,21 +307,38 @@ public class MapCanvas {
             e.consume();
 
         });
-        /*
-         * double clicks to restore to original map
-         */
-        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
-            if (t.getClickCount() > 1) {
-                doSetDisplayArea(map.getMaxBounds());
-            }
-            t.consume();
-        });
+    }
 
-        /*
-         * scroll for zoom in and out
-         */
-        canvas.addEventHandler(ScrollEvent.SCROLL, e -> {
-            scrollEvent(e);
+    private void mouseMovedEvent() {
+        geotoolsCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+            if (lineStart != null) {
+                getCoordinatesAndDrawSquare(e.getX(),e.getY());
+            }
+            e.consume();
+        });
+    }
+
+    private void mouseReleasedEvent() {
+        geotoolsCanvas.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
+            if(e.isSecondaryButtonDown() && lineStart != null) {
+                getCoordinatesAndDrawSquare(e.getX(),e.getY());
+                resetSquare();
+            }
+            e.consume();
+        });
+    }
+
+    private void mousePressedEvent() {
+        geotoolsCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+            baseDrageX = e.getSceneX();
+            baseDrageY = e.getSceneY();
+            if (e.isSecondaryButtonDown() && lineStart == null) {
+                setInitialCoordinateOfSquare(e.getX(),e.getY());
+            } else if(e.isSecondaryButtonDown()) {
+                getCoordinatesAndDrawSquare(e.getX(),e.getY());
+                resetSquare();
+            }
+            e.consume();
         });
     }
 
@@ -289,16 +353,16 @@ public class MapCanvas {
         baseDrageY = e.getSceneY();
         DirectPosition2D newPos = new DirectPosition2D(difX, difY);
         DirectPosition2D result = new DirectPosition2D();
-        map.getViewport().getScreenToWorld().transform(newPos, result);
-        ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
+        mapContent.getViewport().getScreenToWorld().transform(newPos, result);
+        ReferencedEnvelope env = new ReferencedEnvelope(mapContent.getViewport().getBounds());
         env.translate(env.getMinimum(0) - result.x, env.getMaximum(1) - result.y);
         doSetDisplayArea(env);
     }
 
     private void scrollEvent(ScrollEvent e) {
-        map.getViewport().setFixedBoundsOnResize(true);
-        ReferencedEnvelope envelope = map.getViewport().getBounds();
-        double percent = (e.getDeltaY() / canvas.getWidth())*-1;
+        mapContent.getViewport().setFixedBoundsOnResize(true);
+        ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
+        double percent = (e.getDeltaY() / geotoolsCanvas.getWidth())*-1;
         double width = envelope.getWidth();
         double height = envelope.getHeight();
         double deltaW = width * percent;
@@ -310,7 +374,11 @@ public class MapCanvas {
 
     private void getCoordinatesAndDrawSquare(double x, double y) {
         Coordinate[] coordinates = getSquareCoordinates(x,y);
-        drawSquare(coordinates);
+        try {
+            drawGeometryFromCoordinates(coordinates);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private Coordinate[] getSquareCoordinates(double x, double y) {
@@ -329,19 +397,17 @@ public class MapCanvas {
     }
 
     protected void doSetDisplayArea(ReferencedEnvelope envelope) {
-        map.getViewport().setBounds(envelope);
+        mapContent.getViewport().setBounds(envelope);
         repaint = true;
     }
 
     private static final double PAINT_HZ = 50.0;
     private void initPaintThread() {
-        ScheduledService<Boolean> svc = new ScheduledService<Boolean>() {
+        ScheduledService<Boolean> svc = new ScheduledService<>() {
             protected Task<Boolean> createTask() {
-                return new Task<Boolean>() {
+                return new Task<>() {
                     protected Boolean call() {
-                        Platform.runLater(() -> {
-                            drawMap(gc);
-                        });
+                        Platform.runLater(() -> drawMap(graphicsContext));
                         return true;
                     }
                 };
@@ -352,18 +418,28 @@ public class MapCanvas {
     }
 
     public void deleteSquare() {
-        List<Layer> layers = map.layers();
+        List<Layer> layers = mapContent.layers();
         if (layers.size()>1)
-            map.removeLayer(layers.get(1));
-        ReferencedEnvelope env = new ReferencedEnvelope(map.getViewport().getBounds());
+            mapContent.removeLayer(layers.get(1));
+        ReferencedEnvelope env = new ReferencedEnvelope(mapContent.getViewport().getBounds());
         doSetDisplayArea(env);
     }
 
     public void resetMap() {
-        doSetDisplayArea(map.layers().get(0).getBounds());
+        doSetDisplayArea(mapContent.layers().get(0).getBounds());
     }
 
     public void goToSelection() {
-        doSetDisplayArea(map.getMaxBounds());
+        doSetDisplayArea(mapContent.getMaxBounds());
+    }
+
+
+    public void clearMap() {
+        List<Layer> layers = mapContent.layers();
+        if (layers.size()>2)
+            layers.stream()
+                .filter(Objects::nonNull)
+                .filter(l->l.getTitle()!=null && !l.getTitle().equals(SEARCH_AREA))
+                .forEach(layers::remove);
     }
 }

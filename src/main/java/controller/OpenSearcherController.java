@@ -8,16 +8,10 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.MapGUI;
 import gui.ProductResultListCell;
 import gui.dialog.AddProductToProductListDialog;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -28,14 +22,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.ProductList;
 import model.exception.AuthenticationException;
-import model.exception.NotAuthenticatedException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
 import model.products.Product;
 import org.locationtech.jts.io.ParseException;
 import services.OpenSearcher;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -117,11 +109,7 @@ public class OpenSearcherController implements Initializable {
         resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         resultProductsList.setOnMouseClicked(event -> {
             Product product = resultProductsList.getSelectionModel().getSelectedItem();
-            try {
-                mapGUI.drawProductWKT(product.getFootprint());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            mapGUI.showProductArea(product.getId());
         });
         initResultPaneHeader();
         satelliteList.setValue(SENTINEL_1);
@@ -159,36 +147,59 @@ public class OpenSearcherController implements Initializable {
         instrumentList.setValue("GRD");
     }
 
-    public void search(ActionEvent actionEvent) throws NotAuthenticatedException, IOException, AuthenticationException {
+    public void search(ActionEvent actionEvent) {
         clearListAndFilter();
         addParameters();
         spinnerWait.setVisible(true);
         rootPane.setDisable(true);
-        Task<OpenSearchResponse> response = new Task<>() {
+        clearMap();
+        Task<OpenSearchResponse> response = getSearchTask();
+        response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
+        new Thread(response).start();
+        addContextMenu();
+    }
+
+    private void clearMap() {
+        mapGUI.clearMap();
+    }
+
+    private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
+        spinnerWait.setVisible(false);
+        try {
+            ObservableList<Product> tObservableArray =
+                    FXCollections.observableArrayList(response.get().getProducts());
+
+            resultProductsList.setItems(tObservableArray);
+            resultProductsList.setCellFactory(e -> new ProductResultListCell());
+            writeProductsFootprintInMap(response.get().getProducts());
+            spinnerWait.setVisible(false);
+            resultsPane.setVisible(true);
+            rootPane.setDisable(false);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeProductsFootprintInMap(List<Product> products) {
+        mapGUI.addProductsWKT(products);
+        /*
+        products.forEach(p-> {
+            try {
+                mapGUI.addProductWKT(p.getFootprint(),p.getId());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });*/
+
+    }
+
+    private Task<OpenSearchResponse> getSearchTask() {
+        return new Task<>() {
             @Override
             protected OpenSearchResponse call() throws Exception {
                 return searcher.search();
             }
         };
-
-        response.setOnSucceeded(event -> {
-            spinnerWait.setVisible(false);
-            try {
-                ObservableList<Product> tObservableArray =
-                        FXCollections.observableArrayList(response.get().getProducts());
-
-                resultProductsList.setItems(tObservableArray);
-                resultProductsList.setCellFactory(e -> new ProductResultListCell());
-
-                spinnerWait.setVisible(false);
-                resultsPane.setVisible(true);
-                rootPane.setDisable(false);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        });
-        new Thread(response).start();
-        addContextMenu();
     }
 
     private void clearListAndFilter() {
