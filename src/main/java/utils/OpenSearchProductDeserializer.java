@@ -38,9 +38,9 @@ public class OpenSearchProductDeserializer extends StdDeserializer<Product> {
 
     private void initMap() {
         deserializerMap = new HashMap<>();
-        deserializerMap.put("S1",new Sentinel1Deserializer());
-        deserializerMap.put("S2",new Sentinel2Deserializer());
-        deserializerMap.put("default",new DefaultDeserializer());
+        deserializerMap.put(SENTINEL1,new Sentinel1Deserializer());
+        deserializerMap.put(SENTINEL2,new Sentinel2Deserializer());
+        deserializerMap.put(DEFAULT_DESERIALIZER,new DefaultDeserializer());
 
     }
 

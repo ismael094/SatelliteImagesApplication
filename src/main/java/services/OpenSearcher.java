@@ -120,7 +120,13 @@ public class OpenSearcher {
 
     public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
-            throw new NotAuthenticatedException("Not autenticated in OpenSearch");
-        return ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
+            throw new NotAuthenticatedException("Not authenticated in OpenSearch");
+        long start = currentTimeMillis();
+        OpenSearchResponse response = ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
+
+        long finish = currentTimeMillis() - start;
+        System.out.println(finish/1000d);
+        //httpManager.closeConnection();
+        return response;
     }
 }

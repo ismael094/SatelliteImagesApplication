@@ -21,6 +21,7 @@ public class HTTPAuthManager extends Authenticator {
     private final String password;
 
     private static HTTPAuthManager httpManager = null;
+    private HttpsURLConnection connection;
 
     public HTTPAuthManager(String username, String password) {
         this.username = username;
@@ -37,21 +38,21 @@ public class HTTPAuthManager extends Authenticator {
     }
 
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException {
-        //setAuthenticator();
+        setAuthenticator();
         URL path = new URL(url.toString().replace(" ", "%20"));
-        System.out.println(path);
-        HttpsURLConnection connection = null;
+        connection = null;
         try {
             connection = (HttpsURLConnection) path.openConnection();
             connection.setRequestProperty("Accept-Encoding", "identity");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-length", "0");
+            connection.setReadTimeout(30000);
             if (connection.getResponseCode() != 200)
                 throw new AuthenticationException("Incorrect username or password");
             Logger logger = Logger.getLogger(getClass().getName());
             logger.log(Level.INFO, "Connection", connection.getURL().toString());
-            System.out.println(connection.getURL().toString());
+            System.out.println("Retrieving data");
             InputStream a = connection.getInputStream();
             return a;
         } finally {
@@ -59,6 +60,10 @@ public class HTTPAuthManager extends Authenticator {
                 //connection.disconnect();
             }
         }
+    }
+
+    public void closeConnection() {
+        connection.disconnect();
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {

@@ -1,5 +1,8 @@
 package gui;
 
+import com.jfoenix.controls.JFXButton;
+import controller.OpenSearchProductDetailsController;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -8,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import model.products.Product;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class ProductResultListCell extends ListCell<Product> {
@@ -25,6 +29,8 @@ public class ProductResultListCell extends ListCell<Product> {
     private Label instrumentName;
     @FXML
     private Label size;
+    @FXML
+    private JFXButton details;
 
     @Override
     protected void updateItem(Product product, boolean empty) {
@@ -51,6 +57,9 @@ public class ProductResultListCell extends ListCell<Product> {
             instrumentName.setText(product.getProductType());
             size.setText(product.getSize());
             image = new ImageView(this.getClass().getResource("/img/scihub_logo.svg").toString());
+            details.setOnMouseClicked(e->{
+                OpenSearchProductDetailsController ospdc = new OpenSearchProductDetailsController(product);
+            });
             setText(null);
             setGraphic(root);
         }

@@ -70,6 +70,8 @@ public class ListViewController implements Initializable {
             createProductListDialog.show();
         });*/
         tabPane.getTabs().add(new Tab("Searcher"));
+        tabPane.getTabs().get(0).setClosable(true);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         //productList.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> clearAndAddProductsToProductInList(productList.getSelectionModel().getSelectedItem()));
 
         borderPane.setTop(new VBox(getMenu()));
@@ -127,7 +129,9 @@ public class ListViewController implements Initializable {
                     //openSearcherController.setProductList(userProductList);
                     //testPane.getChildren().add(root1);
                     searcherStage = new Stage();
-                    searcherStage.setScene(new Scene(root1));
+                    Scene scene = new Scene(root1);
+                    //scene.getStylesheets().add(getClass().getResource("/OpenSearchView.css").toString());
+                    searcherStage.setScene(scene);
                     /*searcherStage.setOnCloseRequest(event -> {
                         //reloadLists();
                     });*/

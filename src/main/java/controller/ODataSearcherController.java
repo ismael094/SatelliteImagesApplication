@@ -1,6 +1,6 @@
 package controller;
 
-import gui.MapGUI;
+import gui.GTMapSearchController;
 import model.filter.Filter;
 import model.filter.filterItems.FilterItemDateTime;
 import model.filter.filterItems.FilterItemStartWith;
@@ -56,7 +56,7 @@ public class ODataSearcherController {
     private ResourceBundle resources;
 
     @FXML
-    public MapGUI mapGui;
+    public GTMapSearchController GTMapSearchController;
 
     public ODataSearcherController() {
         ODataSearcher = new ODataSearcher();
@@ -89,7 +89,7 @@ public class ODataSearcherController {
 
     private void addFilters() {
         addNameFilter(sateliteList.getValue());
-        addWKTFilter(mapGui.getWKT());
+        addWKTFilter(GTMapSearchController.getWKT());
         addInstrumentFilter(instrumentList.getValue());
         if (rangeIsValid()) {
             addDateRangeLower(dateStart.getValue());

@@ -1,0 +1,8 @@
+
+#myTab *.tab-header-area *.tab-header-background {
+  -fx-background-color:transparent;
+}
+
+#myTab *.tab-header-background {
+  -fx-background-color:transparent;
+}

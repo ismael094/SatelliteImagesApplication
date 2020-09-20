@@ -6,7 +6,10 @@ public enum OpenSearchQueryParameter {
     FOOTPRINT("footprint"),
     TITLE("title"),
     FILENAME("filename"),
-    INGESTION_DATE("ingestiondate");
+    INGESTION_DATE("ingestionDate"),
+    CLOUD_COVER_PERCENTAGE("cloudcoverpercentage"),
+    POLARISATION_MODE("polarisationmode"),
+    SENSOR_OPERATIONAL_MODE("sensoroperationalmode");
 
     private String name;
 

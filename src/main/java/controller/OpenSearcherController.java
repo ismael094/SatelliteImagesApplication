@@ -3,9 +3,10 @@ package controller;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import gui.MapGUI;
+import gui.GTMapSearchController;
 import gui.ProductResultListCell;
 import gui.dialog.AddProductToProductListDialog;
 import javafx.collections.FXCollections;
@@ -25,7 +26,6 @@ import model.exception.AuthenticationException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
 import model.products.Product;
-import org.locationtech.jts.io.ParseException;
 import services.OpenSearcher;
 
 import java.net.URL;
@@ -41,7 +41,6 @@ public class OpenSearcherController implements Initializable {
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";
     public static final String SENTINEL_3 = "Sentinel-3";
-
 
 
     private OpenSearcher searcher;
@@ -63,9 +62,23 @@ public class OpenSearcherController implements Initializable {
     @FXML
     private ChoiceBox<String> satelliteList;
     @FXML
-    public ChoiceBox<String> instrumentList;
+    private ChoiceBox<String> instrumentList;
+    @FXML
+    private Pane polarisationPane;
+    @FXML
+    private ChoiceBox<String> polarisation;
+    @FXML
+    private Pane sensorPane;
+    @FXML
+    private ChoiceBox<String> sensorMode;
+    @FXML
+    private Pane cloudPane;
+    @FXML
+    private JFXTextField cloudCoverage;
     @FXML
     private JFXDatePicker dateStart;
+    @FXML
+    private Pane dateStartPane;
     @FXML
     private JFXDatePicker dateFinish;
     @FXML
@@ -82,7 +95,7 @@ public class OpenSearcherController implements Initializable {
 
     @FXML
     private Pane mapPane;
-    private MapGUI mapGUI;
+    private GTMapSearchController GTMapSearchController;
 
     public void login(String username, String password) throws AuthenticationException {
         searcher = OpenSearcher.getOpenSearcher(username,password);
@@ -90,34 +103,111 @@ public class OpenSearcherController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        satelliteList.setItems(FXCollections.observableArrayList(
-                SENTINEL_1, SENTINEL_2, SENTINEL_3));
-
         resultsPane.setVisible(false);
+        spinnerWait.setManaged(false);
+        setSatelliteList();
+        setSentinel1Data();
+        setProductsList();
+        initResultPaneHeader();
+        GTMapSearchController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight());
+        GTMapSearchController.setOnMouseClicked(event-> {
+            Product product = resultProductsList.getItems().stream()
+                    .filter(p -> p.getId().equals(GTMapSearchController.getSelectedProduct()))
+                    .findFirst()
+                    .orElse(null);
+            if (product != null) {
+                resultProductsList.setFocusTraversable(true);
+                resultProductsList.getFocusModel().focus(resultProductsList.getItems().indexOf(product));
+                resultProductsList.scrollTo(product);
+                resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
+            }
+
+        });
+        cloudCoverage.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*"))
+                cloudCoverage.setText(newValue.replaceAll("[^\\d]", ""));
+            else {
+                if (Integer.parseInt(newValue) < 0 || Integer.parseInt(newValue) > 100)
+                    cloudCoverage.setText(oldValue);
+            }
+        });
+        mapPane.getChildren().addAll(GTMapSearchController);
+        //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
+        buildContextMenu();
+    }
+
+    private void setSentinel1Data() {
+        setSentinel1Instruments();
+        setSentinel1SensorMode();
+        setSentinel1Polarisation();
+    }
+
+    private void setSentinel1Polarisation() {
+        polarisation.setItems(FXCollections.observableArrayList(
+                "All","VV", "VH","HV","VH","HH+HV","VV+VH"));
+        polarisation.setValue("All");
+    }
+
+    private void setSentinel1SensorMode() {
+        sensorMode.setItems(FXCollections.observableArrayList(
+                "All","SM", "IW","EW","WV"));
+        sensorMode.setValue("All");
+    }
+
+    private void setProductsList() {
+        resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        resultProductsList.setOnMouseClicked(event -> {
+            Product product = resultProductsList.getSelectionModel().getSelectedItem();
+            GTMapSearchController.showProductArea(product.getId());
+        });
+    }
+
+    private void setSatelliteList() {
+        satelliteList.setItems(FXCollections.observableArrayList(
+                SENTINEL_1, SENTINEL_2));
+
         satelliteList.getSelectionModel()
                 .selectedIndexProperty()
                 .addListener((observableValue, oldValue, newValue) -> {
-                        if (newValue.equals(SENTINEL_1)) {
+                        if (satelliteList.getItems().get(newValue.intValue()).equals(SENTINEL_1)) {
                             setSentinel1Instruments();
-                        } else if (newValue.equals(SENTINEL_2)) {
+                            setCloudCoverageDisabled();
+                            setSentinel1ParametersEnabled();
+                        } else if (satelliteList.getItems().get(newValue.intValue()).equals(SENTINEL_2)) {
                             setSentinel2Instruments();
+                            setSentinel1ParametersDisabled();
+                            setCloudCoverageEnabled();
                         }
 
                     }
                 );
-
-        resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        resultProductsList.setOnMouseClicked(event -> {
-            Product product = resultProductsList.getSelectionModel().getSelectedItem();
-            mapGUI.showProductArea(product.getId());
-        });
-        initResultPaneHeader();
         satelliteList.setValue(SENTINEL_1);
-        setSentinel1Instruments();
-        mapGUI = new MapGUI(mapPane.getPrefWidth(),mapPane.getPrefHeight());
-        mapPane.getChildren().addAll(mapGUI);
-        //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
-        buildContextMenu();
+
+        setCloudCoverageDisabled();
+    }
+
+    private void setSentinel1ParametersEnabled() {
+        polarisationPane.setManaged(true);
+        polarisationPane.setVisible(true);
+        sensorPane.setManaged(true);
+        sensorPane.setVisible(true);
+    }
+
+    private void setSentinel1ParametersDisabled() {
+        polarisationPane.setManaged(false);
+        polarisationPane.setVisible(false);
+        sensorPane.setManaged(false);
+        sensorPane.setVisible(false);
+    }
+
+    private void setCloudCoverageDisabled() {
+        cloudPane.setManaged(false);
+        cloudPane.setVisible(false);
+    }
+
+    private void setCloudCoverageEnabled() {
+        cloudPane.setManaged(true);
+        cloudPane.setVisible(true);
     }
 
     private void initResultPaneHeader() {
@@ -127,12 +217,6 @@ public class OpenSearcherController implements Initializable {
             resultsPane.setVisible(false);
         });
         resultPaneHeader.getChildren().add(iconButton);
-    }
-
-    private void setSentinel3Instruments() {
-        instrumentList.setItems(FXCollections.observableArrayList(
-                "S2MSI1C", "S2MSI2A","S2MSI2Ap"));
-        instrumentList.setValue("S2MSI1C");
     }
 
     private void setSentinel2Instruments() {
@@ -150,9 +234,10 @@ public class OpenSearcherController implements Initializable {
     public void search(ActionEvent actionEvent) {
         clearListAndFilter();
         addParameters();
-        spinnerWait.setVisible(true);
-        rootPane.setDisable(true);
         clearMap();
+        spinnerWait.setVisible(true);
+        spinnerWait.setManaged(true);
+        rootPane.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
         new Thread(response).start();
@@ -160,19 +245,21 @@ public class OpenSearcherController implements Initializable {
     }
 
     private void clearMap() {
-        mapGUI.clearMap();
+        GTMapSearchController.clearMap();
     }
 
     private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
-        spinnerWait.setVisible(false);
         try {
             ObservableList<Product> tObservableArray =
                     FXCollections.observableArrayList(response.get().getProducts());
 
             resultProductsList.setItems(tObservableArray);
             resultProductsList.setCellFactory(e -> new ProductResultListCell());
-            writeProductsFootprintInMap(response.get().getProducts());
+            clearMap();
+            if (response.get().getProducts().size() > 0)
+                writeProductsFootprintInMap(response.get().getProducts());
             spinnerWait.setVisible(false);
+            spinnerWait.setManaged(false);
             resultsPane.setVisible(true);
             rootPane.setDisable(false);
         } catch (InterruptedException | ExecutionException e) {
@@ -181,7 +268,7 @@ public class OpenSearcherController implements Initializable {
     }
 
     private void writeProductsFootprintInMap(List<Product> products) {
-        mapGUI.addProductsWKT(products);
+        GTMapSearchController.addProductsWKT(products);
         /*
         products.forEach(p-> {
             try {
@@ -208,12 +295,35 @@ public class OpenSearcherController implements Initializable {
     }
 
     private void addParameters() {
-        addNameParameter(satelliteList.getValue());
-        addWKTParameter(mapGUI.getWKT());
+        addPlatformNameParameter(satelliteList.getValue());
+        addWKTParameter(GTMapSearchController.getWKT());
         addInstrumentParameter(instrumentList.getValue());
+        addDateRangeFilter(dateStart.getValue(),dateFinish.getValue());
+        if (satelliteList.getValue().equals(SENTINEL_1)) {
+            addPolarisationModeParameter(polarisation.getValue());
+            addSensorModeParameter(sensorMode.getValue());
+        } else if (satelliteList.getValue().equals(SENTINEL_2)) {
+            addCloudCoverageParameter(cloudCoverage.getText());
+        }
+
         /*if (rangeIsValid()) {
             addDateRangeFilter(dateStart.getValue(),dateFinish.getValue());
         }*/
+    }
+
+    private void addCloudCoverageParameter(String cloudCoverage) {
+        if (!cloudCoverage.isEmpty())
+            searcher.addSearchParameter(OpenSearchQueryParameter.CLOUD_COVER_PERCENTAGE,cloudCoverage);
+    }
+
+    private void addSensorModeParameter(String sensorMode) {
+        if (!sensorMode.equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.SENSOR_OPERATIONAL_MODE, sensorMode);
+    }
+
+    private void addPolarisationModeParameter(String polarisation) {
+        if (!polarisation.equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.POLARISATION_MODE, polarisation);
     }
 
     private void addInstrumentParameter(String instrument) {
@@ -230,19 +340,31 @@ public class OpenSearcherController implements Initializable {
     }
 
     private void addDateRangeFilter(LocalDate start, LocalDate finish) {
-        if (start != null && finish != null)
+        if (start != null || finish != null)
             searcher.addSearchParameter(OpenSearchQueryParameter.INGESTION_DATE,getFromToIngestionDate(start,finish));
     }
 
     private String getFromToIngestionDate(LocalDate start, LocalDate finish) {
-        LocalDateTime localDateTimeStart = start.atTime(0, 0, 0, 0);
-        LocalDateTime localDateTimeFinish = start.atTime(0, 0, 0, 0);
-        localDateTimeStart.atZone(ZoneId.of("UTC"));
-        localDateTimeFinish.atZone(ZoneId.of("UTC"));
-        return "["+ localDateTimeStart.toString() + " TO " + localDateTimeFinish.toString() + "]";
+        String startS,endS = "";
+        if (start == null)
+            startS = "*";
+        else {
+            LocalDateTime localDateTimeStart = start.atTime(0, 0, 0, 0);
+            localDateTimeStart.atZone(ZoneId.of("UTC"));
+            startS = localDateTimeStart.toString()+":00.001Z";
+        }
+        if (finish == null)
+            endS = "NOW";
+        else {
+            LocalDateTime localDateTimeFinish = finish.atTime(23, 59, 59, 0);
+            localDateTimeFinish.atZone(ZoneId.of("UTC"));
+            endS = localDateTimeFinish.toString()+".999Z";
+        }
+
+        return "["+ startS+ " TO " + endS + "]";
     }
 
-    private void addNameParameter(String value) {
+    private void addPlatformNameParameter(String value) {
         searcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,value);
     }
 

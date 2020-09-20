@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<FlowPane fx:id="root" prefWidth="800.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane layoutX="14.0" layoutY="14.0" prefHeight="500.0" prefWidth="374.0">
+         <children>
+            <Label layoutX="14.0" layoutY="78.0" prefHeight="17.0" prefWidth="83.0" text="Name:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="109.0" text="PLatform Name">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="138.0" prefHeight="20.0" prefWidth="104.0" text="Product Type">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="167.0" prefHeight="17.0" prefWidth="83.0" text="Size">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="122.0" layoutY="21.0" text="Product Details">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="197.0" text="Ingestion Date">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="name" layoutX="139.0" layoutY="80.0" prefHeight="17.0" prefWidth="196.0" text="Label" />
+            <Label fx:id="platName" layoutX="139.0" layoutY="111.0" text="Label" />
+            <Label fx:id="size" layoutX="139.0" layoutY="169.0" text="Label" />
+            <Label fx:id="productType" layoutX="139.0" layoutY="140.0" text="Label" />
+            <Label fx:id="ingestionDate" layoutX="139.0" layoutY="199.0" text="Label" />
+         </children>
+         <padding>
+            <Insets left="14.0" />
+         </padding>
+      </Pane>
+      <Separator orientation="VERTICAL" prefHeight="360.0" prefWidth="12.0" />
+      <Pane fx:id="mapPane" prefHeight="500.0" prefWidth="384.0" />
+   </children>
+   <padding>
+      <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+   </padding>
+</FlowPane>
