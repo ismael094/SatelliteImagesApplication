@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import utils.OpenSearchProductDeserializer;
 
+import javax.persistence.Entity;
 import java.util.Calendar;
 
 @JsonDeserialize(using = OpenSearchProductDeserializer.class)

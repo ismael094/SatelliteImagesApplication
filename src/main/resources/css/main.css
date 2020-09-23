@@ -8,6 +8,11 @@
     -fx-font-weight: bold
 }
 
+.h2 {
+    -fx-font-size: 18px ;
+    -fx-font-weight: bold
+}
+
 .myTab {
     -fx-border-color: grey ;
     -fx-border-width: 1 ;

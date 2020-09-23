@@ -2,3 +2,8 @@
     -fx-border-color: black ;
     -fx-border-width: 5 ;
 }
+
+.h2 {
+    -fx-font-size: 18px ;
+    -fx-font-weight: bold
+}

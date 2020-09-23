@@ -161,7 +161,7 @@ public class GTMapSearchController extends Pane {
 
 
         hbox.setSpacing(10f);
-        hbox.getChildren().addAll(new Label("Map Controls: "),deleteSearchAreaButton,resetMap);
+        hbox.getChildren().addAll(deleteSearchAreaButton,resetMap);
 
         return hbox;
     }

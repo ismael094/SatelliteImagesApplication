@@ -34,7 +34,7 @@
                             <RowConstraints vgrow="SOMETIMES" />
                         </rowConstraints>
                         <children>
-                        <Pane styleClass="myTab"/>
+                        <Pane styleClass="myTab" />
                         </children>
             <GridPane.margin>
                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -71,7 +71,7 @@
                         </children>
                     </GridPane>
                     <Pane fx:id="spinnerWait" visible="false" GridPane.rowIndex="1">
-                        <JFXSpinner fx:id="wait" layoutX="400.0" layoutY="200.0" />
+                        <JFXSpinner fx:id="wait" layoutX="650.0" layoutY="200.0" />
                     </Pane>
                 </children>
             </GridPane>

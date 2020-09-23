@@ -26,8 +26,6 @@ import java.util.ResourceBundle;
 public class OpenSearchProductDetailsController implements Initializable {
 
     @FXML
-    private Label platformDetails;
-    @FXML
     private Label sensorMode;
     @FXML
     private Label polarisation;
@@ -40,11 +38,7 @@ public class OpenSearchProductDetailsController implements Initializable {
     @FXML
     private Pane sensorModePane;
     @FXML
-    private Pane container;
-    @FXML
     private Pane map;
-    @FXML
-    private FlowPane root;
     @FXML
     private Label name;
     @FXML
@@ -62,7 +56,6 @@ public class OpenSearchProductDetailsController implements Initializable {
     static final Logger logger = LogManager.getLogger(OpenSearchProductDetailsController.class.getName());
 
     private void setProductDetails() {
-        System.out.println(product);
         name.setText(product.getTitle());
         platName.setText(product.getPlatformName());
         productType.setText(product.getProductType());
@@ -75,7 +68,6 @@ public class OpenSearchProductDetailsController implements Initializable {
     }
 
     private void setSentinel2Data() {
-        platformDetails.setText("Sentinel-2 Data");
         sensorMode.setText(((Sentinel2Product)product).getCloudCoverPercentage()+"");
         toggleSentinel1Data(false);
         toggleSentinel2Data(true);
@@ -94,7 +86,6 @@ public class OpenSearchProductDetailsController implements Initializable {
     }
 
     private void setSentinel1Data() {
-        platformDetails.setText("Sentinel-1 Data");
         sensorMode.setText(((Sentinel1Product)product).getSensorOperationalMode());
         polarisation.setText(((Sentinel1Product)product).getPolarizationMode());
         toggleSentinel1Data(true);
@@ -132,7 +123,7 @@ public class OpenSearchProductDetailsController implements Initializable {
     }
 
     private void setMap() throws ParseException {
-        GTMap gtMap = new GTMap(382, 382);
+        gtMap = new GTMap(382, 382);
         map.getChildren().add(gtMap);
         gtMap.createFeatureFromWKT(product.getFootprint(),product.getId());
         gtMap.createAndDrawProductsLayer();

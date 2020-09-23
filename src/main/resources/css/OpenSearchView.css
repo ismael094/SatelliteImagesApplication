@@ -29,6 +29,10 @@
     -fx-spacing: 0;
 }
 
+.pagination {
+    -fx-background-color:  #f4f4f4;
+}
+
 /* You can control the actual button sizes here */
 .pagination > .pagination-control > .control-box > .number-button,
 .pagination > .pagination-control > .control-box > .bullet-button,

@@ -135,7 +135,7 @@ public class OpenSearcher implements SearchService {
         long start = currentTimeMillis();
         OpenSearchResponse response = ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
         long finish = currentTimeMillis() - start;
-        logger.atInfo().log("Product loaded in {} seconds",finish/1000.0);
+        logger.atInfo().log("{} products loaded in {} seconds",response.getProducts().size(),finish/1000.0);
         return response;
     }
 }

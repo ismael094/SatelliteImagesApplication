@@ -10,6 +10,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -40,7 +41,7 @@ public class OpenSearcherController implements Initializable, SearchController {
     private OpenSearcher searcher;
 
     @FXML
-    private AnchorPane rootPane;
+    private ScrollPane rootPane;
     @FXML
     private AnchorPane spinnerPane;
     @FXML
@@ -78,13 +79,14 @@ public class OpenSearcherController implements Initializable, SearchController {
     @FXML
     private JFXListView<Product> resultProductsList;
     @FXML
-    private Pane mapPane;
+    private AnchorPane mapPane;
     @FXML
     private JFXButton showResults;
 
     private GTMapSearchController GTMapSearchController;
 
     static final Logger logger = LogManager.getLogger(OpenSearcherController.class.getName());
+    private boolean paginationSetted;
 
     public void login(String username, String password) throws AuthenticationException {
         searcher = OpenSearcher.getOpenSearcher(username,password);
@@ -103,6 +105,7 @@ public class OpenSearcherController implements Initializable, SearchController {
         initPaginationEvent();
         search.setOnMouseClicked(e->{
             searcher.setStartProductIndex(0);
+            paginationSetted = false;
             search();
         });
         initGTMapController();
@@ -144,16 +147,10 @@ public class OpenSearcherController implements Initializable, SearchController {
         pagination.setManaged(b);
     }
 
-    private void setSpinnerVisible(boolean b) {
-        spinnerPane.setVisible(b);
-        spinnerPane.setManaged(b);
-        spinnerWait.setVisible(b);
-        spinnerWait.setManaged(b);
-    }
-
     private void initPaginationEvent() {
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             searcher.setStartProductIndex(searcher.getProductsPerPage()*(newIndex.intValue()));
+            paginationSetted = true;
             search();
         });
     }
@@ -293,7 +290,7 @@ public class OpenSearcherController implements Initializable, SearchController {
         clearMap();
         logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
         setSpinnerVisible(true);
-        rootPane.setDisable(true);
+        //rootPane.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
         response.setOnFailed(this::onFailedSearch);
@@ -303,10 +300,6 @@ public class OpenSearcherController implements Initializable, SearchController {
     private void onFailedSearch(WorkerStateEvent event) {
         Throwable exception = event.getSource().getException();
         logger.atLevel(Level.ERROR).log("Error while connecting with OpenSearcher {0}",exception);
-    }
-
-    private void clearMap() {
-        GTMapSearchController.clearMap();
     }
 
     private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
@@ -320,33 +313,49 @@ public class OpenSearcherController implements Initializable, SearchController {
             OpenSearchResponse openSearchResponse = response.get();
             if (openSearchResponse.getProducts().size() > 0) {
                 writeProductsFootprintInMap(openSearchResponse.getProducts());
-                setPagination(openSearchResponse.getNumOfProducts(),openSearchResponse.getProducts().size());
+                if (!paginationSetted)
+                    setPagination(openSearchResponse.getNumOfProducts(),openSearchResponse.getProducts().size());
             }
 
-            spinnerWait.setVisible(false);
-            spinnerWait.setManaged(false);
+            setSpinnerVisible(false);
             resultsPane.setVisible(true);
-            rootPane.setDisable(false);
+            //rootPane.setDisable(false);
         } catch (InterruptedException | ExecutionException e) {
             logger.atLevel(Level.ERROR).log("Error while retrieving search results: {0}",e);
             e.printStackTrace();
         }
     }
 
+    private void clearMap() {
+        GTMapSearchController.clearMap();
+    }
+
+    private void setSpinnerVisible(boolean b) {
+        if (b)
+            rootPane.setCursor(Cursor.WAIT);
+        else
+            rootPane.setCursor(Cursor.DEFAULT);
+        spinnerPane.setVisible(b);
+        spinnerPane.setManaged(b);
+        spinnerWait.setVisible(b);
+        spinnerWait.setManaged(b);
+    }
+
     private void setPagination(int numOfProducts, int rows) {
         if (numOfProducts > rows) {
             pagination.setManaged(true);
             pagination.setVisible(true);
-            pagination.setPageCount((int)Math.ceil(numOfProducts/rows));
+            double numPages = Math.ceil((numOfProducts/rows)+0.5f);
+            System.out.println(numOfProducts);
+            pagination.setPageCount((int)numPages);
         } else {
-            pagination.setManaged(false);
+            //pagination.setManaged(false);
             pagination.setVisible(false);
         }
     }
 
     private void writeProductsFootprintInMap(List<Product> products) {
         GTMapSearchController.addProductsWKT(products);
-
     }
 
     private Task<OpenSearchResponse> getSearchTask() {
@@ -407,18 +416,18 @@ public class OpenSearcherController implements Initializable, SearchController {
     }
 
     private String getFromToIngestionDate(LocalDate start, LocalDate finish) {
-        String startS = getDateString(start,"*",0,0,0,"001");
-        String endS = getDateString(finish,"NOW",23,59,59,"999");
+        String startS = getDateString(start,"*",0,0,0,":00.001");
+        String endS = getDateString(finish,"NOW",23,59,59,".999");
         return "["+ startS+ " TO " + endS + "]";
     }
 
-    private String getDateString(LocalDate finish, String dateNull, int hour, int minute, int seconds, String nano) {
-        if (finish == null)
+    private String getDateString(LocalDate date, String dateNull, int hour, int minute, int seconds, String nano) {
+        if (date == null)
             return dateNull;
 
-        LocalDateTime localDateTimeFinish = finish.atTime(hour, minute, seconds, 0);
+        LocalDateTime localDateTimeFinish = date.atTime(hour, minute, seconds, 0);
         localDateTimeFinish.atZone(ZoneId.of("UTC"));
-        return localDateTimeFinish.toString()+"."+nano+"Z";
+        return localDateTimeFinish.toString()+nano+"Z";
     }
 
     private void addPlatformNameParameter(String value) {
