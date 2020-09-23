@@ -1,27 +1,19 @@
-package controller;
+package controller.search;
 
-import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXSpinner;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.GTMapSearchController;
-import gui.ProductResultListCell;
-import gui.dialog.AddProductToProductListDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import model.ProductList;
 import model.exception.AuthenticationException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
@@ -36,29 +28,21 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
-public class OpenSearcherController implements Initializable {
+public class OpenSearcherController implements Initializable, SearchController {
 
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";
-    public static final String SENTINEL_3 = "Sentinel-3";
-
 
     private OpenSearcher searcher;
-    private ContextMenu productContextMenu;
-    private List<ProductList> productList;
-    private AddProductToProductListDialog addProductToProductListDialog;
 
+    @FXML
+    private Label searcherTitle;
     @FXML
     private AnchorPane rootPane;
     @FXML
-    private Pane searchParameters;
-    @FXML
-    private ImageView image;
+    private AnchorPane spinnerPane;
     @FXML
     private JFXSpinner spinnerWait;
-
-    @FXML
-    private TextArea textArea;
     @FXML
     private ChoiceBox<String> satelliteList;
     @FXML
@@ -78,23 +62,24 @@ public class OpenSearcherController implements Initializable {
     @FXML
     private JFXDatePicker dateStart;
     @FXML
-    private Pane dateStartPane;
-    @FXML
     private JFXDatePicker dateFinish;
     @FXML
-    private URL location;
+    private Button search;
     @FXML
-    private ResourceBundle resources;
-
+    private Pagination pagination;
+    @FXML
+    private ChoiceBox<Integer> rows;
     @FXML
     private Pane resultsPane;
     @FXML
     private HBox resultPaneHeader;
     @FXML
     private JFXListView<Product> resultProductsList;
-
     @FXML
     private Pane mapPane;
+    @FXML
+    private JFXButton showResults;
+
     private GTMapSearchController GTMapSearchController;
 
     public void login(String username, String password) throws AuthenticationException {
@@ -104,11 +89,18 @@ public class OpenSearcherController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         resultsPane.setVisible(false);
-        spinnerWait.setManaged(false);
+        setSpinnerVisible(false);
+        setPaginationVisible(false);
+        initRows();
         setSatelliteList();
         setSentinel1Data();
         setProductsList();
         initResultPaneHeader();
+        initPaginationEvent();
+        search.setOnMouseClicked(e->{
+            searcher.setStartProductIndex(0);
+            search();
+        });
         GTMapSearchController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight());
         GTMapSearchController.setOnMouseClicked(event-> {
             Product product = resultProductsList.getItems().stream()
@@ -118,8 +110,8 @@ public class OpenSearcherController implements Initializable {
             if (product != null) {
                 resultProductsList.setFocusTraversable(true);
                 resultProductsList.getFocusModel().focus(resultProductsList.getItems().indexOf(product));
-                resultProductsList.scrollTo(product);
                 resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
+                resultProductsList.scrollTo(product);
             }
 
         });
@@ -133,7 +125,38 @@ public class OpenSearcherController implements Initializable {
         });
         mapPane.getChildren().addAll(GTMapSearchController);
         //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
-        buildContextMenu();
+    }
+
+    private void setPaginationVisible(boolean b) {
+        pagination.setVisible(b);
+        pagination.setManaged(b);
+    }
+
+    private void setSpinnerVisible(boolean b) {
+        spinnerPane.setVisible(b);
+        spinnerPane.setManaged(b);
+        spinnerWait.setVisible(b);
+        spinnerWait.setManaged(b);
+    }
+
+    private void initPaginationEvent() {
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            searcher.setStartProductIndex(searcher.getProductsPerPage()*(newIndex.intValue()));
+            search();
+        });
+    }
+
+    private void initRows() {
+        rows.setItems(FXCollections.observableArrayList(
+                25,50,75,100));
+        rows.setValue(100);
+        rows.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observableValue, oldValue, newValue) -> {
+                    System.out.println(newValue);
+                    if (newValue > 0)
+                        searcher.setProductPerPage(newValue);
+                });
     }
 
     private void setSentinel1Data() {
@@ -158,7 +181,8 @@ public class OpenSearcherController implements Initializable {
         resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         resultProductsList.setOnMouseClicked(event -> {
             Product product = resultProductsList.getSelectionModel().getSelectedItem();
-            GTMapSearchController.showProductArea(product.getId());
+            if (product != null)
+                GTMapSearchController.showProductArea(product.getId());
         });
     }
 
@@ -215,33 +239,51 @@ public class OpenSearcherController implements Initializable {
         iconButton.setAccessibleText("Close results");
         iconButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             resultsPane.setVisible(false);
+            if (resultProductsList.getItems().size() > 0)
+                showShowResultsButton();
+            else
+                hideShowResultsButton();
         });
         resultPaneHeader.getChildren().add(iconButton);
+        hideShowResultsButton();
+        showResults.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> resultsPane.setVisible(true));
+    }
+
+    private void hideShowResultsButton() {
+        toggleShowResultsButton(false);
+    }
+
+    private void showShowResultsButton() {
+        toggleShowResultsButton(true);
+    }
+
+    private void toggleShowResultsButton(boolean b) {
+        showResults.setVisible(b);
+        showResults.setManaged(b);
     }
 
     private void setSentinel2Instruments() {
         instrumentList.setItems(FXCollections.observableArrayList(
-                "S2MSI1C", "S2MSI2A","S2MSI2Ap"));
-        instrumentList.setValue("S2MSI1C");
+                "All","S2MSI1C", "S2MSI2A","S2MSI2Ap"));
+        instrumentList.setValue("All");
     }
 
     private void setSentinel1Instruments() {
         instrumentList.setItems(FXCollections.observableArrayList(
-                "GRD", "OCN","SLC"));
-        instrumentList.setValue("GRD");
+                "All","GRD", "OCN","SLC"));
+        instrumentList.setValue("All");
     }
 
-    public void search(ActionEvent actionEvent) {
+    @Override
+    public void search() {
         clearListAndFilter();
         addParameters();
         clearMap();
-        spinnerWait.setVisible(true);
-        spinnerWait.setManaged(true);
+        setSpinnerVisible(true);
         rootPane.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
         new Thread(response).start();
-        addContextMenu();
     }
 
     private void clearMap() {
@@ -256,8 +298,12 @@ public class OpenSearcherController implements Initializable {
             resultProductsList.setItems(tObservableArray);
             resultProductsList.setCellFactory(e -> new ProductResultListCell());
             clearMap();
-            if (response.get().getProducts().size() > 0)
-                writeProductsFootprintInMap(response.get().getProducts());
+            OpenSearchResponse openSearchResponse = response.get();
+            if (openSearchResponse.getProducts().size() > 0) {
+                writeProductsFootprintInMap(openSearchResponse.getProducts());
+                setPagination(openSearchResponse.getNumOfProducts(),openSearchResponse.getProducts().size());
+            }
+
             spinnerWait.setVisible(false);
             spinnerWait.setManaged(false);
             resultsPane.setVisible(true);
@@ -267,16 +313,19 @@ public class OpenSearcherController implements Initializable {
         }
     }
 
+    private void setPagination(int numOfProducts, int rows) {
+        if (numOfProducts > rows) {
+            pagination.setManaged(true);
+            pagination.setVisible(true);
+            pagination.setPageCount((int)Math.ceil(numOfProducts/rows));
+        } else {
+            pagination.setManaged(false);
+            pagination.setVisible(false);
+        }
+    }
+
     private void writeProductsFootprintInMap(List<Product> products) {
         GTMapSearchController.addProductsWKT(products);
-        /*
-        products.forEach(p-> {
-            try {
-                mapGUI.addProductWKT(p.getFootprint(),p.getId());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        });*/
 
     }
 
@@ -305,10 +354,6 @@ public class OpenSearcherController implements Initializable {
         } else if (satelliteList.getValue().equals(SENTINEL_2)) {
             addCloudCoverageParameter(cloudCoverage.getText());
         }
-
-        /*if (rangeIsValid()) {
-            addDateRangeFilter(dateStart.getValue(),dateFinish.getValue());
-        }*/
     }
 
     private void addCloudCoverageParameter(String cloudCoverage) {
@@ -327,16 +372,13 @@ public class OpenSearcherController implements Initializable {
     }
 
     private void addInstrumentParameter(String instrument) {
-        searcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,instrument);
+        if (!instrument.equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,instrument);
     }
 
     private void addWKTParameter(String wkt) {
         if (wkt.length()>0)
             searcher.addSearchParameter(OpenSearchQueryParameter.FOOTPRINT,"\"Intersects("+wkt+")\"");
-    }
-
-    private boolean rangeIsValid() {
-        return dateStart.getValue() != null && dateFinish.getValue() != null && dateFinish.getValue().compareTo(dateStart.getValue()) > 0;
     }
 
     private void addDateRangeFilter(LocalDate start, LocalDate finish) {
@@ -345,84 +387,21 @@ public class OpenSearcherController implements Initializable {
     }
 
     private String getFromToIngestionDate(LocalDate start, LocalDate finish) {
-        String startS,endS = "";
-        if (start == null)
-            startS = "*";
-        else {
-            LocalDateTime localDateTimeStart = start.atTime(0, 0, 0, 0);
-            localDateTimeStart.atZone(ZoneId.of("UTC"));
-            startS = localDateTimeStart.toString()+":00.001Z";
-        }
-        if (finish == null)
-            endS = "NOW";
-        else {
-            LocalDateTime localDateTimeFinish = finish.atTime(23, 59, 59, 0);
-            localDateTimeFinish.atZone(ZoneId.of("UTC"));
-            endS = localDateTimeFinish.toString()+".999Z";
-        }
-
+        String startS = getDateString(start,"*",0,0,0,"001");
+        String endS = getDateString(finish,"NOW",23,59,59,"999");
         return "["+ startS+ " TO " + endS + "]";
+    }
+
+    private String getDateString(LocalDate finish, String dateNull, int hour, int minute, int seconds, String nano) {
+        if (finish == null)
+            return dateNull;
+
+        LocalDateTime localDateTimeFinish = finish.atTime(hour, minute, seconds, 0);
+        localDateTimeFinish.atZone(ZoneId.of("UTC"));
+        return localDateTimeFinish.toString()+"."+nano+"Z";
     }
 
     private void addPlatformNameParameter(String value) {
         searcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,value);
     }
-
-    private void addContextMenu() {
-        resultProductsList.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            /*ProductOData productOData = getSelectedItem();
-            if (event.getButton().equals(MouseButton.SECONDARY)) {
-                productContextMenu.show(list, event.getScreenX(), event.getScreenY());
-            } else {
-                textArea.setText(productOData.getInfo());
-                productContextMenu.hide();
-            }*/
-        });
-    }
-
-    private Product getSelectedItem() {
-        return resultProductsList.getSelectionModel().getSelectedItems().get(0);
-    }
-
-    private void buildContextMenu() {
-        productContextMenu = new ContextMenu();
-        MenuItem replaceCardMenuItem = new MenuItem("Ver producto");
-        MenuItem replaceCardMenuItem2 = new MenuItem("Añadir a la lista...");
-        replaceCardMenuItem.setOnAction(event -> {
-            /*ProductDialog pd = new ProductDialog(getSelectedItem());
-            pd.init();
-            pd.show();*/
-        });
-        replaceCardMenuItem2.setOnAction(event -> {
-            initCreateListDialog();
-        });
-        productContextMenu.getItems().add(replaceCardMenuItem);
-        productContextMenu.getItems().add(replaceCardMenuItem2);
-    }
-
-    private void initCreateListDialog() {
-        addProductToProductListDialog = new AddProductToProductListDialog(productList);
-        addProductToProductListDialog.init();
-        addProductToProductListDialog.setOnHidden(ev -> {
-            //if (addProductToProductListDialog.getSelectedItem() > -1)
-                //addSelectedProductToProductList(productList.get(addProductToProductListDialog.getSelectedItem()));
-        });
-        addProductToProductListDialog.show();
-    }
-
-    /*private void addSelectedProductToProductList(ProductList productList) {
-        productList.addProduct(list.getSelectionModel().getSelectedItem());
-    }
-
-    public void showProduct(MouseEvent mouseEvent) {
-        ProductOData selectedItem = list.getSelectionModel().getSelectedItem();
-    }*/
-
-    /*public void setProductList(List<ProductList> list) {
-        this.productList = list;
-    }
-
-    public List<ProductList> getUserProductList() {
-        return productList;
-    }*/
 }

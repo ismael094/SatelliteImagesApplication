@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
 
-public class OpenSearcher {
+public class OpenSearcher implements SearchService {
     public static final String ALL = "*";
     public static final String AND = " AND ";
     private final String URL = "https://scihub.copernicus.eu/dhus/search?format=json";
@@ -60,8 +60,7 @@ public class OpenSearcher {
     }
 
     public void login(String username, String password) throws AuthenticationException {
-        long startTime = currentTimeMillis();
-        this.httpManager = new HTTPAuthManager(username,password);
+        this.httpManager = HTTPAuthManager.getHttpManager(username,password);
         try {
             String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
             this.httpManager.getContentFromURL(new URL(LOGIN_URL));
@@ -91,14 +90,14 @@ public class OpenSearcher {
     }
 
     private String startPage() {
-        return "&start=" + getPage();
+        return "&start=" + getStartProductIndex();
     }
 
-    public void setPage(int page) {
+    public void setStartProductIndex(int page) {
         this.page = page;
     }
 
-    public int getPage() {
+    public int getStartProductIndex() {
         return page;
     }
 
@@ -118,6 +117,7 @@ public class OpenSearcher {
         this.searchParameters.clear();
     }
 
+    @Override
     public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated in OpenSearch");

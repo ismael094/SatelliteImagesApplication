@@ -1,4 +1,4 @@
-package controller;
+package controller.search;
 
 import gui.GTMapSearchController;
 import model.filter.Filter;
@@ -10,7 +10,6 @@ import model.filter.operators.ComparisonOperators;
 import gui.dialog.AddProductToProductListDialog;
 import gui.dialog.ProductDialog;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -25,7 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ODataSearcherController {
+public class ODataSearcherController implements SearchController{
 
     @FXML
     private ImageView image;
@@ -73,7 +72,9 @@ public class ODataSearcherController {
         //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
         buildContextMenu();
     }
-    public void search(ActionEvent actionEvent) {
+
+    @Override
+    public void search() {
         //if (dateStart.getValue() != null && dateFinish.getValue() != null && dateFinish.getValue().compareTo(dateStart.getValue()) > 0) {
         clearListAndFilter();
         addFilters();

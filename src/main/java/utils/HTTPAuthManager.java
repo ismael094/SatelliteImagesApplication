@@ -2,12 +2,10 @@ package utils;
 
 import model.exception.AuthenticationException;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.HttpResponseException;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -38,16 +36,19 @@ public class HTTPAuthManager extends Authenticator {
     }
 
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException {
-        setAuthenticator();
+        //setAuthenticator();
         URL path = new URL(url.toString().replace(" ", "%20"));
         connection = null;
         try {
+            System.out.println(path.toString());
             connection = (HttpsURLConnection) path.openConnection();
             connection.setRequestProperty("Accept-Encoding", "identity");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-length", "0");
-            connection.setReadTimeout(30000);
+            System.out.println(connection.getResponseCode());
+            if (connection.getResponseCode() == 500)
+                throw new HttpResponseException(500,"Image not available");
             if (connection.getResponseCode() != 200)
                 throw new AuthenticationException("Incorrect username or password");
             Logger logger = Logger.getLogger(getClass().getName());

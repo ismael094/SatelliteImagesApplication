@@ -88,7 +88,6 @@ public class GTMap extends Canvas {
         initPaintThread();
         drawMap(graphicsContext);
     }
-
     public Node getCanvas() {
         return this;
     }
@@ -101,8 +100,8 @@ public class GTMap extends Canvas {
         SimpleFeatureSource featureSource2 = null;
         File file = null;
         try {
-            featureSource = loadFileDataStore("/bathymetry.shp").getFeatureSource();
-            file = new File(getClass().getResource("/world.tif").getPath());
+            featureSource = loadFileDataStore("/maps/bathymetry.shp").getFeatureSource();
+            file = new File(getClass().getResource("/maps/world.tif").getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,6 +128,13 @@ public class GTMap extends Canvas {
         //wms();
     }
 
+    public void drawImageInWKT(File image, String wkt) {
+        Style rgbStyle = createRGBStyle(image);
+        GridReaderLayer rasterLayer = new GridReaderLayer(reader, rgbStyle);
+        mapContent.addLayer(rasterLayer);
+        refresh();
+    }
+
     private Style createRGBStyle(File f) {
         AbstractGridFormat format = GridFormatFinder.findFormat( f );
         reader = format.getReader(f);
@@ -152,7 +158,7 @@ public class GTMap extends Canvas {
 
     private void addNewEPSG() {
         try {
-            URL url = getClass().getResource("/epsg.properties");
+            URL url = getClass().getResource("/maps/epsg.properties");
 
             if (url != null) {
                 Hints hints = new Hints(Hints.CRS_AUTHORITY_FACTORY, PropertyAuthorityFactory.class);
@@ -220,7 +226,7 @@ public class GTMap extends Canvas {
         return FileDataStoreFinder.getDataStore(file);
     }
 
-    public void drawGeometryFromWKT(String wktCoordinates, String id) throws ParseException {
+    public void createFeatureFromWKT(String wktCoordinates, String id) throws ParseException {
 
         SimpleFeatureBuilder featureBuilder;
         if (wktCoordinates.contains("MULTIPOLYGON"))

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import model.products.Product;
 import model.products.ProductProperties;
 
+import java.util.Date;
 import java.util.List;
 
 public abstract class Deserializer {
@@ -19,6 +20,8 @@ public abstract class Deserializer {
     public static final String ID = "id";
 
     private static final ObjectMapper mapper = new ObjectMapper();
+    public static final String DATE_ARRAY = "date";
+    public static final String INGESTION_DATE = "ingestiondate";
     TypeReference<List<ProductProperties>> typeRef = new TypeReference<>() {};
 
     public List<ProductProperties> getStringProperties(JsonNode product) {
@@ -27,6 +30,10 @@ public abstract class Deserializer {
 
     public List<ProductProperties> getDoubleProperties(JsonNode product) {
         return mapper.convertValue(product.get(DOUBLE_ARRAY), typeRef);
+    }
+
+    public List<ProductProperties> getDateProperties(JsonNode product) {
+        return mapper.convertValue(product.get(DATE_ARRAY), typeRef);
     }
 
     public Object getPropertyByName(String property, List<ProductProperties> properties) {
@@ -44,6 +51,7 @@ public abstract class Deserializer {
         product.setSize((String)getPropertyByName(SIZE,stringProperties));
         product.setProductType((String)getPropertyByName(PRODUCT_TYPE,stringProperties));
         product.setPlatformName((String)getPropertyByName(PLATFORM_NAME,stringProperties));
+        product.setIngestionDate((String)getPropertyByName(INGESTION_DATE,getDateProperties(node)));
     }
 
     public abstract Product deserialize(JsonNode product);

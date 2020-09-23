@@ -2,13 +2,27 @@ package gui.dialog;
 
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import com.sun.javafx.application.HostServicesDelegate;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.util.Pair;
+
+import javax.ws.rs.core.Link;
+import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 
 public class ScihubCredentialsDialog extends Dialog<Pair<String, String>> {
@@ -73,6 +87,28 @@ public class ScihubCredentialsDialog extends Dialog<Pair<String, String>> {
         grid.add(usernameField, 1, 0);
         grid.add(new Label("Password:"), 0, 1);
         grid.add(passwordField, 1, 1);
+        Hyperlink hyperlink = getHyperlink("Forgot Password?","https://scihub.copernicus.eu/dhus/#/forgot-password");
+        grid.add(hyperlink, 1, 2);
+        grid.add(new Label("Not registered?"), 0, 3);
+        grid.add(getHyperlink("Sign Up!","https://scihub.copernicus.eu/dhus/#/self-registration"), 1, 3);
+        grid.add(new Label("Note: This application uses ApiHub"), 0, 4);
+        grid.add(getHyperlink("Read more","https://scihub.copernicus.eu/twiki/do/view/SciHubWebPortal/APIHubDescription"), 1, 4);
+
+    }
+
+    private Hyperlink getHyperlink(String label, String url) {
+        Hyperlink hyperlink = new Hyperlink(label);
+        hyperlink.setOnAction(e->{
+            if(Desktop.isDesktopSupported())
+            {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        return hyperlink;
     }
 
     private void setGridStyle(GridPane grid) {

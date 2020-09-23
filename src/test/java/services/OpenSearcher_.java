@@ -3,21 +3,14 @@ package services;
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.exception.AuthenticationException;
-import model.openSearcher.OpenSearchResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import utils.HTTPAuthManager;
-import utils.ProductMapper;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.*;
-import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.lang.System.currentTimeMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -62,11 +55,11 @@ public class OpenSearcher_ {
 
     @Test
     public void set_page() {
-        assertThat(openSearcher.getPage()).isEqualTo(0);
-        openSearcher.setPage(1);
-        assertThat(openSearcher.getPage()).isEqualTo(1);
-        openSearcher.setPage(5);
-        assertThat(openSearcher.getPage()).isEqualTo(5);
+        assertThat(openSearcher.getStartProductIndex()).isEqualTo(0);
+        openSearcher.setStartProductIndex(1);
+        assertThat(openSearcher.getStartProductIndex()).isEqualTo(1);
+        openSearcher.setStartProductIndex(5);
+        assertThat(openSearcher.getStartProductIndex()).isEqualTo(5);
     }
 
     @Test
@@ -104,10 +97,10 @@ public class OpenSearcher_ {
     @Test
     public void get_URL_of_query_with_setted_product_per_page_and_number_page() throws MalformedURLException {
         openSearcher.setProductPerPage(1);
-        openSearcher.setPage(1);
+        openSearcher.setStartProductIndex(1);
         assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=1&rows=1&q=(*)");
         openSearcher.setProductPerPage(100);
-        openSearcher.setPage(0);
+        openSearcher.setStartProductIndex(0);
         assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=100&q=(*)");
     }
 

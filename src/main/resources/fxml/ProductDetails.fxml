@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<FlowPane fx:id="root" stylesheets="@../css/ProductDetails.css" prefHeight="545.0" prefWidth="1309.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.search.OpenSearchProductDetailsController">
+   <children>
+      <Pane layoutX="14.0" layoutY="14.0" prefHeight="500.0" prefWidth="370.0">
+         <children>
+            <Label layoutX="122.0" layoutY="21.0" text="Product Details">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <VBox layoutY="78.0" prefHeight="422.0" prefWidth="370.0">
+               <children>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="11.0" prefHeight="17.0" prefWidth="83.0" text="Name:">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="name" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="7.0" text="Platform Name">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="platName" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="10.0" prefHeight="20.0" prefWidth="104.0" text="Product Type">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="productType" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="10.0" prefHeight="17.0" prefWidth="83.0" text="Size">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="size" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="11.0" text="Ingestion Date">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="ingestionDate" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label fx:id="platformDetails" layoutX="173.0" layoutY="12.0" text="Label">
+                           <font>
+                              <Font name="System Italic" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <Pane fx:id="sensorModePane" prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="12.0" prefHeight="17.0" prefWidth="97.0" text="Sensor Mode">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="sensorMode" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane fx:id="polarisationPane" prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="11.0" text="Polarisation">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="polarisation" layoutX="165.0" layoutY="12.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+                  <Pane fx:id="cloudCoveragePane" prefHeight="40.0" prefWidth="374.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="12.0" text="Cloud Coverage">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="cloud" layoutX="165.0" layoutY="11.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="14.0" />
+         </padding>
+      </Pane>
+      <Separator orientation="VERTICAL" prefHeight="360.0" prefWidth="12.0" />
+      <Pane fx:id="container" prefHeight="500.0" prefWidth="867.0">
+         <children>
+            <ImageView fx:id="image" fitHeight="375.0" fitWidth="382.0" layoutX="36.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true" styleClass="previewImage" />
+            <Pane fx:id="map" layoutX="452.0" layoutY="56.0" prefHeight="375.0" prefWidth="382.0" />
+         </children></Pane>
+   </children>
+   <padding>
+      <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+   </padding>
+</FlowPane>

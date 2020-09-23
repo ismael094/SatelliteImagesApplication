@@ -16,96 +16,102 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="545.0" prefWidth="1309.0" stylesheets="@css/OpenSearchView.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OpenSearcherController">
+<AnchorPane id="searchRootPane" fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="445.0" prefWidth="1309.0" stylesheets="@../css/OpenSearchView.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.search.OpenSearcherController">
    <children>
-      <Pane id="searchPane" fx:id="searchParameters" layoutX="14.0" layoutY="47.0" prefHeight="426.0" prefWidth="300.0">
+      <Pane id="searchPane" fx:id="searchParameters" layoutX="14.0" layoutY="41.0" prefHeight="441.0" prefWidth="300.0">
          <children>
             <VBox layoutX="14.0" layoutY="14.0" prefHeight="464.0" prefWidth="280.0">
                <children>
+                  <Label id="searcherTitle" styleClass="title" text="Searcher">
+                     <VBox.margin>
+                        <Insets left="90.0" />
+                     </VBox.margin>
+                  </Label>
                   <Pane prefHeight="40.0" prefWidth="273.0">
                      <children>
                         <ChoiceBox fx:id="satelliteList" layoutX="106.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
-                        <Label layoutY="12.0" prefHeight="17.0" prefWidth="63.0" text="Platform" />
+                        <Label layoutY="12.0" prefHeight="17.0" prefWidth="63.0" styleClass="bold" text="Platform" />
                      </children>
                   </Pane>
                   <Pane prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label layoutY="12.0" prefHeight="17.0" prefWidth="86.0" text="Product" />
+                        <Label layoutY="12.0" prefHeight="17.0" prefWidth="86.0" styleClass="bold" text="Product" />
                         <ChoiceBox fx:id="instrumentList" layoutX="106.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane fx:id="polarisationPane" prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label layoutY="12.0" text="Polarization" />
+                        <Label layoutY="12.0" styleClass="bold" text="Polarization" />
                         <ChoiceBox fx:id="polarisation" layoutX="106.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane fx:id="sensorPane" prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label layoutY="12.0" text="Sensor Mode" />
+                        <Label layoutY="12.0" styleClass="bold" text="Sensor Mode" />
                         <ChoiceBox fx:id="sensorMode" layoutX="106.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane fx:id="cloudPane" prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label layoutY="12.0" text="Cloud Coverage" />
+                        <Label layoutY="12.0" styleClass="bold" text="Cloud Coverage" />
                         <JFXTextField fx:id="cloudCoverage" layoutX="106.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane fx:id="dateStartPane" prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label fx:id="labelStart" layoutY="12.0" prefHeight="18.0" prefWidth="71.0" text="Date Start" />
+                        <Label fx:id="labelStart" layoutY="12.0" prefHeight="18.0" prefWidth="71.0" styleClass="bold" text="Date Start" />
                         <JFXDatePicker fx:id="dateStart" layoutX="106.0" layoutY="7.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane prefHeight="40.0" prefWidth="273.0">
                      <children>
-                        <Label layoutY="12.0" prefHeight="18.0" prefWidth="86.0" text="Date Finish" />
+                        <Label layoutY="12.0" prefHeight="18.0" prefWidth="86.0" styleClass="bold" text="Date Finish" />
                         <JFXDatePicker fx:id="dateFinish" layoutX="106.0" layoutY="7.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="174.0" />
                      </children>
                   </Pane>
                   <Pane prefHeight="34.0" prefWidth="280.0">
                      <children>
-                        <Label layoutY="12.0" text="Products per page" />
+                        <Label layoutY="12.0" styleClass="bold" text="Products per page" />
                         <ChoiceBox fx:id="rows" layoutX="140.0" layoutY="7.0" prefHeight="25.0" prefWidth="63.0" />
                      </children>
                   </Pane>
-                  <Button id="search" fx:id="search" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Search">
+                  <Button id="search" fx:id="search" alignment="BOTTOM_CENTER" mnemonicParsing="false" text="Search">
                      <VBox.margin>
-                        <Insets bottom="25.0" left="125.0" top="50.0" />
+                        <Insets bottom="25.0" left="110.0" top="50.0" />
                      </VBox.margin>
                   </Button>
+                  <JFXButton fx:id="showResults" text="Show Results &gt;">
+                     <VBox.margin>
+                        <Insets left="90.0" />
+                     </VBox.margin>
+                  </JFXButton>
 
                </children>
             </VBox>
          </children>
       </Pane>
-      <Separator layoutX="320.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="513.0" prefWidth="18.0" />
-      <Pane id="searchMapContainer" fx:id="mapPane" layoutX="340.0" layoutY="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="517.0" prefWidth="939.0" />
-      <Pane fx:id="resultsPane" layoutX="14.0" layoutY="14.0" prefHeight="511.0" prefWidth="300.0" style="-fx-background-color: white;" visible="false">
+      <Separator layoutX="354.0" layoutY="15.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="493.0" prefWidth="18.0" />
+      <Pane id="searchMapContainer" fx:id="mapPane" layoutX="373.0" layoutY="15.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="470.0" prefWidth="907.0" />
+      <Pane fx:id="resultsPane" layoutX="14.0" layoutY="14.0" prefHeight="494.0" prefWidth="338.0">
          <children>
-            <BorderPane prefHeight="509.0" prefWidth="300.0">
+            <BorderPane prefHeight="470.0" prefWidth="338.0">
                <center>
-                  <JFXListView fx:id="resultProductsList" prefHeight="468.0" prefWidth="300.0" styleClass="productResultsList" BorderPane.alignment="CENTER" />
+                  <JFXListView fx:id="resultProductsList" prefHeight="357.0" prefWidth="333.0" style="-fx-background-color: #f4f4f4;" styleClass="productResultsList" BorderPane.alignment="CENTER" />
                </center>
                <top>
-                  <HBox fx:id="resultPaneHeader" alignment="BASELINE_RIGHT" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <HBox fx:id="resultPaneHeader" alignment="BASELINE_RIGHT" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #f4f4f4;" BorderPane.alignment="CENTER">
                      <children>
-                        <Label layoutY="15.0" text="Result List">
-                           <font>
-                              <Font name="Arial Bold" size="23.0" />
-                           </font>
+                        <Label layoutY="15.0" styleClass="title" text="Result List">
                            <HBox.margin>
-                              <Insets right="80.0" />
+                              <Insets right="110.0" />
                            </HBox.margin>
                         </Label>
                      </children>
                   </HBox>
                </top>
                <bottom>
-                  <Pagination fx:id="pagination" prefHeight="77.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
+                  <Pagination fx:id="pagination" prefHeight="63.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
                </bottom>
             </BorderPane>
          </children>
@@ -115,12 +121,6 @@
             <JFXSpinner fx:id="spinnerWait" layoutY="13.0" visible="false" />
          </children>
       </AnchorPane>
-      <Label layoutX="135.0" layoutY="20.0" text="Searcher">
-         <font>
-            <Font name="System Bold Italic" size="18.0" />
-         </font>
-      </Label>
-      <JFXButton fx:id="showResults" layoutX="26.0" layoutY="21.0" text="Results &gt;" />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

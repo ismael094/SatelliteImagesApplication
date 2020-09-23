@@ -1,7 +1,10 @@
 package services;
 
+import model.exception.AuthenticationException;
+import model.exception.NotAuthenticatedException;
 import model.filter.Filter;
 import model.ProductOData;
+import model.filter.FilterItem;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -11,20 +14,19 @@ import org.apache.olingo.client.api.domain.ClientProperty;
 import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
 import org.apache.olingo.commons.api.format.ContentType;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.olingo.client.core.ODataClientFactory.getClient;
 
-public class ODataSearcher {
+public class ODataSearcher implements SearchService {
     public static final ODataClient client = getClient();
     private final String iCrmServiceRoot = "https://scihub.copernicus.eu/dhus/odata/v2";
-    private final String username = "ismael096";
-    private final String pass = "Test_password";
+
 
     public ODataSearcher() {
-        setAuthentificationCredential(username,pass);
     }
 
     public void setAuthentificationCredential(String username, String pass) {
@@ -122,5 +124,10 @@ public class ODataSearcher {
         final ODataRetrieveResponse<ClientEntitySet> response = request.execute();
         final ClientEntitySet entitySet = response.getBody();
         System.out.println(entitySet.getEntities().get(0).toString());
+    }
+
+    @Override
+    public Object search() throws IOException, AuthenticationException, NotAuthenticatedException {
+        return null;
     }
 }

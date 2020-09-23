@@ -3,8 +3,8 @@ package gui;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -18,7 +18,7 @@ import java.util.List;
 public class GTMapSearchController extends Pane {
 
 
-    private final GTMap canvas;
+    private final GTMap geotoolsMap;
     private HBox hbox;
     private boolean isSearchAreaDraw;
     private final double[] searchAreaCoordinates;
@@ -28,20 +28,17 @@ public class GTMapSearchController extends Pane {
     public GTMapSearchController(double width, double height) {
         searchAreaCoordinates = new double[2];
         isSearchAreaDraw = false;
-        this.canvas = new GTMap((int) width, (int) height);
-        Pane mapPane = new	Pane(canvas.getCanvas());
+        geotoolsMap = new GTMap((int) width, (int) height);
+        Pane mapPane = new Pane(geotoolsMap);
         BorderPane border = new BorderPane();
-        HBox controlBar = controlBar(canvas);
+        HBox controlBar = controlBar();
         border.setTop(controlBar);
         border.setCenter(mapPane);
-        border.setBottom(addBottomHBox(canvas));
-        Scene scene = new Scene(border);
-        initEvent();
-
+        addGeotoolsMapEvents();
         getChildren().add(border);
     }
 
-    private void initEvent() {
+    private void addGeotoolsMapEvents() {
         addMapMousePressedEvent();
         addMapMouseClickedEvent();
         addMapMouseReleasedEvent();
@@ -53,7 +50,7 @@ public class GTMapSearchController extends Pane {
 
     private void addMapScrollMapEvent() {
         addEventHandler(ScrollEvent.SCROLL, e-> {
-            canvas.scroll(e.getDeltaY());
+            geotoolsMap.scroll(e.getDeltaY());
             e.consume();
         });
     }
@@ -61,18 +58,18 @@ public class GTMapSearchController extends Pane {
     private void addMapMouseClickedEvent() {
         addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
             if (t.getClickCount() == 1) {
-                canvas.selectFeature((int)(t.getX()),(int)(t.getY()-hbox.getHeight()));
-                canvas.refresh();
+                geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()-hbox.getHeight()));
+                geotoolsMap.refresh();
             } else if (t.getClickCount() > 1)
-                canvas.resetMap();
+                geotoolsMap.resetMap();
             t.consume();
         });
     }
 
     private void addMapMouseReleasedEvent() {
-        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
+        geotoolsMap.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
             if(e.isSecondaryButtonDown() && isSearchAreaDraw) {
-                canvas.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
+                geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
                 isSearchAreaDraw = false;
             }
             e.consume();
@@ -80,17 +77,17 @@ public class GTMapSearchController extends Pane {
     }
 
     private void addMapMouseMovedEvent() {
-        canvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+        geotoolsMap.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
             if (isSearchAreaDraw) {
-                canvas.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
+                geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
             }
             e.consume();
         });
     }
 
     private void addMapMouseDraggedEvent() {
-        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
-            canvas.dragMap(baseDragedX,baseDragedY,e.getSceneX(),e.getSceneY());
+        geotoolsMap.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
+            geotoolsMap.dragMap(baseDragedX,baseDragedY,e.getSceneX(),e.getSceneY());
             setBaseDraggedPosition(e);
             e.consume();
 
@@ -98,13 +95,13 @@ public class GTMapSearchController extends Pane {
     }
 
     private void addMapMousePressedEvent() {
-        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+        geotoolsMap.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             setBaseDraggedPosition(e);
             if (e.isSecondaryButtonDown()) {
                 if (!isSearchAreaDraw) {
                     setInitSearchCoordinates(e.getX(), e.getY());
                 } else {
-                    canvas.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
+                    geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
                     isSearchAreaDraw = false;
                 }
             }
@@ -124,7 +121,7 @@ public class GTMapSearchController extends Pane {
     }
 
     public void addProductsWKT(List<Product> products) {
-        canvas.clearFeatures();
+        geotoolsMap.clearFeatures();
         products.forEach(p-> {
             try {
                 addProductWKT(p.getFootprint(),p.getId());
@@ -136,22 +133,21 @@ public class GTMapSearchController extends Pane {
     }
 
     private void drawProductsWKT() {
-        canvas.createAndDrawProductsLayer();
+        geotoolsMap.createAndDrawProductsLayer();
     }
 
     public void addProductWKT(String wkt, String id) throws ParseException {
-        canvas.drawGeometryFromWKT(wkt,id);
+        geotoolsMap.createFeatureFromWKT(wkt,id);
     }
 
-    public HBox addBottomHBox(GTMap canvas) {
+    public HBox addBottomHBox() {
         return new HBox();
     }
 
-    public HBox controlBar(GTMap canvas) {
+    public HBox controlBar() {
         hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
-        hbox.setStyle("-fx-background-color: #336699;");
         //buttonCurrent.setPrefSize(100, 20);
 
         Button deleteSearchAreaButton = getDeleteSearchAreaButton();
@@ -159,8 +155,8 @@ public class GTMapSearchController extends Pane {
         Button resetMap = getResetMapButton();
 
 
-        hbox.setSpacing(5f);
-        hbox.getChildren().addAll(deleteSearchAreaButton,resetMap);
+        hbox.setSpacing(10f);
+        hbox.getChildren().addAll(new Label("Map Controls: "),deleteSearchAreaButton,resetMap);
 
         return hbox;
     }
@@ -170,7 +166,7 @@ public class GTMapSearchController extends Pane {
         Button resetMap = GlyphsDude.createIconButton(FontAwesomeIcon.EXPAND,"Reset map");
         resetMap.setAccessibleText("Reset map");
         resetMap.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            canvas.resetMap();
+            geotoolsMap.resetMap();
         });
         return resetMap;
     }
@@ -181,7 +177,7 @@ public class GTMapSearchController extends Pane {
         goToSelection.setAccessibleText("Zoom selected area");
 
         goToSelection.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            canvas.goToSelection();
+            geotoolsMap.goToSelection();
         });
         return goToSelection;
     }
@@ -190,25 +186,25 @@ public class GTMapSearchController extends Pane {
         Button clearButton = GlyphsDude.createIconButton(FontAwesomeIcon.ERASER,"Delete selection");
         clearButton.setAccessibleText("Delete selection");
         clearButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            canvas.removeLayer("SearchArea");
+            geotoolsMap.removeLayer("SearchArea");
         });
         return clearButton;
     }
 
     public String getWKT() {
-        return canvas.getWKT();
+        return geotoolsMap.getWKT();
     }
 
     public void showProductArea(String id) {
-        canvas.showFeatureArea(id);
+        geotoolsMap.showFeatureArea(id);
     }
 
     public void clearMap() {
-        canvas.clearMap();
+        geotoolsMap.clearMap();
     }
 
     public String getSelectedProduct() {
-        return canvas.getSelectedFeatureID();
+        return geotoolsMap.getSelectedFeatureID();
 
     }
 }

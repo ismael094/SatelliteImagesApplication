@@ -1,12 +1,12 @@
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 import java.net.URL;
 
@@ -16,10 +16,14 @@ public class SatelliteApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        URL location = getClass().getResource("/ListView.fxml");
+        URL location = getClass().getResource("/fxml/MainApp.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
 
+        JMetro jMetro = new JMetro(Style.LIGHT);
         Scene scene = new Scene(fxmlLoader.load());
+        primaryStage.setMaximized(true);
+
+        jMetro.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResource("/img/logo.jpg").openStream()));
         primaryStage.setScene(scene);
         primaryStage.show();
