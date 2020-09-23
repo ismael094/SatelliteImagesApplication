@@ -7,6 +7,7 @@ import gui.GTMapSearchController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -18,6 +19,9 @@ import model.exception.AuthenticationException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
 import model.products.Product;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import services.OpenSearcher;
 
 import java.net.URL;
@@ -35,8 +39,6 @@ public class OpenSearcherController implements Initializable, SearchController {
 
     private OpenSearcher searcher;
 
-    @FXML
-    private Label searcherTitle;
     @FXML
     private AnchorPane rootPane;
     @FXML
@@ -82,6 +84,8 @@ public class OpenSearcherController implements Initializable, SearchController {
 
     private GTMapSearchController GTMapSearchController;
 
+    static final Logger logger = LogManager.getLogger(OpenSearcherController.class.getName());
+
     public void login(String username, String password) throws AuthenticationException {
         searcher = OpenSearcher.getOpenSearcher(username,password);
     }
@@ -101,6 +105,13 @@ public class OpenSearcherController implements Initializable, SearchController {
             searcher.setStartProductIndex(0);
             search();
         });
+        initGTMapController();
+        cloudCoverageEvent();
+        mapPane.getChildren().addAll(GTMapSearchController);
+        //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
+    }
+
+    private void initGTMapController() {
         GTMapSearchController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight());
         GTMapSearchController.setOnMouseClicked(event-> {
             Product product = resultProductsList.getItems().stream()
@@ -115,6 +126,9 @@ public class OpenSearcherController implements Initializable, SearchController {
             }
 
         });
+    }
+
+    private void cloudCoverageEvent() {
         cloudCoverage.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*"))
                 cloudCoverage.setText(newValue.replaceAll("[^\\d]", ""));
@@ -123,8 +137,6 @@ public class OpenSearcherController implements Initializable, SearchController {
                     cloudCoverage.setText(oldValue);
             }
         });
-        mapPane.getChildren().addAll(GTMapSearchController);
-        //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
     }
 
     private void setPaginationVisible(boolean b) {
@@ -279,11 +291,18 @@ public class OpenSearcherController implements Initializable, SearchController {
         clearListAndFilter();
         addParameters();
         clearMap();
+        logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
         setSpinnerVisible(true);
         rootPane.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
+        response.setOnFailed(this::onFailedSearch);
         new Thread(response).start();
+    }
+
+    private void onFailedSearch(WorkerStateEvent event) {
+        Throwable exception = event.getSource().getException();
+        logger.atLevel(Level.ERROR).log("Error while connecting with OpenSearcher {0}",exception);
     }
 
     private void clearMap() {
@@ -309,6 +328,7 @@ public class OpenSearcherController implements Initializable, SearchController {
             resultsPane.setVisible(true);
             rootPane.setDisable(false);
         } catch (InterruptedException | ExecutionException e) {
+            logger.atLevel(Level.ERROR).log("Error while retrieving search results: {0}",e);
             e.printStackTrace();
         }
     }

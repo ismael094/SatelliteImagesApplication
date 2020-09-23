@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -25,23 +27,17 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.*;
-import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.map.WMSLayer;
-import org.geotools.ows.wmts.WebMapTileServer;
-import org.geotools.ows.wmts.model.WMTSCapabilities;
-import org.geotools.ows.wmts.model.WMTSLayer;
-import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.factory.PropertyAuthorityFactory;
-import org.geotools.referencing.factory.ReferencingFactoryContainer;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.*;
 import org.geotools.styling.Stroke;
 import org.geotools.swing.wms.WMSLayerChooser;
-import org.geotools.util.factory.Hints;
+import org.geotools.tile.impl.osm.OSMService;
+import org.geotools.tile.util.AsyncTileLayer;
 import org.jfree.fx.FXGraphics2D;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
@@ -51,7 +47,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.referencing.FactoryException;
 import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
@@ -80,6 +75,8 @@ public class GTMap extends Canvas {
     private final StyleFactory sf = CommonFactoryFinder.getStyleFactory();
     private AbstractGridCoverage2DReader reader;
 
+    static final Logger logger = LogManager.getLogger(GTMap.class.getName());
+
     public GTMap(int width, int height) {
         super(width, height);
         graphicsContext = getGraphicsContext2D();
@@ -93,58 +90,51 @@ public class GTMap extends Canvas {
     }
 
     private void initMap() {
-        addNewEPSG();
         mapContent = new MapContent();
         mapContent.setTitle("Geotool map");
-        SimpleFeatureSource featureSource = null;
-        SimpleFeatureSource featureSource2 = null;
-        File file = null;
+        SimpleFeatureSource featureSource;
         try {
             featureSource = loadFileDataStore("/maps/bathymetry.shp").getFeatureSource();
-            file = new File(getClass().getResource("/maps/world.tif").getPath());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.atError().log("Error loading bathymetry.shp: {0}",e);
+            return;
         }
 
         Style style = SLD.createSimpleStyle(featureSource.getSchema());
         FeatureLayer layer = new FeatureLayer(featureSource, style);
         layer.setTitle("MapLayer");
-        Style rgbStyle = createRGBStyle(file);
-        Layer rasterLayer = new GridReaderLayer(reader, rgbStyle);
-        //mapContent.addLayer(rasterLayer);
-
         mapContent.addLayer(layer);
-        mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));
+        setScreenArea();
+    }
 
-        //mapContent = new MapContent();
-
-        /*OSMService service = new OSMService("OMS", "http://tile.openstreetmap.org/");
-        AsyncTileLayer mapnik = new AsyncTileLayer(service);
-        //mapContent.addLayer(mapnik);
+    private void initOMSMap() {
+        mapContent = new MapContent();
+        OSMService service = new OSMService("OMS", "http://tile.openstreetmap.org/");
         mapContent.addLayer(new AsyncTileLayer(service));
-        mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));*/
+        setScreenArea();
+    }
 
-        //URL capabilitiesURL = new URL("https://tiles.maps.eox.at/wmts/1.0.0/WMTSCapabilities.xml");
-        //wms();
+    private void setScreenArea() {
+        mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));
     }
 
     public void drawImageInWKT(File image, String wkt) {
-        Style rgbStyle = createRGBStyle(image);
-        GridReaderLayer rasterLayer = new GridReaderLayer(reader, rgbStyle);
-        mapContent.addLayer(rasterLayer);
-        refresh();
+        try {
+            Style rgbStyle = createRGBStyle(image);
+            GridReaderLayer rasterLayer = new GridReaderLayer(reader, rgbStyle);
+            mapContent.addLayer(rasterLayer);
+            refresh();
+        } catch (IOException e) {
+            logger.atError().log("Error creating RGBStyle for image {}: {}",image.toString(),e);
+        }
     }
 
-    private Style createRGBStyle(File f) {
+    private Style createRGBStyle(File f) throws IOException {
         AbstractGridFormat format = GridFormatFinder.findFormat( f );
         reader = format.getReader(f);
-        GridCoverage2D cov = null;
-        try {
-            cov = reader.read(null);
-        } catch (IOException giveUp) {
-            throw new RuntimeException(giveUp);
-        }
-        // Now we create a RasterSymbolizer using the selected channels
+        GridCoverage2D cov;
+        cov = reader.read(null);
+
         SelectedChannelType[] sct = new SelectedChannelType[cov.getNumSampleDimensions()];
         ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.HISTOGRAM);
         for (int i = 0; i < 3; i++) {
@@ -154,52 +144,6 @@ public class GTMap extends Canvas {
         ChannelSelection sel = sf.channelSelection(sct[0], sct[1], sct[2]);
         sym.setChannelSelection(sel);
         return SLD.wrapSymbolizers(sym);
-    }
-
-    private void addNewEPSG() {
-        try {
-            URL url = getClass().getResource("/maps/epsg.properties");
-
-            if (url != null) {
-                Hints hints = new Hints(Hints.CRS_AUTHORITY_FACTORY, PropertyAuthorityFactory.class);
-                ReferencingFactoryContainer referencingFactoryContainer =
-                        ReferencingFactoryContainer.instance(hints);
-
-                PropertyAuthorityFactory factory = new PropertyAuthorityFactory(
-                        referencingFactoryContainer, Citations.fromName("EPSG"), url);
-
-                ReferencingFactoryFinder.addAuthorityFactory(factory);
-                ReferencingFactoryFinder.scanForPlugins(); // hook everything up
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void wmts() throws FactoryException {
-        URL url = null;
-
-        try {
-            url = new URL("https://tiles.maps.eox.at/wmts/epsg4326/best/wmts.cgi?VERSION=1.0.0&Request=GetCapabilities&Service=WMTS");
-        } catch (MalformedURLException e) {
-            // will not happen
-        }
-
-        WebMapTileServer wmts = null;
-        try {
-            wmts = new WebMapTileServer(url);
-        } catch (IOException e) {
-            // There was an error communicating with the server
-            // For example, the server is down
-        } catch (ServiceException e) {
-            // The server returned a ServiceException (unusual in this case)
-        }
-
-        WMTSCapabilities capabilities = wmts.getCapabilities();
-        List<WMTSLayer> layers = capabilities.getLayerList();
-        WMTSLayer layer = capabilities.getLayer("OpenStreetMap background layer by EOX - 4326");
-        List<org.geotools.ows.wms.Layer> layerChildren = layer.getLayerChildren();
-
     }
 
     private void wms() {
@@ -466,6 +410,7 @@ public class GTMap extends Canvas {
 
 
     private void initPaintThread() {
+        logger.atInfo().log("Init map refresh thread");
         ScheduledService<Boolean> svc = new ScheduledService<>() {
             protected Task<Boolean> createTask() {
                 return new Task<>() {

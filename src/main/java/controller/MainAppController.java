@@ -20,6 +20,9 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.ProductOData;
 import model.ProductList;
 import model.exception.AuthenticationException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.util.List;
@@ -51,8 +54,13 @@ public class MainAppController implements Initializable {
     private Stage searcherStage;
     private List<ProductList> userProductList;
 
+
+    static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        logger.atLevel(Level.INFO).log("Starting Satellite App...");
+
         wait.setVisible(false);
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
@@ -107,12 +115,13 @@ public class MainAppController implements Initializable {
                 }
             };
             response.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
+                logger.atLevel(Level.WARN).log("Exception while login in searcher: {0}",newValue);
                 if(newValue != null) {
                     if (newValue instanceof AuthenticationException) {
                         showErrorDialog("Login","An error occurred during login",
                                 "Incorrect username or password");
 
-                        consoleDebug.appendText("Error login\n");
+                        consoleDebug.appendText("Copernicus Open Search: Incorrect username or password\n");
                     }
                     hideSpinner();
                 }
@@ -120,7 +129,7 @@ public class MainAppController implements Initializable {
             response.setOnSucceeded(event -> {
                 tabPane.addTab("Copernicus Open Search", response.getValue());
                 hideSpinner();
-                consoleDebug.appendText("Copernicus Open Search opened\n");
+                consoleDebug.appendText("Login Successful! Copernicus Open Search opened\n");
             });
             new Thread(response).start();
         } else

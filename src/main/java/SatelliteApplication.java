@@ -1,4 +1,5 @@
 
+import controller.MainAppController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -7,14 +8,22 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 
+import java.io.File;
 import java.net.URL;
 
 
 public class SatelliteApplication extends Application {
 
+    static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+
 
         URL location = getClass().getResource("/fxml/MainApp.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
@@ -28,6 +37,7 @@ public class SatelliteApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(t -> {
+            logger.atInfo().log("===Closing Satellite App===");
             Platform.exit();
             System.exit(0);
         });

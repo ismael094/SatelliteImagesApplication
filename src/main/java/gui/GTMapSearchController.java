@@ -1,5 +1,6 @@
 package gui;
 
+import controller.MainAppController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.geometry.Insets;
@@ -11,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.products.Product;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 
 import java.util.List;
@@ -24,6 +27,8 @@ public class GTMapSearchController extends Pane {
     private final double[] searchAreaCoordinates;
     private double baseDragedX;
     private double baseDragedY;
+
+    static final Logger logger = LogManager.getLogger(GTMapSearchController.class.getName());
 
     public GTMapSearchController(double width, double height) {
         searchAreaCoordinates = new double[2];

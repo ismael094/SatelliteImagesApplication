@@ -4,9 +4,12 @@ import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.HTTPAuthManager;
 import utils.ProductMapper;
 
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,11 +28,15 @@ public class OpenSearcher implements SearchService {
     private int page;
     private final Map<OpenSearchQueryParameter, String> searchParameters;
 
+    @Singleton
     private static OpenSearcher openSearcher;
+    static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
+
 
     public static OpenSearcher getOpenSearcher(String username, String password) throws AuthenticationException {
         if (openSearcher == null)
             openSearcher = new OpenSearcher(username,password);
+        openSearcher.login(username,password);
         return openSearcher;
 
     }
@@ -65,6 +72,7 @@ public class OpenSearcher implements SearchService {
             String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
             this.httpManager.getContentFromURL(new URL(LOGIN_URL));
         } catch (IOException e) {
+            logger.atInfo().log("Not able to connect to SciHub API: {0}",e);
             e.printStackTrace();
         }
     }
@@ -119,14 +127,15 @@ public class OpenSearcher implements SearchService {
 
     @Override
     public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
-        if (httpManager == null)
+        if (httpManager == null) {
+            logger.atWarn().log("Not authenticated in Copernicus OpenSearch");
             throw new NotAuthenticatedException("Not authenticated in OpenSearch");
+        }
+
         long start = currentTimeMillis();
         OpenSearchResponse response = ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
-
         long finish = currentTimeMillis() - start;
-        System.out.println(finish/1000d);
-        //httpManager.closeConnection();
+        logger.atInfo().log("Product loaded in {} seconds",finish/1000.0);
         return response;
     }
 }

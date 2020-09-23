@@ -12,6 +12,8 @@ import model.exception.AuthenticationException;
 import model.products.Product;
 import model.products.Sentinel1Product;
 import model.products.Sentinel2Product;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 import utils.HTTPAuthManager;
 
@@ -57,7 +59,7 @@ public class OpenSearchProductDetailsController implements Initializable {
     private ImageView image;
     private Product product;
     private GTMap gtMap;
-
+    static final Logger logger = LogManager.getLogger(OpenSearchProductDetailsController.class.getName());
 
     private void setProductDetails() {
         System.out.println(product);
@@ -105,7 +107,7 @@ public class OpenSearchProductDetailsController implements Initializable {
         try {
             setImagePreviewAndMap();
         } catch (AuthenticationException | ParseException | IOException e) {
-            e.printStackTrace();
+            logger.atError().log("Error loading bathymetry.shp: {0}",e);
         }
 
     }
@@ -117,13 +119,15 @@ public class OpenSearchProductDetailsController implements Initializable {
         try {
             contentFromURL = httpManager.getContentFromURL(getQuicklook(product.getId()));
             image.setImage(new Image(contentFromURL,382,382,false,false));
-
         } catch (IOException e) {
+            logger.atInfo().log("No preview image found for product name {}",product.getTitle());
             httpManager.closeConnection();
             image.setImage(new Image(getClass().getResource("/img/no_photo.jpg").openStream(),382,382,false,false));
+        } finally {
+            image.setFitWidth(382);
+            image.setFitHeight(382);
         }
-        image.setFitWidth(382);
-        image.setFitHeight(382);
+
 
     }
 
@@ -148,6 +152,7 @@ public class OpenSearchProductDetailsController implements Initializable {
         if (product!=null)
             setProductDetails();
         else
-            System.out.println("dklsfjml");
+            logger.atError().log("Error while retrieving product data");
+
     }
 }
