@@ -85,10 +85,8 @@ public class ProductMapper_ {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContentOne);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getProducts().size()).isEqualTo(1);
-        //assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
-        //assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
-        //assertThat(response.getProducts().get(1)).isInstanceOf(Sentinel2Product.class);
-        //assertThat(((Sentinel2Product)response.getProducts().get(1)).getCloudCoverPercentage()).isEqualTo(51.9229d);
+        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
+        assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
     }
 
     @Test

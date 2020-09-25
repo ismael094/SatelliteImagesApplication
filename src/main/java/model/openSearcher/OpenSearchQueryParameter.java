@@ -9,6 +9,8 @@ public enum OpenSearchQueryParameter {
     INGESTION_DATE("ingestionDate"),
     CLOUD_COVER_PERCENTAGE("cloudcoverpercentage"),
     POLARISATION_MODE("polarisationmode"),
+    ID("id"),
+    SIZE("size"),
     SENSOR_OPERATIONAL_MODE("sensoroperationalmode");
 
     private String name;

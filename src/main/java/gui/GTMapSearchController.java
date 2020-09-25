@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 
+import java.io.IOException;
 import java.util.List;
 
 public class GTMapSearchController extends Pane {
@@ -63,7 +64,11 @@ public class GTMapSearchController extends Pane {
     private void addMapMouseClickedEvent() {
         addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
             if (t.getClickCount() == 1) {
-                geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()-hbox.getHeight()));
+                try {
+                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()-hbox.getHeight()));
+                } catch (IOException e) {
+                    logger.atError().log("Not able to style selected features: {0}",e);
+                }
                 geotoolsMap.refresh();
             } else if (t.getClickCount() > 1)
                 geotoolsMap.resetMap();

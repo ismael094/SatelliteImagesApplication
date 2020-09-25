@@ -44,14 +44,14 @@
                         </Label>
                         <Pane prefHeight="40.0" prefWidth="273.0">
                            <children>
-                              <ChoiceBox fx:id="satelliteList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                              <ChoiceBox fx:id="platformList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                               <Label layoutY="12.0" prefHeight="17.0" prefWidth="63.0" styleClass="bold" text="Platform" />
                            </children>
                         </Pane>
                         <Pane prefHeight="40.0" prefWidth="273.0">
                            <children>
                               <Label layoutY="12.0" prefHeight="17.0" prefWidth="86.0" styleClass="bold" text="Product" />
-                              <ChoiceBox fx:id="instrumentList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                              <ChoiceBox fx:id="productTypeList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                            </children>
                         </Pane>
                         <Pane fx:id="polarisationPane" prefHeight="40.0" prefWidth="273.0">

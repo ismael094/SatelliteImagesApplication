@@ -11,6 +11,7 @@ import utils.ProductMapper;
 
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -26,12 +27,11 @@ public class OpenSearcher implements SearchService {
     private HTTPAuthManager httpManager;
     private int productsPerPage;
     private int page;
-    private final Map<OpenSearchQueryParameter, String> searchParameters;
+    private Map<OpenSearchQueryParameter, String> searchParameters;
+    static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
 
     @Singleton
     private static OpenSearcher openSearcher;
-    static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
-
 
     public static OpenSearcher getOpenSearcher(String username, String password) throws AuthenticationException {
         if (openSearcher == null)
@@ -41,25 +41,20 @@ public class OpenSearcher implements SearchService {
 
     }
 
-    public OpenSearcher() {
-        initData();
-        this.searchParameters = new LinkedHashMap<>();
-        httpManager = null;
-    }
-
     public OpenSearcher(String username, String password) throws AuthenticationException {
         initData();
-        this.searchParameters = new LinkedHashMap<>();
         login(username,password);
+    }
+
+    public OpenSearcher() {
+        initData();
+        httpManager = null;
     }
 
     private void initData() {
         this.page = 0;
         this.productsPerPage = 100;
-    }
-
-    public int getProductsPerPage() {
-        return this.productsPerPage;
+        this.searchParameters = new LinkedHashMap<>();
     }
 
     public void setProductPerPage(int productsPerPage) {
@@ -131,11 +126,16 @@ public class OpenSearcher implements SearchService {
             logger.atWarn().log("Not authenticated in Copernicus OpenSearch");
             throw new NotAuthenticatedException("Not authenticated in OpenSearch");
         }
-
         long start = currentTimeMillis();
-        OpenSearchResponse response = ProductMapper.getResponse(httpManager.getContentFromURL(getURL()));
+        InputStream contentFromURL = httpManager.getContentFromURL(getURL());
+        OpenSearchResponse response = ProductMapper.getResponse(contentFromURL);
+        contentFromURL.close();
         long finish = currentTimeMillis() - start;
         logger.atInfo().log("{} products loaded in {} seconds",response.getProducts().size(),finish/1000.0);
         return response;
+    }
+
+    public int getProductsPerPage() {
+        return this.productsPerPage;
     }
 }

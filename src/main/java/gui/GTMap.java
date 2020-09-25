@@ -54,34 +54,37 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.stream.IntStream;
 
 
 public class GTMap extends Canvas {
     private static final double PAINT_HZ = 500;
-    public static final String SEARCH_AREA = "SearchArea";
-    public static final String RESULTS_LAYER_TITLE = "ResultsLayer";
-    private final GraphicsContext graphicsContext;
-    private List<SimpleFeature> featureCollection;
-    private MapContent mapContent;
-    private boolean repaint = true;
-    private Geometry wktSquare;
-    private String selectedFeatureID;
+    private static final String SEARCH_AREA = "SearchArea";
+    private static final String RESULTS_LAYER_TITLE = "ResultsLayer";
     private final GTRenderer draw;
-    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private final GraphicsContext graphicsContext;
+    private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     private final StyleFactory sf = CommonFactoryFinder.getStyleFactory();
-    private AbstractGridCoverage2DReader reader;
 
     static final Logger logger = LogManager.getLogger(GTMap.class.getName());
+
+    private boolean repaint = true;
+    private List<SimpleFeature> featureCollection;
+    private MapContent mapContent;
+    private Geometry searchAreaWKT;
+    private String selectedFeatureID;
+    private AbstractGridCoverage2DReader reader;
+
+
 
     public GTMap(int width, int height) {
         super(width, height);
         graphicsContext = getGraphicsContext2D();
         draw = new StreamingRenderer();
-        initMap();
+        initMapFromFile();
         initPaintThread();
         drawMap(graphicsContext);
     }
@@ -89,14 +92,15 @@ public class GTMap extends Canvas {
         return this;
     }
 
-    private void initMap() {
+    private void initMapFromFile() {
+        String url = "/maps/bathymetry.shp";
         mapContent = new MapContent();
         mapContent.setTitle("Geotool map");
         SimpleFeatureSource featureSource;
         try {
-            featureSource = loadFileDataStore("/maps/bathymetry.shp").getFeatureSource();
+            featureSource = loadFileDataStore(url).getFeatureSource();
         } catch (IOException e) {
-            logger.atError().log("Error loading bathymetry.shp: {0}",e);
+            logger.atError().log("Error loading {}: {}",url,e);
             return;
         }
 
@@ -118,31 +122,16 @@ public class GTMap extends Canvas {
         mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));
     }
 
-    public void drawImageInWKT(File image, String wkt) {
-        try {
-            Style rgbStyle = createRGBStyle(image);
-            GridReaderLayer rasterLayer = new GridReaderLayer(reader, rgbStyle);
-            mapContent.addLayer(rasterLayer);
-            refresh();
-        } catch (IOException e) {
-            logger.atError().log("Error creating RGBStyle for image {}: {}",image.toString(),e);
-        }
-    }
-
     private Style createRGBStyle(File f) throws IOException {
         AbstractGridFormat format = GridFormatFinder.findFormat( f );
         reader = format.getReader(f);
         GridCoverage2D cov;
         cov = reader.read(null);
-
         SelectedChannelType[] sct = new SelectedChannelType[cov.getNumSampleDimensions()];
         ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.HISTOGRAM);
-        for (int i = 0; i < 3; i++) {
-            sct[i] = sf.createSelectedChannelType(String.valueOf(i+1), ce);
-        }
+        IntStream.range(0, 3).forEach(i -> sct[i] = sf.createSelectedChannelType(String.valueOf(i + 1), ce));
         RasterSymbolizer sym = sf.getDefaultRasterSymbolizer();
-        ChannelSelection sel = sf.channelSelection(sct[0], sct[1], sct[2]);
-        sym.setChannelSelection(sel);
+        sym.setChannelSelection(sf.channelSelection(sct[0], sct[1], sct[2]));
         return SLD.wrapSymbolizers(sym);
     }
 
@@ -193,17 +182,17 @@ public class GTMap extends Canvas {
 
     public void showFeatureArea(String id)  {
         FeatureLayer layer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
-        Style selectedStyle = createSelectedStyle(new FeatureIdImpl(id), getLayerGeometryAttribute(layer));
+        Style selectedStyle = createSelectedFeatureStyle(new FeatureIdImpl(id), getLayerGeometryAttribute(layer));
         layer.setStyle(selectedStyle);
         refresh();
     }
 
-    private void drawGeometryFromCoordinates(Coordinate[] coordinates) throws ParseException {
+    private void drawPolygonFromCoordinates(Coordinate[] coordinates) throws ParseException {
 
         SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
         Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
-        wktSquare = readWKTString(polygon.toText());
-        featureBuilder.add(wktSquare);
+        searchAreaWKT = readWKTString(polygon.toText());
+        featureBuilder.add(searchAreaWKT);
 
         removeSearchAreaLayer();
 
@@ -241,9 +230,7 @@ public class GTMap extends Canvas {
     }
 
     private void removeSearchAreaLayer() {
-        mapContent.layers().stream()
-                .filter(l -> l.getTitle() != null && l.getTitle().equals(SEARCH_AREA))
-                .findFirst().ifPresent(l -> mapContent.removeLayer(l));
+        removeLayer(SEARCH_AREA);
     }
 
 
@@ -256,7 +243,7 @@ public class GTMap extends Canvas {
     }
 
     public String getWKT() {
-        return wktSquare == null ? "" : wktSquare.toText();
+        return searchAreaWKT == null ? "" : searchAreaWKT.toText();
     }
 
     public void drawMap(GraphicsContext gc) {
@@ -269,9 +256,7 @@ public class GTMap extends Canvas {
         graphics.setBackground(java.awt.Color.WHITE);
         graphics.clearRect(0, 0, (int) getWidth(), (int) getHeight());
         Rectangle rectangle = new Rectangle((int) getWidth(), (int) getHeight());
-
         draw.paint(graphics, rectangle, mapContent.getViewport().getBounds());
-
     }
 
     public void removeLayer(String title) {
@@ -283,31 +268,29 @@ public class GTMap extends Canvas {
         doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
     }
 
-    public void selectFeature(int x, int y) {
+    public void selectFeature(int x, int y) throws IOException {
         if (getLayerByName(RESULTS_LAYER_TITLE) == null)
             return;
         FeatureLayer featureLayer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
         Filter filter = ff.intersects(ff.property(getLayerGeometryAttribute(featureLayer)), ff.literal(getMousePointReferencedEnvelope(x,y)));
-        try {
-            SimpleFeatureCollection features = featureLayer.getSimpleFeatureSource().getFeatures(filter);
-            FeatureId ID = null;
-            SimpleFeatureIterator featureIterator = features.features();
+        SimpleFeatureCollection features = featureLayer.getSimpleFeatureSource().getFeatures(filter);
+        FeatureId featureId = null;
+        SimpleFeatureIterator featureIterator = features.features();
 
-            if (featureIterator.hasNext()) {
-                SimpleFeature feature = featureIterator.next();
-                ID = feature.getIdentifier();
-            }
-
-            if (ID == null)
-                selectedFeatureID = null;
-            else
-                selectedFeatureID = ID.getID();
-
-            Style selectedStyle = createSelectedStyle(ID, getLayerGeometryAttribute(featureLayer));
-            featureLayer.setStyle(selectedStyle);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (featureIterator.hasNext()) {
+            SimpleFeature feature = featureIterator.next();
+            featureId = feature.getIdentifier();
         }
+        featureIterator.close();
+
+        selectedFeatureID = null;
+        if (featureId != null)
+            selectedFeatureID = featureId.getID();
+
+
+        Style selectedStyle = createSelectedFeatureStyle(featureId, getLayerGeometryAttribute(featureLayer));
+        featureLayer.setStyle(selectedStyle);
+
     }
 
     private String getLayerGeometryAttribute(FeatureLayer featureLayer) {
@@ -322,17 +305,17 @@ public class GTMap extends Canvas {
                 worldRect, mapContent.getCoordinateReferenceSystem());
     }
 
-    private Style createSelectedStyle(FeatureId id, String geometryAttributeName) {
+    private Style createSelectedFeatureStyle(FeatureId id, String geometryAttributeName) {
         Rule selectedRule = createRule(Color.BLUE,Color.CYAN, 3f, 0.1f, geometryAttributeName);
         selectedRule.setFilter(ff.id(id));
 
-        Rule otherRule = createRule(Color.BLACK, null,1f,1f,geometryAttributeName);
-        otherRule.setElseFilter(true);
+        Rule notSelectedFeaturesRules = createRule(Color.BLACK, null,1f,1f,geometryAttributeName);
+        notSelectedFeaturesRules.setElseFilter(true);
 
         FeatureTypeStyle fts = sf.createFeatureTypeStyle();
         if (id != null)
             fts.rules().add(selectedRule);
-        fts.rules().add(otherRule);
+        fts.rules().add(notSelectedFeaturesRules);
 
         Style style = sf.createStyle();
         style.featureTypeStyles().add(fts);
@@ -364,17 +347,15 @@ public class GTMap extends Canvas {
         mapContent.getViewport().setFixedBoundsOnResize(true);
         ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
         double percent = (deltaY / getWidth())*-1;
-        double width = envelope.getWidth();
-        double height = envelope.getHeight();
-        double deltaW = width * percent;
-        double deltaH = height * percent;
+        double deltaW = envelope.getWidth() * percent;
+        double deltaH = envelope.getHeight() * percent;
         envelope.expandBy(deltaW, deltaH);
         doSetDisplayArea(envelope);
     }
 
     public void drawPolygon(double initX, double initY, double endX, double endY) {
         try {
-            drawGeometryFromCoordinates(getSquareCoordinates(initX, initY, endX, endY));
+            drawPolygonFromCoordinates(getSquareCoordinates(initX, initY, endX, endY));
         } catch (ParseException e) {
             e.printStackTrace();
         }

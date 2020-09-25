@@ -5,7 +5,10 @@ import controller.search.OpenSearcherController;
 import gui.TabPaneManager;
 import gui.dialog.ScihubCredentialsDialog;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -62,20 +65,19 @@ public class MainAppController implements Initializable {
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
 
         wait.setVisible(false);
-        rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
+        rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         tabPane = TabPaneManager.getTabPaneManager();
         tabPane.getStyleClass().add("myTab");
         gridPane.add(tabPane,1,0);
-        tabPane.getTabs().add(new Tab("Searcher"));
+        tabPane.getTabs().add(new Tab("Information"));
         tabPane.getTabs().get(0).setClosable(true);
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         //productList.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> clearAndAddProductsToProductInList(productList.getSelectionModel().getSelectedItem()));
         getMenu();
     }
 
     private void getMenu() {
-
         Menu file = new Menu("File");
         MenuItem close = new MenuItem("Exit");
         close.setOnAction(e -> {
@@ -103,37 +105,53 @@ public class MainAppController implements Initializable {
         showSpinner();
         if (stringStringPair.isPresent() && searcherStage == null) {
             Pair<String, String> credentials = stringStringPair.get();
-            URL location = getClass().getResource("/fxml/SearcherView.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader(location);
-            Task<Parent> response = new Task<>() {
-                @Override
-                protected Parent call() throws Exception {
-                    Parent root1 = fxmlLoader.load();
-                    openSearcherController = fxmlLoader.getController();
-                    openSearcherController.login(credentials.getKey(),credentials.getValue());
-                    return root1;
-                }
-            };
-            response.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
-                logger.atLevel(Level.WARN).log("Exception while login in searcher: {0}",newValue);
-                if(newValue != null) {
-                    if (newValue instanceof AuthenticationException) {
-                        showErrorDialog("Login","An error occurred during login",
-                                "Incorrect username or password");
-
-                        consoleDebug.appendText("Copernicus Open Search: Incorrect username or password\n");
-                    }
-                    hideSpinner();
-                }
-            });
-            response.setOnSucceeded(event -> {
-                tabPane.addTab("Copernicus Open Search", response.getValue());
-                hideSpinner();
-                consoleDebug.appendText("Login Successful! Copernicus Open Search opened\n");
-            });
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SearcherView.fxml"));
+            Task<Parent> response = getOpenSearchTask(credentials, fxmlLoader);
+            response.exceptionProperty().addListener(exceptionWhileOpenOpenSearch());
+            response.setOnSucceeded(addOpenSearchTab(response.getValue()));
             new Thread(response).start();
         } else
             hideSpinner();
+    }
+
+    private EventHandler<WorkerStateEvent> addOpenSearchTab(Parent response) {
+        return event -> {
+            tabPane.addTab("Copernicus Open Search", response);
+            hideSpinner();
+            print("Login Successful! Copernicus Open Search opened");
+        };
+    }
+
+    private ChangeListener<Throwable> exceptionWhileOpenOpenSearch() {
+        return (observable, oldValue, newValue) -> {
+            logger.atLevel(Level.WARN).log("Exception while login in searcher: {}", newValue.getMessage());
+            if (newValue instanceof AuthenticationException) {
+                showErrorDialog("Login", "An error occurred during login",
+                        "Incorrect username or password");
+
+                print("Copernicus Open Search: Incorrect username or password");
+            } else
+                print("Error opening Copernicus Open Search");
+
+            hideSpinner();
+        };
+    }
+
+    private Task<Parent> getOpenSearchTask(Pair<String, String> credentials, FXMLLoader fxmlLoader) {
+        Task<Parent> response = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                Parent root1 = fxmlLoader.load();
+                openSearcherController = fxmlLoader.getController();
+                openSearcherController.login(credentials.getKey(), credentials.getValue());
+                return root1;
+            }
+        };
+        return response;
+    }
+
+    private void print(String text) {
+        consoleDebug.appendText(text+"\n");
     }
 
     private void showSpinner() {

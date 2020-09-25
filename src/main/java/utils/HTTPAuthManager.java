@@ -44,23 +44,24 @@ public class HTTPAuthManager extends Authenticator {
         setAuthenticator();
         URL path = new URL(url.toString().replace(" ", "%20"));
         connection = null;
-        System.out.println(path.toString());
         connection = (HttpsURLConnection) path.openConnection();
         connection.setRequestProperty("Accept-Encoding", "identity");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-length", "0");
-        System.out.println(connection.getResponseCode());
-        if (connection.getResponseCode() == 500) {
-            logger.atWarn().log("URL respond with {} code, {}",connection.getResponseCode(),path);
-            throw new HttpResponseException(500,"Image not available");
-        }
-        if (connection.getResponseCode() != 200) {
-            logger.atWarn().log("URL respond with {} code, login error? in {}",connection.getResponseCode(),path);
-            throw new AuthenticationException("Incorrect username or password");
-        }
+        isConnectionResponseOK(connection.getResponseCode());
         return connection.getInputStream();
 
+    }
+
+    private void isConnectionResponseOK(int responseCode) throws HttpResponseException, AuthenticationException {
+        if (responseCode == 401) {
+            logger.atWarn().log("URL respond with {} code, login error?",responseCode);
+            throw new AuthenticationException("Incorrect username or password");
+        } else if (responseCode != 200) {
+            logger.atWarn().log("URL respond with {} code",responseCode);
+            throw new HttpResponseException(responseCode,"Resource not available");
+        }
     }
 
     public void closeConnection() {

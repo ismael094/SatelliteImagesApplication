@@ -7,7 +7,6 @@ import gui.GTMapSearchController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -47,9 +46,9 @@ public class OpenSearcherController implements Initializable, SearchController {
     @FXML
     private JFXSpinner spinnerWait;
     @FXML
-    private ChoiceBox<String> satelliteList;
+    private ChoiceBox<String> platformList;
     @FXML
-    private ChoiceBox<String> instrumentList;
+    private ChoiceBox<String> productTypeList;
     @FXML
     private Pane polarisationPane;
     @FXML
@@ -196,17 +195,17 @@ public class OpenSearcherController implements Initializable, SearchController {
     }
 
     private void setSatelliteList() {
-        satelliteList.setItems(FXCollections.observableArrayList(
+        platformList.setItems(FXCollections.observableArrayList(
                 SENTINEL_1, SENTINEL_2));
 
-        satelliteList.getSelectionModel()
+        platformList.getSelectionModel()
                 .selectedIndexProperty()
                 .addListener((observableValue, oldValue, newValue) -> {
-                        if (satelliteList.getItems().get(newValue.intValue()).equals(SENTINEL_1)) {
+                        if (platformList.getItems().get(newValue.intValue()).equals(SENTINEL_1)) {
                             setSentinel1Instruments();
                             setCloudCoverageDisabled();
                             setSentinel1ParametersEnabled();
-                        } else if (satelliteList.getItems().get(newValue.intValue()).equals(SENTINEL_2)) {
+                        } else if (platformList.getItems().get(newValue.intValue()).equals(SENTINEL_2)) {
                             setSentinel2Instruments();
                             setSentinel1ParametersDisabled();
                             setCloudCoverageEnabled();
@@ -214,7 +213,7 @@ public class OpenSearcherController implements Initializable, SearchController {
 
                     }
                 );
-        satelliteList.setValue(SENTINEL_1);
+        platformList.setValue(SENTINEL_1);
 
         setCloudCoverageDisabled();
     }
@@ -241,6 +240,18 @@ public class OpenSearcherController implements Initializable, SearchController {
     private void setCloudCoverageEnabled() {
         cloudPane.setManaged(true);
         cloudPane.setVisible(true);
+    }
+
+    private void setSentinel2Instruments() {
+        productTypeList.setItems(FXCollections.observableArrayList(
+                "All","S2MSI1C", "S2MSI2A","S2MSI2Ap"));
+        productTypeList.setValue("All");
+    }
+
+    private void setSentinel1Instruments() {
+        productTypeList.setItems(FXCollections.observableArrayList(
+                "All","GRD", "OCN","SLC"));
+        productTypeList.setValue("All");
     }
 
     private void initResultPaneHeader() {
@@ -271,18 +282,6 @@ public class OpenSearcherController implements Initializable, SearchController {
         showResults.setManaged(b);
     }
 
-    private void setSentinel2Instruments() {
-        instrumentList.setItems(FXCollections.observableArrayList(
-                "All","S2MSI1C", "S2MSI2A","S2MSI2Ap"));
-        instrumentList.setValue("All");
-    }
-
-    private void setSentinel1Instruments() {
-        instrumentList.setItems(FXCollections.observableArrayList(
-                "All","GRD", "OCN","SLC"));
-        instrumentList.setValue("All");
-    }
-
     @Override
     public void search() {
         clearListAndFilter();
@@ -290,16 +289,10 @@ public class OpenSearcherController implements Initializable, SearchController {
         clearMap();
         logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
         setSpinnerVisible(true);
-        //rootPane.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
-        response.setOnFailed(this::onFailedSearch);
+        //response.setOnFailed(this::onFailedSearch);
         new Thread(response).start();
-    }
-
-    private void onFailedSearch(WorkerStateEvent event) {
-        Throwable exception = event.getSource().getException();
-        logger.atLevel(Level.ERROR).log("Error while connecting with OpenSearcher {0}",exception);
     }
 
     private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
@@ -373,47 +366,49 @@ public class OpenSearcherController implements Initializable, SearchController {
     }
 
     private void addParameters() {
-        addPlatformNameParameter(satelliteList.getValue());
-        addWKTParameter(GTMapSearchController.getWKT());
-        addInstrumentParameter(instrumentList.getValue());
-        addDateRangeFilter(dateStart.getValue(),dateFinish.getValue());
-        if (satelliteList.getValue().equals(SENTINEL_1)) {
-            addPolarisationModeParameter(polarisation.getValue());
-            addSensorModeParameter(sensorMode.getValue());
-        } else if (satelliteList.getValue().equals(SENTINEL_2)) {
-            addCloudCoverageParameter(cloudCoverage.getText());
+        addPlatformNameParameter();
+        addWKTParameter();
+        addInstrumentParameter();
+        addDateRangeFilter();
+        if (platformList.getValue().equals(SENTINEL_1)) {
+            addPolarisationModeParameter();
+            addSensorModeParameter();
+        } else if (platformList.getValue().equals(SENTINEL_2)) {
+            addCloudCoverageParameter();
         }
     }
 
-    private void addCloudCoverageParameter(String cloudCoverage) {
-        if (!cloudCoverage.isEmpty())
-            searcher.addSearchParameter(OpenSearchQueryParameter.CLOUD_COVER_PERCENTAGE,cloudCoverage);
+    private void addCloudCoverageParameter() {
+        if (!cloudCoverage.getText().isEmpty())
+            searcher.addSearchParameter(OpenSearchQueryParameter.CLOUD_COVER_PERCENTAGE,cloudCoverage.getText());
     }
 
-    private void addSensorModeParameter(String sensorMode) {
-        if (!sensorMode.equals("All"))
-            searcher.addSearchParameter(OpenSearchQueryParameter.SENSOR_OPERATIONAL_MODE, sensorMode);
+    private void addSensorModeParameter() {
+        if (!sensorMode.getValue().equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.SENSOR_OPERATIONAL_MODE, sensorMode.getValue());
     }
 
-    private void addPolarisationModeParameter(String polarisation) {
-        if (!polarisation.equals("All"))
-            searcher.addSearchParameter(OpenSearchQueryParameter.POLARISATION_MODE, polarisation);
+    private void addPolarisationModeParameter() {
+        if (!polarisation.getValue().equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.POLARISATION_MODE, polarisation.getValue());
     }
 
-    private void addInstrumentParameter(String instrument) {
-        if (!instrument.equals("All"))
-            searcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE,instrument);
+    private void addInstrumentParameter() {
+        if (!productTypeList.getValue().equals("All"))
+            searcher.addSearchParameter(OpenSearchQueryParameter.PRODUCT_TYPE, productTypeList.getValue());
     }
 
-    private void addWKTParameter(String wkt) {
-        if (wkt.length()>0)
-            searcher.addSearchParameter(OpenSearchQueryParameter.FOOTPRINT,"\"Intersects("+wkt+")\"");
+    private void addWKTParameter() {
+        if (GTMapSearchController.getWKT().length()>0)
+            searcher.addSearchParameter(OpenSearchQueryParameter.FOOTPRINT,"\"Intersects("+GTMapSearchController.getWKT()+")\"");
     }
 
-    private void addDateRangeFilter(LocalDate start, LocalDate finish) {
-        if (start != null || finish != null)
-            searcher.addSearchParameter(OpenSearchQueryParameter.INGESTION_DATE,getFromToIngestionDate(start,finish));
+    private void addDateRangeFilter() {
+        if (dateStart.getValue() != null || dateFinish.getValue() != null)
+            searcher.addSearchParameter(OpenSearchQueryParameter.INGESTION_DATE,getFromToIngestionDate(dateStart.getValue(),dateFinish.getValue()));
     }
+
+    //REFACTOR to OpenSearch
 
     private String getFromToIngestionDate(LocalDate start, LocalDate finish) {
         String startS = getDateString(start,"*",0,0,0,":00.001");
@@ -430,7 +425,7 @@ public class OpenSearcherController implements Initializable, SearchController {
         return localDateTimeFinish.toString()+nano+"Z";
     }
 
-    private void addPlatformNameParameter(String value) {
-        searcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME,value);
+    private void addPlatformNameParameter() {
+        searcher.addSearchParameter(OpenSearchQueryParameter.PLATFORM_NAME, platformList.getValue());
     }
 }
