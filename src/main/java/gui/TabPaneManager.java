@@ -2,6 +2,7 @@ package gui;
 
 import com.jfoenix.controls.JFXTextArea;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
@@ -31,7 +32,7 @@ public class TabPaneManager extends TabPane {
         setPrefWidth(1291.0);
     }
 
-    public Tab addTab(String title, Node node) {
+    public Tab addTab(String title, Parent node) {
         logger.atLevel(Level.INFO).log("Added tab {}",title);
         Tab tab = new Tab(title, node);
         tab.getStyleClass().add(JMetroStyleClass.BACKGROUND);

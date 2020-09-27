@@ -7,7 +7,7 @@ import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.junit.Before;
 import org.junit.Test;
-import services.ODataSearcher;
+import services.search.ODataSearcher;
 
 import java.util.List;
 

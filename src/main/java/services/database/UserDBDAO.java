@@ -1,0 +1,85 @@
+package services.database;
+
+import dev.morphia.query.experimental.filters.Filters;
+import model.user.UserDTO;
+import services.entities.User;
+import utils.Encryptor;
+import utils.MongoDBManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserDBDAO implements DAO<UserDTO> {
+
+    private static UserDBDAO instance;
+    private final MongoDBManager database;
+
+    private UserDBDAO() {
+        database = MongoDBManager.getMongoDBManager();
+    }
+
+    public static UserDBDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDBDAO();
+        }
+        return instance;
+    }
+
+    @Override
+    public List<UserDTO> getCollection() {
+        return toDAO(database.getDatastore().find(User.class).iterator().toList());
+    }
+
+    @Override
+    public List<UserDTO> find(UserDTO dao) {
+        return toDAO(database.getDatastore()
+                .find(User.class)
+                .filter(Filters.eq("password", Encryptor.hashString(dao.getPassword())),Filters.eq("email",dao.getEmail()))
+                .iterator()
+                .toList());
+    }
+
+    @Override
+    public UserDTO findFirst(UserDTO dao) {
+        return toDAO(database.getDatastore()
+                .find(User.class)
+                .filter(Filters.eq("password",Encryptor.hashString(dao.getPassword())),Filters.eq("email",dao.getEmail()))
+                .first());
+    }
+
+    public UserDTO findByEmail(UserDTO userDTO) {
+        return toDAO(database.getDatastore().find(User.class).filter(Filters.eq("email", userDTO.getEmail())).first());
+    }
+
+    @Override
+    public void save(UserDTO dao) {
+        database.getDatastore().save(toEntity(dao));
+    }
+
+    @Override
+    public void delete(UserDTO dao) {
+        database.getDatastore().delete(toEntity(dao));
+    }
+
+    public List<UserDTO> toDAO(List<User> toList) {
+        if (toList == null)
+            return null;
+        List<UserDTO> result = new ArrayList<>();
+        toList.forEach(e->result.add(toDAO(e)));
+        return result;
+    }
+
+    public UserDTO toDAO(User user) {
+        if (user == null)
+            return null;
+        UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
+        userDTO.setId(user.getId());
+        return userDTO;
+    }
+
+    public User toEntity(UserDTO userDTO) {
+        return new User(userDTO.getId(), userDTO.getEmail(), Encryptor.hashString(userDTO.getPassword()), userDTO.getFirstName(), userDTO.getLastName());
+    }
+
+
+}

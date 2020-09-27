@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<ScrollPane fx:id="rootPane" prefHeight="500.0" prefWidth="1298.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <GridPane prefHeight="494.0" prefWidth="1294.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="10" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="68.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="100.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="493.0" prefWidth="18.0" GridPane.columnIndex="1" />
+            <Pane fx:id="resultsPane" prefHeight="494.0">
+               <children>
+                  <BorderPane prefHeight="477.0" prefWidth="390.0" style="-fx-background-color: #f4f4f4;">
+                     <center>
+                        <JFXListView fx:id="resultProductsList" minWidth="333.0" prefHeight="357.0" prefWidth="374.0" style="-fx-background-color: #f4f4f4;" styleClass="productResultsList" BorderPane.alignment="CENTER" />
+                     </center>
+                     <top>
+                        <Label text="Products" BorderPane.alignment="CENTER" />
+                     </top>
+                  </BorderPane>
+               </children>
+            </Pane>
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="494.0" prefWidth="904.0" GridPane.columnIndex="2">
+               <content>
+                  <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="422.0" prefWidth="872.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="366.1999816894531" minHeight="10.0" percentHeight="100.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="366.1999816894531" minHeight="10.0" percentHeight="17.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="mapPane" minHeight="0.0" prefHeight="158.0" prefWidth="436.0" GridPane.columnIndex="1" />
+                     </children>
+                  </GridPane>
+               </content>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ScrollPane>
+         </children>
+      </GridPane>
+   </content>
+</ScrollPane>

@@ -1,4 +1,4 @@
-package services;
+package services.search;
 
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;

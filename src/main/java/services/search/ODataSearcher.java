@@ -1,10 +1,9 @@
-package services;
+package services.search;
 
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.filter.Filter;
 import model.ProductOData;
-import model.filter.FilterItem;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;

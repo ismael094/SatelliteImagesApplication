@@ -1,4 +1,4 @@
-package services;
+package services.search;
 
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.OpenSearchQueryParameter;
@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import services.search.OpenSearcher;
 
 import java.io.IOException;
 import java.net.*;

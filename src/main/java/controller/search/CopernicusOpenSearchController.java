@@ -4,17 +4,20 @@ import com.jfoenix.controls.*;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.GTMapSearchController;
+import gui.dialog.ScihubCredentialsDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.util.Pair;
 import model.exception.AuthenticationException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
@@ -22,22 +25,26 @@ import model.products.Product;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.OpenSearcher;
+import services.search.OpenSearcher;
 
-import java.net.URL;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public class OpenSearcherController implements Initializable, SearchController {
+public class CopernicusOpenSearchController implements SearchController {
 
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";
+    private final String id;
+    private FXMLLoader loader;
+
 
     private OpenSearcher searcher;
+    private Parent parent;
 
     @FXML
     private ScrollPane rootPane;
@@ -84,16 +91,57 @@ public class OpenSearcherController implements Initializable, SearchController {
 
     private GTMapSearchController GTMapSearchController;
 
-    static final Logger logger = LogManager.getLogger(OpenSearcherController.class.getName());
+    static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
     private boolean paginationSetted;
 
-    public void login(String username, String password) throws AuthenticationException {
+    public CopernicusOpenSearchController(String id) {
+        this.id = id;
+        loader = new FXMLLoader(getClass().getResource("/fxml/CopernicusOpenSearchView.fxml"));
+        loader.setController(this);
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public Parent getView() {
+        return searcher == null ? null : rootPane;
+    }
+
+    private void login(String username, String password) throws AuthenticationException {
         searcher = OpenSearcher.getOpenSearcher(username,password);
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        resultsPane.setVisible(false);
+    public Task<Parent> start() {
+        ScihubCredentialsDialog dialog = new ScihubCredentialsDialog();
+        Optional<Pair<String, String>> stringStringPair = dialog.showAndWait();
+        if (stringStringPair.isPresent()) {
+            Pair<String, String> credentials = stringStringPair.get();
+            Task<Parent> task = new Task<>() {
+                @Override
+                protected Parent call() throws Exception {
+                    login(credentials.getKey(), credentials.getValue());
+                    System.out.println(spinnerPane);
+                    System.out.println(resultsPane);
+                    initViewData();
+                    return getView();
+                }
+            };
+            return task;
+
+        }
+        return null;
+    }
+
+    private void initViewData() {
         setSpinnerVisible(false);
         setPaginationVisible(false);
         initRows();
@@ -102,15 +150,17 @@ public class OpenSearcherController implements Initializable, SearchController {
         setProductsList();
         initResultPaneHeader();
         initPaginationEvent();
+        initSearchEvent();
+        initGTMapController();
+        cloudCoverageEvent();
+    }
+
+    private void initSearchEvent() {
         search.setOnMouseClicked(e->{
             searcher.setStartProductIndex(0);
             paginationSetted = false;
             search();
         });
-        initGTMapController();
-        cloudCoverageEvent();
-        mapPane.getChildren().addAll(GTMapSearchController);
-        //list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> textArea.setText(newValue.getInfo()));
     }
 
     private void initGTMapController() {
@@ -126,8 +176,8 @@ public class OpenSearcherController implements Initializable, SearchController {
                 resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
                 resultProductsList.scrollTo(product);
             }
-
         });
+        mapPane.getChildren().addAll(GTMapSearchController);
     }
 
     private void cloudCoverageEvent() {
@@ -255,6 +305,7 @@ public class OpenSearcherController implements Initializable, SearchController {
     }
 
     private void initResultPaneHeader() {
+        resultsPane.setVisible(false);
         Button iconButton = GlyphsDude.createIconButton(FontAwesomeIcon.CLOSE,"");
         iconButton.setAccessibleText("Close results");
         iconButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
@@ -309,10 +360,8 @@ public class OpenSearcherController implements Initializable, SearchController {
                 if (!paginationSetted)
                     setPagination(openSearchResponse.getNumOfProducts(),openSearchResponse.getProducts().size());
             }
-
             setSpinnerVisible(false);
             resultsPane.setVisible(true);
-            //rootPane.setDisable(false);
         } catch (InterruptedException | ExecutionException e) {
             logger.atLevel(Level.ERROR).log("Error while retrieving search results: {0}",e);
             e.printStackTrace();

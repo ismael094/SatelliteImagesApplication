@@ -1,4 +1,5 @@
 
+import controller.LoginController;
 import controller.MainAppController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -8,28 +9,45 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
+import utils.Encryptor;
+import utils.MongoDBManager;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 
 public class SatelliteApplication extends Application {
 
     static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+    JMetro jMetro = new JMetro(Style.LIGHT);
+    private static final String USER = "new-user_31";
+    private static final String PASSWORD = "UNexjLVEJ3CIafOl";
+    private static final String DATABASE = "SatelliteProducts";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        MongoDBManager mongoDBManager = MongoDBManager.getMongoDBManager();
+        mongoDBManager.setCredentialsAndDatabase(USER,PASSWORD,DATABASE);
+        mongoDBManager.connect();
 
+        UserDTO userDTO = loginWindows();
 
+        if (userDTO.getEmail().isEmpty()) {
+            Platform.exit();
+            System.exit(0);
+        }
 
         URL location = getClass().getResource("/fxml/MainApp.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
 
-        JMetro jMetro = new JMetro(Style.LIGHT);
+
         Scene scene = new Scene(fxmlLoader.load());
+        MainAppController controller = fxmlLoader.getController();
+        controller.setUser(userDTO);
         primaryStage.setMaximized(true);
 
         jMetro.setScene(scene);
@@ -50,6 +68,24 @@ public class SatelliteApplication extends Application {
 
     }
 
+    private UserDTO loginWindows() {
+        URL location = getClass().getResource("/fxml/LoginView.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader(location);
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        jMetro.setScene(scene);
+        LoginController controller = fxmlLoader.getController();
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.showAndWait();
+        return controller.getUser();
+    }
 
 
     public static void main(String[] args) {

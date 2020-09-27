@@ -1,6 +1,8 @@
 package controller.search;
 
 import gui.GTMapSearchController;
+import javafx.concurrent.Task;
+import javafx.scene.Parent;
 import model.filter.Filter;
 import model.filter.filterItems.FilterItemDateTime;
 import model.filter.filterItems.FilterItemStartWith;
@@ -17,7 +19,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.ProductOData;
 import model.ProductList;
-import services.ODataSearcher;
+import services.search.ODataSearcher;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -81,6 +83,21 @@ public class ODataSearcherController implements SearchController{
         //System.out.println(model.filter.evaluate());
         list.getItems().addAll(ODataSearcher.getImages(filter));
         addContextMenu();
+    }
+
+    @Override
+    public Parent getView() {
+        return null;
+    }
+
+    @Override
+    public Task<Parent> start() {
+        return null;
+    }
+
+    @Override
+    public String getId() {
+        return null;
     }
 
     private void clearListAndFilter() {

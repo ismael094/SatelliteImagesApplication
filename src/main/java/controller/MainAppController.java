@@ -1,36 +1,31 @@
 package controller;
 
 import com.jfoenix.controls.JFXSpinner;
-import controller.search.OpenSearcherController;
+import controller.search.CopernicusOpenSearchController;
+import controller.search.SearchController;
 import gui.TabPaneManager;
-import gui.dialog.ScihubCredentialsDialog;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.ProductOData;
 import model.ProductList;
 import model.exception.AuthenticationException;
+import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static utils.AlertFactory.showErrorDialog;
 
@@ -53,17 +48,17 @@ public class MainAppController implements Initializable {
     @FXML
     private JFXSpinner wait;
 
-    private OpenSearcherController openSearcherController;
+    private CopernicusOpenSearchController copernicusOpenSearchController;
     private Stage searcherStage;
     private List<ProductList> userProductList;
-
-
+    private Map<String, SearchController> searchControllers;
     static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+    private UserDTO user;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
-
+        searchControllers = new HashMap<>();
         wait.setVisible(false);
 
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
@@ -88,66 +83,46 @@ public class MainAppController implements Initializable {
         Menu edit = new Menu("Edit");
         Menu search = new Menu("Searchers");
         MenuItem searcher = new MenuItem("Copernicus Open Search");
-        searcher.setOnAction(e -> createSearcherScene());
+        search.setId("OpenSearcher");
+        searcher.setOnAction(e -> showSearchView(search.getId()));
         search.getItems().addAll(searcher);
         menuBar.getMenus().addAll(file,edit,search);
     }
 
-    private void createSearcherScene() {
-        getSearcherStage();
-        if (searcherStage != null)
-            searcherStage.show();
+    private void showSearchView(String id) {
+        if (!searchControllers.containsKey(id)) {
+            CopernicusOpenSearchController copernicusOpenSearchController = new CopernicusOpenSearchController(id);
+            initSearchStage(copernicusOpenSearchController);
+
+        } else {
+            tabPane.addTab(id,searchControllers.get(id).getView());
+        }
+
     }
 
-    public void getSearcherStage() {
-        ScihubCredentialsDialog dialog = new ScihubCredentialsDialog();
-        Optional<Pair<String, String>> stringStringPair = dialog.showAndWait();
+    public void initSearchStage(SearchController controller) {
+        Task<Parent> task = controller.start();
+        task.exceptionProperty().addListener(exceptionWhileOpenSearch(controller.getId()));
+        task.setOnSucceeded(addSearchTab(controller));
         showSpinner();
-        if (stringStringPair.isPresent() && searcherStage == null) {
-            Pair<String, String> credentials = stringStringPair.get();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SearcherView.fxml"));
-            Task<Parent> response = getOpenSearchTask(credentials, fxmlLoader);
-            response.exceptionProperty().addListener(exceptionWhileOpenOpenSearch());
-            response.setOnSucceeded(addOpenSearchTab(response.getValue()));
-            new Thread(response).start();
-        } else
-            hideSpinner();
+        new Thread(task).start();
     }
 
-    private EventHandler<WorkerStateEvent> addOpenSearchTab(Parent response) {
+    private EventHandler<WorkerStateEvent> addSearchTab(SearchController controller) {
         return event -> {
-            tabPane.addTab("Copernicus Open Search", response);
+            searchControllers.put(controller.getId(),controller);
+            tabPane.addTab(controller.getId(), controller.getView());
             hideSpinner();
-            print("Login Successful! Copernicus Open Search opened");
         };
     }
 
-    private ChangeListener<Throwable> exceptionWhileOpenOpenSearch() {
+    private ChangeListener<Throwable> exceptionWhileOpenSearch(String id) {
         return (observable, oldValue, newValue) -> {
-            logger.atLevel(Level.WARN).log("Exception while login in searcher: {}", newValue.getMessage());
-            if (newValue instanceof AuthenticationException) {
-                showErrorDialog("Login", "An error occurred during login",
-                        "Incorrect username or password");
-
-                print("Copernicus Open Search: Incorrect username or password");
-            } else
-                print("Error opening Copernicus Open Search");
-
+            logger.atLevel(Level.WARN).log("Exception while opening searcher -> {}: {}", id, newValue.getMessage());
+            showErrorDialog(id, "An error occurred while opening "+id,
+                    newValue.getMessage());
             hideSpinner();
         };
-    }
-
-    private Task<Parent> getOpenSearchTask(Pair<String, String> credentials, FXMLLoader fxmlLoader) {
-        Task<Parent> response = new Task<>() {
-            @Override
-            protected Parent call() throws Exception {
-                Parent root1 = fxmlLoader.load();
-                openSearcherController = fxmlLoader.getController();
-                openSearcherController.login(credentials.getKey(), credentials.getValue());
-                return root1;
-            }
-        };
-        return response;
     }
 
     private void print(String text) {
@@ -168,4 +143,7 @@ public class MainAppController implements Initializable {
         spinnerWait.setVisible(b);
         spinnerWait.setManaged(b);}
 
+    public void setUser(UserDTO userDTO) {
+        this.user = userDTO;
+    }
 }
