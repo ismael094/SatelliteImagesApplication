@@ -7,6 +7,7 @@ import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -15,6 +16,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Pair;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 import javax.ws.rs.core.Link;
 import java.awt.*;
@@ -54,6 +57,7 @@ public class ScihubCredentialsDialog extends Dialog<Pair<String, String>> {
         Node loginButton = this.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
 
+        this.getDialogPane().setContent(grid);
         this.getDialogPane().setContent(grid);
         addListenerToUsernameField();
 

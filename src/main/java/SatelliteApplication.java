@@ -1,6 +1,6 @@
 
-import controller.LoginController;
-import controller.MainAppController;
+import controller.identification.LoginController;
+import controller.SatelliteApplicationController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,27 +12,24 @@ import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utils.Encryptor;
+import utils.MongoDBConfiguration;
 import utils.MongoDBManager;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.prefs.Preferences;
 
 
 public class SatelliteApplication extends Application {
 
-    static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+
+
+    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     JMetro jMetro = new JMetro(Style.LIGHT);
-    private static final String USER = "new-user_31";
-    private static final String PASSWORD = "UNexjLVEJ3CIafOl";
-    private static final String DATABASE = "SatelliteProducts";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        MongoDBManager mongoDBManager = MongoDBManager.getMongoDBManager();
-        mongoDBManager.setCredentialsAndDatabase(USER,PASSWORD,DATABASE);
-        mongoDBManager.connect();
+
+        initDatabase();
 
         UserDTO userDTO = loginWindows();
 
@@ -43,10 +40,9 @@ public class SatelliteApplication extends Application {
 
         URL location = getClass().getResource("/fxml/MainApp.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
-
-
         Scene scene = new Scene(fxmlLoader.load());
-        MainAppController controller = fxmlLoader.getController();
+
+        SatelliteApplicationController controller = fxmlLoader.getController();
         controller.setUser(userDTO);
         primaryStage.setMaximized(true);
 
@@ -60,12 +56,12 @@ public class SatelliteApplication extends Application {
             System.exit(0);
         });
 
+    }
 
-        /*Scene scene = new Scene(new MapGUI(1024,724));
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Map Example");
-        primaryStage.show();*/
-
+    private void initDatabase() {
+        MongoDBManager mongoDBManager = MongoDBManager.getMongoDBManager();
+        mongoDBManager.setCredentialsAndDatabase(MongoDBConfiguration.USER,MongoDBConfiguration.PASSWORD,MongoDBConfiguration.DATABASE);
+        mongoDBManager.connect();
     }
 
     private UserDTO loginWindows() {

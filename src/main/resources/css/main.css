@@ -8,12 +8,95 @@
     -fx-font-weight: bold
 }
 
+.h1 {
+   -fx-display: block;
+   -fx-font-size: 2em;
+   -fx-margin-top: 0.67em;
+   -fx-margin-bottom: 0.67em;
+   -fx-margin-left: 0;
+   -fx-margin-right: 0;
+   -fx-font-weight: bold;
+ }
+
 .h2 {
-    -fx-font-size: 18px ;
+    -fx-display: block;
+    -fx-font-size: 1.5em ;
+    -fx-margin-top: 0.83em;
+    -fx-margin-bottom: 0.83em;
+    -fx-margin-left: 0;
+    -fx-margin-right: 0;
     -fx-font-weight: bold
 }
+
+.h3 {
+   -fx-display: block;
+   -fx-font-size: 1.17em;
+   -fx-margin-top: 1em;
+   -fx-margin-bottom: 1em;
+   -fx-margin-left: 0;
+   -fx-margin-right: 0;
+   -fx-font-weight: bold;
+ }
+
+ .h4 {
+    -fx-display: block;
+    -fx-font-size: 1em;
+    -fx-margin-top: 1.33em;
+    -fx-margin-bottom: 1.33em;
+    -fx-margin-left: 0;
+    -fx-margin-right: 0;
+    -fx-font-weight: bold;
+  }
+
+  .h5 {
+     -fx-display: block;
+     -fx-font-size: .83em;
+     -fx-margin-top: 1.67em;
+     -fx-margin-bottom: 1.67em;
+     -fx-margin-left: 0;
+     -fx-margin-right: 0;
+     -fx-font-weight: bold;
+   }
 
 .myTab {
     -fx-border-color: grey ;
     -fx-border-width: 1 ;
+}
+
+#addToList {
+    -fx-graphic: url("../img/addToList.png");
+    -fx-width: 25px;
+    -fx-height: 25px;
+     -fx-font-size: .5em;
+}
+
+#createList {
+    -fx-graphic: url("../img/createList.png");
+    -fx-width: 25px;
+    -fx-height: 25px;
+     -fx-font-size: .5em;
+}
+
+#downloadSingle {
+    -fx-graphic: url("../img/downloadSingle.png");
+    -fx-width: 25px;
+    -fx-height: 25px;
+     -fx-font-size: .5em;
+}
+
+#downloadAll {
+    -fx-graphic: url("../img/downloadAll.png");
+    -fx-width: 25px;
+    -fx-height: 25px;
+     -fx-font-size: .5em;
+}
+
+#selectAll {
+    -fx-graphic: url("../img/selectAll.png");
+    -fx-width: 25px;
+    -fx-height: 25px;
+     -fx-font-size: .5em;
+}
+
+#createListDialog {
 }

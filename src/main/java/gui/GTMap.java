@@ -1,5 +1,6 @@
 package gui;
 
+import com.google.common.collect.Lists;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -80,16 +82,16 @@ public class GTMap extends Canvas {
 
 
 
-    public GTMap(int width, int height) {
+    public GTMap(int width, int height,boolean oms) {
         super(width, height);
         graphicsContext = getGraphicsContext2D();
         draw = new StreamingRenderer();
-        initMapFromFile();
+        if (oms)
+            initOMSMap();
+        else
+            initMapFromFile();
         initPaintThread();
         drawMap(graphicsContext);
-    }
-    public Node getCanvas() {
-        return this;
     }
 
     private void initMapFromFile() {
@@ -113,8 +115,11 @@ public class GTMap extends Canvas {
 
     private void initOMSMap() {
         mapContent = new MapContent();
+        mapContent.setTitle("Geotool map");
         OSMService service = new OSMService("OMS", "http://tile.openstreetmap.org/");
-        mapContent.addLayer(new AsyncTileLayer(service));
+        AsyncTileLayer asyncTileLayer = new AsyncTileLayer(service);
+        asyncTileLayer.setTitle("MapLayer");
+        mapContent.addLayer(asyncTileLayer);
         setScreenArea();
     }
 
@@ -180,9 +185,10 @@ public class GTMap extends Canvas {
         featureCollection = null;
     }
 
-    public void showFeatureArea(String id)  {
+    public void showFeatureArea(List<String> ids)  {
         FeatureLayer layer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
-        Style selectedStyle = createSelectedFeatureStyle(new FeatureIdImpl(id), getLayerGeometryAttribute(layer));
+        List<FeatureIdImpl> collect = ids.stream().map(FeatureIdImpl::new).collect(Collectors.toList());
+        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(layer), collect);
         layer.setStyle(selectedStyle);
         refresh();
     }
@@ -272,7 +278,19 @@ public class GTMap extends Canvas {
         if (getLayerByName(RESULTS_LAYER_TITLE) == null)
             return;
         FeatureLayer featureLayer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
-        Filter filter = ff.intersects(ff.property(getLayerGeometryAttribute(featureLayer)), ff.literal(getMousePointReferencedEnvelope(x,y)));
+
+        FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates(x, y, featureLayer);
+        List<FeatureIdImpl> list = new ArrayList<>();
+        if (featureId != null)
+            list.add(featureId);
+
+        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(featureLayer), list);
+        featureLayer.setStyle(selectedStyle);
+
+    }
+
+    private FeatureId findFeatureIdByCoordinates(int x, int y, FeatureLayer featureLayer) throws IOException {
+        Filter filter = ff.intersects(ff.property(getLayerGeometryAttribute(featureLayer)), ff.literal(getMousePointReferencedEnvelope(x, y)));
         SimpleFeatureCollection features = featureLayer.getSimpleFeatureSource().getFeatures(filter);
         FeatureId featureId = null;
         SimpleFeatureIterator featureIterator = features.features();
@@ -286,11 +304,7 @@ public class GTMap extends Canvas {
         selectedFeatureID = null;
         if (featureId != null)
             selectedFeatureID = featureId.getID();
-
-
-        Style selectedStyle = createSelectedFeatureStyle(featureId, getLayerGeometryAttribute(featureLayer));
-        featureLayer.setStyle(selectedStyle);
-
+        return featureId;
     }
 
     private String getLayerGeometryAttribute(FeatureLayer featureLayer) {
@@ -305,15 +319,15 @@ public class GTMap extends Canvas {
                 worldRect, mapContent.getCoordinateReferenceSystem());
     }
 
-    private Style createSelectedFeatureStyle(FeatureId id, String geometryAttributeName) {
+    private Style createSelectedFeatureStyle(String geometryAttributeName,List<FeatureIdImpl> ids) {
         Rule selectedRule = createRule(Color.BLUE,Color.CYAN, 3f, 0.1f, geometryAttributeName);
-        selectedRule.setFilter(ff.id(id));
+        selectedRule.setFilter(ff.id(Set.copyOf(ids)));
 
         Rule notSelectedFeaturesRules = createRule(Color.BLACK, null,1f,1f,geometryAttributeName);
         notSelectedFeaturesRules.setElseFilter(true);
 
         FeatureTypeStyle fts = sf.createFeatureTypeStyle();
-        if (id != null)
+        if (ids.size() > 0)
             fts.rules().add(selectedRule);
         fts.rules().add(notSelectedFeaturesRules);
 

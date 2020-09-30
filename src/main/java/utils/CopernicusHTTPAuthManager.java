@@ -1,37 +1,55 @@
 package utils;
 
+import gui.dialog.ScihubCredentialsDialog;
+import javafx.concurrent.Task;
+import javafx.scene.Parent;
+import javafx.util.Pair;
 import model.exception.AuthenticationException;
+import model.exception.NotAuthenticatedException;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import javax.inject.Singleton;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
+import java.util.Optional;
 
-public class HTTPAuthManager extends Authenticator {
+import static utils.AlertFactory.showErrorDialog;
+
+public class CopernicusHTTPAuthManager extends Authenticator {
 
     private String username;
     private String password;
 
-    @Singleton
-    private static HTTPAuthManager httpManager = null;
+
     private HttpsURLConnection connection;
 
+    @Singleton
+    private static CopernicusHTTPAuthManager httpManager;
+    static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CopernicusHTTPAuthManager.class.getName());
 
-    static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(HTTPAuthManager.class.getName());
-
-    public HTTPAuthManager(String username, String password) {
+    private CopernicusHTTPAuthManager(String username, String password) throws AuthenticationException {
         setCredentials(username, password);
         setAuthenticator();
+        testCredentials();
     }
 
-    public static HTTPAuthManager getHttpManager(String username, String password) {
-        if (httpManager == null) {
-            httpManager = new HTTPAuthManager(username, password);
-            httpManager.setAuthenticator();
+    private void testCredentials() throws AuthenticationException {
+        try {
+            String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
+            getContentFromURL(new URL(LOGIN_URL));
+        } catch (IOException e) {
+            logger.atInfo().log("Not able to connect to SciHub API: {0}",e);
+            e.printStackTrace();
         }
-        httpManager.setCredentials(username, password);
+    }
+
+    public static CopernicusHTTPAuthManager getHttpManager(String username, String password) throws AuthenticationException {
+        if (httpManager == null) {
+            httpManager = new CopernicusHTTPAuthManager(username,password);
+        }
         return httpManager;
     }
 

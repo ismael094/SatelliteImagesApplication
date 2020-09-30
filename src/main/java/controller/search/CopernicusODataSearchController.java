@@ -1,6 +1,8 @@
 package controller.search;
 
-import gui.GTMapSearchController;
+import controller.TabItem;
+import controller.GTMapSearchController;
+import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
 import model.filter.Filter;
@@ -19,6 +21,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.ProductOData;
 import model.ProductList;
+import model.products.Product;
 import services.search.ODataSearcher;
 
 import java.net.URL;
@@ -26,7 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ODataSearcherController implements SearchController{
+public class CopernicusODataSearchController implements SearchController, TabItem {
 
     @FXML
     private ImageView image;
@@ -59,7 +62,7 @@ public class ODataSearcherController implements SearchController{
     @FXML
     public GTMapSearchController GTMapSearchController;
 
-    public ODataSearcherController() {
+    public CopernicusODataSearchController() {
         ODataSearcher = new ODataSearcher();
         filter = new Filter();
     }
@@ -86,6 +89,11 @@ public class ODataSearcherController implements SearchController{
     }
 
     @Override
+    public void setTabPaneComponent(TabPaneComponent component) {
+
+    }
+
+    @Override
     public Parent getView() {
         return null;
     }
@@ -96,7 +104,16 @@ public class ODataSearcherController implements SearchController{
     }
 
     @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
     public String getId() {
+        return null;
+    }
+
+    @Override
+    public List<Product> getSelectedProducts() {
         return null;
     }
 
@@ -185,7 +202,7 @@ public class ODataSearcherController implements SearchController{
     }
 
     private void addSelectedProductToProductList(ProductList productList) {
-        productList.addProduct(list.getSelectionModel().getSelectedItem());
+        //productList.addProduct(list.getSelectionModel().getSelectedItem());
     }
 
     public void showProduct(MouseEvent mouseEvent) {

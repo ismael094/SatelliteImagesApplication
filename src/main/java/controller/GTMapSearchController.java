@@ -1,11 +1,11 @@
-package gui;
+package controller;
 
-import controller.MainAppController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import gui.GTMap;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -19,10 +19,11 @@ import org.locationtech.jts.io.ParseException;
 import java.io.IOException;
 import java.util.List;
 
-public class GTMapSearchController extends Pane {
+public class GTMapSearchController {
 
 
     private final GTMap geotoolsMap;
+    private final BorderPane border;
     private HBox hbox;
     private boolean isSearchAreaDraw;
     private final double[] searchAreaCoordinates;
@@ -34,14 +35,18 @@ public class GTMapSearchController extends Pane {
     public GTMapSearchController(double width, double height) {
         searchAreaCoordinates = new double[2];
         isSearchAreaDraw = false;
-        geotoolsMap = new GTMap((int) width, (int) height);
-        Pane mapPane = new Pane(geotoolsMap);
-        BorderPane border = new BorderPane();
+        geotoolsMap = new GTMap((int) width, (int) height,false);
+        border = new BorderPane();
         HBox controlBar = controlBar();
         border.setTop(controlBar);
-        border.setCenter(mapPane);
+        border.setCenter(geotoolsMap);
+        border.setLeft(null);
+        border.setRight(null);
         addGeotoolsMapEvents();
-        getChildren().add(border);
+    }
+
+    public Parent getView() {
+        return border;
     }
 
     private void addGeotoolsMapEvents() {
@@ -55,17 +60,19 @@ public class GTMapSearchController extends Pane {
     }
 
     private void addMapScrollMapEvent() {
-        addEventHandler(ScrollEvent.SCROLL, e-> {
+        geotoolsMap.addEventHandler(ScrollEvent.SCROLL, e-> {
             geotoolsMap.scroll(e.getDeltaY());
             e.consume();
         });
     }
 
     private void addMapMouseClickedEvent() {
-        addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+        geotoolsMap.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
             if (t.getClickCount() == 1) {
                 try {
-                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()-hbox.getHeight()));
+                    System.out.println(t.getX() + " - " + (t.getY()));
+                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()));
+
                 } catch (IOException e) {
                     logger.atError().log("Not able to style selected features: {0}",e);
                 }
@@ -205,8 +212,8 @@ public class GTMapSearchController extends Pane {
         return geotoolsMap.getWKT();
     }
 
-    public void showProductArea(String id) {
-        geotoolsMap.showFeatureArea(id);
+    public void showProductArea(List<String> ids) {
+        geotoolsMap.showFeatureArea(ids);
     }
 
     public void clearMap() {

@@ -1,7 +1,8 @@
-package controller.search;
+package controller.cell;
 
 import com.jfoenix.controls.JFXButton;
-import gui.TabPaneManager;
+import controller.search.CopernicusProductDetailsController;
+import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +16,8 @@ import model.products.Product;
 import java.io.IOException;
 import java.net.URL;
 
-public class ProductResultListCell extends ListCell<Product> {
+public class ProductResultListCellController extends ListCell<Product> {
+    private final TabPaneComponent tabPaneComponent;
     private FXMLLoader loader;
 
     @FXML
@@ -32,6 +34,10 @@ public class ProductResultListCell extends ListCell<Product> {
     private Label size;
     @FXML
     private JFXButton details;
+
+    public ProductResultListCellController(TabPaneComponent component) {
+        this.tabPaneComponent = component;
+    }
 
     @Override
     protected void updateItem(Product product, boolean empty) {
@@ -69,18 +75,17 @@ public class ProductResultListCell extends ListCell<Product> {
     public void detailsEvent(Product product) {
         URL location = getClass().getResource("/fxml/ProductDetails.fxml");
         FXMLLoader loader = new FXMLLoader(location);
-        TabPaneManager tabPaneManager = TabPaneManager.getTabPaneManager();
         Task<Parent> response = new Task<>() {
             @Override
             protected Parent call() throws Exception {
                 Parent parent = loader.load();
-                OpenSearchProductDetailsController controller = loader.getController();
+                CopernicusProductDetailsController controller = loader.getController();
                 controller.setProduct(product);
                 return parent;
             }
         };
         response.setOnSucceeded(event -> {
-            tabPaneManager.addTab(product.getTitle().substring(0,10), response.getValue());
+            tabPaneComponent.create(product.getTitle().substring(0,10),response.getValue());
         });
         new Thread(response).start();
     }

@@ -1,37 +1,42 @@
 package model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
+import model.products.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductList {
     private String name;
     private String description;
-    private List<ProductOData> productOData;
+    private ObservableList<Product> products;
 
     public ProductList(String name, String description) {
         this.name = name;
         this.description = description;
-        productOData = new ArrayList<>();
+        products = FXCollections.observableArrayList();
     }
 
-    public List<ProductOData> getProducts() {
-        return productOData;
+    public ObservableList<Product> getProducts() {
+        return products;
     }
 
-    public ProductOData getProductById(String id) {
-        for (ProductOData productOData : this.productOData)
-            if (productOData.getId().equals(id))
-                return productOData;
+    public Product getProductById(String id) {
+        for (Product product : this.products)
+            if (product.getId().equals(id))
+                return product;
 
         return null;
     }
 
     public int count() {
-        return productOData.size();
+        return products.size();
     }
 
-    public void addProduct(ProductOData productOData) {
-        this.productOData.add(productOData);
+    public void addProduct(Product product) {
+        this.products.add(product);
     }
 
     public String getName() {
@@ -55,5 +60,9 @@ public class ProductList {
         return "ProductList {" +
                 "name='" + name + '\'' +
                 ", description='" + description;
+    }
+
+    public void remove(Product product) {
+        products.remove(product);
     }
 }

@@ -3,6 +3,7 @@ package services.search;
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.exception.AuthenticationException;
+import org.apache.logging.log4j.core.appender.HttpManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import java.net.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class OpenSearcher_ {
+public class CopernicusOpenSearcher_ {
     public final String URL = "https://scihub.copernicus.eu/dhus/search?format=json&";
     public static final String VALID_USERNAME = "user";
     public static final String VALID_PASSWORD = "pass";
@@ -27,9 +28,13 @@ public class OpenSearcher_ {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
+    public void a() {
+    }
 
+/*
     @Before
     public void initMockup() throws AuthenticationException {
+        HttpManager.
         openSearcher = new OpenSearcher();
         //openSearcherMock = mock(OpenSearcher.class);
         /*doReturn(CONTENT_LENGTH).when(product).getContentLength();
@@ -37,7 +42,8 @@ public class OpenSearcher_ {
         doReturn(NAME).when(product).getName();
         doReturn(CREATION_TIME).when(product).getCreationDate();*/
 
-    }
+    //}
+    /*
 
     @Test(expected = AuthenticationException.class)
     public void with_invalid_credentials_should_throw_exception() throws AuthenticationException {
@@ -117,7 +123,7 @@ public class OpenSearcher_ {
     @Test(expected = NotAuthenticatedException.class)
     public void search_with_default_query_should_return_an_open_response() throws IOException, AuthenticationException, NotAuthenticatedException {
         assertThat(openSearcher.search().getNumOfProducts()).isEqualTo(0);
-    }
+    }*/
 }
 
 

@@ -1,13 +1,10 @@
-package controller;
+package controller.identification;
 
-import javafx.beans.binding.Binding;
+import controller.SatelliteApplicationController;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -38,7 +35,7 @@ public class RegisterController implements Initializable {
 
     private UserDTO userDTO;
 
-    static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

@@ -28,8 +28,8 @@ public class TabPaneManager extends TabPane {
         super();
         getStyleClass().add(JMetroStyleClass.UNDERLINE_TAB_PANE);
         setId("myTab");
-        setPrefHeight(576.0);
-        setPrefWidth(1291.0);
+        //setPrefHeight(453.6);
+        //setPrefWidth(1038.4);
     }
 
     public Tab addTab(String title, Parent node) {
@@ -41,10 +41,7 @@ public class TabPaneManager extends TabPane {
         return tab;
     }
 
-    public Tab getTab(Tab tab) {
-        int index = getTabs().indexOf(tab);
-        return getTabs().get(index);
-    }
+
 
 
 

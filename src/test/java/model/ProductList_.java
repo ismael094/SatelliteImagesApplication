@@ -1,5 +1,7 @@
-import model.ProductOData;
-import model.ProductList;
+package model;
+
+import model.products.Product;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -8,9 +10,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class ProductODataList_ {
+public class ProductList_ {
     public static final String PRODUCT_ID = "06ffb973-2be6-4ace-b813-5d6e24792af2";
     private ProductList productList;
+    private Product product;
+
+    @Before
+    public void init() {
+        product = mock(Product.class);
+    }
 
     @Test
     public void with_name_list1_should_return_list1() {
@@ -33,7 +41,7 @@ public class ProductODataList_ {
     @Test
     public void when_count_list_with_one_element_should_return_1() {
         productList = new ProductList("List1","description");
-        ProductOData productOData = mock(ProductOData.class);
+        Product productOData = mock(Product.class);
         productList.addProduct(productOData);
         assertThat(productList.count()).isEqualTo(1);
     }
@@ -41,28 +49,35 @@ public class ProductODataList_ {
     @Test
     public void when_get_product_by_id_in_list_should_return_one_product() {
         productList = new ProductList("List1","description");
-        ProductOData productOData = mock(ProductOData.class);
-        doReturn(PRODUCT_ID).when(productOData).getId();
-        productList.addProduct(productOData);
-        assertThat(productList.getProductById(PRODUCT_ID)).isEqualTo(productOData);
+        doReturn(PRODUCT_ID).when(product).getId();
+        productList.addProduct(product);
+        assertThat(productList.getProductById(PRODUCT_ID)).isEqualTo(product);
     }
 
     @Test
     public void when_get_product_by_id_not_in_list_should_return_null() {
         productList = new ProductList("List1","description");
-        ProductOData productOData = mock(ProductOData.class);
-        doReturn(PRODUCT_ID).when(productOData).getId();
-        productList.addProduct(productOData);
+        doReturn(PRODUCT_ID).when(product).getId();
+        productList.addProduct(product);
         assertThat(productList.getProductById("no_id")).isEqualTo(null);
+    }
+
+    @Test
+    public void remove_product_in_list_should_remove_product() {
+        productList = new ProductList("List1","description");
+        doReturn(PRODUCT_ID).when(product).getId();
+        productList.addProduct(product);
+        assertThat(productList.count()).isEqualTo(1);
+        productList.remove(product);
+        assertThat(productList.count()).isEqualTo(0);
     }
 
     @Test
     public void get_products_from_list_empty_should_return_empty_list() {
         productList = new ProductList("List1","description");
-        ProductOData pr = mock(ProductOData.class);
-        productList.addProduct(pr);
-        List<ProductOData> productOData = productList.getProducts();
-        assertThat(productOData.size()).isEqualTo(1);
+        productList.addProduct(product);
+        List<Product> products = productList.getProducts();
+        assertThat(products.size()).isEqualTo(1);
     }
 
     @Test

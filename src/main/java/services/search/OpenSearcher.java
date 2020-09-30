@@ -6,7 +6,8 @@ import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utils.HTTPAuthManager;
+import services.CopernicusService;
+import utils.CopernicusHTTPAuthManager;
 import utils.ProductMapper;
 
 import javax.inject.Singleton;
@@ -24,31 +25,19 @@ public class OpenSearcher implements SearchService {
     public static final String ALL = "*";
     public static final String AND = " AND ";
     private final String URL = "https://scihub.copernicus.eu/dhus/search?format=json";
-    private HTTPAuthManager httpManager;
+    private CopernicusService service;
     private int productsPerPage;
     private int page;
     private Map<OpenSearchQueryParameter, String> searchParameters;
     static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
 
-    @Singleton
-    private static OpenSearcher openSearcher;
-
-    public static OpenSearcher getOpenSearcher(String username, String password) throws AuthenticationException {
-        if (openSearcher == null)
-            openSearcher = new OpenSearcher(username,password);
-        openSearcher.login(username,password);
-        return openSearcher;
-
-    }
-
-    public OpenSearcher(String username, String password) throws AuthenticationException {
-        initData();
-        login(username,password);
-    }
-
     public OpenSearcher() {
         initData();
-        httpManager = null;
+        this.service = CopernicusService.getInstance();
+    }
+
+    public void login() throws AuthenticationException, NotAuthenticatedException {
+        service.login();
     }
 
     private void initData() {
@@ -59,17 +48,6 @@ public class OpenSearcher implements SearchService {
 
     public void setProductPerPage(int productsPerPage) {
         this.productsPerPage = productsPerPage;
-    }
-
-    public void login(String username, String password) throws AuthenticationException {
-        this.httpManager = HTTPAuthManager.getHttpManager(username,password);
-        try {
-            String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
-            this.httpManager.getContentFromURL(new URL(LOGIN_URL));
-        } catch (IOException e) {
-            logger.atInfo().log("Not able to connect to SciHub API: {0}",e);
-            e.printStackTrace();
-        }
     }
 
     public URL getURL() throws MalformedURLException {
@@ -122,12 +100,12 @@ public class OpenSearcher implements SearchService {
 
     @Override
     public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
-        if (httpManager == null) {
+        if (service == null) {
             logger.atWarn().log("Not authenticated in Copernicus OpenSearch");
             throw new NotAuthenticatedException("Not authenticated in OpenSearch");
         }
         long start = currentTimeMillis();
-        InputStream contentFromURL = httpManager.getContentFromURL(getURL());
+        InputStream contentFromURL = service.getContentFromURL(getURL());
         OpenSearchResponse response = ProductMapper.getResponse(contentFromURL);
         contentFromURL.close();
         long finish = currentTimeMillis() - start;

@@ -1,5 +1,6 @@
-package controller;
+package controller.identification;
 
+import controller.SatelliteApplicationController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -21,9 +22,7 @@ import utils.Encryptor;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class LoginController implements Initializable {
     @FXML
@@ -38,7 +37,7 @@ public class LoginController implements Initializable {
     private PasswordField password;
 
     private UserDTO userDTO;
-    static final Logger logger = LogManager.getLogger(MainAppController.class.getName());
+    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

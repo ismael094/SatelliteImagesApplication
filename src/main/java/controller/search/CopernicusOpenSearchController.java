@@ -1,10 +1,12 @@
 package controller.search;
 
 import com.jfoenix.controls.*;
+import controller.TabItem;
+import controller.cell.ProductResultListCellController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import gui.GTMapSearchController;
-import gui.dialog.ScihubCredentialsDialog;
+import controller.GTMapSearchController;
+import gui.components.TabPaneComponent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -15,10 +17,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.util.Pair;
-import model.exception.AuthenticationException;
 import model.openSearcher.OpenSearchQueryParameter;
 import model.openSearcher.OpenSearchResponse;
 import model.products.Product;
@@ -31,11 +32,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
-public class CopernicusOpenSearchController implements SearchController {
+public class CopernicusOpenSearchController implements TabItem, SearchController  {
 
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";
@@ -93,6 +95,7 @@ public class CopernicusOpenSearchController implements SearchController {
 
     static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
     private boolean paginationSetted;
+    private TabPaneComponent tabPaneComponent;
 
     public CopernicusOpenSearchController(String id) {
         this.id = id;
@@ -105,9 +108,18 @@ public class CopernicusOpenSearchController implements SearchController {
         }
     }
 
-    @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public List<Product> getSelectedProducts() {
+        return new ArrayList<>(resultProductsList.getSelectionModel().getSelectedItems());
+    }
+
+    @Override
+    public void setTabPaneComponent(TabPaneComponent component) {
+        this.tabPaneComponent = component;
     }
 
     @Override
@@ -115,36 +127,30 @@ public class CopernicusOpenSearchController implements SearchController {
         return searcher == null ? null : rootPane;
     }
 
-    private void login(String username, String password) throws AuthenticationException {
-        searcher = OpenSearcher.getOpenSearcher(username,password);
+    @Override
+    public Task<Parent> start() {
+        searcher = new OpenSearcher();
+        Task<Parent> task = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                searcher.login();
+                initViewData();
+                return getView();
+            }
+        };
+        return task;
     }
 
     @Override
-    public Task<Parent> start() {
-        ScihubCredentialsDialog dialog = new ScihubCredentialsDialog();
-        Optional<Pair<String, String>> stringStringPair = dialog.showAndWait();
-        if (stringStringPair.isPresent()) {
-            Pair<String, String> credentials = stringStringPair.get();
-            Task<Parent> task = new Task<>() {
-                @Override
-                protected Parent call() throws Exception {
-                    login(credentials.getKey(), credentials.getValue());
-                    System.out.println(spinnerPane);
-                    System.out.println(resultsPane);
-                    initViewData();
-                    return getView();
-                }
-            };
-            return task;
+    public String getName() {
 
-        }
-        return null;
+        return getClass().getSimpleName();
     }
 
     private void initViewData() {
         setSpinnerVisible(false);
         setPaginationVisible(false);
-        initRows();
+        initProductsPerPage();
         setSatelliteList();
         setSentinel1Data();
         setProductsList();
@@ -165,19 +171,24 @@ public class CopernicusOpenSearchController implements SearchController {
 
     private void initGTMapController() {
         GTMapSearchController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight());
-        GTMapSearchController.setOnMouseClicked(event-> {
+        BorderPane view = (BorderPane)GTMapSearchController.getView();
+        view.getCenter().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
+            System.out.println("gelpp");
             Product product = resultProductsList.getItems().stream()
                     .filter(p -> p.getId().equals(GTMapSearchController.getSelectedProduct()))
                     .findFirst()
                     .orElse(null);
             if (product != null) {
+                
                 resultProductsList.setFocusTraversable(true);
                 resultProductsList.getFocusModel().focus(resultProductsList.getItems().indexOf(product));
                 resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
                 resultProductsList.scrollTo(product);
             }
         });
-        mapPane.getChildren().addAll(GTMapSearchController);
+        mapPane.getChildren().addAll(GTMapSearchController.getView());
+        AnchorPane.setLeftAnchor(GTMapSearchController.getView(),0.0);
+        AnchorPane.setRightAnchor(GTMapSearchController.getView(),0.0);
     }
 
     private void cloudCoverageEvent() {
@@ -204,14 +215,13 @@ public class CopernicusOpenSearchController implements SearchController {
         });
     }
 
-    private void initRows() {
+    private void initProductsPerPage() {
         rows.setItems(FXCollections.observableArrayList(
                 25,50,75,100));
         rows.setValue(100);
         rows.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observableValue, oldValue, newValue) -> {
-                    System.out.println(newValue);
                     if (newValue > 0)
                         searcher.setProductPerPage(newValue);
                 });
@@ -236,11 +246,15 @@ public class CopernicusOpenSearchController implements SearchController {
     }
 
     private void setProductsList() {
-        resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         resultProductsList.setOnMouseClicked(event -> {
-            Product product = resultProductsList.getSelectionModel().getSelectedItem();
-            if (product != null)
-                GTMapSearchController.showProductArea(product.getId());
+            ObservableList<Product> products = resultProductsList.getSelectionModel().getSelectedItems();
+            System.out.println(products.size());
+            GTMapSearchController.showProductArea(
+                    products.stream()
+                            .map(Product::getId)
+                            .collect(Collectors.toList())
+            );
         });
     }
 
@@ -352,7 +366,7 @@ public class CopernicusOpenSearchController implements SearchController {
                     FXCollections.observableArrayList(response.get().getProducts());
 
             resultProductsList.setItems(tObservableArray);
-            resultProductsList.setCellFactory(e -> new ProductResultListCell());
+            resultProductsList.setCellFactory(e -> new ProductResultListCellController(tabPaneComponent));
             clearMap();
             OpenSearchResponse openSearchResponse = response.get();
             if (openSearchResponse.getProducts().size() > 0) {

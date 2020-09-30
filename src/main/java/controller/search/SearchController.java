@@ -1,14 +1,10 @@
 package controller.search;
 
-import javafx.concurrent.Task;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import model.products.Product;
 
-import java.io.IOException;
+import java.util.List;
 
 public interface SearchController {
     void search();
-    Parent getView();
-    Task<Parent> start();
-    String getId();
+    List<Product> getSelectedProducts();
 }

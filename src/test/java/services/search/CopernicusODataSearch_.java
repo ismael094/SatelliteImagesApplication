@@ -1,3 +1,5 @@
+package services.search;
+
 import model.filter.Filter;
 import model.filter.filterItems.FilterItemStartWith;
 import model.ProductOData;
@@ -14,7 +16,7 @@ import java.util.List;
 import static org.apache.olingo.client.core.ODataClientFactory.getClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ODataSearcher_ {
+public class CopernicusODataSearch_ {
     public static final ODataClient client = getClient();
     private final String iCrmServiceRoot = "https://scihub.copernicus.eu/dhus/odata/v1";
     private final String username = "ismael096";

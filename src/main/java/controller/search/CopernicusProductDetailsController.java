@@ -1,21 +1,25 @@
 package controller.search;
 
+import controller.TabItem;
 import gui.GTMap;
+import gui.components.TabPaneComponent;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import model.exception.AuthenticationException;
+import model.exception.NotAuthenticatedException;
 import model.products.Product;
 import model.products.Sentinel1Product;
 import model.products.Sentinel2Product;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
-import utils.HTTPAuthManager;
+import services.CopernicusService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class OpenSearchProductDetailsController implements Initializable {
+public class CopernicusProductDetailsController implements Initializable, TabItem {
 
     @FXML
     private Label sensorMode;
@@ -53,7 +57,8 @@ public class OpenSearchProductDetailsController implements Initializable {
     private ImageView image;
     private Product product;
     private GTMap gtMap;
-    static final Logger logger = LogManager.getLogger(OpenSearchProductDetailsController.class.getName());
+    static final Logger logger = LogManager.getLogger(CopernicusProductDetailsController.class.getName());
+    private TabPaneComponent tabPaneComponent;
 
     private void setProductDetails() {
         name.setText(product.getTitle());
@@ -99,31 +104,32 @@ public class OpenSearchProductDetailsController implements Initializable {
             setImagePreviewAndMap();
         } catch (AuthenticationException | ParseException | IOException e) {
             logger.atError().log("Error loading bathymetry.shp: {0}",e);
+        } catch (NotAuthenticatedException e) {
+            e.printStackTrace();
         }
 
     }
 
-    private void setImagePreviewAndMap() throws AuthenticationException, ParseException, IOException {
+    private void setImagePreviewAndMap() throws AuthenticationException, ParseException, IOException, NotAuthenticatedException {
         setMap();
-        HTTPAuthManager httpManager = HTTPAuthManager.getHttpManager("", "");
+        CopernicusService httpManager = CopernicusService.getInstance();
         InputStream contentFromURL = null;
         try {
             contentFromURL = httpManager.getContentFromURL(getQuicklook(product.getId()));
-            image.setImage(new Image(contentFromURL,382,382,false,false));
+            System.out.println(image.getFitHeight());
+            image.setImage(new Image(contentFromURL,image.getFitWidth(),image.getFitHeight(),false,false));
+            System.out.println(image.getFitHeight());
         } catch (IOException e) {
             logger.atInfo().log("No preview image found for product name {}",product.getTitle());
-            httpManager.closeConnection();
-            image.setImage(new Image(getClass().getResource("/img/no_photo.jpg").openStream(),382,382,false,false));
-        } finally {
-            image.setFitWidth(382);
-            image.setFitHeight(382);
+            //httpManager.closeConnection();
+            image.setImage(new Image(getClass().getResource("/img/no_photo.jpg").openStream(),image.getFitWidth(),image.getFitHeight(),false,false));
         }
 
 
     }
 
     private void setMap() throws ParseException {
-        gtMap = new GTMap(382, 382);
+        gtMap = new GTMap(300, 300,false);
         map.getChildren().add(gtMap);
         gtMap.createFeatureFromWKT(product.getFootprint(),product.getId());
         gtMap.createAndDrawProductsLayer();
@@ -146,4 +152,26 @@ public class OpenSearchProductDetailsController implements Initializable {
             logger.atError().log("Error while retrieving product data");
 
     }
+
+    @Override
+    public void setTabPaneComponent(TabPaneComponent component) {
+        this.tabPaneComponent = component;
+    }
+
+    @Override
+    public Parent getView() {
+        return null;
+    }
+
+    @Override
+    public Task<Parent> start() {
+        return null;
+    }
+
+    @Override
+    public String getName(){
+        return getClass().getSimpleName();
+    }
+
+
 }
