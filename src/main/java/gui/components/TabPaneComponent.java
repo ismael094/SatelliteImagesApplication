@@ -3,7 +3,8 @@ package gui.components;
 import controller.TabItem;
 import controller.SatelliteApplicationController;
 import controller.search.SearchController;
-import gui.TabPaneManager;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
@@ -19,34 +20,37 @@ import java.util.*;
 import static utils.AlertFactory.showErrorDialog;
 
 public class TabPaneComponent extends TabPane implements Component {
-    private final TabPaneManager tabManager;
-    private final SatelliteApplicationController mainController;
-    private final List<TabItem> loadedControllers;
-
     static final Logger logger = LogManager.getLogger(TabPaneComponent.class.getName());
-    private static TabPaneComponent instance;
+    private final SatelliteApplicationController mainController;
+    private final Map<String,TabItem> loadedControllers;
+    private final BooleanProperty isSearchControllerOpen;
 
     public TabPaneComponent(SatelliteApplicationController mainController) {
         super();
         getStyleClass().add(JMetroStyleClass.UNDERLINE_TAB_PANE);
         setId("TabComponent");
         this.mainController = mainController;
-        this.tabManager = TabPaneManager.getTabPaneManager();
-        this.loadedControllers = new ArrayList<>();
+        this.loadedControllers = new HashMap<>();
+        isSearchControllerOpen = new SimpleBooleanProperty(false);
     }
 
     @Override
     public void init() {
-        tabManager.getStyleClass().add("myTab");
-        tabManager.getTabs().add(new Tab("Information"));
-        tabManager.getTabs().get(0).setClosable(true);
-        tabManager.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-        tabManager.setPrefWidth(Double.MAX_VALUE);
+        getStyleClass().add("myTab");
+        getTabs().add(new Tab("Information"));
+        getTabs().get(0).setClosable(true);
+        setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        setPrefWidth(Double.MAX_VALUE);
     }
 
     @Override
     public Parent getView() {
-        return tabManager;
+        return this;
+    }
+
+    @Override
+    public SatelliteApplicationController getMainController() {
+        return mainController;
     }
 
     public void add(Tab t) {
@@ -59,29 +63,44 @@ public class TabPaneComponent extends TabPane implements Component {
         add(new Tab(name, node));
     }
 
-    public Tab get(Tab tab) {
-        return get(tab);
-    }
-
     public Tab get(String tab) {
-        return get(tab);
+        return getTabs().stream()
+        .filter(t->t.getText().equals(tab))
+        .findAny()
+        .orElse(null);
     }
 
-    public SearchController getSearchController() {
-        return (SearchController)loadedControllers.stream()
-                .filter(c -> c instanceof SearchController)
-                .findFirst()
-                .orElse(null);
+    public Tab getActive() {
+        return getSelectionModel().getSelectedItem();
+    }
+
+    public void select(Tab tab) {
+        getSelectionModel().select(tab);
+    }
+
+    public TabItem getControllerOf(Tab tab) {
+        return loadedControllers.getOrDefault(tab.getText(),null);
     }
 
     public void load(TabItem item) {
+        if (loadedControllers.getOrDefault(item.getName(),null)!=null){
+            Tab tab = get(item.getName());
+            if (tab == null)
+                create(item.getName(),loadedControllers.get(item.getName()).getView());
+            else
+                select(get(item.getName()));
+            return;
+        }
+
         mainController.showWaitSpinner();
         Task<Parent> task = item.start();
         task.exceptionProperty().addListener(exceptionWhileOpeningController(item.getName()));
         task.setOnSucceeded(e->{
             create(item.getName(), item.getView());
-            loadedControllers.add(item);
+            loadedControllers.put(item.getName(),item);
             item.setTabPaneComponent(this);
+            if (item instanceof SearchController)
+                isSearchControllerOpen.setValue(true);
             mainController.hideWaitSpinner();
         });
         new Thread(task).start();
@@ -95,5 +114,9 @@ public class TabPaneComponent extends TabPane implements Component {
                     id,newValue.getLocalizedMessage());
             mainController.hideWaitSpinner();
         };
+    }
+
+    public BooleanProperty getIsSearchControllerOpenProperty() {
+        return isSearchControllerOpen;
     }
 }

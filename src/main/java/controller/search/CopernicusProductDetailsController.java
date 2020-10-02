@@ -73,7 +73,7 @@ public class CopernicusProductDetailsController implements Initializable, TabIte
     }
 
     private void setSentinel2Data() {
-        sensorMode.setText(((Sentinel2Product)product).getCloudCoverPercentage()+"");
+        cloud.setText(((Sentinel2Product)product).getCloudCoverPercentage()+"");
         toggleSentinel1Data(false);
         toggleSentinel2Data(true);
     }

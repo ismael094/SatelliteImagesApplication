@@ -29,10 +29,10 @@ public class CreateProductListDialog extends Stage {
     public void init() {
         initStyle(StageStyle.UTILITY);
         Button btn = new Button("Create");
-        btn.setOnAction(event -> {
+        /*btn.setOnAction(event -> {
             productList = new ProductList(name.getText(),description.getText());
             close();
-        });
+        });*/
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(event -> {

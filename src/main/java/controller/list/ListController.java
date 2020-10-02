@@ -1,17 +1,24 @@
 package controller.list;
 
 import com.jfoenix.controls.JFXListView;
+import controller.GTMapSearchController;
 import controller.TabItem;
 import controller.cell.ProductListCell;
 import gui.GTMap;
 import gui.components.TabPaneComponent;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
@@ -20,15 +27,23 @@ import model.ProductList;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.products.Product;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.swing.control.DnDListItemsTransferable;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import services.CopernicusService;
+import utils.WKTUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-public class ListController implements TabItem {
+public class ListController implements TabItem, ListItem {
     private final FXMLLoader loader;
     private Parent parent;
     private ProductList productList;
@@ -47,7 +62,9 @@ public class ListController implements TabItem {
     private Label size;
     @FXML
     private AnchorPane mapPane;
-    private GTMap gtMap;
+    @FXML
+    private Button workingAreaToAll;
+    private GTMapSearchController gtMapSearchController;
     private TabPaneComponent setTabPaneComponent;
 
     public ListController(ProductList productList) {
@@ -61,23 +78,11 @@ public class ListController implements TabItem {
         }
     }
 
-    private void setMap() throws ParseException {
-        gtMap = new GTMap(458, 435,false);
-        mapPane.getChildren().add(gtMap);
-        gtMap.createFeatureFromWKT(productList.getProducts().get(0).getFootprint(),productList.getProducts().get(0).getId());
-        gtMap.createAndDrawProductsLayer();
-        gtMap.goToSelection();
-        gtMap.scroll(-96);
-        gtMap.refresh();
-        mapPane.addEventHandler(ScrollEvent.SCROLL, e-> {
-            gtMap.scroll(e.getDeltaY());
-            e.consume();
-        });
-    }
-
-    public URL getQuicklook(String id) throws MalformedURLException {
-        String url = "https://scihub.copernicus.eu/dhus/odata/v1/Products('"+id+"')/Products('Quicklook')/$value";
-        return new URL(url);
+    private void setMap() {
+        gtMapSearchController = new GTMapSearchController(458.0,435.0,false);
+        gtMapSearchController.disableMouseClickedEvent();
+        mapPane.getChildren().add(gtMapSearchController.getView());
+        gtMapSearchController.addProductsWKT(productList.getProducts());
     }
 
     @Override
@@ -101,9 +106,11 @@ public class ListController implements TabItem {
                     if (productList.count() > 0) {
                         InputStream preview = CopernicusService.getInstance().getPreview(productList.getProducts().get(0).getId());
                         image.setImage(new Image(preview));
+                    } else {
+                        image.setImage(new Image("/img/no_photo.jpg"));
                     }
 
-                } catch (ParseException | IOException | AuthenticationException e) {
+                } catch (IOException | AuthenticationException e) {
                     e.printStackTrace();
                 }
                 return getView();
@@ -112,32 +119,78 @@ public class ListController implements TabItem {
     }
 
     private void initData() {
+        numberOfProducts.textProperty().bind(productList.countProperty().asString());
+        size.textProperty().bind(Bindings.format("%.2f",productList.sizeAsDoubleProperty()).concat(" GB"));
         productListView.setItems(productList.getProducts());
-        productListView.setCellFactory(e -> new ProductListCell());
+        productListView.setCellFactory(e -> new ProductListCell(productList));
+        productListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         title.setText(productList.getName());
         description.setText(productList.getDescription());
-        productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            Platform.runLater(() -> {
-                try {
-                    image.setImage(new Image(CopernicusService.getInstance().getPreview(newValue.getId())));
-                } catch (IOException | AuthenticationException | NotAuthenticatedException e) {
-                    e.printStackTrace();
-                }
-            });
+        productList.getProducts().addListener((ListChangeListener<Product>) c -> {
+            gtMapSearchController.clearMap();
+            gtMapSearchController.addProductsWKT(productList.getProducts());
 
         });
-        productListView.getItems().addListener((ListChangeListener<Product>) c -> {
-            if (c.wasAdded())
-                System.out.println(c.getList().size());
-            /*gtMap.createFeatureFromWKT(c.getAddedSubList().get(0).getFootprint(), c.getAddedSubList().get(0).getId());
-            gtMap.createAndDrawProductsLayer();
-            gtMap.refresh();*/
+
+        addSelectionModeListener();
+
+
+        workingAreaToAll.setOnAction(event -> {
+            System.out.println(gtMapSearchController.getWKT());
+            if (!gtMapSearchController.getWKT().isEmpty())
+                productList.setDefaultAreaOfWork(gtMapSearchController.getWKT());
         });
+    }
+
+
+
+    private void addSelectionModeListener() {
+        productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
+            Task<InputStream> task = new Task<>() {
+                @Override
+                protected InputStream call() throws Exception {
+                    setTabPaneComponent.getMainController().showWaitSpinner();
+                    return CopernicusService.getInstance().getPreview(newValue.getId());
+                }
+            };
+            task.setOnSucceeded(previewImageLoaded(task));
+            task.setOnFailed(loadDefaultImage());
+            new Thread(task).start();
+
+        });
+    }
+
+    private EventHandler<WorkerStateEvent> loadDefaultImage() {
+        return event -> {
+            image.setImage(new Image("/img/no_photo.jpg"));
+            setTabPaneComponent.getMainController().hideWaitSpinner();
+        };
+    }
+
+    private EventHandler<WorkerStateEvent> previewImageLoaded(Task<InputStream> task) {
+        return event -> {
+            try {
+                image.setImage(new Image(task.get()));
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            setTabPaneComponent.getMainController().hideWaitSpinner();
+        };
+    }
+
+    @Override
+    public ProductList getProductList() {
+        return productList;
+    }
+
+    @Override
+    public ObservableList<Product> getSelectedProducts() {
+        return productListView.getSelectionModel().getSelectedItems();
     }
 
     @Override
     public String getName() {
-        return getClass().getName();
+        return productList.getName();
     }
 
 }

@@ -2,15 +2,13 @@ package services.search;
 
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
-import model.openSearcher.OpenSearchQueryParameter;
+import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.CopernicusService;
-import utils.CopernicusHTTPAuthManager;
 import utils.ProductMapper;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -28,7 +26,7 @@ public class OpenSearcher implements SearchService {
     private CopernicusService service;
     private int productsPerPage;
     private int page;
-    private Map<OpenSearchQueryParameter, String> searchParameters;
+    private Map<SentinelProductParameters, String> searchParameters;
     static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
 
     public OpenSearcher() {
@@ -82,15 +80,15 @@ public class OpenSearcher implements SearchService {
         return page;
     }
 
-    public void addSearchParameter(OpenSearchQueryParameter parameterName, String value) {
+    public void addSearchParameter(SentinelProductParameters parameterName, String value) {
         this.searchParameters.put(parameterName, value);
     }
 
-    private String joinParameterNameValue(OpenSearchQueryParameter parameterName, String value) {
+    private String joinParameterNameValue(SentinelProductParameters parameterName, String value) {
         return parameterName.getParameterName()+":"+value;
     }
 
-    public Map<OpenSearchQueryParameter,String> getSearchParameters() {
+    public Map<SentinelProductParameters,String> getSearchParameters() {
         return this.searchParameters;
     }
 

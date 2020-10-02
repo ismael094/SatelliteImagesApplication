@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import utils.OpenSearchProductDeserializer;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 @JsonDeserialize(using = OpenSearchProductDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -97,7 +98,11 @@ public class Product {
     }
 
     public double getSizeAsDouble() {
-        return Double.parseDouble(size.substring(0,size.indexOf(" ")));
+        double p;
+        if (size.contains("MB"))
+            return Double.parseDouble(size.substring(0,size.indexOf(" ")))/1024.0;
+        else
+            return Double.parseDouble(size.substring(0,size.indexOf(" ")));
     }
 
     @Override
@@ -112,5 +117,18 @@ public class Product {
                 ", platformName='" + platformName + '\'' +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
+        return id.equals(product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

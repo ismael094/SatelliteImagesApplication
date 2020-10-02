@@ -44,6 +44,11 @@ public class MenuComponent extends MenuBar implements Component{
         return this;
     }
 
+    @Override
+    public SatelliteApplicationController getMainController() {
+        return mainController;
+    }
+
     public void initSearchView(String id) {
         ;
     }

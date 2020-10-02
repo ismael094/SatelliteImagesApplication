@@ -8,6 +8,9 @@ import gui.components.TabPaneComponent;
 import controller.search.CopernicusOpenSearchController;
 import controller.search.SearchController;
 import gui.components.ToolBarComponent;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -16,6 +19,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.ProductList;
+import model.products.Product;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -59,12 +63,18 @@ public class SatelliteApplicationController implements Initializable {
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
-    private List<ProductList> productLists;
+    private ObservableList<ProductList> productLists;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        productLists = new ArrayList<>();
+        productLists = FXCollections.observableArrayList();
+        productLists.addListener((ListChangeListener<ProductList>) c -> {
+            c.next();
+            System.out.println(c.wasAdded());
+            System.out.println(c.wasRemoved());
+            System.out.println("FUNCIONARÁ?");
+        });
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
         initComponents();
         searchControllers = new HashMap<>();
@@ -118,7 +128,7 @@ public class SatelliteApplicationController implements Initializable {
         return listTreeViewComponent;
     }
 
-    public List<ProductList> getUserProductList() {
+    public ObservableList<ProductList> getUserProductList() {
         return productLists;
     }
 

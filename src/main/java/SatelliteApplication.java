@@ -37,7 +37,7 @@ public class SatelliteApplication extends Application {
             Platform.exit();
             System.exit(0);
         }
-
+        
         URL location = getClass().getResource("/fxml/MainApp.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = new Scene(fxmlLoader.load());

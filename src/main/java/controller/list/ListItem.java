@@ -1,11 +1,10 @@
-package controller.search;
+package controller.list;
 
 import javafx.collections.ObservableList;
+import model.ProductList;
 import model.products.Product;
 
-public interface SearchController {
-    void search();
+public interface ListItem {
+    ProductList getProductList();
     ObservableList<Product> getSelectedProducts();
-
-    ObservableList<Product> getProducts();
 }

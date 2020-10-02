@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -11,10 +12,12 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
-<BorderPane id="createListDialog" fx:id="root" prefHeight="215.0" prefWidth="456.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.list.CreateListController">
+<BorderPane id="createListDialog" fx:id="root" prefHeight="504.0" prefWidth="456.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.list.CreateListController">
    <top>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="455.0" BorderPane.alignment="CENTER">
          <children>
@@ -28,26 +31,28 @@
       </AnchorPane>
    </top>
    <center>
-      <AnchorPane prefHeight="292.0" prefWidth="448.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="110.0" prefWidth="456.0" BorderPane.alignment="CENTER">
          <children>
-            <GridPane prefHeight="122.0" prefWidth="393.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="63.0" AnchorPane.topAnchor="0.0">
+            <GridPane prefHeight="411.0" prefWidth="405.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="51.0" AnchorPane.topAnchor="0.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="276.6000122070312" minHeight="10.0" prefHeight="188.8000061035156" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="259.1999816894531" minHeight="10.0" prefHeight="82.8000244140625" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="259.1999816894531" minHeight="10.0" prefHeight="213.99997558593748" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <GridPane prefHeight="122.0" prefWidth="394.0">
+                  <GridPane prefHeight="164.0" prefWidth="394.0">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                      </columnConstraints>
                      <rowConstraints>
                         <RowConstraints maxHeight="275.1999877929687" minHeight="0.0" prefHeight="27.40000190734863" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="330.60001983642576" minHeight="0.0" prefHeight="45.79999809265136" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="330.60001983642576" minHeight="10.0" prefHeight="49.399993896484375" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="330.60001983642576" minHeight="10.0" prefHeight="28.39996795654298" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="330.60001983642576" minHeight="0.0" prefHeight="38.00000610351563" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="330.60001983642576" minHeight="10.0" prefHeight="55.39999389648438" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="330.60001983642576" minHeight="10.0" prefHeight="47.40000610351561" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
                         <Label styleClass="bold" text="Description" GridPane.rowIndex="2">
@@ -68,6 +73,71 @@
                            </font>
                         </Label>
                         <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+                  <ToggleSwitch fx:id="activate" maxWidth="163.0" prefHeight="18.0" prefWidth="163.0" text="Activate restrictions" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
+                     </GridPane.margin>
+                  </ToggleSwitch>
+                  <GridPane fx:id="restrictions" GridPane.rowIndex="2">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="175.20004425048828" minHeight="10.0" prefHeight="164.80001983642578" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="90.599951171875" minHeight="10.0" prefHeight="24.199980163574224" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <VBox prefHeight="89.0" prefWidth="174.0" GridPane.columnIndex="1">
+                           <children>
+                              <JFXCheckBox fx:id="grd" checkedColor="#0d2ae8" text="GRD">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                              <JFXCheckBox fx:id="slc" checkedColor="#0d2ae8" text="SLC">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                              <JFXCheckBox fx:id="ocn" checkedColor="#0d2ae8" text="OCN">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                              <JFXCheckBox fx:id="sC" text="S2MSI1C">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                              <JFXCheckBox fx:id="sA" text="S2MSI2A">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                              <JFXCheckBox fx:id="sAp" text="S2MSI2Ap">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </JFXCheckBox>
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ToggleSwitch fx:id="s1" maxWidth="105.0" prefWidth="105.0" text="Sentinel 1">
+                                 <VBox.margin>
+                                    <Insets bottom="8.0" left="20.0" right="8.0" top="8.0" />
+                                 </VBox.margin>
+                              </ToggleSwitch>
+                              <ToggleSwitch fx:id="s2" maxWidth="105.0" prefWidth="105.0" text="Sentinel 2">
+                                 <VBox.margin>
+                                    <Insets bottom="8.0" left="20.0" right="8.0" top="8.0" />
+                                 </VBox.margin>
+                              </ToggleSwitch>
+                           </children>
+                        </VBox>
                      </children>
                   </GridPane>
                </children>

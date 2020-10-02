@@ -1,6 +1,6 @@
 package model.openSearcher;
 
-public enum OpenSearchQueryParameter {
+public enum SentinelProductParameters {
     PLATFORM_NAME("platformname"),
     PRODUCT_TYPE("producttype"),
     FOOTPRINT("footprint"),
@@ -15,7 +15,7 @@ public enum OpenSearchQueryParameter {
 
     private String name;
 
-    OpenSearchQueryParameter(String name) {
+    SentinelProductParameters(String name) {
         this.name = name;
     }
 

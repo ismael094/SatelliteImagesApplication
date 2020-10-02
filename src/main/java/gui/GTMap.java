@@ -1,10 +1,8 @@
 package gui;
 
-import com.google.common.collect.Lists;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Duration;
@@ -15,6 +13,7 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureLockException;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -75,6 +74,7 @@ public class GTMap extends Canvas {
 
     private boolean repaint = true;
     private List<SimpleFeature> featureCollection;
+    private final List<FeatureIdImpl> selectedFeatures;
     private MapContent mapContent;
     private Geometry searchAreaWKT;
     private String selectedFeatureID;
@@ -86,6 +86,7 @@ public class GTMap extends Canvas {
         super(width, height);
         graphicsContext = getGraphicsContext2D();
         draw = new StreamingRenderer();
+        selectedFeatures = new ArrayList<>();
         if (oms)
             initOMSMap();
         else
@@ -274,18 +275,27 @@ public class GTMap extends Canvas {
         doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
     }
 
-    public void selectFeature(int x, int y) throws IOException {
+    public void selectFeature(int x, int y, boolean multipleSelection) throws IOException {
         if (getLayerByName(RESULTS_LAYER_TITLE) == null)
             return;
         FeatureLayer featureLayer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
 
         FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates(x, y, featureLayer);
-        List<FeatureIdImpl> list = new ArrayList<>();
-        if (featureId != null)
-            list.add(featureId);
 
-        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(featureLayer), list);
+        if (!multipleSelection || featureId == null)
+            selectedFeatures.clear();
+
+        if (featureId != null && !selectedFeatures.contains(featureId))
+            selectedFeatures.add(featureId);
+        else if (featureId!=null) {
+            selectedFeatures.remove(featureId);
+        }
+
+        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(featureLayer), selectedFeatures);
         featureLayer.setStyle(selectedStyle);
+
+        if (featureId == null)
+            throw new FeatureLockException();
 
     }
 

@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import model.products.Product;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geotools.data.FeatureLockException;
 import org.locationtech.jts.io.ParseException;
 
 import java.io.IOException;
@@ -31,14 +32,19 @@ public class GTMapSearchController {
     private double baseDragedY;
 
     static final Logger logger = LogManager.getLogger(GTMapSearchController.class.getName());
+    private boolean disableMouseClickedEvent;
 
-    public GTMapSearchController(double width, double height) {
+    public GTMapSearchController(double width, double height, boolean controlBarActive) {
         searchAreaCoordinates = new double[2];
+        disableMouseClickedEvent = false;
         isSearchAreaDraw = false;
-        geotoolsMap = new GTMap((int) width, (int) height,false);
-        border = new BorderPane();
         HBox controlBar = controlBar();
-        border.setTop(controlBar);
+        geotoolsMap = new GTMap((int) width, (int) (height-controlBar.getHeight()),false);
+        border = new BorderPane();
+        if (controlBarActive)
+            border.setTop(controlBar);
+        else
+            border.setTop(null);
         border.setCenter(geotoolsMap);
         border.setLeft(null);
         border.setRight(null);
@@ -49,6 +55,10 @@ public class GTMapSearchController {
         return border;
     }
 
+    public void disableMouseClickedEvent() {
+        this.disableMouseClickedEvent = true;
+    }
+
     private void addGeotoolsMapEvents() {
         addMapMousePressedEvent();
         addMapMouseClickedEvent();
@@ -56,7 +66,6 @@ public class GTMapSearchController {
         addMapMouseMovedEvent();
         addMapMouseDraggedEvent();
         addMapScrollMapEvent();
-
     }
 
     private void addMapScrollMapEvent() {
@@ -68,12 +77,15 @@ public class GTMapSearchController {
 
     private void addMapMouseClickedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+            if (disableMouseClickedEvent)
+                return;
             if (t.getClickCount() == 1) {
                 try {
-                    System.out.println(t.getX() + " - " + (t.getY()));
-                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()));
+                    boolean multipleFeatureSelection = t.isControlDown();
+                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()),multipleFeatureSelection);
 
                 } catch (IOException e) {
+
                     logger.atError().log("Not able to style selected features: {0}",e);
                 }
                 geotoolsMap.refresh();
@@ -157,10 +169,6 @@ public class GTMapSearchController {
         geotoolsMap.createFeatureFromWKT(wkt,id);
     }
 
-    public HBox addBottomHBox() {
-        return new HBox();
-    }
-
     public HBox controlBar() {
         hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
@@ -178,7 +186,6 @@ public class GTMapSearchController {
         return hbox;
     }
 
-
     private Button getResetMapButton() {
         Button resetMap = GlyphsDude.createIconButton(FontAwesomeIcon.EXPAND,"Reset map");
         resetMap.setAccessibleText("Reset map");
@@ -186,17 +193,6 @@ public class GTMapSearchController {
             geotoolsMap.resetMap();
         });
         return resetMap;
-    }
-
-
-    private Button getGoToSelectionButton() {
-        Button goToSelection = GlyphsDude.createIconButton(FontAwesomeIcon.COMPRESS,"Zoom selected area");
-        goToSelection.setAccessibleText("Zoom selected area");
-
-        goToSelection.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            geotoolsMap.goToSelection();
-        });
-        return goToSelection;
     }
 
     private Button getDeleteSearchAreaButton() {

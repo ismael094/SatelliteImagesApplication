@@ -9,8 +9,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 import model.products.Product;
 
 import java.io.IOException;
@@ -60,6 +63,10 @@ public class ProductResultListCellController extends ListCell<Product> {
                 }
             }
             title.setText(product.getTitle());
+            Tooltip tooltip = new Tooltip(product.getTitle());
+            tooltip.setShowDelay(new Duration(0.2));
+            tooltip.setFont(Font.font(12));
+            title.setTooltip(tooltip);
             platformName.setText(product.getPlatformName());
             instrumentName.setText(product.getProductType());
             size.setText(product.getSize());

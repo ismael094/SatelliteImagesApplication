@@ -1,7 +1,5 @@
 package model.products;
 
-import model.products.Product;
-
 public class Sentinel2Product extends Product {
     private double cloudCoverPercentage;
     private double vegetationPercentageCoverage;
@@ -51,5 +49,15 @@ public class Sentinel2Product extends Product {
 
     public void setWaterPercentageCoverage(double waterPercentageCoverage) {
         this.waterPercentageCoverage = waterPercentageCoverage;
+    }
+
+    @Override
+    public String toString() {
+        return "Sentinel2Product{" +
+                "cloudCoverPercentage=" + cloudCoverPercentage +
+                ", vegetationPercentageCoverage=" + vegetationPercentageCoverage +
+                ", notVegetationPercentageCoverage=" + notVegetationPercentageCoverage +
+                ", waterPercentageCoverage=" + waterPercentageCoverage +
+                '}';
     }
 }

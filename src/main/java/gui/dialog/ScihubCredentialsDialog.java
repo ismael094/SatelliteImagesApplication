@@ -58,7 +58,6 @@ public class ScihubCredentialsDialog extends Dialog<Pair<String, String>> {
         loginButton.setDisable(true);
 
         this.getDialogPane().setContent(grid);
-        this.getDialogPane().setContent(grid);
         addListenerToUsernameField();
 
         setPasswordAndUsernameWhenButtonIsClicked();

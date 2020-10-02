@@ -1,17 +1,7 @@
 package services.search;
 
-import model.exception.NotAuthenticatedException;
-import model.openSearcher.OpenSearchQueryParameter;
-import model.exception.AuthenticationException;
-import org.apache.logging.log4j.core.appender.HttpManager;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import services.search.OpenSearcher;
-
-import java.io.IOException;
-import java.net.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

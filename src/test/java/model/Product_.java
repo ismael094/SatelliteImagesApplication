@@ -99,6 +99,12 @@ public class Product_ {
         assertThat(product.getSizeAsDouble()).isEqualTo(1.55d);
     }
 
+    @Test
+    public void should_return_size_in_Mb_as_double_less_than_one() {
+        product.setSize("766 MB");
+        assertThat(product.getSizeAsDouble()).isEqualTo(766.0/1024.0);
+    }
+
     /*@Test
     public void with_content_length_in_bytes_should_return_gigabytes() throws NoSuchFieldException, IllegalAccessException {
         Product product = new Product();

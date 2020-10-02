@@ -3,6 +3,7 @@ package controller.search;
 import controller.TabItem;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
 import model.filter.Filter;
@@ -113,7 +114,12 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     @Override
-    public List<Product> getSelectedProducts() {
+    public ObservableList<Product> getSelectedProducts() {
+        return null;
+    }
+
+    @Override
+    public ObservableList<Product> getProducts() {
         return null;
     }
 
