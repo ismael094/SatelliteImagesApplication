@@ -2,6 +2,9 @@ package model.user;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
 
 public class UserDTO {
@@ -10,8 +13,10 @@ public class UserDTO {
     private StringProperty password;
     private StringProperty firstName;
     private StringProperty lastName;
+    private ObservableList<ProductListDTO> productListsDTO;
 
     public UserDTO() {
+        this.productListsDTO = FXCollections.observableArrayList();
     }
 
     public UserDTO(StringProperty email, StringProperty password, StringProperty firstName, StringProperty lastName) {
@@ -20,6 +25,7 @@ public class UserDTO {
         this.firstName = firstName;
         this.lastName = lastName;
         this.id = null;
+        this.productListsDTO = FXCollections.observableArrayList();
     }
 
     public UserDTO(String email, String password, String firstName, String lastName) {
@@ -27,6 +33,19 @@ public class UserDTO {
         this.password = new SimpleStringProperty(password);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
+        this.productListsDTO = FXCollections.observableArrayList();
+    }
+
+    public void addProductList(ProductListDTO productListDTO) {
+        productListsDTO.add(productListDTO);
+    }
+
+    public ObservableList<ProductListDTO> getProductListsDTO() {
+        return productListsDTO;
+    }
+
+    public void setProductListsDTO(ObservableList<ProductListDTO> productListsDTO) {
+        this.productListsDTO = productListsDTO;
     }
 
     public ObjectId getId() {

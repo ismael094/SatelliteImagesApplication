@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane fitToWidth="true" prefHeight="496.0" prefWidth="1089.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <content>
+    <AnchorPane prefHeight="730.0" prefWidth="1086.0">
+         <children>
+            <GridPane alignment="CENTER" prefHeight="742.0" prefWidth="1086.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="489.6000122070312" minHeight="10.0" prefHeight="69.13333892822266" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="673.0666610717774" minHeight="10.0" prefHeight="673.0666610717774" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Text layoutX="60.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="h1" text="Satellite Information Manager" wrappingWidth="522.1367797851562">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Text>
+                  <Pane prefHeight="554.0" prefWidth="1090.0" GridPane.rowIndex="1">
+                     <children>
+                        <Text layoutX="15.0" layoutY="14.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The Satellite Information Manager application allows you to search, manage, download and process satellite images, all of it in single program. This first version only uses Sentinel products, but in future updates we will forward to open the application for more API to get all of it.As we said, we are using the Copernicus Open Access Hub to search products of the sentinel satellites family. The products that are implemented in this version are Sentinel 1 GRD and SLC products, as Sentinel 2 products. A little explanation about these instruments:" wrappingWidth="660.0" />
+                        <Text layoutX="15.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sentinel-1 is an imaging radar mission providing continuous all-weather, day-and-night imagery at C-band. The Sentinel-1 constellation provides high reliability, improved revisit time, geographical coverage and rapid data dissemination to support operational applications in the priority areas of marine monitoring, land monitoring and emergency services." wrappingWidth="666.4000549316406" />
+                        <Text layoutX="15.0" layoutY="169.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sentinel-1 potentially images all global landmasses, coastal zones and shipping routes in European waters in high resolution and covers the global oceans at regular intervals. Having a primary operational mode over land and another over open ocean allows for a pre-programmed conflict-free operation. The main operational mode features a wide swath (250 km) with high geometric (typically 20 m Level-1 product resolution) and radiometric resolutions, suitable for most applications." wrappingWidth="666.0" />
+                        <Text layoutX="15.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The Sentinel-1 Synthetic Aperture Radar (SAR) instrument may acquire data in four exclusive modes:" wrappingWidth="666.0" />
+                        <Text layoutX="30.0" layoutY="273.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stripmap (SM) - A standard SAR stripmap imaging mode where the ground swath is illuminated with a continuous sequence of pulses, while the antenna beam is pointing to a fixed azimuth and elevation angle." wrappingWidth="617.199951171875" />
+                        <Text layoutX="30.0" layoutY="310.0" strokeType="OUTSIDE" strokeWidth="0.0" text="• Interferometric Wide swath (IW) - Data is acquired in three swaths using the Terrain Observation with Progressive Scanning SAR (TOPSAR) imaging technique. In IW mode, bursts are synchronised from pass to pass to ensure the alignment of interferometric pairs. IW is SENTINEL-1's primary operational mode over land." wrappingWidth="617.0" />
+                        <Text layoutX="30.0" layoutY="362.0" strokeType="OUTSIDE" strokeWidth="0.0" text="•Extra Wide swath (EW) - Data is acquired in five swaths using the TOPSAR imaging technique. EW mode provides very large swath coverage at the expense of spatial resolution." wrappingWidth="617.0" />
+                        <Text layoutX="30.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="•Wave (WV) - Data is acquired in small stripmap scenes called &quot;vignettes&quot;, situated at regular intervals of 100 km along track. The vignettes are acquired by alternating, acquiring one vignette at a near range incidence angle while the next vignette is acquired at a far range incidence angle. WV is SENTINEL-1's operational mode over open ocean." wrappingWidth="617.0" />
+                        <Text layoutX="15.0" layoutY="455.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SENTINEL-1 data products distributed by ESA include:Raw Level-0 data (for specific usage)Processed Level-1 Single Look Complex (SLC) data comprising complex imagery with amplitude and phase (systematic distribution limited to specific relevant areas)Ground Range Detected (GRD) Level-1 data with multi-looked intensity only (systematically distributed)Level-2 Ocean (OCN) data for retrieved geophysical parameters of the ocean (systematically distributed)." wrappingWidth="617.0" />
+                        <ImageView fitHeight="232.0" fitWidth="319.0" layoutX="730.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/Sentinel-1.jpg" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="227.0" fitWidth="268.0" layoutX="770.0" layoutY="280.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/sentinel2.jpg" />
+                           </image>
+                        </ImageView>
+                        <Text layoutX="15.0" layoutY="525.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The SENTINEL-2 Multispectral Instrument (MSI) samples 13 spectral bands: four bands at 10 metres, six bands at 20 metres and three bands at 60 metres spatial resolution." wrappingWidth="630.0" />
+                        <Label layoutX="868.0" layoutY="253.0" text="Sentinel-1">
+                           <font>
+                              <Font name="System Italic" size="10.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="870.0" layoutY="520.0" text="Sentinel-2">
+                           <font>
+                              <Font name="System Italic" size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+  </content>
+</ScrollPane>

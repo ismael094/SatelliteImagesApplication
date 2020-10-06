@@ -1,45 +1,51 @@
-package model.products;
+package services.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import utils.OpenSearchProductDeserializer;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 
 import java.util.Calendar;
 import java.util.Objects;
 
-@JsonDeserialize(using = OpenSearchProductDeserializer.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Entity("products")
 public class Product {
-    private Calendar ingestionDate;
+    protected String ingestionDate;
     protected String title;
+    @Id
     protected String id;
-    private String footprint;
-    private String size;
-    private String productType;
-    private String platformName;
-    private String status;
+    protected String footprint;
+    protected String size;
+    protected String productType;
+    protected String platformName;
+    protected String status;
 
-    public Product() {
-    }
-
-    public Product(String ingestionDate, String title, String id, String footprint, String size, String productType, String platformName, String status) {
-        setIngestionDate(ingestionDate);
-        this.title = title;
+    public Product(String id, String title, String platformName, String productType, String footprint, String size, String status, String ingestionDate) {
+        //setIngestionDate(ingestionDate);
         this.id = id;
+        this.title = title;
         this.footprint = footprint;
         this.size = size;
         this.productType = productType;
         this.platformName = platformName;
         this.status = status;
+        this.ingestionDate = ingestionDate;
     }
 
-    public Calendar getIngestionDate() {
+    public Product() {
+    }
+
+    public String getIngestionDate() {
         return ingestionDate;
     }
 
     public void setIngestionDate(String ingestionDate) {
-        this.ingestionDate = javax.xml.bind.DatatypeConverter.parseDateTime(ingestionDate);
+        this.ingestionDate = ingestionDate;
     }
+
+    /*public void setIngestionDate(String ingestionDate) {
+        this.ingestionDate = javax.xml.bind.DatatypeConverter.parseDateTime(ingestionDate);
+    }*/
 
     public String getStatus() {
         return status;
@@ -95,14 +101,6 @@ public class Product {
 
     public String getFootprint() {
         return footprint;
-    }
-
-    public double getSizeAsDouble() {
-        double p;
-        if (size.contains("MB"))
-            return Double.parseDouble(size.substring(0,size.indexOf(" ")))/1024.0;
-        else
-            return Double.parseDouble(size.substring(0,size.indexOf(" ")));
     }
 
     @Override

@@ -3,10 +3,10 @@ package utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.openSearcher.OpenSearchResponse;
-import model.products.Product;
+import model.products.ProductDTO;
 import model.products.ProductProperties;
-import model.products.Sentinel1Product;
-import model.products.Sentinel2Product;
+import model.products.Sentinel1ProductDTO;
+import model.products.Sentinel2ProductDTO;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -18,8 +18,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -55,29 +53,29 @@ public class ProductMapper_ {
     @Test
     public void given_json_data_should_return_products_object() throws JSONException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        List<Product> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<Product>>() { });
+        List<ProductDTO> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<ProductDTO>>() { });
         assertThat(products.size()).isEqualTo(2);
     }
 
     @Test
     public void given_a_sentinel1_product_should_return_sentinel1POJO() throws JSONException, IOException{
         ObjectMapper mapper = new ObjectMapper();
-        List<Product> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<Product>>() { });
-        Product p = products.get(0);
-        assertThat(p).isInstanceOf(Sentinel1Product.class);
+        List<ProductDTO> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<ProductDTO>>() { });
+        ProductDTO p = products.get(0);
+        assertThat(p).isInstanceOf(Sentinel1ProductDTO.class);
         assertThat(p.getTitle()).isEqualTo("S1A_IW_RAW__0SDV_20200910T133908_20200910T133939_034297_03FC92_B68D");
         assertThat(p.getId()).isEqualTo("883cd3b6-eefe-4c73-b8e7-80759b6403a0");
         assertThat(p.getPlatformName()).isEqualTo("Sentinel-1");
-        assertThat(((Sentinel1Product)p).getPolarizationMode()).isEqualTo("VH VV");
+        assertThat(((Sentinel1ProductDTO)p).getPolarizationMode()).isEqualTo("VH VV");
     }
 
     @Test
     public void given_a_sentinel2_product_should_return_sentinel2POJO() throws JSONException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        List<Product> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<Product>>() { });
-        Product p = products.get(1);
-        assertThat(p).isInstanceOf(Sentinel2Product.class);
-        assertThat(((Sentinel2Product)p).getCloudCoverPercentage()).isEqualTo(4.386624d);
+        List<ProductDTO> products = mapper.readValue(str.get("entry").toString(), new TypeReference<List<ProductDTO>>() { });
+        ProductDTO p = products.get(1);
+        assertThat(p).isInstanceOf(Sentinel2ProductDTO.class);
+        assertThat(((Sentinel2ProductDTO)p).getCloudCoverPercentage()).isEqualTo(4.386624d);
     }
 
     @Test
@@ -85,8 +83,8 @@ public class ProductMapper_ {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContentOne);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getProducts().size()).isEqualTo(1);
-        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
-        assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
+        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
+        assertThat(((Sentinel1ProductDTO)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
     }
 
     @Test
@@ -94,10 +92,10 @@ public class ProductMapper_ {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContent);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getProducts().size()).isEqualTo(4);
-        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
-        assertThat(((Sentinel1Product)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
-        assertThat(response.getProducts().get(1)).isInstanceOf(Sentinel2Product.class);
-        assertThat(((Sentinel2Product)response.getProducts().get(1)).getCloudCoverPercentage()).isEqualTo(51.9229d);
+        assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
+        assertThat(((Sentinel1ProductDTO)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
+        assertThat(response.getProducts().get(1)).isInstanceOf(Sentinel2ProductDTO.class);
+        assertThat(((Sentinel2ProductDTO)response.getProducts().get(1)).getCloudCoverPercentage()).isEqualTo(51.9229d);
     }
 
     @Test

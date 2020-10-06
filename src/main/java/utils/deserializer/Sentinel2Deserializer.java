@@ -1,9 +1,12 @@
 package utils.deserializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import model.products.Product;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import model.products.ProductDTO;
 import model.products.ProductProperties;
-import model.products.Sentinel2Product;
+import model.products.Sentinel2ProductDTO;
 
 import java.util.List;
 
@@ -14,8 +17,15 @@ public class Sentinel2Deserializer extends Deserializer {
     public static final String VEGETATION_COVER_PERCENTAGE = "vegetationcoverpercentage";
 
     @Override
-    public Product deserialize(JsonNode product) {
-        Sentinel2Product sentinel2 = new Sentinel2Product();
+    public ProductDTO deserialize(JsonNode product) {
+        Sentinel2ProductDTO sentinel2 =  new Sentinel2ProductDTO(
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleObjectProperty<>(),
+                new SimpleDoubleProperty(),new SimpleDoubleProperty(),
+                new SimpleDoubleProperty(),new SimpleDoubleProperty());
+
         List<ProductProperties> stringProperties = getStringProperties(product);
         if (product.get(DOUBLE_ARRAY).isArray()) {
             List<ProductProperties> doubleProperties = getDoubleProperties(product);
@@ -30,25 +40,25 @@ public class Sentinel2Deserializer extends Deserializer {
         return sentinel2;
     }
 
-    private void setNotVegetationPercentagePropertyIfExists(Sentinel2Product product, List<ProductProperties> doubleProperties) {
+    private void setNotVegetationPercentagePropertyIfExists(Sentinel2ProductDTO product, List<ProductProperties> doubleProperties) {
         if (getPropertyByName(NOT_VEGETATION_COVER_PERCENTAGE,doubleProperties) == null)
             return;
         product.setNotVegetationPercentageCoverage(Double.parseDouble((String)  getPropertyByName(NOT_VEGETATION_COVER_PERCENTAGE,doubleProperties)));
     }
 
-    private void setVegetationPercentageIfExistsPropertyIfExists(Sentinel2Product product, List<ProductProperties> doubleProperties) {
+    private void setVegetationPercentageIfExistsPropertyIfExists(Sentinel2ProductDTO product, List<ProductProperties> doubleProperties) {
         if (getPropertyByName(VEGETATION_COVER_PERCENTAGE,doubleProperties) == null)
             return;
         product.setVegetationPercentageCoverage(Double.parseDouble((String)  getPropertyByName(VEGETATION_COVER_PERCENTAGE,doubleProperties)));
     }
 
-    private void setWaterCoverageIfExistsPropertyIfExists(Sentinel2Product product, List<ProductProperties> doubleProperties) {
+    private void setWaterCoverageIfExistsPropertyIfExists(Sentinel2ProductDTO product, List<ProductProperties> doubleProperties) {
         if (getPropertyByName(WATER_COVER_PERCENTAGE,doubleProperties) == null)
             return;
         product.setWaterPercentageCoverage(Double.parseDouble((String)  getPropertyByName(WATER_COVER_PERCENTAGE,doubleProperties)));
     }
 
-    private void setCloudCoverPercentageIfExistsPropertyIfExists(Sentinel2Product product, List<ProductProperties> doubleProperties) {
+    private void setCloudCoverPercentageIfExistsPropertyIfExists(Sentinel2ProductDTO product, List<ProductProperties> doubleProperties) {
         if (getPropertyByName(CLOUD_COVER_PERCENTAGE,doubleProperties) == null)
             return;
         product.setCloudCoverPercentage(Double.parseDouble((String) getPropertyByName(CLOUD_COVER_PERCENTAGE,doubleProperties)));

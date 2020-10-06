@@ -1,7 +1,7 @@
 package controller.search;
 
 import com.jfoenix.controls.*;
-import controller.TabItem;
+import controller.interfaces.TabItem;
 import controller.cell.ProductResultListCellController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -11,11 +11,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -23,13 +27,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
-import model.products.Product;
+import model.products.ProductDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.CopernicusService;
 import services.search.OpenSearcher;
 import utils.AlertFactory;
 
+import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -84,16 +90,16 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     @FXML
     private HBox resultPaneHeader;
     @FXML
-    private ListView<Product> resultProductsList;
+    private ListView<ProductDTO> resultProductsList;
     @FXML
     private AnchorPane mapPane;
     @FXML
     private Button showResults;
 
-    private GTMapSearchController GTMapSearchController;
+    private GTMapSearchController mapController;
 
     static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
-    private boolean paginationSetted;
+    private boolean isPaginationSetted;
     private TabPaneComponent tabPaneComponent;
 
     public CopernicusOpenSearchController(String id) {
@@ -112,12 +118,12 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     @Override
-    public ObservableList<Product> getSelectedProducts() {
+    public ObservableList<ProductDTO> getSelectedProducts() {
         return resultProductsList.getSelectionModel().getSelectedItems();
     }
 
     @Override
-    public ObservableList<Product> getProducts() {
+    public ObservableList<ProductDTO> getProducts() {
         return resultProductsList.getItems();
     }
 
@@ -133,7 +139,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     @Override
     public Task<Parent> start() {
-        searcher = new OpenSearcher();
+        searcher = new OpenSearcher(CopernicusService.getInstance());
         return new Task<>() {
             @Override
             protected Parent call() throws Exception {
@@ -158,54 +164,78 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         setSentinel1Data();
         setProductsList();
         initResultPaneHeader();
-        initPaginationEvent();
-        initSearchEvent();
+        onActionInPaginationFireSearchEvent();
         initGTMapController();
-        cloudCoverageEvent();
+        onSearchButtonActionSearchEvent();
+        onCloudCoverageChangeAllowOnlyNumbers();
     }
 
-    private void initSearchEvent() {
+    private void onSearchButtonActionSearchEvent() {
         search.setOnMouseClicked(e->{
             searcher.setStartProductIndex(0);
-            paginationSetted = false;
+            isPaginationSetted = false;
             search();
         });
     }
 
     private void initGTMapController() {
-        GTMapSearchController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(), true);
-        BorderPane view = (BorderPane)GTMapSearchController.getView();
+        mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(), true);
+        mapController.addSelectedAreaEvent("products");
+
+        onMouseClickInMapHighlightSelectedProductsEvent();
+
+        mapPane.getChildren().addAll(mapController.getView());
+        AnchorPane.setLeftAnchor(mapController.getView(),0.0);
+        AnchorPane.setRightAnchor(mapController.getView(),0.0);
+    }
+
+    private void onMouseClickInMapHighlightSelectedProductsEvent() {
+        BorderPane view = (BorderPane)mapController.getView();
         view.getCenter().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
-            if (GTMapSearchController.getSelectedProduct() == null) {
+            //If there are not selected products in map, deselect items in listview
+            if (mapController.getSelectedProduct() == null) {
                 resultProductsList.getSelectionModel().clearSelection();
                 return;
             }
 
-            Product product = resultProductsList.getItems().stream()
-                    .filter(p -> p.getId().equals(GTMapSearchController.getSelectedProduct()))
+            //Get selected product
+            ProductDTO product = resultProductsList.getItems().stream()
+                    .filter(p -> p.getId().equals(mapController.getSelectedProduct()))
                     .findFirst()
                     .orElse(null);
 
+            //Clear selected items in listview if control is not pushed
             if (!event.isControlDown())
                 resultProductsList.getSelectionModel().clearSelection();
+
             if (product != null) {
-                if (resultProductsList.getSelectionModel().isSelected(resultProductsList.getItems().indexOf(product))) {
-                    resultProductsList.getSelectionModel().clearSelection(resultProductsList.getItems().indexOf(product));
+                //If product is already selected, deselected
+                if (isProductSelectedInListView(product)) {
+                    deselectProductInListView(product);
                 } else {
-                    resultProductsList.setFocusTraversable(true);
-                    resultProductsList.getFocusModel().focus(resultProductsList.getItems().indexOf(product));
-                    resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
-                    resultProductsList.scrollTo(product);
+                    selectProductInListView(product);
                 }
 
             }
         });
-        mapPane.getChildren().addAll(GTMapSearchController.getView());
-        AnchorPane.setLeftAnchor(GTMapSearchController.getView(),0.0);
-        AnchorPane.setRightAnchor(GTMapSearchController.getView(),0.0);
     }
 
-    private void cloudCoverageEvent() {
+    private void selectProductInListView(ProductDTO product) {
+        resultProductsList.setFocusTraversable(true);
+        resultProductsList.getFocusModel().focus(resultProductsList.getItems().indexOf(product));
+        resultProductsList.getSelectionModel().select(resultProductsList.getItems().indexOf(product));
+        resultProductsList.scrollTo(product);
+    }
+
+    private void deselectProductInListView(ProductDTO product) {
+        resultProductsList.getSelectionModel().clearSelection(resultProductsList.getItems().indexOf(product));
+    }
+
+    private boolean isProductSelectedInListView(ProductDTO product) {
+        return resultProductsList.getSelectionModel().isSelected(resultProductsList.getItems().indexOf(product));
+    }
+
+    private void onCloudCoverageChangeAllowOnlyNumbers() {
         cloudCoverage.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*") || newValue.length() == 0)
                 cloudCoverage.setText(newValue.replaceAll("[^\\d]", ""));
@@ -221,10 +251,10 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         pagination.setManaged(b);
     }
 
-    private void initPaginationEvent() {
+    private void onActionInPaginationFireSearchEvent() {
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             searcher.setStartProductIndex(searcher.getProductsPerPage()*(newIndex.intValue()));
-            paginationSetted = true;
+            isPaginationSetted = true;
             search();
         });
     }
@@ -232,13 +262,13 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     private void initProductsPerPage() {
         rows.setItems(FXCollections.observableArrayList(
                 25,50,75,100));
-        rows.setValue(100);
+        rows.setValue(25);
         rows.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observableValue, oldValue, newValue) -> {
-                    if (newValue > 0)
-                        searcher.setProductPerPage(newValue);
-                });
+            .selectedItemProperty()
+            .addListener((observableValue, oldValue, newValue) -> {
+                if (newValue > 0)
+                    searcher.setProductPerPage(newValue);
+            });
     }
 
     private void setSentinel1Data() {
@@ -261,15 +291,19 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     private void setProductsList() {
         resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        resultProductsList.setOnMouseClicked(event -> {
-            ObservableList<Product> products = resultProductsList.getSelectionModel().getSelectedItems();
-            System.out.println(products.size());
-            GTMapSearchController.showProductArea(
+        resultProductsList.setOnMouseClicked(highlightInMapSelectedProductInListView());
+    }
+
+    private EventHandler<MouseEvent> highlightInMapSelectedProductInListView() {
+        return event -> {
+            ObservableList<ProductDTO> products = resultProductsList.getSelectionModel().getSelectedItems();
+            //Get the ids of the products for the features id
+            mapController.showProductArea(
                     products.stream()
-                            .map(Product::getId)
+                            .map(ProductDTO::getId)
                             .collect(Collectors.toList())
-            );
-        });
+                    , "products");
+        };
     }
 
     private void setSatelliteList() {
@@ -382,7 +416,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
         try {
-            ObservableList<Product> tObservableArray =
+            ObservableList<ProductDTO> tObservableArray =
                     FXCollections.observableArrayList(response.get().getProducts());
 
             resultProductsList.setItems(tObservableArray);
@@ -392,7 +426,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
             if (openSearchResponse.getProducts().size() > 0) {
                 setPaginationVisible(true);
                 writeProductsFootprintInMap(openSearchResponse.getProducts());
-                if (!paginationSetted)
+                if (!isPaginationSetted)
                     setPagination(openSearchResponse.getNumOfProducts(),openSearchResponse.getProducts().size());
             } else {
                 setPaginationVisible(false);
@@ -406,7 +440,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     private void clearMap() {
-        GTMapSearchController.clearMap();
+        mapController.clearMap("products");
     }
 
     private void setSpinnerVisible(boolean b) {
@@ -430,8 +464,9 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     }
 
-    private void writeProductsFootprintInMap(List<Product> products) {
-        GTMapSearchController.addProductsWKT(products);
+    private void writeProductsFootprintInMap(List<ProductDTO> products) {
+        mapController.printProductsInMap(products, Color.BLACK, null);
+
     }
 
     private Task<OpenSearchResponse> getSearchTask() {
@@ -482,8 +517,8 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     private void addWKTParameter() {
-        if (GTMapSearchController.getWKT().length()>0)
-            searcher.addSearchParameter(SentinelProductParameters.FOOTPRINT,"\"Intersects("+GTMapSearchController.getWKT()+")\"");
+        if (mapController.getWKT().length()>0)
+            searcher.addSearchParameter(SentinelProductParameters.FOOTPRINT,"\"Intersects("+ mapController.getWKT()+")\"");
     }
 
     private void addDateRangeFilter() {

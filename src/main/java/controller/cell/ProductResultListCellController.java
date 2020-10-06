@@ -1,7 +1,7 @@
 package controller.cell;
 
 import com.jfoenix.controls.JFXButton;
-import controller.search.CopernicusProductDetailsController;
+import controller.search.CopernicusProductDetailsController_;
 import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -14,12 +14,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-import model.products.Product;
+import model.products.ProductDTO;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class ProductResultListCellController extends ListCell<Product> {
+public class ProductResultListCellController extends ListCell<ProductDTO> {
     private final TabPaneComponent tabPaneComponent;
     private FXMLLoader loader;
 
@@ -43,7 +43,7 @@ public class ProductResultListCellController extends ListCell<Product> {
     }
 
     @Override
-    protected void updateItem(Product product, boolean empty) {
+    protected void updateItem(ProductDTO product, boolean empty) {
         super.updateItem(product, empty);
 
         if(empty || product == null) {
@@ -62,14 +62,15 @@ public class ProductResultListCellController extends ListCell<Product> {
                     e.printStackTrace();
                 }
             }
-            title.setText(product.getTitle());
+            title.textProperty().bind(product.titleProperty());
             Tooltip tooltip = new Tooltip(product.getTitle());
             tooltip.setShowDelay(new Duration(0.2));
-            tooltip.setFont(Font.font(12));
+            tooltip.setFont(Font.font(10));
             title.setTooltip(tooltip);
             platformName.setText(product.getPlatformName());
             instrumentName.setText(product.getProductType());
             size.setText(product.getSize());
+
             details.setOnMouseClicked(e->{
                 detailsEvent(product);
             });
@@ -79,22 +80,9 @@ public class ProductResultListCellController extends ListCell<Product> {
 
     }
 
-    public void detailsEvent(Product product) {
-        URL location = getClass().getResource("/fxml/ProductDetails.fxml");
-        FXMLLoader loader = new FXMLLoader(location);
-        Task<Parent> response = new Task<>() {
-            @Override
-            protected Parent call() throws Exception {
-                Parent parent = loader.load();
-                CopernicusProductDetailsController controller = loader.getController();
-                controller.setProduct(product);
-                return parent;
-            }
-        };
-        response.setOnSucceeded(event -> {
-            tabPaneComponent.create(product.getTitle().substring(0,10),response.getValue());
-        });
-        new Thread(response).start();
+    public void detailsEvent(ProductDTO product) {
+        CopernicusProductDetailsController_ copernicusPDC = new CopernicusProductDetailsController_(product);
+        tabPaneComponent.load(copernicusPDC);
     }
 
 }

@@ -6,24 +6,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import model.ProductList;
+import model.list.ProductListDTO;
 
 public class CreateProductListDialog extends Stage {
 
     private final GridPane group;
     private final TextField name;
     private final TextField description;
-    private ProductList productList;
+    private ProductListDTO productListDTO;
 
     public CreateProductListDialog() {
         this.group = new GridPane();
         this.description = new TextField("Description");
         this.name = new TextField("Name");
-        this.productList = null;
+        this.productListDTO = null;
     }
 
     public void init() {
@@ -55,7 +53,7 @@ public class CreateProductListDialog extends Stage {
         setHeight(200);
     }
 
-    public ProductList getProductList() {
-        return productList;
+    public ProductListDTO getProductList() {
+        return productListDTO;
     }
 }

@@ -12,8 +12,8 @@ import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utils.MongoDBConfiguration;
-import utils.MongoDBManager;
+import utils.database.MongoDBConfiguration;
+import utils.database.MongoDBManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,7 +32,7 @@ public class SatelliteApplication extends Application {
         initDatabase();
 
         UserDTO userDTO = loginWindows();
-
+        System.out.println(userDTO.getProductListsDTO().size());
         if (userDTO.getEmail().isEmpty()) {
             Platform.exit();
             System.exit(0);
@@ -60,8 +60,11 @@ public class SatelliteApplication extends Application {
 
     private void initDatabase() {
         MongoDBManager mongoDBManager = MongoDBManager.getMongoDBManager();
-        mongoDBManager.setCredentialsAndDatabase(MongoDBConfiguration.USER,MongoDBConfiguration.PASSWORD,MongoDBConfiguration.DATABASE);
-        mongoDBManager.connect();
+        if (!mongoDBManager.isConnected()) {
+            mongoDBManager.setCredentialsAndDatabase(MongoDBConfiguration.USER,MongoDBConfiguration.PASSWORD,MongoDBConfiguration.DATABASE);
+            mongoDBManager.connect();
+        }
+
     }
 
     private UserDTO loginWindows() {

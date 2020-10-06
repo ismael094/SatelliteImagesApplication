@@ -3,15 +3,12 @@ package gui;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureLockException;
 import org.geotools.data.FileDataStore;
@@ -27,15 +24,11 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.*;
-import org.geotools.ows.ServiceException;
-import org.geotools.ows.wms.WebMapServer;
-import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.*;
 import org.geotools.styling.Stroke;
-import org.geotools.swing.wms.WMSLayerChooser;
 import org.geotools.tile.impl.osm.OSMService;
 import org.geotools.tile.util.AsyncTileLayer;
 import org.jfree.fx.FXGraphics2D;
@@ -47,7 +40,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -63,27 +55,24 @@ import java.util.stream.IntStream;
 
 public class GTMap extends Canvas {
     private static final double PAINT_HZ = 500;
-    private static final String SEARCH_AREA = "SearchArea";
-    private static final String RESULTS_LAYER_TITLE = "ResultsLayer";
     private final GTRenderer draw;
     private final GraphicsContext graphicsContext;
     private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     private final StyleFactory sf = CommonFactoryFinder.getStyleFactory();
 
-    static final Logger logger = LogManager.getLogger(GTMap.class.getName());
-
     private boolean repaint = true;
-    private List<SimpleFeature> featureCollection;
     private final List<FeatureIdImpl> selectedFeatures;
     private MapContent mapContent;
     private Geometry searchAreaWKT;
     private String selectedFeatureID;
-    private AbstractGridCoverage2DReader reader;
+    private final Map<String,List<SimpleFeature>> layers;
 
+    static final Logger logger = LogManager.getLogger(GTMap.class.getName());
 
 
     public GTMap(int width, int height,boolean oms) {
         super(width, height);
+        layers = new HashMap<>();
         graphicsContext = getGraphicsContext2D();
         draw = new StreamingRenderer();
         selectedFeatures = new ArrayList<>();
@@ -128,44 +117,13 @@ public class GTMap extends Canvas {
         mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));
     }
 
-    private Style createRGBStyle(File f) throws IOException {
-        AbstractGridFormat format = GridFormatFinder.findFormat( f );
-        reader = format.getReader(f);
-        GridCoverage2D cov;
-        cov = reader.read(null);
-        SelectedChannelType[] sct = new SelectedChannelType[cov.getNumSampleDimensions()];
-        ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.HISTOGRAM);
-        IntStream.range(0, 3).forEach(i -> sct[i] = sf.createSelectedChannelType(String.valueOf(i + 1), ce));
-        RasterSymbolizer sym = sf.getDefaultRasterSymbolizer();
-        sym.setChannelSelection(sf.channelSelection(sct[0], sct[1], sct[2]));
-        return SLD.wrapSymbolizers(sym);
-    }
-
-    private void wms() {
-        try {
-            URL capabilitiesURL = new URL("https://tiles.maps.eox.at/wms/");
-            WebMapServer wms = new WebMapServer(capabilitiesURL);
-
-            List<org.geotools.ows.wms.Layer> wmsLayers = WMSLayerChooser.showSelectLayer(wms);
-
-            mapContent.setTitle(wms.getCapabilities().getService().getTitle());
-            for (org.geotools.ows.wms.Layer wmsLayer : wmsLayers) {
-                System.out.println(wmsLayer.getTitle());
-                WMSLayer displayLayer = new WMSLayer(wms, wmsLayer);
-                mapContent.addLayer(displayLayer);
-            }
-        } catch (ServiceException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private FileDataStore loadFileDataStore(String url) throws IOException {
         URL resource = this.getClass().getResource(url);
         File file = new File(resource.getPath());
         return FileDataStoreFinder.getDataStore(file);
     }
 
-    public void createFeatureFromWKT(String wktCoordinates, String id) throws ParseException {
+    public void createFeatureFromWKT(String wktCoordinates, String id, String layer) throws ParseException {
 
         SimpleFeatureBuilder featureBuilder;
         if (wktCoordinates.contains("MULTIPOLYGON"))
@@ -174,42 +132,41 @@ public class GTMap extends Canvas {
             featureBuilder = getSimpleFeatureBuilder(Polygon.class);
 
         featureBuilder.add(readWKTString(wktCoordinates));
-        if (featureCollection == null) {
-            featureCollection = new ArrayList<>();
-            //createProductResultsLayer(Color.BLACK,null,1f);
+        if (layers.getOrDefault(layer,null) == null) {
+            layers.put(layer,new ArrayList<>());
+            System.out.println("Creating layer "+layer);
         }
-        featureCollection.add(featureBuilder.buildFeature(id));
-        //doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
+        layers.get(layer).add(featureBuilder.buildFeature(id));
     }
 
-    public void clearFeatures() {
-        featureCollection = null;
+    public void clearFeatures(String layer) {
+        List<SimpleFeature> simpleFeatures = layers.getOrDefault(layer,null);
+
+        if (simpleFeatures != null)
+            simpleFeatures.clear();
+
+
     }
 
-    public void showFeatureArea(List<String> ids)  {
-        FeatureLayer layer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
+    public void highlightFeatures(List<String> ids, String layerName, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor)  {
+        FeatureLayer layer = (FeatureLayer) getLayerByName(layerName);
         List<FeatureIdImpl> collect = ids.stream().map(FeatureIdImpl::new).collect(Collectors.toList());
-        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(layer), collect);
+
+        Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(layer));
+        selectedRule.setFilter(ff.id(Set.copyOf(collect)));
+
+        Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,1f,getLayerGeometryAttribute(layer));
+        notSelectedRule.setElseFilter(true);
+
+        Style selectedStyle = createSelectedFeatureStyle(collect, selectedRule, notSelectedRule);
         layer.setStyle(selectedStyle);
         refresh();
     }
 
-    private void drawPolygonFromCoordinates(Coordinate[] coordinates) throws ParseException {
-
-        SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
-        Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
-        searchAreaWKT = readWKTString(polygon.toText());
-        featureBuilder.add(searchAreaWKT);
-
-        removeSearchAreaLayer();
-
-        addFeatureToMapContent(featureBuilder,Color.RED,null,0.5f, SEARCH_AREA);
-        refresh();
-    }
-
-    public void createAndDrawProductsLayer() {
-        Layer resultsLayer = createLayer(featureCollection,
-                getPolygonStyle(Color.BLACK, null, 0.5f), RESULTS_LAYER_TITLE);
+    public void createAndDrawLayer(String layer, Color borderColor, Color fillColor) {
+        removeLayer(layer);
+        Layer resultsLayer = createLayer(layers.getOrDefault(layer, new ArrayList<>()),
+                getPolygonStyle(borderColor, fillColor, 0.5f), layer);
         mapContent.addLayer(resultsLayer);
         refresh();
     }
@@ -235,11 +192,6 @@ public class GTMap extends Canvas {
     private Style getPolygonStyle(Color outlineColor, Color fillColor, float opacity) {
         return SLD.createPolygonStyle(outlineColor,fillColor, opacity);
     }
-
-    private void removeSearchAreaLayer() {
-        removeLayer(SEARCH_AREA);
-    }
-
 
     private SimpleFeatureBuilder getSimpleFeatureBuilder(Class geometry) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -275,12 +227,13 @@ public class GTMap extends Canvas {
         doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
     }
 
-    public void selectFeature(int x, int y, boolean multipleSelection) throws IOException {
-        if (getLayerByName(RESULTS_LAYER_TITLE) == null)
-            return;
-        FeatureLayer featureLayer = (FeatureLayer) getLayerByName(RESULTS_LAYER_TITLE);
+    public void selectFeature(Point2D point, boolean multipleSelection, String layer, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor) throws IOException {
+        FeatureLayer featureLayer = (FeatureLayer) getLayerByName(layer);
 
-        FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates(x, y, featureLayer);
+        if (featureLayer == null)
+            return;
+
+        FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates((int)point.getX(), (int)point.getY(), featureLayer);
 
         if (!multipleSelection || featureId == null)
             selectedFeatures.clear();
@@ -291,7 +244,13 @@ public class GTMap extends Canvas {
             selectedFeatures.remove(featureId);
         }
 
-        Style selectedStyle = createSelectedFeatureStyle(getLayerGeometryAttribute(featureLayer), selectedFeatures);
+        Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(featureLayer));
+        selectedRule.setFilter(ff.id(Set.copyOf(selectedFeatures)));
+
+        Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,1f,getLayerGeometryAttribute(featureLayer));
+        notSelectedRule.setElseFilter(true);
+
+        Style selectedStyle = createSelectedFeatureStyle(selectedFeatures, selectedRule, notSelectedRule);
         featureLayer.setStyle(selectedStyle);
 
         if (featureId == null)
@@ -329,17 +288,11 @@ public class GTMap extends Canvas {
                 worldRect, mapContent.getCoordinateReferenceSystem());
     }
 
-    private Style createSelectedFeatureStyle(String geometryAttributeName,List<FeatureIdImpl> ids) {
-        Rule selectedRule = createRule(Color.BLUE,Color.CYAN, 3f, 0.1f, geometryAttributeName);
-        selectedRule.setFilter(ff.id(Set.copyOf(ids)));
-
-        Rule notSelectedFeaturesRules = createRule(Color.BLACK, null,1f,1f,geometryAttributeName);
-        notSelectedFeaturesRules.setElseFilter(true);
-
+    private Style createSelectedFeatureStyle(List<FeatureIdImpl> ids, Rule selectedRule,  Rule notSelectedRule) {
         FeatureTypeStyle fts = sf.createFeatureTypeStyle();
         if (ids.size() > 0)
             fts.rules().add(selectedRule);
-        fts.rules().add(notSelectedFeaturesRules);
+        fts.rules().add(notSelectedRule);
 
         Style style = sf.createStyle();
         style.featureTypeStyles().add(fts);
@@ -377,12 +330,25 @@ public class GTMap extends Canvas {
         doSetDisplayArea(envelope);
     }
 
-    public void drawPolygon(double initX, double initY, double endX, double endY) {
+    public void createLayerFromCoordinates(Point2D initial, Point2D end, String layerName) {
         try {
-            drawPolygonFromCoordinates(getSquareCoordinates(initX, initY, endX, endY));
+            drawPolygonFromCoordinates(getSquareCoordinates(initial.getX(), initial.getY(), end.getX(), end.getY()),layerName);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    private void drawPolygonFromCoordinates(Coordinate[] coordinates, String layerName) throws ParseException {
+
+        SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
+        Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
+        searchAreaWKT = readWKTString(polygon.toText());
+        featureBuilder.add(searchAreaWKT);
+
+        removeLayer(layerName);
+
+        addFeatureToMapContent(featureBuilder,Color.RED,null,0.5f, layerName);
+        refresh();
     }
 
     private Coordinate[] getSquareCoordinates(double initX, double initY, double endX, double endY) {
@@ -430,6 +396,14 @@ public class GTMap extends Canvas {
         svc.start();
     }
 
+    public void focusOnLayer(String layer) {
+        Layer ly = getLayerByName(layer);
+        if (ly != null) {
+            int i = mapContent.layers().indexOf(ly);
+            doSetDisplayArea(mapContent.layers().get(i).getBounds());
+        }
+    }
+
     public void resetMap() {
         doSetDisplayArea(mapContent.layers().get(0).getBounds());
     }
@@ -439,11 +413,11 @@ public class GTMap extends Canvas {
     }
 
 
-    public void clearMap() {
+    public void clearMap(String layerName) {
         List<Layer> layers = mapContent.layers();
             layers.stream()
                 .filter(Objects::nonNull)
-                .filter(l->l.getTitle()!=null && l.getTitle().equals(RESULTS_LAYER_TITLE))
+                .filter(l->l.getTitle()!=null && l.getTitle().equals(layerName))
                 .forEach(layers::remove);
     }
 
@@ -457,6 +431,5 @@ public class GTMap extends Canvas {
     public String getSelectedFeatureID() {
         return selectedFeatureID;
     }
-
 
 }

@@ -2,11 +2,12 @@ package controller.list;
 
 import com.jfoenix.controls.JFXListView;
 import controller.GTMapSearchController;
-import controller.TabItem;
+import controller.interfaces.TabItem;
 import controller.cell.ProductListCell;
-import gui.GTMap;
+import controller.interfaces.ProductTabItem;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.components.TabPaneComponent;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -21,32 +22,26 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import model.ProductList;
+import model.list.ProductListDTO;
 import model.exception.AuthenticationException;
-import model.exception.NotAuthenticatedException;
-import model.products.Product;
-import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.geotools.swing.control.DnDListItemsTransferable;
-import org.locationtech.jts.geom.Geometry;
+import model.products.ProductDTO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import services.CopernicusService;
-import utils.WKTUtil;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class ListController implements TabItem, ListItem {
+public class ListController implements TabItem, ProductTabItem {
     private final FXMLLoader loader;
     private Parent parent;
-    private ProductList productList;
+    private final ProductListDTO productListDTO;
+    private GTMapSearchController mapController;
+    private TabPaneComponent tabPaneComponent;
 
     @FXML
     private ImageView image;
@@ -55,7 +50,7 @@ public class ListController implements TabItem, ListItem {
     @FXML
     private Label description;
     @FXML
-    private JFXListView<Product> productListView;
+    private JFXListView<ProductDTO> productListView;
     @FXML
     private Label numberOfProducts;
     @FXML
@@ -63,31 +58,27 @@ public class ListController implements TabItem, ListItem {
     @FXML
     private AnchorPane mapPane;
     @FXML
-    private Button workingAreaToAll;
-    private GTMapSearchController gtMapSearchController;
-    private TabPaneComponent setTabPaneComponent;
+    private Button addAreaOfProduct;
+    @FXML
+    private Button deleteSelectedArea;
 
-    public ListController(ProductList productList) {
-        this.productList = productList;
-        loader = new FXMLLoader(getClass().getResource("/fxml/ListView.fxml"));
-        loader.setController(this);
+    static final Logger logger = LogManager.getLogger(ListController.class.getName());
+
+
+    public ListController(ProductListDTO productList) {
+        this.productListDTO = productList;
+        this.loader = new FXMLLoader(getClass().getResource("/fxml/ListView.fxml"));
+        this.loader.setController(this);
         try {
-            parent = loader.load();
+            parent = this.loader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setMap() {
-        gtMapSearchController = new GTMapSearchController(458.0,435.0,false);
-        gtMapSearchController.disableMouseClickedEvent();
-        mapPane.getChildren().add(gtMapSearchController.getView());
-        gtMapSearchController.addProductsWKT(productList.getProducts());
-    }
-
     @Override
     public void setTabPaneComponent(TabPaneComponent component) {
-        this.setTabPaneComponent = component;
+        this.tabPaneComponent = component;
     }
 
     @Override
@@ -95,102 +86,172 @@ public class ListController implements TabItem, ListItem {
         return parent;
     }
 
+    /**
+     * Start controller. Init data, if user not logged in copernicus, login. Load preview of first image
+     * @return new Task with view node
+     */
     @Override
     public Task<Parent> start() {
+        CopernicusService service = CopernicusService.getInstance();
+
         return new Task<>() {
             @Override
             protected Parent call() throws Exception {
+                service.login();
                 initData();
                 try {
-                    setMap();
-                    if (productList.count() > 0) {
-                        InputStream preview = CopernicusService.getInstance().getPreview(productList.getProducts().get(0).getId());
-                        image.setImage(new Image(preview));
-                    } else {
-                        image.setImage(new Image("/img/no_photo.jpg"));
-                    }
-
+                    if (productListDTO.count() > 0) {
+                        InputStream preview = CopernicusService.getInstance().getPreview(productListDTO.getProducts().get(0).getId());
+                        loadImage(new Image(preview));
+                    } else
+                        loadImage(new Image("/img/no_photo.jpg"));
                 } catch (IOException | AuthenticationException e) {
-                    e.printStackTrace();
+                    loadImage(new Image("/img/no_photo.jpg"));
                 }
                 return getView();
             }
         };
     }
 
-    private void initData() {
-        numberOfProducts.textProperty().bind(productList.countProperty().asString());
-        size.textProperty().bind(Bindings.format("%.2f",productList.sizeAsDoubleProperty()).concat(" GB"));
-        productListView.setItems(productList.getProducts());
-        productListView.setCellFactory(e -> new ProductListCell(productList));
-        productListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        title.setText(productList.getName());
-        description.setText(productList.getDescription());
-        productList.getProducts().addListener((ListChangeListener<Product>) c -> {
-            gtMapSearchController.clearMap();
-            gtMapSearchController.addProductsWKT(productList.getProducts());
-
-        });
-
-        addSelectionModeListener();
-
-
-        workingAreaToAll.setOnAction(event -> {
-            System.out.println(gtMapSearchController.getWKT());
-            if (!gtMapSearchController.getWKT().isEmpty())
-                productList.setDefaultAreaOfWork(gtMapSearchController.getWKT());
-        });
-    }
-
-
-
-    private void addSelectionModeListener() {
-        productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            Task<InputStream> task = new Task<>() {
-                @Override
-                protected InputStream call() throws Exception {
-                    setTabPaneComponent.getMainController().showWaitSpinner();
-                    return CopernicusService.getInstance().getPreview(newValue.getId());
-                }
-            };
-            task.setOnSucceeded(previewImageLoaded(task));
-            task.setOnFailed(loadDefaultImage());
-            new Thread(task).start();
-
-        });
-    }
-
-    private EventHandler<WorkerStateEvent> loadDefaultImage() {
-        return event -> {
-            image.setImage(new Image("/img/no_photo.jpg"));
-            setTabPaneComponent.getMainController().hideWaitSpinner();
-        };
-    }
-
-    private EventHandler<WorkerStateEvent> previewImageLoaded(Task<InputStream> task) {
-        return event -> {
-            try {
-                image.setImage(new Image(task.get()));
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            setTabPaneComponent.getMainController().hideWaitSpinner();
-        };
+    @Override
+    public ProductListDTO getProductList() {
+        return productListDTO;
     }
 
     @Override
-    public ProductList getProductList() {
-        return productList;
-    }
-
-    @Override
-    public ObservableList<Product> getSelectedProducts() {
+    public ObservableList<ProductDTO> getSelectedProducts() {
         return productListView.getSelectionModel().getSelectedItems();
     }
 
     @Override
     public String getName() {
-        return productList.getName();
+        return productListDTO.getName();
     }
 
+    private void initData() {
+        bindProperties();
+
+        initListView();
+
+        onProductListChangeRepaintMap();
+
+        onProductSelectedLoadPreviewImage();
+
+        onAreaOfWorkChangeRefreshListView();
+
+        initAddWorkingAreaButton();
+
+        initDeleteSelectedAreaOfWorkButton();
+
+        initMapController();
+    }
+
+    private void initMapController() {
+        mapController = new GTMapSearchController(458.0,435.0,true);
+        mapController.addSelectedAreaEvent("default");
+        mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
+        mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
+        mapPane.getChildren().add(mapController.getView());
+        mapController.printProductsInMap(productListDTO.getProducts(),Color.BLACK, null);
+        mapController.focusOnLayer("products");
+        printAreasOfWork();
+    }
+
+    private void onProductListChangeRepaintMap() {
+        productListDTO.getProducts().addListener((ListChangeListener<ProductDTO>) c -> {
+            mapController.clearMap("products");
+            mapController.printProductsInMap(productListDTO.getProducts(), Color.BLACK, null);
+
+        });
+    }
+
+    private void initDeleteSelectedAreaOfWorkButton() {
+        GlyphsDude.setIcon(deleteSelectedArea, FontAwesomeIcon.ERASER);
+        deleteSelectedArea.setOnAction(e->{
+            productListDTO.removeAreaOfWork(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedProduct())));
+            printAreasOfWork();
+        });
+    }
+
+    private void initAddWorkingAreaButton() {
+        GlyphsDude.setIcon(addAreaOfProduct, FontAwesomeIcon.LOCATION_ARROW);
+        addAreaOfProduct.setOnAction(event -> {
+            if (!mapController.getWKT().isEmpty()) {
+                productListDTO.addAreaOfWork(mapController.getWKT());
+                printAreasOfWork();
+            }
+        });
+    }
+
+    private void initListView() {
+        productListView.setItems(productListDTO.getProducts());
+        productListView.setCellFactory(e -> new ProductListCell(productListDTO, mapController));
+        productListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    private void bindProperties() {
+        numberOfProducts.textProperty().bind(productListDTO.countProperty().asString());
+        size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
+        title.textProperty().bind(productListDTO.nameProperty());
+        description.textProperty().bind(productListDTO.descriptionProperty());
+    }
+
+    private void printAreasOfWork() {
+        mapController.clearMap("default");
+        productListDTO.getAreasOfWork().forEach(a->{
+            try {
+                mapController.addProductWKT(a, productListDTO.getAreasOfWork().indexOf(a)+"","default");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
+        mapController.drawFeaturesOfLayer("default",Color.ORANGE, null);
+    }
+
+    private void onAreaOfWorkChangeRefreshListView() {
+        productListDTO.getAreasOfWork().addListener((ListChangeListener<String>) c -> {
+            productListView.refresh();
+            productListView.applyCss();
+            productListView.refresh();
+        });
+
+    }
+
+    private void onProductSelectedLoadPreviewImage() {
+        productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
+            Task<InputStream> task = new Task<>() {
+                @Override
+                protected InputStream call() throws Exception {
+                    tabPaneComponent.getMainController().showWaitSpinner();
+                    return CopernicusService.getInstance().getPreview(newValue.getId());
+                }
+            };
+            task.setOnSucceeded(e-> {
+                try {
+                    loadPreviewImage(task.get());
+                } catch (Exception ioException) {
+                    ioException.printStackTrace();
+                }
+            });
+
+
+            task.setOnFailed(e->loadDefaultImage());
+            new Thread(task).start();
+        });
+    }
+
+    private void  loadDefaultImage() {
+        loadImage(new Image("/img/no_photo.jpg"));
+    }
+
+    private void loadPreviewImage(InputStream inputStream) throws IOException {
+        loadImage(new Image(inputStream));
+        inputStream.close();
+    }
+
+    private void loadImage(Image imageResource) {
+        image.setImage(imageResource);
+        if (tabPaneComponent != null)
+            tabPaneComponent.getMainController().hideWaitSpinner();
+    }
 }

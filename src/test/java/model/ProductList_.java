@@ -1,9 +1,11 @@
 package model;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.products.Product;
-import model.products.Sentinel1Product;
-import model.products.Sentinel2Product;
+import model.list.ProductListDTO;
+import model.products.ProductDTO;
+import model.products.Sentinel1ProductDTO;
+import model.products.Sentinel2ProductDTO;
 import model.restriction.PlatFormRestriction;
 import model.restriction.ProductTypeRestriction;
 import org.assertj.core.data.Percentage;
@@ -19,256 +21,259 @@ import static org.mockito.Mockito.mock;
 
 public class ProductList_ {
     public static final String PRODUCT_ID = "06ffb973-2be6-4ace-b813-5d6e24792af2";
-    private ProductList productList;
-    private Product product;
+    public static final String FOOTPRINT_INVALID = "POLYGON((-9.630307693957912 32.909380961554916,-8.355893631457912 32.909380961554916,-8.355893631457912 31.87037104706671,-9.630307693957912 31.87037104706671,-9.630307693957912 32.909380961554916))";
+    private ProductListDTO productListDTO;
+    private ProductDTO productMock;
+    private ProductDTO product;
+    private ProductDTO p1;
+    private final String FOOTPRINT = "POLYGON((-18.393555946045392 29.37323662909026,-13.262940711670392 29.37323662909026,-13.262940711670392 27.32362244850862,-18.393555946045392 27.32362244850862,-18.393555946045392 29.37323662909026))";
+    private final String AREA_OF_WORK = "POLYGON((-18.037842482007054 28.874114470373776,-17.683533399975804 28.874114470373776,-17.683533399975804 28.406474298401793,-18.037842482007054 28.406474298401793,-18.037842482007054 28.874114470373776))";
 
     @Before
     public void init() {
-        product = mock(Product.class);
-        productList = new ProductList(
+        product = new ProductDTO(
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleStringProperty(),
+                new SimpleStringProperty(),new SimpleObjectProperty<>());
+
+        p1 = mock(ProductDTO.class);
+        productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
     }
 
     @Test
     public void with_name_list1_should_return_list1() {
-        assertThat(productList.getName()).isEqualTo("List1");
+        assertThat(productListDTO.getName()).isEqualTo("List1");
     }
 
     @Test
     public void with_name_list2_should_return_list2() {
-        productList = new ProductList(new SimpleStringProperty("List2")
+        productListDTO = new ProductListDTO(new SimpleStringProperty("List2")
                 ,new SimpleStringProperty("description"));
-        assertThat(productList.getName()).isEqualTo("List2");
+        assertThat(productListDTO.getName()).isEqualTo("List2");
     }
 
     @Test
     public void with_description_description_should_return_description() {
-        assertThat(productList.getDescription()).isEqualTo("description");
+        assertThat(productListDTO.getDescription()).isEqualTo("description");
     }
 
     @Test
     public void when_count_list_with_one_element_should_return_1() {
-        Product productOData = mock(Product.class);
-        productList.addProduct(productOData);
-        assertThat(productList.count()).isEqualTo(1);
+        ProductDTO productOData = mock(ProductDTO.class);
+        productListDTO.addProduct(productOData);
+        assertThat(productListDTO.count()).isEqualTo(1);
     }
 
     @Test
     public void when_get_product_by_id_in_list_should_return_one_product() {
-        doReturn(PRODUCT_ID).when(product).getId();
-        productList.addProduct(product);
-        assertThat(productList.getProductById(PRODUCT_ID)).isEqualTo(product);
+        doReturn(PRODUCT_ID).when(productMock).getId();
+        productListDTO.addProduct(productMock);
+        assertThat(productListDTO.getProductById(PRODUCT_ID)).isEqualTo(productMock);
     }
 
     @Test
     public void when_get_product_by_id_not_in_list_should_return_null() {
-        doReturn(PRODUCT_ID).when(product).getId();
-        productList.addProduct(product);
-        assertThat(productList.getProductById("no_id")).isEqualTo(null);
+        doReturn(PRODUCT_ID).when(productMock).getId();
+        productListDTO.addProduct(productMock);
+        assertThat(productListDTO.getProductById("no_id")).isEqualTo(null);
     }
 
     @Test
     public void when_add_repeated_product_should_skipped() {
-        doReturn(PRODUCT_ID).when(product).getId();
-        productList.addProduct(product);
-        productList.addProduct(product);
-        assertThat(productList.count()).isEqualTo(1);
+        doReturn(PRODUCT_ID).when(productMock).getId();
+        productListDTO.addProduct(productMock);
+        productListDTO.addProduct(productMock);
+        assertThat(productListDTO.count()).isEqualTo(1);
     }
 
     @Test
     public void remove_product_in_list_should_remove_product() {
-        doReturn(PRODUCT_ID).when(product).getId();
-        productList.addProduct(product);
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        p1.setId("1");
-        productList.addProduct(p1);
-        assertThat(productList.count()).isEqualTo(2);
-        List<Product> list = new ArrayList<>();
-        list.add(product);
+        doReturn(PRODUCT_ID).when(productMock).getId();
+        productListDTO.addProduct(productMock);
+        doReturn("4.65 GB").when(p1).getSize();
+        doReturn("1").when(p1).getId();
+        productListDTO.addProduct(p1);
+        assertThat(productListDTO.count()).isEqualTo(2);
+        List<ProductDTO> list = new ArrayList<>();
+        list.add(productMock);
         list.add(p1);
-        productList.remove(list);
-        assertThat(productList.count()).isEqualTo(0);
+        productListDTO.remove(list);
+        assertThat(productListDTO.count()).isEqualTo(0);
     }
 
     @Test
     public void remove_collection_of_product_should_remove_all_products_in_collection() {
-        doReturn(PRODUCT_ID).when(product).getId();
-        productList.addProduct(product);
-        assertThat(productList.count()).isEqualTo(1);
-        productList.remove(product);
-        assertThat(productList.count()).isEqualTo(0);
+        doReturn(PRODUCT_ID).when(productMock).getId();
+        productListDTO.addProduct(productMock);
+        assertThat(productListDTO.count()).isEqualTo(1);
+        productListDTO.remove(productMock);
+        assertThat(productListDTO.count()).isEqualTo(0);
     }
 
     @Test
     public void get_products_from_list_empty_should_return_empty_list() {
-        productList.addProduct(product);
-        assertThat(productList.count()).isEqualTo(1);
+        productListDTO.addProduct(productMock);
+        assertThat(productListDTO.count()).isEqualTo(1);
     }
 
     @Test
     public void with_one_product_should_return_the_product_size() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        productList.addProduct(p1);
-        assertThat(productList.productSize()).isEqualTo(4.65);
+        doReturn(4.65).when(p1).getSizeAsDouble();
+        productListDTO.addProduct(p1);
+        assertThat(productListDTO.productSize()).isEqualTo(4.65);
     }
 
     @Test
     public void with_more_than_one_products_should_return_the_sum_of_all_products() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        p1.setId("1");
-        Product p2 = new Product();
-        p2.setSize("4.65 GB");
-        p2.setId("p2");
-        Product p3 = new Product();
-        p3.setSize("4.65 GB");
-        p3.setId("p3");
-        productList.addProduct(p1);
-        productList.addProduct(p2);
-        productList.addProduct(p3);
 
-        assertThat(productList.productSize()).isCloseTo(13.95,Percentage.withPercentage(1.0));
+        doReturn(4.65).when(p1).getSizeAsDouble();
+        doReturn("1").when(p1).getId();
+        ProductDTO p2 = mock(ProductDTO.class);
+        doReturn(4.65).when(p2).getSizeAsDouble();
+        doReturn("p2").when(p2).getId();
+        ProductDTO p3 = mock(ProductDTO.class);
+        doReturn(4.65).when(p3).getSizeAsDouble();
+        doReturn("p3").when(p3).getId();
+        productListDTO.addProduct(p1);
+        productListDTO.addProduct(p2);
+        productListDTO.addProduct(p3);
+
+        assertThat(productListDTO.productSize()).isCloseTo(13.95,Percentage.withPercentage(1.0));
     }
 
     @Test
     public void with_more_than_one_products_in_MB_should_return_the_sum_of_all_products() {
-        Product p1 = new Product();
-        p1.setId("1");
-        p1.setSize("755 MB");
-        Product p2 = new Product();
-        p2.setId("p2");
-        p2.setSize("4.65 GB");
-        Product p3 = new Product();
-        p3.setId("p3");
-        p3.setSize("4.65 GB");
-        productList.addProduct(p1);
-        productList.addProduct(p2);
-        productList.addProduct(p3);
-        assertThat(productList.productSize()).isCloseTo(10.037,Percentage.withPercentage(1.0));
+        doReturn(0.755).when(p1).getSizeAsDouble();
+        doReturn("1").when(p1).getId();
+
+        ProductDTO p2 = mock(ProductDTO.class);
+        doReturn(4.65).when(p2).getSizeAsDouble();
+        doReturn("p2").when(p2).getId();
+
+        ProductDTO p3 = mock(ProductDTO.class);
+        doReturn(4.65).when(p3).getSizeAsDouble();
+        doReturn("p3").when(p3).getId();
+
+        productListDTO.addProduct(p1);
+        productListDTO.addProduct(p2);
+        productListDTO.addProduct(p3);
+        assertThat(productListDTO.productSize()).isCloseTo(10.037,Percentage.withPercentage(1.0));
     }
 
     @Test
     public void list_with_sentinel1_restriction_should_not_add_sentinel2_product() {
-        productList = new ProductList(
+        productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
         PlatFormRestriction platFormRestriction = new PlatFormRestriction();
         platFormRestriction.add("Sentinel-1");
-        productList.addRestriction(platFormRestriction);
-        Sentinel2Product s2 = new Sentinel2Product();
-        s2.setPlatformName("Sentinel-2");
-        s2.setId("1");
-        s2.setSize("755 MB");
-        Sentinel1Product s1 = new Sentinel1Product();
-        s1.setPlatformName("Sentinel-1");
-        s1.setId("p2");
-        s1.setSize("4.65 GB");
-        productList.addProduct(s1);
-        productList.addProduct(s2);
-        assertThat(productList.count()).isEqualTo(1);
-        assertThat(productList.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
+        productListDTO.addRestriction(platFormRestriction);
+
+        Sentinel2ProductDTO s2 = mock(Sentinel2ProductDTO.class);
+        doReturn("Sentinel-2").when(s2).getPlatformName();
+        doReturn("1").when(s2).getId();
+
+        Sentinel1ProductDTO s1 = mock(Sentinel1ProductDTO.class);
+        doReturn("Sentinel-1").when(s1).getPlatformName();
+        doReturn("2").when(s1).getId();
+        productListDTO.addProduct(s1);
+        productListDTO.addProduct(s2);
+        assertThat(productListDTO.count()).isEqualTo(1);
+        assertThat(productListDTO.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
     }
 
     @Test
     public void list_with_sentinel1_and_sentinel2_restriction_should_add_sentinel2_and_sentinel1_products() {
-        productList = new ProductList(
+        productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
         PlatFormRestriction platFormRestriction = new PlatFormRestriction();
         platFormRestriction.add("Sentinel-1");
         platFormRestriction.add("Sentinel-2");
-        productList.addRestriction(platFormRestriction);
-        Sentinel2Product s2 = new Sentinel2Product();
-        s2.setPlatformName("Sentinel-2");
-        s2.setId("1");
-        s2.setSize("755 MB");
-        Sentinel1Product s1 = new Sentinel1Product();
-        s1.setPlatformName("Sentinel-1");
-        s1.setId("p2");
-        s1.setSize("4.65 GB");
-        productList.addProduct(s1);
-        productList.addProduct(s2);
-        assertThat(productList.count()).isEqualTo(2);
-        assertThat(productList.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
-        assertThat(productList.getProducts().get(1)).isInstanceOf(Sentinel2Product.class);
+        productListDTO.addRestriction(platFormRestriction);
+        Sentinel2ProductDTO s2 = mock(Sentinel2ProductDTO.class);
+        doReturn("Sentinel-2").when(s2).getPlatformName();
+        doReturn("1").when(s2).getId();
+
+        Sentinel1ProductDTO s1 = mock(Sentinel1ProductDTO.class);
+        doReturn("Sentinel-1").when(s1).getPlatformName();
+        doReturn("2").when(s1).getId();
+        productListDTO.addProduct(s1);
+        productListDTO.addProduct(s2);
+        assertThat(productListDTO.count()).isEqualTo(2);
+        assertThat(productListDTO.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
+        assertThat(productListDTO.getProducts().get(1)).isInstanceOf(Sentinel2ProductDTO.class);
     }
 
     @Test
     public void list_with_GRD_producttype_restriction_should_add_only_grd_products() {
-        productList = new ProductList(
+        productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
         ProductTypeRestriction productTypeRestriction = new ProductTypeRestriction();
         productTypeRestriction.add("GRD");
-        productList.addRestriction(productTypeRestriction);
-        Sentinel2Product s2 = new Sentinel2Product();
-        s2.setPlatformName("Sentinel-2");
-        s2.setProductType("MS1");
-        s2.setId("1");
-        s2.setSize("755 MB");
-        Sentinel1Product s1 = new Sentinel1Product();
-        s1.setPlatformName("Sentinel-1");
-        s1.setProductType("GRD");
-        s1.setId("p2");
-        s1.setSize("4.65 GB");
-        productList.addProduct(s2);
-        assertThat(productList.count()).isEqualTo(0);
-        productList.addProduct(s1);
-        assertThat(productList.count()).isEqualTo(1);
-        assertThat(productList.getProducts().get(0)).isInstanceOf(Sentinel1Product.class);
+        productListDTO.addRestriction(productTypeRestriction);
+        Sentinel2ProductDTO s2 = mock(Sentinel2ProductDTO.class);
+        doReturn("Sentinel-2").when(s2).getPlatformName();
+        doReturn("MS1").when(s2).getPlatformName();
+        doReturn("1").when(s2).getId();
+
+        Sentinel1ProductDTO s1 = mock(Sentinel1ProductDTO.class);
+        doReturn("Sentinel-1").when(s1).getPlatformName();
+        doReturn("GRD").when(s1).getProductType();
+        doReturn("2").when(s1).getId();
+        productListDTO.addProduct(s2);
+        assertThat(productListDTO.count()).isEqualTo(0);
+        productListDTO.addProduct(s1);
+        assertThat(productListDTO.count()).isEqualTo(1);
+        assertThat(productListDTO.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
     }
 
     @Test
     public void set_default_area_of_work() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        productList.setDefaultAreaOfWork("POLYGON");
-        assertThat(productList.getAreaOfWorkOrDefault("default")).isEqualTo("POLYGON");
+        productListDTO.addAreaOfWork("POLYGON");
+        assertThat(productListDTO.getAreasOfWork().get(0)).isEqualTo("POLYGON");
     }
 
     @Test
     public void no_area_of_work_should_return_null() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        assertThat(productList.getAreaOfWorkOrDefault("default")).isNull();
+        assertThat(productListDTO.areasOfWorkOfProduct("POLYGON")).isNull();
     }
 
     @Test
     public void set_specific_area_of_work() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        productList.setAreaOfWork(PRODUCT_ID,"POLYGON");
-        assertThat(productList.getAreaOfWork(PRODUCT_ID)).isEqualTo("POLYGON");
+        productListDTO.addAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.areasOfWorkOfProduct(FOOTPRINT).size()).isEqualTo(1);
+        assertThat(productListDTO.areasOfWorkOfProduct(FOOTPRINT).get(0)).isEqualTo(AREA_OF_WORK);
     }
 
     @Test
-    public void get_default_with_no_specific_area_of_work() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        productList.setDefaultAreaOfWork("POLYGON2");
-        productList.setAreaOfWork(PRODUCT_ID,"POLYGON");
-        assertThat(productList.getAreaOfWorkOrDefault("fff")).isEqualTo("POLYGON2");
+    public void with_footprint_not_containing_any_areas_of_work_should_return_empty_list() {
+        productListDTO.addAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.areasOfWorkOfProduct(FOOTPRINT_INVALID).size()).isEqualTo(0);
     }
 
     @Test
-    public void set_default_and_specific_area_of_work() {
-        Product p1 = new Product();
-        p1.setSize("4.65 GB");
-        productList.setDefaultAreaOfWork("POLYGON2");
-        productList.setAreaOfWork(PRODUCT_ID,"POLYGON");
-        assertThat(productList.getAreaOfWork(PRODUCT_ID)).isEqualTo("POLYGON");
-        assertThat(productList.getAreaOfWork("default")).isEqualTo("POLYGON2");
+    public void with_product_containing_area_of_work_should_return_map_with_list_of_area_of_work() {
+        product.setId("id");
+        product.setSize("755 MB");
+        product.setFootprint(FOOTPRINT);
+        productListDTO.addProduct(product);
+        productListDTO.addAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.getProductsAreasOfWorks().size()).isEqualTo(1);
+        assertThat(productListDTO.getProductsAreasOfWorks().get("id").size()).isEqualTo(1);
+        assertThat(productListDTO.getProductsAreasOfWorks().get("id").get(0)).isEqualTo(AREA_OF_WORK);
     }
 
     @Test
     public void to_string_should_return_name_and_description() {
-        productList = new ProductList(
+        productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
-        assertThat(productList.toString()).isEqualTo("List1");
+        assertThat(productListDTO.toString()).isEqualTo("List1");
         /*assertThat(productList.toString()).isEqualTo("ProductList {" +
                 "name='List1"  + '\'' +
                 ", description='description");

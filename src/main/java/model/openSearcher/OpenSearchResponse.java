@@ -2,7 +2,7 @@ package model.openSearcher;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import model.products.Product;
+import model.products.ProductDTO;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,7 +18,7 @@ public class OpenSearchResponse {
     @JsonProperty("opensearch:totalResults")
     private int numOfProducts = 0;
     @JsonProperty("entry")
-    private List<Product> products = new ArrayList<>();
+    private List<ProductDTO> products = new ArrayList<>();
 
     public int getNumOfProducts() {
         return numOfProducts;
@@ -28,11 +28,11 @@ public class OpenSearchResponse {
         this.numOfProducts = numOfProducts;
     }
 
-    public List<Product> getProducts() {
+    public List<ProductDTO> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(List<ProductDTO> products) {
         this.products = products;
     }
 }

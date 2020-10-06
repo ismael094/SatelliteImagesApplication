@@ -1,24 +1,15 @@
-package utils;
+package utils.http;
 
-import gui.dialog.ScihubCredentialsDialog;
-import javafx.concurrent.Task;
-import javafx.scene.Parent;
-import javafx.util.Pair;
 import model.exception.AuthenticationException;
-import model.exception.NotAuthenticatedException;
 import org.apache.http.client.HttpResponseException;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import javax.inject.Singleton;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
-import java.util.Optional;
 
-import static utils.AlertFactory.showErrorDialog;
-
-public class CopernicusHTTPAuthManager extends Authenticator {
+public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuthManager {
 
     private String username;
     private String password;
@@ -33,17 +24,7 @@ public class CopernicusHTTPAuthManager extends Authenticator {
     private CopernicusHTTPAuthManager(String username, String password) throws AuthenticationException {
         setCredentials(username, password);
         setAuthenticator();
-        testCredentials();
-    }
-
-    private void testCredentials() throws AuthenticationException {
-        try {
-            String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
-            getContentFromURL(new URL(LOGIN_URL));
-        } catch (IOException e) {
-            logger.atInfo().log("Not able to connect to SciHub API: {0}",e);
-            e.printStackTrace();
-        }
+        login();
     }
 
     public static CopernicusHTTPAuthManager getHttpManager(String username, String password) throws AuthenticationException {
@@ -53,11 +34,24 @@ public class CopernicusHTTPAuthManager extends Authenticator {
         return httpManager;
     }
 
-    private void setCredentials(String username, String password) {
+    @Override
+    public void login() throws AuthenticationException {
+        try {
+            String LOGIN_URL = "https://scihub.copernicus.eu/dhus/search?q=*&rows=0&format=json";
+            getContentFromURL(new URL(LOGIN_URL));
+        } catch (IOException e) {
+            logger.atInfo().log("Not able to connect to SciHub API: {0}",e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setCredentials(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
+    @Override
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException {
         setAuthenticator();
         URL path = new URL(url.toString().replace(" ", "%20"));
@@ -72,6 +66,11 @@ public class CopernicusHTTPAuthManager extends Authenticator {
 
     }
 
+    @Override
+    public void closeConnection() {
+        connection.disconnect();
+    }
+
     private void isConnectionResponseOK(int responseCode) throws HttpResponseException, AuthenticationException {
         if (responseCode == 401) {
             logger.atWarn().log("URL respond with {} code, login error?",responseCode);
@@ -82,21 +81,17 @@ public class CopernicusHTTPAuthManager extends Authenticator {
         }
     }
 
-    public void closeConnection() {
-        connection.disconnect();
+    private void setAuthenticator() {
+        Authenticator.setDefault(this);
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password.toCharArray());
     }
 
-    private void setAuthenticator() {
-        Authenticator.setDefault(new BasicAuthenticator());
-    }
-
-    private final class BasicAuthenticator extends Authenticator {
+    /*private final class BasicAuthenticator extends Authenticator {
         protected PasswordAuthentication getPasswordAuthentication() {
             return new PasswordAuthentication(username, password.toCharArray());
         }
-    }
+    }*/
 }

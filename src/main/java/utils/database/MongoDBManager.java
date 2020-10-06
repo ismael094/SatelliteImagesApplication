@@ -1,8 +1,10 @@
-package utils;
+package utils.database;
 
 import com.mongodb.client.MongoClients;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import model.restriction.Restriction;
+import services.entities.ProductList;
 import services.entities.User;
 
 public class MongoDBManager {
@@ -13,6 +15,9 @@ public class MongoDBManager {
 
     private static MongoDBManager instance;
     private String user;
+
+    public MongoDBManager() {
+    }
 
     public static MongoDBManager getMongoDBManager() {
         if (instance == null) {
@@ -39,6 +44,9 @@ public class MongoDBManager {
         client = MongoClients.create(serverURL);
         datastore = Morphia.createDatastore(client, database);
         datastore.getMapper().map(User.class);
+        datastore.getMapper().mapPackage("model");
+        datastore.getMapper().mapPackageFromClass(ProductList.class);
+        datastore.getMapper().mapPackageFromClass(Restriction.class);
         datastore.ensureIndexes();
     }
     public boolean isConnected() {

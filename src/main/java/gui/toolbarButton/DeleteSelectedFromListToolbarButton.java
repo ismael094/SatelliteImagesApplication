@@ -1,15 +1,11 @@
 package gui.toolbarButton;
 
-import controller.TabItem;
-import controller.list.ListItem;
+import controller.interfaces.TabItem;
+import controller.interfaces.ProductTabItem;
 import gui.components.ToolBarComponent;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
-import model.ProductList;
-
-import java.util.List;
+import model.list.ProductListDTO;
 
 public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
 
@@ -27,9 +23,9 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
     public void handle(ActionEvent event) {
         Tab active = toolBar.getMainController().getTabController().getActive();
         TabItem controllerOf = toolBar.getMainController().getTabController().getControllerOf(active);
-        if (controllerOf instanceof ListItem) {
-            ProductList productList = ((ListItem) controllerOf).getProductList();
-            productList.remove(((ListItem)controllerOf).getSelectedProducts());
+        if (controllerOf instanceof ProductTabItem) {
+            ProductListDTO productListDTO = ((ProductTabItem) controllerOf).getProductList();
+            productListDTO.remove(((ProductTabItem)controllerOf).getSelectedProducts());
         }
     }
 }

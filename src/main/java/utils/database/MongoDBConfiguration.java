@@ -1,4 +1,4 @@
-package utils;
+package utils.database;
 
 public class MongoDBConfiguration {
     public static final String USER = "new-user_31";

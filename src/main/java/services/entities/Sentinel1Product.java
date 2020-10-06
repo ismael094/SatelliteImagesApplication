@@ -1,15 +1,13 @@
-package model.products;
+package services.entities;
 
-import model.products.Product;
+
 
 public class Sentinel1Product extends Product {
     private String sensorOperationalMode;
     private String polarizationMode;
 
-    public Sentinel1Product(String ingestionDate, String title, String id, String footprint, String size,
-                            String productType, String platformName, String status, String sensorOperationalMode,
-                            String polarizationMode) {
-        super(ingestionDate, title, id, footprint, size, productType, platformName, status);
+    public Sentinel1Product(String id, String title, String platformName, String productType, String footprint, String size, String status, String ingestionDate, String sensorOperationalMode, String polarizationMode) {
+        super(id, title, platformName, productType, footprint, size, status, ingestionDate);
         this.sensorOperationalMode = sensorOperationalMode;
         this.polarizationMode = polarizationMode;
     }
@@ -17,8 +15,11 @@ public class Sentinel1Product extends Product {
     public Sentinel1Product() {
     }
 
-    public Sentinel1Product(String sensorOperationalMode, String polarizationMode) {
+    public void setSensorOperationalMode(String sensorOperationalMode) {
         this.sensorOperationalMode = sensorOperationalMode;
+    }
+
+    public void setPolarizationMode(String polarizationMode) {
         this.polarizationMode = polarizationMode;
     }
 
@@ -26,16 +27,8 @@ public class Sentinel1Product extends Product {
         return sensorOperationalMode;
     }
 
-    public void setSensorOperationalMode(String sensorOperationalMode) {
-        this.sensorOperationalMode = sensorOperationalMode;
-    }
-
     public String getPolarizationMode() {
         return polarizationMode;
-    }
-
-    public void setPolarizationMode(String polarizationMode) {
-        this.polarizationMode = polarizationMode;
     }
 
     @Override

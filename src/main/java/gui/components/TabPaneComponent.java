@@ -1,6 +1,6 @@
 package gui.components;
 
-import controller.TabItem;
+import controller.interfaces.TabItem;
 import controller.SatelliteApplicationController;
 import controller.search.SearchController;
 import javafx.beans.property.BooleanProperty;
@@ -60,6 +60,7 @@ public class TabPaneComponent extends TabPane implements Component {
     }
 
     public void create(String name, Parent node) {
+        node.prefWidth(this.getPrefWidth());
         add(new Tab(name, node));
     }
 
@@ -84,6 +85,7 @@ public class TabPaneComponent extends TabPane implements Component {
 
     public void load(TabItem item) {
         if (loadedControllers.getOrDefault(item.getName(),null)!=null){
+            System.out.println("something");
             Tab tab = get(item.getName());
             if (tab == null)
                 create(item.getName(),loadedControllers.get(item.getName()).getView());
@@ -92,8 +94,8 @@ public class TabPaneComponent extends TabPane implements Component {
             return;
         }
 
-        mainController.showWaitSpinner();
         Task<Parent> task = item.start();
+        mainController.showWaitSpinner();
         task.exceptionProperty().addListener(exceptionWhileOpeningController(item.getName()));
         task.setOnSucceeded(e->{
             create(item.getName(), item.getView());
@@ -113,6 +115,7 @@ public class TabPaneComponent extends TabPane implements Component {
             showErrorDialog(id, "An error occurred while opening "+
                     id,newValue.getLocalizedMessage());
             mainController.hideWaitSpinner();
+            newValue.printStackTrace();
         };
     }
 

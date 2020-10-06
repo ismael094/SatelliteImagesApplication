@@ -75,7 +75,7 @@
                         <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
-                  <ToggleSwitch fx:id="activate" maxWidth="163.0" prefHeight="18.0" prefWidth="163.0" text="Activate restrictions" GridPane.rowIndex="1">
+                  <ToggleSwitch fx:id="restrictionSwitch" maxWidth="163.0" prefHeight="18.0" prefWidth="163.0" text="Activate restrictions" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
                      </GridPane.margin>

@@ -29,18 +29,26 @@ public class OpenSearcher implements SearchService {
     private Map<SentinelProductParameters, String> searchParameters;
     static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
 
-    public OpenSearcher() {
+    public OpenSearcher(CopernicusService service) {
         initData();
-        this.service = CopernicusService.getInstance();
+        this.service = service;
     }
 
+    /**
+     * Login in CopernicusService
+     * @throws AuthenticationException If credentials are incorrect
+     * @throws NotAuthenticatedException Not credentials setted
+     */
     public void login() throws AuthenticationException, NotAuthenticatedException {
         service.login();
     }
 
+    /**
+     * Init fields
+     */
     private void initData() {
         this.page = 0;
-        this.productsPerPage = 100;
+        this.productsPerPage = 25;
         this.searchParameters = new LinkedHashMap<>();
     }
 
@@ -96,6 +104,13 @@ public class OpenSearcher implements SearchService {
         this.searchParameters.clear();
     }
 
+    /**
+     * Search with the parameters products in the API of Copernicus
+     * @return OpenSearchResponse with number of products in API and list of products
+     * @throws IOException Error while reading inputStream
+     * @throws AuthenticationException If credentials are incorrect
+     * @throws NotAuthenticatedException Not credentials setted
+     */
     @Override
     public OpenSearchResponse search() throws IOException, AuthenticationException, NotAuthenticatedException {
         if (service == null) {

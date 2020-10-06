@@ -8,8 +8,6 @@
     <artifactId>TFT_test</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
-
     <build>
         <plugins>
             <plugin>
@@ -46,7 +44,9 @@
                         <option>--add-exports</option><option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
                         <option>--add-exports</option><option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
                         <option>--add-exports</option><option>javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</option>
+
                     </options>
+                    <commandlineArgs>-Xms2048m</commandlineArgs>
                 </configuration>
 
             </plugin>
@@ -57,6 +57,7 @@
         <geootools.version>24-RC</geootools.version>
         <javafx.version>14</javafx.version>
         <log4j.version>2.13.3</log4j.version>
+        <odata.version>4.7.1</odata.version>
     </properties>
 
     <dependencies>
@@ -115,6 +116,25 @@
             <version>9.0.10</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialdesignfont</artifactId>
+            <version>2.0.26-9.1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+            <version>9.1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-9.1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx -->
         <dependency>
             <groupId>de.jensd</groupId>
@@ -128,6 +148,14 @@
             <artifactId>jmetro</artifactId>
             <version>11.6.12</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -159,31 +187,31 @@
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-commons-api</artifactId>
-            <version>4.7.1</version>
+            <version>${odata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-commons-core</artifactId>
-            <version>4.7.1</version>
+            <version>${odata.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-core</artifactId>
-            <version>4.7.1</version>
+            <version>${odata.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-api</artifactId>
-            <version>4.7.1</version>
+            <version>${odata.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.olingo/odata-client-proxy -->
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-proxy</artifactId>
-            <version>4.7.1</version>
+            <version>${odata.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.geotools.xsd/gt-xsd-gml3 -->
@@ -270,12 +298,10 @@
             <version>${geootools.version}</version>
         </dependency>
 
-
-
         <dependency>
             <groupId>org.jfree</groupId>
-            <artifactId>fxgraphics2d</artifactId>
-            <version>1.3</version>
+            <artifactId>org.jfree.fxgraphics2d</artifactId>
+            <version>2.1</version>
         </dependency>
 
         <dependency>
@@ -291,10 +317,19 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.mongodb.morphia/morphia -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.4.13.Final</version>
+            <groupId>dev.morphia.morphia</groupId>
+            <artifactId>morphia-core</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
         <dependency>
@@ -329,13 +364,6 @@
             <version>3.0.0-M1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-        </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -348,8 +376,32 @@
             <version>1.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.narayana.jta</groupId>
+            <artifactId>narayana-jta</artifactId>
+            <version>5.10.6.Final</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.30</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
 
     </dependencies>
 
@@ -375,6 +427,16 @@
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>false</enabled></releases>
         </repository>
+
+        <repository>
+            <id>sonatype-snapshots</id>
+            <name>Sontatype Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
     </repositories>
 
 </project>

@@ -52,7 +52,7 @@
             <TextArea fx:id="consoleDebug" editable="false" maxHeight="200" prefHeight="100.0" GridPane.columnIndex="1" />
         </GridPane>
         <Pane fx:id="spinnerWait" maxHeight="0.0" maxWidth="0.0" GridPane.rowIndex="1">
-            <JFXSpinner fx:id="wait" layoutX="650.0" layoutY="-50.0" />
+            <JFXSpinner fx:id="wait" layoutX="750.0" layoutY="-50.0" />
         </Pane>
     </GridPane>
    <padding>

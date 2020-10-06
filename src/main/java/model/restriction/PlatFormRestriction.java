@@ -1,11 +1,12 @@
 package model.restriction;
 
-import model.openSearcher.SentinelProductParameters;
-import model.products.Product;
+import dev.morphia.annotations.Embedded;
+import model.products.ProductDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Embedded
 public class PlatFormRestriction implements Restriction {
     private final List<String> acceptedValues;
 
@@ -24,7 +25,12 @@ public class PlatFormRestriction implements Restriction {
     }
 
     @Override
-    public boolean validate(Product product) {
+    public boolean validate(ProductDTO product) {
         return acceptedValues.contains(product.getPlatformName());
+    }
+
+    @Override
+    public List<String> getValues() {
+        return acceptedValues;
     }
 }

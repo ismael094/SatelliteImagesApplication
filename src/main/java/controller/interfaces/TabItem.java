@@ -1,4 +1,4 @@
-package controller;
+package controller.interfaces;
 
 import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
@@ -9,5 +9,4 @@ public interface TabItem {
     Parent getView();
     Task<Parent> start();
     String getName();
-
 }

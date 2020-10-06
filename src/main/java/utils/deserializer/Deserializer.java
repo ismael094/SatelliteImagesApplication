@@ -3,10 +3,9 @@ package utils.deserializer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.products.Product;
+import model.products.ProductDTO;
 import model.products.ProductProperties;
 
-import java.util.Date;
 import java.util.List;
 
 public abstract class Deserializer {
@@ -44,7 +43,7 @@ public abstract class Deserializer {
                 .orElse(null);
     }
 
-    protected void setProductProperties(List<ProductProperties> stringProperties, JsonNode node, Product product) {
+    protected void setProductProperties(List<ProductProperties> stringProperties, JsonNode node, ProductDTO product) {
         product.setTitle(node.get(TITLE).asText());
         product.setId(node.get(ID).asText());
         product.setFootprint((String)getPropertyByName(FOOTPRINT,stringProperties));
@@ -54,5 +53,5 @@ public abstract class Deserializer {
         product.setIngestionDate((String)getPropertyByName(INGESTION_DATE,getDateProperties(node)));
     }
 
-    public abstract Product deserialize(JsonNode product);
+    public abstract ProductDTO deserialize(JsonNode product);
 }

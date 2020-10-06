@@ -3,7 +3,7 @@ package utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import utils.MongoDBManager;
+import utils.database.MongoDBManager;
 
 
 import static org.assertj.core.api.Assertions.assertThat;

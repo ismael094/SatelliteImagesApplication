@@ -1,101 +1,102 @@
 package model;
 
-import model.products.Product;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import model.products.ProductDTO;
+import org.apache.logging.log4j.core.appender.routing.Route;
 import org.junit.Before;
 import org.junit.Test;
+import services.entities.Product;
 
 import javax.xml.bind.DatatypeConverter;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class Product_ {
-    public static final String TITLE = "S1A_IW_RAW__0SDV_20200910T070039_20200910T070111_034293_03FC6D_E4C0";
-    public static final String ID = "2f4f7537-1711-4871-af8b-9f3ce98a1f9a";
-    public static final String INGESTION_TIME = "2020-09-10T08:50:57.572Z";
-    public static final String FOOTPRINT = "MULTIPOLYGON (((-13.3525 34.187, -12.8959 36.142, -15.6169 36.4117, -16.0074 34.4559, -13.3525 34.187)))";
-    public static final String PRODUCT_TYPE = "RAW";
-    public static final String PLATFORM_NAME = "Sentinel-1";
-    public static final String SIZE = "1.55 GB";
-    public static final String STATUS = "ARCHIVED";
-    public static final Calendar calendar = DatatypeConverter.parseDateTime(INGESTION_TIME);
-    Product product;
+
+    ProductDTO product;
 
     @Before
     public void initMockup() {
-        product = new Product();
 
+        product = SentinelData.getProduct();
     }
 
     @Test
     public void should_return_same_id_as_seted() {
-        product.setId(ID);
-        assertThat(product.getId()).isEqualTo(ID);
+        product.setId(SentinelData.ID);
+        assertThat(product.getId()).isEqualTo(SentinelData.ID);
     }
 
     @Test
     public void should_return_same_size_as_seted() {
-        product.setSize(SIZE);
-        assertThat(product.getSize()).isEqualTo(SIZE);
+        product.setSize(SentinelData.SIZE);
+        assertThat(product.getSize()).isEqualTo(SentinelData.SIZE);
     }
 
     @Test
     public void should_return_same_title_as_seted() {
-        product.setTitle(TITLE);
-        assertThat(product.getTitle()).isEqualTo(TITLE);
+        product.setTitle(SentinelData.TITLE);
+        assertThat(product.getTitle()).isEqualTo(SentinelData.TITLE);
     }
 
     @Test
     public void should_return_same_footprint_as_seted() {
-        product.setFootprint(FOOTPRINT);
-        assertThat(product.getFootprint()).isEqualTo(FOOTPRINT);
+        product.setFootprint(SentinelData.FOOTPRINT);
+        assertThat(product.getFootprint()).isEqualTo(SentinelData.FOOTPRINT);
     }
 
     @Test
     public void should_return_same_ingestionDate_as_seted() {
-        product.setIngestionDate(INGESTION_TIME);
-        Calendar calendar = DatatypeConverter.parseDateTime(INGESTION_TIME);
+        product.setIngestionDate(SentinelData.INGESTION_TIME);
+        Calendar calendar = DatatypeConverter.parseDateTime(SentinelData.INGESTION_TIME);
         assertThat(product.getIngestionDate()).isEqualTo(calendar);
     }
 
     @Test
     public void should_return_same_status_as_seted() {
-        product.setStatus(STATUS);
-        assertThat(product.getStatus()).isEqualTo(STATUS);
+        product.setStatus(SentinelData.STATUS);
+        assertThat(product.getStatus()).isEqualTo(SentinelData.STATUS);
     }
 
     @Test
     public void should_return_same_productType_as_seted() {
-        product.setProductType(PRODUCT_TYPE);
-        assertThat(product.getProductType()).isEqualTo(PRODUCT_TYPE);
+        product.setProductType(SentinelData.PRODUCT_TYPE);
+        assertThat(product.getProductType()).isEqualTo(SentinelData.PRODUCT_TYPE);
     }
 
     @Test
     public void should_return_same_plataformName_as_seted() {
-        product.setPlatformName(PLATFORM_NAME);
-        assertThat(product.getPlatformName()).isEqualTo(PLATFORM_NAME);
+        product.setPlatformName(SentinelData.PLATFORM_NAME);
+        assertThat(product.getPlatformName()).isEqualTo(SentinelData.PLATFORM_NAME);
     }
 
     @Test
     public void test_constructor() {
-        Product p = new Product(INGESTION_TIME,TITLE,ID,FOOTPRINT,SIZE,PRODUCT_TYPE,PLATFORM_NAME,STATUS);
+        ProductDTO p = new ProductDTO(
+                new SimpleStringProperty(SentinelData.ID),new SimpleStringProperty(SentinelData.TITLE),
+                new SimpleStringProperty(SentinelData.PLATFORM_NAME),new SimpleStringProperty(SentinelData.PRODUCT_TYPE),
+                new SimpleStringProperty(SentinelData.FOOTPRINT),new SimpleStringProperty(SentinelData.SIZE),
+                new SimpleStringProperty(SentinelData.STATUS),
+                new SimpleObjectProperty<>(SentinelData.calendar));
 
 
 
-        assertThat(p.getIngestionDate()).isEqualTo(calendar);
-        assertThat(p.getTitle()).isEqualTo(TITLE);
-        assertThat(p.getId()).isEqualTo(ID);
-        assertThat(p.getFootprint()).isEqualTo(FOOTPRINT);
-        assertThat(p.getSize()).isEqualTo(SIZE);
-        assertThat(p.getProductType()).isEqualTo(PRODUCT_TYPE);
-        assertThat(p.getPlatformName()).isEqualTo(PLATFORM_NAME);
-        assertThat(p.getStatus()).isEqualTo(STATUS);
+        assertThat(p.getIngestionDate()).isEqualTo(SentinelData.calendar);
+        assertThat(p.getTitle()).isEqualTo(SentinelData.TITLE);
+        assertThat(p.getId()).isEqualTo(SentinelData.ID);
+        assertThat(p.getFootprint()).isEqualTo(SentinelData.FOOTPRINT);
+        assertThat(p.getSize()).isEqualTo(SentinelData.SIZE);
+        assertThat(p.getProductType()).isEqualTo(SentinelData.PRODUCT_TYPE);
+        assertThat(p.getPlatformName()).isEqualTo(SentinelData.PLATFORM_NAME);
+        assertThat(p.getStatus()).isEqualTo(SentinelData.STATUS);
     }
 
     @Test
     public void should_return_size_as_double() {
-        product.setSize(SIZE);
+        product.setSize(SentinelData.SIZE);
         assertThat(product.getSizeAsDouble()).isEqualTo(1.55d);
     }
 

@@ -58,6 +58,12 @@
      -fx-font-weight: bold;
    }
 
+.toolbarIcon {
+    -fx-width: 25px;
+    -fx-height: 25px;
+    -fx-font-size: .5em;
+}
+
 .myTab {
     -fx-border-color: grey ;
     -fx-border-width: 1 ;
@@ -65,72 +71,56 @@
 
 #addToList {
     -fx-graphic: url("../img/addToList.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
+
 }
 
 #createList {
     -fx-graphic: url("../img/createList.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
 }
 
 #downloadSingle {
     -fx-graphic: url("../img/downloadSingle.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
 }
 
 #downloadAll {
     -fx-graphic: url("../img/downloadAll.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
 }
 
 #selectAll {
     -fx-graphic: url("../img/selectAll.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
 }
 
 #deleteSelected {
     -fx-graphic: url("../img/deleteSelected.png");
-    -fx-width: 25px;
-    -fx-height: 25px;
-     -fx-font-size: .5em;
+}
+
+#editList {
+    -fx-graphic: url("../img/editList.png");
 }
 
 #createListDialog {
 }
 
 .jfx-toggle-node {
-    /* This is the color once toggled on. */
     -jfx-toggle-color: deepskyblue;
 }
 
 .workingAreaValid {
-    /* This is the color once toggled on. */
     -fx-background-color: #66FB68;
 }
 
 .workingAreaIcon {
     -fx-opacity: 0.0;
+    visibility: hidden;
 }
 
 .workingAreaInvalid {
-    /* This is the color once toggled on. */
     -fx-background-color: #EE4545;
 }
 
-.workingAreaInvalid > .workingAreaIcon {
-    /* This is the color once toggled on. */
-
-    -fx-opacity: 1;
+.workingAreaInvalid .workingAreaIcon {
+    visibility: visible;
+    -fx-opacity: 1.0;
     -fx-fill: #A30303;
     -fx-graphic: url("../img/danger.png");
     -fx-width: 25px;

@@ -3,20 +3,22 @@ package controller;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.GTMap;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import model.products.Product;
+import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.geotools.data.FeatureLockException;
 import org.locationtech.jts.io.ParseException;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,18 +28,24 @@ public class GTMapSearchController {
     private final GTMap geotoolsMap;
     private final BorderPane border;
     private HBox hbox;
-    private boolean isSearchAreaDraw;
-    private final double[] searchAreaCoordinates;
+    private boolean isSearchAreaDrawing;
+    private Point2D initialCoodinates;
     private double baseDragedX;
     private double baseDragedY;
 
     static final Logger logger = LogManager.getLogger(GTMapSearchController.class.getName());
-    private boolean disableMouseClickedEvent;
+    private final BooleanProperty wasPrimaryButtonClicked;
+    private final BooleanProperty wasSecondaryButtonClicked;
+
+    private Color selectedFeaturesBorderColor;
+    private Color selectedFeaturesFillColor;
+    private Color notSelectedFeaturesBorderColor;
+    private Color notSelectedFeaturesFillColor;
 
     public GTMapSearchController(double width, double height, boolean controlBarActive) {
-        searchAreaCoordinates = new double[2];
-        disableMouseClickedEvent = false;
-        isSearchAreaDraw = false;
+        wasPrimaryButtonClicked = new SimpleBooleanProperty(false);
+        wasSecondaryButtonClicked = new SimpleBooleanProperty(false);
+        isSearchAreaDrawing = false;
         HBox controlBar = controlBar();
         geotoolsMap = new GTMap((int) width, (int) (height-controlBar.getHeight()),false);
         border = new BorderPane();
@@ -49,19 +57,19 @@ public class GTMapSearchController {
         border.setLeft(null);
         border.setRight(null);
         addGeotoolsMapEvents();
+
+        selectedFeaturesBorderColor = Color.BLUE;
+        selectedFeaturesFillColor = Color.CYAN;
+        notSelectedFeaturesBorderColor = Color.BLACK;
+        notSelectedFeaturesFillColor = null;
     }
 
     public Parent getView() {
         return border;
     }
 
-    public void disableMouseClickedEvent() {
-        this.disableMouseClickedEvent = true;
-    }
-
     private void addGeotoolsMapEvents() {
         addMapMousePressedEvent();
-        addMapMouseClickedEvent();
         addMapMouseReleasedEvent();
         addMapMouseMovedEvent();
         addMapMouseDraggedEvent();
@@ -75,17 +83,13 @@ public class GTMapSearchController {
         });
     }
 
-    private void addMapMouseClickedEvent() {
+    public void addSelectedAreaEvent(String layer) {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
-            if (disableMouseClickedEvent)
-                return;
-            if (t.getClickCount() == 1) {
+            if (t.getClickCount() == 1 && wasPrimaryButtonClicked.get()) {
+                wasPrimaryButtonClicked.set(false);
                 try {
-                    boolean multipleFeatureSelection = t.isControlDown();
-                    geotoolsMap.selectFeature((int)(t.getX()),(int)(t.getY()),multipleFeatureSelection);
-
+                    geotoolsMap.selectFeature(new Point2D(t.getX(),t.getY()),t.isControlDown(),layer, selectedFeaturesBorderColor, selectedFeaturesFillColor, notSelectedFeaturesBorderColor, notSelectedFeaturesFillColor);
                 } catch (IOException e) {
-
                     logger.atError().log("Not able to style selected features: {0}",e);
                 }
                 geotoolsMap.refresh();
@@ -97,9 +101,9 @@ public class GTMapSearchController {
 
     private void addMapMouseReleasedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
-            if(e.isSecondaryButtonDown() && isSearchAreaDraw) {
-                geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
-                isSearchAreaDraw = false;
+            if(e.isSecondaryButtonDown() && isSearchAreaDrawing) {
+                createSearchArea(new Point2D(e.getX(),e.getY()));
+                isSearchAreaDrawing = false;
             }
             e.consume();
         });
@@ -107,8 +111,8 @@ public class GTMapSearchController {
 
     private void addMapMouseMovedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-            if (isSearchAreaDraw) {
-                geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
+            if (isSearchAreaDrawing) {
+                createSearchArea(new Point2D(e.getX(),e.getY()));
             }
             e.consume();
         });
@@ -126,16 +130,26 @@ public class GTMapSearchController {
     private void addMapMousePressedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             setBaseDraggedPosition(e);
+            wasPrimaryButtonClicked.set(e.isPrimaryButtonDown());
+            wasSecondaryButtonClicked.set(e.isSecondaryButtonDown());
             if (e.isSecondaryButtonDown()) {
-                if (!isSearchAreaDraw) {
-                    setInitSearchCoordinates(e.getX(), e.getY());
+                if (!isSearchAreaDrawing) {
+                    setInitialCoordinates(e.getX(), e.getY());
                 } else {
-                    geotoolsMap.drawPolygon(searchAreaCoordinates[0], searchAreaCoordinates[1],e.getX(),e.getY());
-                    isSearchAreaDraw = false;
+                    createSearchArea(new Point2D(e.getX(),e.getY()));
+                    isSearchAreaDrawing = false;
                 }
             }
             e.consume();
         });
+    }
+
+    public void showProductArea(List<String> ids,String layer) {
+        geotoolsMap.highlightFeatures(ids, layer, selectedFeaturesBorderColor, selectedFeaturesFillColor, notSelectedFeaturesBorderColor, notSelectedFeaturesFillColor);
+    }
+
+    private void createSearchArea(Point2D end) {
+        geotoolsMap.createLayerFromCoordinates(initialCoodinates,end,"searchArea");
     }
 
     private void setBaseDraggedPosition(MouseEvent e) {
@@ -143,40 +157,42 @@ public class GTMapSearchController {
         baseDragedY = e.getSceneY();
     }
 
-    private void setInitSearchCoordinates(double x, double y) {
-        searchAreaCoordinates[0] = x;
-        searchAreaCoordinates[1] = y;
-        isSearchAreaDraw = true;
+    private void setInitialCoordinates(double x, double y) {
+        initialCoodinates = new Point2D(x,y);
+        isSearchAreaDrawing = true;
     }
 
-    public void addProductsWKT(List<Product> products) {
-        geotoolsMap.clearFeatures();
+    public void printProductsInMap(List<ProductDTO> products, Color borderColor, Color fillColor) {
+        printProductsInLayer("products",products,borderColor,fillColor);
+    }
+
+    public void printProductsInLayer(String layer, List<ProductDTO> products, Color borderColor, Color fillColor) {
+
+        geotoolsMap.clearFeatures(layer);
         products.forEach(p-> {
             try {
-                addProductWKT(p.getFootprint(),p.getId());
+                addProductWKT(p.getFootprint(),p.getId(),layer);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
-        drawProductsWKT();
+        drawFeaturesOfLayer(layer,borderColor, fillColor);
     }
 
-    private void drawProductsWKT() {
-        geotoolsMap.createAndDrawProductsLayer();
+    public void drawFeaturesOfLayer(String layer,Color borderColor, Color fillColor) {
+        geotoolsMap.createAndDrawLayer(layer, borderColor, fillColor);
     }
 
-    public void addProductWKT(String wkt, String id) throws ParseException {
-        geotoolsMap.createFeatureFromWKT(wkt,id);
+    public void addProductWKT(String wkt, String id,String layer) throws ParseException {
+        geotoolsMap.createFeatureFromWKT(wkt,id,layer);
     }
 
     public HBox controlBar() {
         hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
-        //buttonCurrent.setPrefSize(100, 20);
 
         Button deleteSearchAreaButton = getDeleteSearchAreaButton();
-        //Button goToSelection = getGoToSelectionButton();
         Button resetMap = getResetMapButton();
 
 
@@ -199,7 +215,7 @@ public class GTMapSearchController {
         Button clearButton = GlyphsDude.createIconButton(FontAwesomeIcon.ERASER,"Delete selection");
         clearButton.setAccessibleText("Delete selection");
         clearButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            geotoolsMap.removeLayer("SearchArea");
+            geotoolsMap.removeLayer("searchArea");
         });
         return clearButton;
     }
@@ -208,16 +224,25 @@ public class GTMapSearchController {
         return geotoolsMap.getWKT();
     }
 
-    public void showProductArea(List<String> ids) {
-        geotoolsMap.showFeatureArea(ids);
+    public void clearMap(String layer) {
+        geotoolsMap.clearFeatures(layer);
     }
 
-    public void clearMap() {
-        geotoolsMap.clearMap();
+    public void focusOnLayer(String layer) {
+        geotoolsMap.focusOnLayer(layer);
     }
 
     public String getSelectedProduct() {
         return geotoolsMap.getSelectedFeatureID();
+    }
 
+    public void setSelectedFeaturesBorderColor(Color borderColor, Color fillColor) {
+        selectedFeaturesBorderColor = borderColor;
+        selectedFeaturesFillColor = fillColor;
+    }
+
+    public void setNotSelectedFeaturesBorderColor(Color borderColor, Color fillColor) {
+        notSelectedFeaturesBorderColor = borderColor;
+        notSelectedFeaturesFillColor = fillColor;
     }
 }

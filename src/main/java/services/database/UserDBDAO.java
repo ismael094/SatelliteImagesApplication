@@ -1,10 +1,13 @@
 package services.database;
 
+
 import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.experimental.updates.UpdateOperators;
+import javafx.collections.FXCollections;
 import model.user.UserDTO;
 import services.entities.User;
 import utils.Encryptor;
-import utils.MongoDBManager;
+import utils.database.MongoDBManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +16,11 @@ public class UserDBDAO implements DAO<UserDTO> {
 
     private static UserDBDAO instance;
     private final MongoDBManager database;
+    private final ProductListDBDAO productListDBDAO;
 
     private UserDBDAO() {
         database = MongoDBManager.getMongoDBManager();
+        productListDBDAO = ProductListDBDAO.getInstance();
     }
 
     public static UserDBDAO getInstance() {
@@ -59,6 +64,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     @Override
     public void delete(UserDTO dao) {
         database.getDatastore().delete(toEntity(dao));
+        dao.getProductListsDTO().forEach(productListDBDAO::delete);
     }
 
     public List<UserDTO> toDAO(List<User> toList) {
@@ -74,12 +80,38 @@ public class UserDBDAO implements DAO<UserDTO> {
             return null;
         UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
         userDTO.setId(user.getId());
+        if (user.getProductLists() == null)
+            userDTO.setProductListsDTO(FXCollections.observableArrayList());
+        else if (user.getProductLists().size()>0)
+            userDTO.setProductListsDTO(FXCollections.observableList(productListDBDAO.toDAO(user.getProductLists())));
         return userDTO;
     }
 
     public User toEntity(UserDTO userDTO) {
-        return new User(userDTO.getId(), userDTO.getEmail(), Encryptor.hashString(userDTO.getPassword()), userDTO.getFirstName(), userDTO.getLastName());
+        String hashedPass = userDTO.getPassword();
+        if (!userDTO.getPassword().startsWith("$2a$10"))
+            hashedPass = Encryptor.hashString(userDTO.getPassword());
+        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName());
+
+        if (userDTO.getProductListsDTO().size()>0) {
+            user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));
+            userDTO.getProductListsDTO().forEach(pL->{
+                if (productListDBDAO.findByName(pL) == null)
+                    productListDBDAO.save(pL);
+            });
+        }
+
+        return user;
     }
 
-
+    public void updateProductList(UserDTO user) {
+        user.getProductListsDTO().forEach(pL->{
+            if (productListDBDAO.findByName(pL) == null)
+                productListDBDAO.save(pL);
+        });
+        database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();
+    }
 }

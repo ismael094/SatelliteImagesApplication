@@ -1,4 +1,4 @@
-package model.products;
+package services.entities;
 
 public class Sentinel2Product extends Product {
     private double cloudCoverPercentage;
@@ -6,17 +6,15 @@ public class Sentinel2Product extends Product {
     private double notVegetationPercentageCoverage;
     private double waterPercentageCoverage;
 
-    public Sentinel2Product(String ingestionDate, String title, String id, String footprint, String size,
-                            String productType, String platformName, String status, double cloudCoverPercentage) {
-        super(ingestionDate, title, id, footprint, size, productType, platformName, status);
+    public Sentinel2Product(String id, String title, String platformName, String productType, String footprint, String size, String status, String ingestionDate, double cloudCoverPercentage, double vegetationPercentageCoverage, double notVegetationPercentageCoverage, double waterPercentageCoverage) {
+        super(id, title, platformName, productType, footprint, size, status, ingestionDate);
         this.cloudCoverPercentage = cloudCoverPercentage;
+        this.vegetationPercentageCoverage = vegetationPercentageCoverage;
+        this.notVegetationPercentageCoverage = notVegetationPercentageCoverage;
+        this.waterPercentageCoverage = waterPercentageCoverage;
     }
 
     public Sentinel2Product() {
-    }
-
-    public Sentinel2Product(double cloudCoverPercentage) {
-        this.cloudCoverPercentage = cloudCoverPercentage;
     }
 
     public double getCloudCoverPercentage() {
@@ -27,12 +25,12 @@ public class Sentinel2Product extends Product {
         this.cloudCoverPercentage = cloudCoverPercentage;
     }
 
-    public void setVegetationPercentageCoverage(double vegetationPercentageCoverage) {
-        this.vegetationPercentageCoverage = vegetationPercentageCoverage;
-    }
-
     public double getVegetationPercentageCoverage() {
         return vegetationPercentageCoverage;
+    }
+
+    public void setVegetationPercentageCoverage(double vegetationPercentageCoverage) {
+        this.vegetationPercentageCoverage = vegetationPercentageCoverage;
     }
 
     public double getNotVegetationPercentageCoverage() {

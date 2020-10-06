@@ -18,12 +18,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.ProductList;
-import model.products.Product;
+import model.list.ProductListDTO;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.database.UserDBDAO;
 
 import java.net.URL;
 import java.util.*;
@@ -58,23 +58,15 @@ public class SatelliteApplicationController implements Initializable {
     private JFXSpinner wait;
 
     private CopernicusOpenSearchController copernicusOpenSearchController;
-    private List<ProductList> userProductList;
     private Map<String, SearchController> searchControllers;
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
-    private ObservableList<ProductList> productLists;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        productLists = FXCollections.observableArrayList();
-        productLists.addListener((ListChangeListener<ProductList>) c -> {
-            c.next();
-            System.out.println(c.wasAdded());
-            System.out.println(c.wasRemoved());
-            System.out.println("FUNCIONARÁ?");
-        });
+
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
         initComponents();
         searchControllers = new HashMap<>();
@@ -102,6 +94,7 @@ public class SatelliteApplicationController implements Initializable {
         tabPaneComponent.init();
         gridPane.add(tabPaneComponent,2,0);
         logger.atInfo().log("TabPaneComponent loaded");
+        tabPaneComponent.load(new InformationController());
     }
 
     private void initListTreeViewComponent() {
@@ -128,8 +121,8 @@ public class SatelliteApplicationController implements Initializable {
         return listTreeViewComponent;
     }
 
-    public ObservableList<ProductList> getUserProductList() {
-        return productLists;
+    public ObservableList<ProductListDTO> getUserProductList() {
+        return user.getProductListsDTO();
     }
 
     public void showWaitSpinner() {
@@ -148,6 +141,11 @@ public class SatelliteApplicationController implements Initializable {
 
     public void setUser(UserDTO userDTO) {
         this.user = userDTO;
+        user.getProductListsDTO().addListener((ListChangeListener<ProductListDTO>) c -> {
+            UserDBDAO instance = UserDBDAO.getInstance();
+            instance.updateProductList(user);
+        });
+        listTreeViewComponent.reload();
     }
 
 }

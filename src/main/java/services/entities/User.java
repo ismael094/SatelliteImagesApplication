@@ -1,7 +1,12 @@
 package services.entities;
 
 import dev.morphia.annotations.*;
+import javafx.collections.ObservableList;
+import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity("users")
 @Indexes(
@@ -14,6 +19,8 @@ public class User {
     private String password;
     private String lastName;
     private String firstName;
+    @Reference
+    private List<ProductList> productLists;
 
     public User(ObjectId id, String email, String password, String firstName, String lastName) {
         this.id = id;
@@ -21,9 +28,11 @@ public class User {
         this.password = password;
         this.lastName = lastName;
         this.firstName = firstName;
+        this.productLists = new ArrayList<>();
     }
 
     public User() {
+        this.productLists = new ArrayList<>();
     }
 
     public ObjectId getId() {
@@ -64,5 +73,13 @@ public class User {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public List<ProductList> getProductLists() {
+        return productLists;
+    }
+
+    public void setProductLists(List<ProductList> productLists) {
+        this.productLists = productLists;
     }
 }

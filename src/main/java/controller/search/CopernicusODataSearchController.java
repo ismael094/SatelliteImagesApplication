@@ -1,6 +1,6 @@
 package controller.search;
 
-import controller.TabItem;
+import controller.interfaces.TabItem;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
 import javafx.collections.ObservableList;
@@ -21,8 +21,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.ProductOData;
-import model.ProductList;
-import model.products.Product;
+import model.list.ProductListDTO;
+import model.products.ProductDTO;
 import services.search.ODataSearcher;
 
 import java.net.URL;
@@ -37,7 +37,7 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     private ODataSearcher ODataSearcher;
     private Filter filter;
     private ContextMenu productContextMenu;
-    private List<ProductList> productList;
+    private List<ProductListDTO> productListDTO;
     private AddProductToProductListDialog addProductToProductListDialog;
     @FXML
     private ListView<ProductOData> list;
@@ -114,12 +114,12 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     @Override
-    public ObservableList<Product> getSelectedProducts() {
+    public ObservableList<ProductDTO> getSelectedProducts() {
         return null;
     }
 
     @Override
-    public ObservableList<Product> getProducts() {
+    public ObservableList<ProductDTO> getProducts() {
         return null;
     }
 
@@ -198,16 +198,16 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     private void initCreateListDialog() {
-        addProductToProductListDialog = new AddProductToProductListDialog(productList);
+        addProductToProductListDialog = new AddProductToProductListDialog(productListDTO);
         addProductToProductListDialog.init();
         addProductToProductListDialog.setOnHidden(ev -> {
             if (addProductToProductListDialog.getSelectedItem() > -1)
-            addSelectedProductToProductList(productList.get(addProductToProductListDialog.getSelectedItem()));
+            addSelectedProductToProductList(productListDTO.get(addProductToProductListDialog.getSelectedItem()));
         });
         addProductToProductListDialog.show();
     }
 
-    private void addSelectedProductToProductList(ProductList productList) {
+    private void addSelectedProductToProductList(ProductListDTO productListDTO) {
         //productList.addProduct(list.getSelectionModel().getSelectedItem());
     }
 
@@ -215,11 +215,11 @@ public class CopernicusODataSearchController implements SearchController, TabIte
         ProductOData selectedItem = list.getSelectionModel().getSelectedItem();
     }
 
-    public void setProductList(List<ProductList> list) {
-        this.productList = list;
+    public void setProductList(List<ProductListDTO> list) {
+        this.productListDTO = list;
     }
 
-    public List<ProductList> getUserProductList() {
-        return productList;
+    public List<ProductListDTO> getUserProductList() {
+        return productListDTO;
     }
 }

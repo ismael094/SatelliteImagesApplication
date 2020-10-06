@@ -2,14 +2,15 @@ package services.database;
 
 import dev.morphia.query.experimental.filters.Filters;
 import javafx.beans.property.SimpleStringProperty;
+import model.SentinelData;
+import model.list.ProductListDTO;
 import model.user.UserDTO;
 import org.junit.Before;
 import org.junit.Test;
 import utils.MongoDB_;
-import services.database.UserDBDAO;
 import services.entities.User;
 import utils.Encryptor;
-import utils.MongoDBManager;
+import utils.database.MongoDBManager;
 
 import java.util.List;
 
@@ -57,6 +58,49 @@ public class UserDBDAO_ {
         UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        userDAO.delete(dbUserDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
+    }
+
+    @Test
+    public void save_and_delete_user_collection_with_product_list() {
+        userDTO.setEmail("email@mail.com");
+        userDTO.setPassword("password");
+        userDTO.setFirstName("firstName");
+        userDTO.setLastName("lastName");
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name"), new SimpleStringProperty("Description"));
+        productListDTO.addProduct(SentinelData.getProduct());
+        userDTO.addProductList(productListDTO);
+        userDAO.save(userDTO);
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNotNull();
+        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
+        assertThat(dbUserDTO.getProductListsDTO().get(0).getName()).isEqualTo(productListDTO.getName());
+        assertThat(dbUserDTO.getProductListsDTO().get(0).getProducts().get(0).getId()).isEqualTo(productListDTO.getProducts().get(0).getId());
+        userDAO.delete(dbUserDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
+    }
+
+    @Test
+    public void update_user_collection_with_product_list() {
+        userDTO.setEmail("email@mail.com");
+        userDTO.setPassword("password");
+        userDTO.setFirstName("firstName");
+        userDTO.setLastName("lastName");
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name"), new SimpleStringProperty("Description"));
+        productListDTO.addProduct(SentinelData.getProduct());
+        //userDTO.addProductList(productListDTO);
+        userDAO.save(userDTO);
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNotNull();
+        userDTO.addProductList(productListDTO);
+        userDAO.updateProductList(userDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO.getProductListsDTO()).isNotNull();
+        assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
         userDAO.delete(dbUserDTO);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNull();

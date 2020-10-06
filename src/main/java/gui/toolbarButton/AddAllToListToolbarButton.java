@@ -1,18 +1,14 @@
 package gui.toolbarButton;
 
-import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialogLayout;
-import controller.TabItem;
+import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import gui.components.ToolBarComponent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.util.Duration;
-import model.ProductList;
-import model.products.Product;
+import model.list.ProductListDTO;
+import model.products.ProductDTO;
 
 import java.util.List;
 
@@ -37,22 +33,22 @@ public class AddAllToListToolbarButton extends ToolbarButton{
     public void handle(ActionEvent event) {
 
 
-        ObservableList<Product> openSearcher = getAllProducts();
+        ObservableList<ProductDTO> openSearcher = getAllProducts();
         if (openSearcher == null || openSearcher.size() == 0) {
             event.consume();
             return;
         }
 
-        List<ProductList> productList = getProductList();
-        if (productList.size()>0){
-            productList.forEach(pL->openSearcher.forEach(pL::addProduct));
-            toolBar.getMainController().getListTreeViewController().reloadTree();
+        List<ProductListDTO> productListDTO = getProductList();
+        if (productListDTO.size()>0){
+            productListDTO.forEach(pL->pL.addProduct(openSearcher));
+            toolBar.getMainController().getListTreeViewController().reload();
         }
     }
 
 
 
-    private ObservableList<Product> getAllProducts() {
+    private ObservableList<ProductDTO> getAllProducts() {
         Tab tab = toolBar.getMainController().getTabController().getSelectionModel().getSelectedItem();
         TabItem controller = toolBar.getMainController().getTabController().getControllerOf(tab);
         if (controller instanceof SearchController)

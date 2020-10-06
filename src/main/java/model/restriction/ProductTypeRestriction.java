@@ -1,10 +1,12 @@
 package model.restriction;
 
-import model.products.Product;
+import dev.morphia.annotations.Embedded;
+import model.products.ProductDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Embedded
 public class ProductTypeRestriction implements Restriction{
     private final List<String> acceptedValues;
 
@@ -23,7 +25,12 @@ public class ProductTypeRestriction implements Restriction{
     }
 
     @Override
-    public boolean validate(Product product) {
+    public boolean validate(ProductDTO product) {
         return acceptedValues.contains(product.getProductType());
+    }
+
+    @Override
+    public List<String> getValues() {
+        return acceptedValues;
     }
 }

@@ -8,27 +8,27 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import model.ProductList;
+import model.list.ProductListDTO;
 
 import java.util.List;
 
 public class AddProductToProductListDialog extends Stage {
 
     private final VBox group;
-    private final List<ProductList> userProductList;
-    private final ListView<ProductList> productList;
+    private final List<ProductListDTO> userProductListDTO;
+    private final ListView<ProductListDTO> productList;
     private int selectedItem;
 
-    public AddProductToProductListDialog(List<ProductList> productList) {
+    public AddProductToProductListDialog(List<ProductListDTO> productListDTO) {
         this.group = new VBox();
         this.productList = new ListView<>();
-        this.userProductList = productList;
+        this.userProductListDTO = productListDTO;
         this.selectedItem = -1;
         addUserListToView();
     }
 
     private void addUserListToView() {
-        productList.getItems().addAll(userProductList);
+        productList.getItems().addAll(userProductListDTO);
     }
 
     public void init() {
@@ -68,11 +68,11 @@ public class AddProductToProductListDialog extends Stage {
         setScene(scene);
     }
 
-    private void addProductListToList(ProductList pl) {
+    private void addProductListToList(ProductListDTO pl) {
         if (pl == null)
             return;
         productList.getItems().add(pl);
-        userProductList.add(pl);
+        userProductListDTO.add(pl);
         productList.refresh();
     }
 
