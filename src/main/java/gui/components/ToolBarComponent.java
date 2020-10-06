@@ -22,6 +22,7 @@ public class ToolBarComponent extends ToolBar implements Component{
 
     private void initButtonMap() {
         this.buttonMap = new HashMap<>();
+        buttonMap.put("deleteList", new DeleteListToolbarButton(this));
         buttonMap.put("createList", new CreateListToolbarButton(this));
         buttonMap.put("addToList", new AddSelectedToListToolbarButton(this));
         buttonMap.put("editList", new EditListToolbarButton(this));
@@ -32,7 +33,6 @@ public class ToolBarComponent extends ToolBar implements Component{
     @Override
     public void init() {
         buttonMap.forEach((key,value)->{
-            System.out.println(key);
             value.init();
             getItems().add(value);
         });

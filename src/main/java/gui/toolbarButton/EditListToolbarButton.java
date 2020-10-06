@@ -1,13 +1,18 @@
 package gui.toolbarButton;
 
 import controller.interfaces.TabItem;
-import controller.list.ListController;
+import controller.list.ListCreateAndEditController;
+import controller.list.ListInformationController;
 import gui.components.ToolBarComponent;
+import gui.dialog.ListDialog;
 import javafx.event.ActionEvent;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 import model.list.ProductListDTO;
+
+import java.util.List;
 
 public class EditListToolbarButton extends ToolbarButton {
 
@@ -28,13 +33,17 @@ public class EditListToolbarButton extends ToolbarButton {
     @Override
     public void handle(ActionEvent event) {
         Tab active = toolBar.getMainController().getTabController().getActive();
-        if (active instanceof TabItem) {
-            TabItem listController = (TabItem)active;
-            ProductListDTO productListDTO = toolBar.getMainController().getUserProductList().stream().filter(pL -> pL.getName().equals(listController.getName()))
-                    .findAny()
-                    .orElse(null);
-        }
+        TabItem controllerOf = toolBar.getMainController().getTabController().getControllerOf(active);
 
-        return;
+        if (controllerOf instanceof ListInformationController) {
+            ListInformationController listController = (ListInformationController)controllerOf;
+            ProductListDTO productList1 = listController.getProductList();
+            ListDialog edit_list = new ListDialog("Edit list");
+            ListCreateAndEditController load = edit_list.load();
+            load.setProductList(productList1);
+            edit_list.showAndWait();
+        } else {
+            List<ProductListDTO> productList = showAndGetList(SelectionMode.SINGLE,"Select list to edit");
+        }
     }
 }

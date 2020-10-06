@@ -13,4 +13,6 @@ public interface DAO<E> {
 
     void delete(E dao);
 
+    void delete(List<E> dao);
+
 }

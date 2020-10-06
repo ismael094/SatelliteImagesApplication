@@ -5,6 +5,7 @@ import controller.search.SearchController;
 import gui.components.ToolBarComponent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;

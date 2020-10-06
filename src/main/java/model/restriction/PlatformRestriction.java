@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Embedded
-public class PlatFormRestriction implements Restriction {
+public class PlatformRestriction implements Restriction {
     private final List<String> acceptedValues;
 
-    public PlatFormRestriction() {
+    public PlatformRestriction() {
         this.acceptedValues = new ArrayList<>();
     }
 

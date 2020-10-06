@@ -3,7 +3,7 @@ package services.database;
 import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
-import model.restriction.PlatFormRestriction;
+import model.restriction.PlatformRestriction;
 import model.restriction.ProductTypeRestriction;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public class ProductListDBDAO_ {
     @Test
     public void save_and_delete_with_products_and_restrictions_product_list() {
         productListDTO.addProduct(SentinelData.getProduct());
-        PlatFormRestriction platFormRestriction = new PlatFormRestriction();
+        PlatformRestriction platFormRestriction = new PlatformRestriction();
         platFormRestriction.add("Sentinel-1");
         ProductTypeRestriction productTypeRestriction = new ProductTypeRestriction();
         productTypeRestriction.add("GRD");
@@ -89,7 +89,7 @@ public class ProductListDBDAO_ {
     @Test
     public void save_and_delete_with_products_and_restrictions_and_areas_product_list() {
         productListDTO.addProduct(SentinelData.getProduct());
-        PlatFormRestriction platFormRestriction = new PlatFormRestriction();
+        PlatformRestriction platFormRestriction = new PlatformRestriction();
         platFormRestriction.add("Sentinel-1");
         productListDTO.addRestriction(platFormRestriction);
         productListDTO.addAreaOfWork("AREA1");

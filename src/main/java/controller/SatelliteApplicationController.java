@@ -11,6 +11,7 @@ import gui.components.ToolBarComponent;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -78,6 +79,10 @@ public class SatelliteApplicationController implements Initializable {
         initListTreeViewComponent();
         initMenuComponent();
         initToolBarComponent();
+
+        toolBarComponent.setOnMouseClicked(event -> {
+            System.out.println("CLICKED");
+        });
     }
 
     private void initToolBarComponent() {
@@ -144,6 +149,7 @@ public class SatelliteApplicationController implements Initializable {
         user.getProductListsDTO().addListener((ListChangeListener<ProductListDTO>) c -> {
             UserDBDAO instance = UserDBDAO.getInstance();
             instance.updateProductList(user);
+            System.out.println("update user");
         });
         listTreeViewComponent.reload();
     }

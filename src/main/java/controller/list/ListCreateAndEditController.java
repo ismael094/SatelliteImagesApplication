@@ -2,7 +2,6 @@ package controller.list;
 
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXToggleButton;
-import controller.identification.RegisterController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,18 +15,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import model.list.ProductListDTO;
-import model.restriction.PlatFormRestriction;
+import model.restriction.PlatformRestriction;
 import model.restriction.ProductTypeRestriction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class CreateListController implements Initializable {
+public class ListCreateAndEditController implements Initializable {
 
     @FXML
     private JFXCheckBox grd;
@@ -71,16 +68,15 @@ public class CreateListController implements Initializable {
     SimpleBooleanProperty sentinel2ALlProducts = new SimpleBooleanProperty();
     List<SimpleStringProperty> productTypes;
     private boolean listWasCreated = false;
+    private Map<String,JFXCheckBox> checkboxMap;
+    private Map<String,ToggleSwitch> toggleSwitchMap;
 
-    static final Logger logger = LogManager.getLogger(CreateListController.class.getName());
+    static final Logger logger = LogManager.getLogger(ListCreateAndEditController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         logger.atInfo().log("CreateListView initiated...");
-        productListDTO = new ProductListDTO(new SimpleStringProperty(),new SimpleStringProperty());
-        productListDTO.nameProperty().bindBidirectional(name.textProperty());
-        productListDTO.descriptionProperty().bindBidirectional(description.textProperty());
 
         productTypes = new ArrayList<>();
         productTypes.add(grdStringProperty);
@@ -89,6 +85,19 @@ public class CreateListController implements Initializable {
         productTypes.add(sCStringProperty);
         productTypes.add(sAStringProperty);
         productTypes.add(sApStringProperty);
+
+        checkboxMap = new HashMap<>();
+        toggleSwitchMap = new HashMap<>();
+
+        checkboxMap.put("GRD",grd);
+        checkboxMap.put("SLC",slc);
+        checkboxMap.put("OCN",ocn);
+        checkboxMap.put("S2MSI1C",sC);
+        checkboxMap.put("S2MSI2A",sA);
+        checkboxMap.put("S2MSI2Ap",sAp);
+
+        toggleSwitchMap.put("Sentinel-1",s1);
+        toggleSwitchMap.put("Sentinel-2",s2);
 
         create.setOnAction(e->{
             listWasCreated = true;
@@ -105,6 +114,29 @@ public class CreateListController implements Initializable {
         bindSentinel2Property();
 
         setCheckboxes();
+    }
+
+    public void setProductList(ProductListDTO productList) {
+        productListDTO = productList;
+        name.textProperty().bindBidirectional(productListDTO.nameProperty());
+        description.textProperty().bindBidirectional(productListDTO.descriptionProperty());
+
+        if (productListDTO.getRestrictions().size() > 0) {
+            restrictionSwitch.setSelected(true);
+            productListDTO.getRestrictions().forEach(restriction -> {
+                if (restriction.getValues().size()>0)
+                    restriction.getValues().forEach(this::activateCheckboxOrToggleSwitch);
+            });
+        }
+    }
+
+    private void activateCheckboxOrToggleSwitch(String value) {
+        if (checkboxMap.getOrDefault(value, null) == null)
+            toggleSwitchMap.get(value).setSelected(true);
+        else {
+            checkboxMap.get(value).setSelected(true);
+        }
+
     }
 
     private void setCheckboxes() {
@@ -163,6 +195,7 @@ public class CreateListController implements Initializable {
     }
 
     private void createRestrictions() {
+        productListDTO.getRestrictions().clear();
         if ((sentinel1AllProducts.get() && s1.isSelected()) || (sentinel2ALlProducts.get() && s2.isSelected())) {
             createPlatformRestriction();
         } else {
@@ -181,7 +214,7 @@ public class CreateListController implements Initializable {
     }
 
     private void createPlatformRestriction() {
-        PlatFormRestriction platFormRestriction = new PlatFormRestriction();
+        PlatformRestriction platFormRestriction = new PlatformRestriction();
         if (sentinel1AllProducts.get() && s1.isSelected()) {
             platFormRestriction.add("Sentinel-1");
         }

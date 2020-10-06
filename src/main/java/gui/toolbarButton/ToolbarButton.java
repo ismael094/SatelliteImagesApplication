@@ -40,19 +40,19 @@ public abstract class ToolbarButton extends Button implements EventHandler<Actio
         } else if (toolBar.getMainController().getUserProductList().size() == 1) {
             productListDTO.add(toolBar.getMainController().getUserProductList().get(0));
         } else {
-            productListDTO = showAndGetList();
+            productListDTO = showAndGetList(SelectionMode.MULTIPLE,"Choose one or more list to add");
         }
         return productListDTO;
     }
 
-    private ObservableList<ProductListDTO> showAndGetList() {
+    protected ObservableList<ProductListDTO> showAndGetList(SelectionMode selectionMode,String title) {
         ListView<ProductListDTO> productListListView = new ListView<>(toolBar.getMainController().getUserProductList());
-        productListListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        productListListView.getSelectionModel().setSelectionMode(selectionMode);
         JFXAlert alert = new JFXAlert(this.getScene().getWindow());
         alert.initModality(Modality.WINDOW_MODAL);
         alert.setOverlayClose(true);
         JFXDialogLayout layout = new JFXDialogLayout();
-        layout.setHeading(new Label("Choose one or more list to add"));
+        layout.setHeading(new Label(title));
         layout.setBody(productListListView);
         JFXButton closeButton = new JFXButton("Accept");
         closeButton.getStyleClass().add("dialog-accept");

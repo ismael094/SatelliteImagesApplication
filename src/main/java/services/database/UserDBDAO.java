@@ -4,6 +4,7 @@ package services.database;
 import dev.morphia.query.experimental.filters.Filters;
 import dev.morphia.query.experimental.updates.UpdateOperators;
 import javafx.collections.FXCollections;
+import model.products.ProductDTO;
 import model.user.UserDTO;
 import services.entities.User;
 import utils.Encryptor;
@@ -65,6 +66,11 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void delete(UserDTO dao) {
         database.getDatastore().delete(toEntity(dao));
         dao.getProductListsDTO().forEach(productListDBDAO::delete);
+    }
+
+    @Override
+    public void delete(List<UserDTO> dao) {
+        dao.forEach(this::delete);
     }
 
     public List<UserDTO> toDAO(List<User> toList) {

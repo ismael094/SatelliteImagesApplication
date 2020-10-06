@@ -120,4 +120,8 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
 
         return productList;
     }
+
+    public void delete(List<ProductListDTO> productList) {
+        productList.forEach(this::delete);
+    }
 }

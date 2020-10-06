@@ -69,6 +69,11 @@ public class ProductDBDAO implements DAO<ProductDTO> {
         database.getDatastore().delete(toEntity(dao));
     }
 
+    @Override
+    public void delete(List<ProductDTO> dao) {
+        dao.forEach(this::delete);
+    }
+
     public List<ProductDTO> toDAO(List<Product> toList) {
         if (toList == null)
             return null;

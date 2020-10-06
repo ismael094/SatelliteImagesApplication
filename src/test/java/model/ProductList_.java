@@ -6,7 +6,7 @@ import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import model.products.Sentinel2ProductDTO;
-import model.restriction.PlatFormRestriction;
+import model.restriction.PlatformRestriction;
 import model.restriction.ProductTypeRestriction;
 import org.assertj.core.data.Percentage;
 import org.junit.Before;
@@ -168,7 +168,7 @@ public class ProductList_ {
         productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
-        PlatFormRestriction platFormRestriction = new PlatFormRestriction();
+        PlatformRestriction platFormRestriction = new PlatformRestriction();
         platFormRestriction.add("Sentinel-1");
         productListDTO.addRestriction(platFormRestriction);
 
@@ -190,7 +190,7 @@ public class ProductList_ {
         productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),
                 new SimpleStringProperty("description"));
-        PlatFormRestriction platFormRestriction = new PlatFormRestriction();
+        PlatformRestriction platFormRestriction = new PlatformRestriction();
         platFormRestriction.add("Sentinel-1");
         platFormRestriction.add("Sentinel-2");
         productListDTO.addRestriction(platFormRestriction);

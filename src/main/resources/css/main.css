@@ -98,6 +98,10 @@
     -fx-graphic: url("../img/editList.png");
 }
 
+#deleteList {
+    -fx-graphic: url("../img/deleteList.png");
+}
+
 #createListDialog {
 }
 

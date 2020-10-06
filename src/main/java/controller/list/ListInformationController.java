@@ -12,8 +12,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,9 +32,8 @@ import services.CopernicusService;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 
-public class ListController implements TabItem, ProductTabItem {
+public class ListInformationController implements TabItem, ProductTabItem {
     private final FXMLLoader loader;
     private Parent parent;
     private final ProductListDTO productListDTO;
@@ -62,10 +59,10 @@ public class ListController implements TabItem, ProductTabItem {
     @FXML
     private Button deleteSelectedArea;
 
-    static final Logger logger = LogManager.getLogger(ListController.class.getName());
+    static final Logger logger = LogManager.getLogger(ListInformationController.class.getName());
 
 
-    public ListController(ProductListDTO productList) {
+    public ListInformationController(ProductListDTO productList) {
         this.productListDTO = productList;
         this.loader = new FXMLLoader(getClass().getResource("/fxml/ListView.fxml"));
         this.loader.setController(this);

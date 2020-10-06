@@ -1,7 +1,9 @@
 package gui.toolbarButton;
 
-import controller.list.CreateListController;
+import controller.list.ListCreateAndEditController;
 import gui.components.ToolBarComponent;
+import gui.dialog.ListDialog;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -35,23 +37,10 @@ public class CreateListToolbarButton extends ToolbarButton {
 
     @Override
     public void handle(ActionEvent event) {
-        URL location = getClass().getResource("/fxml/CreateListView.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Scene scene = null;
-        try {
-            scene = new Scene(fxmlLoader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        new JMetro(Style.LIGHT).setScene(scene);
-        CreateListController controller = fxmlLoader.getController();
-        Stage stage = new Stage();
-        stage.setTitle("Create list");
-        stage.setResizable(false);
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+        ListDialog createList = new ListDialog("Create list");
+        ListCreateAndEditController controller = createList.load();
+        controller.setProductList(new ProductListDTO(new SimpleStringProperty(), new SimpleStringProperty()));
+        createList.showAndWait();
         ProductListDTO productListDTO = controller.getProductList();
         if (productListDTO !=null)
             toolBar.getMainController().getUserProductList().add(productListDTO);

@@ -1,12 +1,10 @@
 package gui.components;
 
 import controller.SatelliteApplicationController;
-import controller.list.ListController;
+import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -57,7 +55,7 @@ public class ListTreeViewComponent extends TreeView<Object> implements Component
             if (selectedItem != null && !selectedItem.isLeaf())
                 mainController.getUserProductList().stream()
                     .filter(p -> p.getName().equals(selectedItem.getValue()))
-                    .findAny().ifPresent(productList -> mainController.getTabController().load(new ListController(productList)));
+                    .findAny().ifPresent(productList -> mainController.getTabController().load(new ListInformationController(productList)));
 
         });
     }
