@@ -125,6 +125,11 @@ public class ListInformationController implements TabItem, ProductTabItem {
         return productListDTO.getName();
     }
 
+    @Override
+    public String getItemId() {
+        return productListDTO.getId().toString();
+    }
+
     private void initData() {
         bindProperties();
 

@@ -48,4 +48,9 @@ public class InformationController implements TabItem {
     public String getName() {
         return "Information";
     }
+
+    @Override
+    public String getItemId() {
+        return "InformationID";
+    }
 }

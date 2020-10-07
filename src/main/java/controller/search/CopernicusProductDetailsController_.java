@@ -101,6 +101,11 @@ public class CopernicusProductDetailsController_ implements TabItem {
         return product.getTitle().substring(0,15);
     }
 
+    @Override
+    public String getItemId() {
+        return product.getId();
+    }
+
     public void initViewData() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
         if (product!=null)
             setProductDetails();

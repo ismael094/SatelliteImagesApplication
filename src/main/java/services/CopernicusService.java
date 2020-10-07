@@ -1,6 +1,7 @@
 package services;
 
 import gui.dialog.ScihubCredentialsDialog;
+import javafx.concurrent.Service;
 import javafx.util.Pair;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
@@ -52,27 +53,28 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException if credentials are not setted
      */
-    public void login() throws AuthenticationException, NotAuthenticatedException {
+    public synchronized void login() throws AuthenticationException, NotAuthenticatedException {
         if (pair == null) {
             instance = null;
             logger.atWarn().log("Incorrect credentials while login in Copernicus API");
             throw new NotAuthenticatedException("Not authenticated");
         }
-        httpManager = CopernicusHTTPAuthManager.getHttpManager(pair.getKey(),pair.getValue());
+        httpManager = CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue());
     }
 
     /**
-     * Get content of resource of URL
+     * Get content of resource of URL. To use this method you should
      * @param url URL of API resource
      * @return Content as inputstream
      * @throws IOException error reading content from URL
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
+
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
-            throw new NotAuthenticatedException("Not authentificated");
-        return httpManager.getContentFromURL(url);
+            throw new NotAuthenticatedException("Not authenticated");
+        return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getContentFromURL(url);
     }
 
     /**

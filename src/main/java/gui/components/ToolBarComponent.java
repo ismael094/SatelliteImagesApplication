@@ -1,22 +1,31 @@
 package gui.components;
 
 import controller.SatelliteApplicationController;
+import gui.components.listener.ComponentChangeListener;
+import gui.components.listener.ComponentEventType;
+import gui.components.listener.ToolbarComponentEvent;
 import gui.toolbarButton.*;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ToolBarComponent extends ToolBar implements Component{
 
     private final SatelliteApplicationController mainController;
     private HashMap<String, ToolbarButton> buttonMap;
+    //private final List<ComponentChangeListener> toolBarListener;
+    private final Map<ComponentEventType, ComponentChangeListener> toolBarListener;
 
     public ToolBarComponent(SatelliteApplicationController mainController) {
         super();
         this.mainController = mainController;
+        this.toolBarListener = new HashMap<>();
         initButtonMap();
     }
 
@@ -64,5 +73,17 @@ public class ToolBarComponent extends ToolBar implements Component{
     @Override
     public SatelliteApplicationController getMainController() {
         return mainController;
+    }
+
+    @Override
+    public void addComponentListener(ComponentEventType type, ComponentChangeListener listener) {
+        this.toolBarListener.put(type,listener);
+    }
+
+    @Override
+    public void fireEvent(ToolbarComponentEvent event) {
+        ComponentChangeListener orDefault = this.toolBarListener.getOrDefault(event.getToolbarEvent(), null);
+        if (orDefault != null)
+            orDefault.onComponentChange(event);
     }
 }

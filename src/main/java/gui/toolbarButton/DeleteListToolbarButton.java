@@ -1,6 +1,8 @@
 package gui.toolbarButton;
 
 import gui.components.ToolBarComponent;
+import gui.components.listener.ComponentEventType;
+import gui.components.listener.ToolbarComponentEvent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tooltip;
@@ -31,7 +33,6 @@ public class DeleteListToolbarButton extends ToolbarButton {
         List<ProductListDTO> productList = showAndGetList(SelectionMode.MULTIPLE,"Delete list");
         ProductListDBDAO.getInstance().delete(productList);
         toolBar.getMainController().getUserProductList().removeAll(productList);
-        toolBar.getMainController().getListTreeViewController().reload();
-
+        toolBar.fireEvent(new ToolbarComponentEvent(this, ComponentEventType.LIST_DELETED));
     }
 }

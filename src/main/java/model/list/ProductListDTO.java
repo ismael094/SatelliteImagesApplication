@@ -47,7 +47,6 @@ public class ProductListDTO {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
-
                 ProductListDBDAO.getInstance().save(p);
                 return null;
             }

@@ -2,16 +2,14 @@ package controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
-import gui.components.ListTreeViewComponent;
-import gui.components.MenuComponent;
-import gui.components.TabPaneComponent;
+import gui.components.*;
 import controller.search.CopernicusOpenSearchController;
 import controller.search.SearchController;
-import gui.components.ToolBarComponent;
-import javafx.collections.FXCollections;
+import gui.components.listener.ComponentEventType;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -24,6 +22,7 @@ import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.database.ProductListDBDAO;
 import services.database.UserDBDAO;
 
 import java.net.URL;
@@ -59,7 +58,7 @@ public class SatelliteApplicationController implements Initializable {
     private JFXSpinner wait;
 
     private CopernicusOpenSearchController copernicusOpenSearchController;
-    private Map<String, SearchController> searchControllers;
+    private List<Component> components;
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
@@ -69,9 +68,14 @@ public class SatelliteApplicationController implements Initializable {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
-        initComponents();
-        searchControllers = new HashMap<>();
+
+        components = new ArrayList<>();
+        components.add(toolBarComponent);
+        components.add(tabPaneComponent);
+        components.add(listTreeViewComponent);
+        components.add(menuController);
         wait.setVisible(false);
+        initComponents();
     }
 
     private void initComponents() {
@@ -80,9 +84,33 @@ public class SatelliteApplicationController implements Initializable {
         initMenuComponent();
         initToolBarComponent();
 
-        toolBarComponent.setOnMouseClicked(event -> {
-            System.out.println("CLICKED");
+        initListeners();
+    }
+
+    private void initListeners() {
+        toolBarComponent.addComponentListener(ComponentEventType.LIST_CREATED,event -> {
+            listTreeViewComponent.reload();
+
         });
+        toolBarComponent.addComponentListener(ComponentEventType.LIST_DELETED,event -> {
+            listTreeViewComponent.reload();
+
+        });
+        toolBarComponent.addComponentListener(ComponentEventType.LIST_UPDATED,event -> {
+            listTreeViewComponent.reload();
+
+        });
+    }
+
+    private void saveProductList() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                UserDBDAO.getInstance().save(user);
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     private void initToolBarComponent() {

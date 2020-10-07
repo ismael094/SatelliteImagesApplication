@@ -109,6 +109,11 @@ public class CopernicusODataSearchController implements SearchController, TabIte
         return getClass().getSimpleName();
     }
 
+    @Override
+    public String getItemId() {
+        return null;
+    }
+
     public String getId() {
         return null;
     }

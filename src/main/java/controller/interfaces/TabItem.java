@@ -9,4 +9,5 @@ public interface TabItem {
     Parent getView();
     Task<Parent> start();
     String getName();
+    String getItemId();
 }

@@ -3,6 +3,9 @@ package gui.components;
 import controller.interfaces.TabItem;
 import controller.SatelliteApplicationController;
 import controller.search.SearchController;
+import gui.components.listener.ComponentChangeListener;
+import gui.components.listener.ComponentEventType;
+import gui.components.listener.ToolbarComponentEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -53,20 +56,33 @@ public class TabPaneComponent extends TabPane implements Component {
         return mainController;
     }
 
+    @Override
+    public void addComponentListener(ComponentEventType type, ComponentChangeListener listener) {
+
+    }
+
+    @Override
+    public void fireEvent(ToolbarComponentEvent event) {
+
+    }
+
     public void add(Tab t) {
         t.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         getTabs().add(t);
         getSelectionModel().select(t);
     }
 
-    public void create(String name, Parent node) {
+    public void create(String name, String id, Parent node) {
         node.prefWidth(this.getPrefWidth());
-        add(new Tab(name, node));
+        Tab tab = new Tab(name, node);
+        tab.setId(id);
+        add(tab);
     }
 
-    public Tab get(String tab) {
+    public Tab get(String id) {
         return getTabs().stream()
-        .filter(t->t.getText().equals(tab))
+        .filter(Objects::nonNull)
+        .filter(t->t.getId().equals(id))
         .findAny()
         .orElse(null);
     }
@@ -84,13 +100,12 @@ public class TabPaneComponent extends TabPane implements Component {
     }
 
     public void load(TabItem item) {
-        if (loadedControllers.getOrDefault(item.getName(),null)!=null){
-            System.out.println("something");
-            Tab tab = get(item.getName());
+        if (loadedControllers.getOrDefault(item.getItemId(),null)!=null){
+            Tab tab = get(item.getItemId());
             if (tab == null)
-                create(item.getName(),loadedControllers.get(item.getName()).getView());
+                create(item.getName(),item.getItemId(),loadedControllers.get(item.getItemId()).getView());
             else
-                select(get(item.getName()));
+                select(get(item.getItemId()));
             return;
         }
 
@@ -98,8 +113,8 @@ public class TabPaneComponent extends TabPane implements Component {
         mainController.showWaitSpinner();
         task.exceptionProperty().addListener(exceptionWhileOpeningController(item.getName()));
         task.setOnSucceeded(e->{
-            create(item.getName(), item.getView());
-            loadedControllers.put(item.getName(),item);
+            create(item.getName(),item.getItemId(), item.getView());
+            loadedControllers.put(item.getItemId(),item);
             item.setTabPaneComponent(this);
             if (item instanceof SearchController)
                 isSearchControllerOpen.setValue(true);

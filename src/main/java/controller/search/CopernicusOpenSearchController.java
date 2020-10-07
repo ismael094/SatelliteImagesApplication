@@ -156,6 +156,11 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         return getClass().getSimpleName();
     }
 
+    @Override
+    public String getItemId() {
+        return getClass().getSimpleName();
+    }
+
     private void initViewData() {
         setSpinnerVisible(false);
         setPaginationVisible(false);

@@ -27,11 +27,8 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         login();
     }
 
-    public static CopernicusHTTPAuthManager getHttpManager(String username, String password) throws AuthenticationException {
-        if (httpManager == null) {
-            httpManager = new CopernicusHTTPAuthManager(username,password);
-        }
-        return httpManager;
+    public static CopernicusHTTPAuthManager getNewHttpManager(String username, String password) throws AuthenticationException {
+        return new CopernicusHTTPAuthManager(username,password);
     }
 
     @Override
