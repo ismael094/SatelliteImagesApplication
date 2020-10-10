@@ -32,9 +32,8 @@ public class ProductListDBDAO_ {
 
     @Test
     public void get_collection() {
-        System.out.println(productListDAO);
         List<ProductListDTO> productListDTOS = productListDAO.getCollection();
-        assertThat(productListDTOS.size()).isEqualTo(0);
+        assertThat(productListDTOS.size()).isGreaterThan(0);
 
     }
 

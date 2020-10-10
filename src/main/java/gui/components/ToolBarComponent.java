@@ -1,56 +1,67 @@
 package gui.components;
 
 import controller.SatelliteApplicationController;
-import gui.components.listener.ComponentChangeListener;
-import gui.components.listener.ComponentEventType;
-import gui.components.listener.ToolbarComponentEvent;
+import model.events.EventType;
+import model.listeners.ComponentChangeListener;
+import model.events.ToolbarComponentEvent;
 import gui.toolbarButton.*;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ToolBarComponent extends ToolBar implements Component{
 
     private final SatelliteApplicationController mainController;
-    private HashMap<String, ToolbarButton> buttonMap;
+    private Map<String, ToolbarButton> buttonListMap;
+    private Map<String, ToolbarButton> buttonProductListMap;
+    private Map<String, ToolbarButton> buttonDownloadMap;
+    private List<Map<String, ToolbarButton>> buttonList;
     //private final List<ComponentChangeListener> toolBarListener;
-    private final Map<ComponentEventType, ComponentChangeListener> toolBarListener;
+    private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
 
     public ToolBarComponent(SatelliteApplicationController mainController) {
         super();
         this.mainController = mainController;
-        this.toolBarListener = new HashMap<>();
+        this.toolBarListener = new LinkedHashMap<>();
         initButtonMap();
     }
 
     private void initButtonMap() {
-        this.buttonMap = new HashMap<>();
-        buttonMap.put("deleteList", new DeleteListToolbarButton(this));
-        buttonMap.put("createList", new CreateListToolbarButton(this));
-        buttonMap.put("addToList", new AddSelectedToListToolbarButton(this));
-        buttonMap.put("editList", new EditListToolbarButton(this));
-        buttonMap.put("selectAll",new AddAllToListToolbarButton(this));
-        buttonMap.put("deleteSelected",new DeleteSelectedFromListToolbarButton(this));
+
+        this.buttonListMap = new LinkedHashMap<>();
+        this.buttonProductListMap = new LinkedHashMap<>();
+        this.buttonDownloadMap = new LinkedHashMap<>();
+        buttonList = new LinkedList<>();
+        buttonList.add(buttonListMap);
+        buttonList.add(buttonProductListMap);
+        buttonList.add(buttonDownloadMap);
+
+        buttonListMap.put("createList", new CreateListToolbarButton(this));
+        buttonListMap.put("deleteList", new DeleteListToolbarButton(this));
+        buttonListMap.put("editList", new EditListToolbarButton(this));
+        buttonProductListMap.put("selectAll",new AddAllToListToolbarButton(this));
+        buttonProductListMap.put("addToList", new AddSelectedToListToolbarButton(this));
+        buttonProductListMap.put("deleteSelected",new DeleteSelectedFromListToolbarButton(this));
+        buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
     }
 
     @Override
     public void init() {
-        buttonMap.forEach((key,value)->{
-            value.init();
-            getItems().add(value);
+        buttonList.forEach(map->{
+            map.forEach((key,value)->{
+                value.init();
+                getItems().add(value);
+            });
+            getItems().add(new Separator());
         });
-        getItems().add(new Separator());
         //createButton("createList","");
         //createButton("addToList","");
         //createButton("selectAll","");
         createButton("downloadSingle","");
-        createButton("downloadAll","");
+        //createButton("downloadAll","");
 
     }
 
@@ -62,7 +73,11 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     public Button get(String id) {
-        return buttonMap.getOrDefault(id,null);
+        return buttonList.stream()
+                .filter(m -> m.containsKey(id))
+                .map(m -> m.get(id))
+                .findAny()
+                .orElse(null);
     }
 
     @Override
@@ -76,7 +91,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     @Override
-    public void addComponentListener(ComponentEventType type, ComponentChangeListener listener) {
+    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
         this.toolBarListener.put(type,listener);
     }
 

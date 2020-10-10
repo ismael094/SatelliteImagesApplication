@@ -1,15 +1,17 @@
 package gui.components;
 
-import com.google.common.collect.ImmutableSortedMap;
 import controller.SatelliteApplicationController;
 import controller.cell.ListTreeViewCell;
-import controller.cell.ProductResultListCellController;
+import controller.interfaces.ProductTabItem;
+import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import gui.components.listener.ComponentChangeListener;
-import gui.components.listener.ComponentEventType;
-import gui.components.listener.ToolbarComponentEvent;
+import javafx.collections.FXCollections;
+import javafx.scene.control.Tab;
+import model.events.EventType;
+import model.listeners.ComponentChangeListener;
+import model.events.ToolbarComponentEvent;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
@@ -18,7 +20,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Pair;
 import model.list.ProductListDTO;
-import services.entities.ProductList;
+import model.products.ProductDTO;
+import utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +70,15 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
             TreeItem<Pair<String,Object>> selectedItem = getSelectionModel().getSelectedItem();
             if (selectedItem.getValue().getValue() instanceof ProductListDTO) {
                 ProductListDTO productListDTO = (ProductListDTO)selectedItem.getValue().getValue();
-                mainController.getUserProductList().stream()
-                        .filter(p -> p.getId().equals(productListDTO.getId()))
-                        .findAny().ifPresent(productList -> mainController.getTabController().load(new ListInformationController(productList)));
+                mainController.getTabController().load(new ListInformationController(productListDTO,mainController.getDownload()));
+            } else {
+                TreeItem<Pair<String, Object>> parent = selectedItem.getParent();
+                if (parent != null && parent.getValue().getValue() instanceof ProductListDTO) {
+                    ProductListDTO productListDTO = (ProductListDTO)parent.getValue().getValue();
+                    Tab tab = mainController.getTabController().get(productListDTO.getId().toString());
+                    TabItem controllerOf = mainController.getTabController().getControllerOf(tab);
+                    ((ProductTabItem)controllerOf).setSelectedProducts(FXCollections.observableArrayList((ProductDTO)selectedItem.getValue().getValue()));
+                }
             }
 
         });
@@ -86,7 +95,7 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
     }
 
     @Override
-    public void addComponentListener(ComponentEventType type, ComponentChangeListener listener) {
+    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
         this.listTreeViewListener.add(listener);
     }
 
@@ -105,11 +114,14 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
             TreeItem<Pair<String,Object>> treeItem = new TreeItem<>(new Pair<>(pL.getName(),pL));
             GlyphsDude.setIcon(treeItem, FontAwesomeIcon.FOLDER);
             if (pL.getProducts().size() > 0) {
-                pL.getProducts().forEach(p->{
-                    TreeItem<Pair<String,Object>> item = new TreeItem<>(new Pair<>(p.getPlatformName() + "-" + p.getProductType(),p));
+                int i = 1;
+                for (ProductDTO p : pL.getProducts()) {
+                    TreeItem<Pair<String,Object>> item = new TreeItem<>(new Pair<>(""+i+" " + p.getPlatformName() + "-" + p.getProductType(),p));
                     GlyphsDude.setIcon(item, FontAwesomeIcon.IMAGE);
                     treeItem.getChildren().add(item);
-                });
+                    i++;
+                }
+
             }
             getRoot().getChildren().add(treeItem);
         }

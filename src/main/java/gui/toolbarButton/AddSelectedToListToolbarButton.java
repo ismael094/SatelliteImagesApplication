@@ -3,9 +3,10 @@ package gui.toolbarButton;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import gui.components.ToolBarComponent;
+import model.events.EventType;
+import model.events.ToolbarComponentEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
@@ -39,11 +40,10 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
             event.consume();
             return;
         }
-
         List<ProductListDTO> productListDTO = getProductList();
         if (productListDTO.size()>0){
-            productListDTO.forEach(pL->openSearcher.forEach(pL::addProduct));
-            toolBar.getMainController().getListTreeViewController().reload();
+            productListDTO.forEach(pL->pL.addProduct(openSearcher));
+            toolBar.fireEvent(new ToolbarComponentEvent(this, EventType.ComponentEventType.LIST_UPDATED));
         }
     }
 

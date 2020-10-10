@@ -25,6 +25,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
 import model.products.ProductDTO;
@@ -75,6 +76,8 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     private Pane cloudPane;
     @FXML
     private TextField cloudCoverage;
+    @FXML
+    private TextField cloudCoverageTo;
     @FXML
     private DatePicker dateStart;
     @FXML
@@ -173,6 +176,10 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         initGTMapController();
         onSearchButtonActionSearchEvent();
         onCloudCoverageChangeAllowOnlyNumbers();
+        Tooltip tp = new Tooltip("Example: [5.3 TO 25.8], or single number");
+        tp.setShowDelay(new Duration(300));
+        tp.setHideDelay(new Duration(300));
+        cloudCoverage.setTooltip(tp);
     }
 
     private void onSearchButtonActionSearchEvent() {
@@ -241,12 +248,16 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     private void onCloudCoverageChangeAllowOnlyNumbers() {
-        cloudCoverage.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*") || newValue.length() == 0)
-                cloudCoverage.setText(newValue.replaceAll("[^\\d]", ""));
+        setCloudCoverageListener(cloudCoverage);
+        setCloudCoverageListener(cloudCoverageTo);
+    }
+
+    private void setCloudCoverageListener(TextField field) {
+        field.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.matches("\\d*"))
+                field.setStyle("-fx-text-fill: black");
             else {
-                if (Integer.parseInt(newValue) < 0 || Integer.parseInt(newValue) > 100)
-                    cloudCoverage.setText(oldValue);
+                field.setStyle("-fx-text-fill: RED");
             }
         });
     }
@@ -502,8 +513,22 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     private void addCloudCoverageParameter() {
-        if (!cloudCoverage.getText().isEmpty())
-            searcher.addSearchParameter(SentinelProductParameters.CLOUD_COVER_PERCENTAGE,cloudCoverage.getText());
+        if (isCloudCoverageValid(cloudCoverage) && isCloudCoverageValid(cloudCoverageTo)) {
+            addCloudCoverageParsed("[" + cloudCoverage.getText() + " TO " + cloudCoverageTo.getText() + "]");
+        } else {
+            if (isCloudCoverageValid(cloudCoverage))
+                addCloudCoverageParsed(cloudCoverage.getText());
+            else if (isCloudCoverageValid(cloudCoverageTo))
+                addCloudCoverageParsed(cloudCoverageTo.getText());
+        }
+    }
+
+    private boolean isCloudCoverageValid(TextField cloudCoverage) {
+        return !cloudCoverage.getText().isEmpty() && cloudCoverage.getText().matches("\\d*");
+    }
+
+    private void addCloudCoverageParsed(String cloudCoverage) {
+        searcher.addSearchParameter(SentinelProductParameters.CLOUD_COVER_PERCENTAGE,cloudCoverage);
     }
 
     private void addSensorModeParameter() {

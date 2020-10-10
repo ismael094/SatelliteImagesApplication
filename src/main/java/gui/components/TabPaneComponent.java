@@ -3,9 +3,9 @@ package gui.components;
 import controller.interfaces.TabItem;
 import controller.SatelliteApplicationController;
 import controller.search.SearchController;
-import gui.components.listener.ComponentChangeListener;
-import gui.components.listener.ComponentEventType;
-import gui.components.listener.ToolbarComponentEvent;
+import model.events.EventType;
+import model.listeners.ComponentChangeListener;
+import model.events.ToolbarComponentEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -40,8 +40,6 @@ public class TabPaneComponent extends TabPane implements Component {
     @Override
     public void init() {
         getStyleClass().add("myTab");
-        getTabs().add(new Tab("Information"));
-        getTabs().get(0).setClosable(true);
         setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         setPrefWidth(Double.MAX_VALUE);
     }
@@ -57,7 +55,7 @@ public class TabPaneComponent extends TabPane implements Component {
     }
 
     @Override
-    public void addComponentListener(ComponentEventType type, ComponentChangeListener listener) {
+    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
 
     }
 
@@ -96,7 +94,7 @@ public class TabPaneComponent extends TabPane implements Component {
     }
 
     public TabItem getControllerOf(Tab tab) {
-        return loadedControllers.getOrDefault(tab.getText(),null);
+        return loadedControllers.getOrDefault(tab.getId(),null);
     }
 
     public void load(TabItem item) {

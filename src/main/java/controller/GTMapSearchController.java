@@ -87,7 +87,6 @@ public class GTMapSearchController {
 
     public void addSelectedAreaEvent(String layer) {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
-            System.out.println("clicked");
             if (t.getClickCount() == 1 && wasPrimaryButtonClicked.get() && !dragged) {
                 wasPrimaryButtonClicked.set(false);
                 try {
@@ -135,7 +134,6 @@ public class GTMapSearchController {
     private void addMapMousePressedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             setBaseDraggedPosition(e);
-            System.out.println("pressed");
             wasPrimaryButtonClicked.set(e.isPrimaryButtonDown());
             wasSecondaryButtonClicked.set(e.isSecondaryButtonDown());
             if (e.isSecondaryButtonDown()) {

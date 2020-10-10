@@ -2,21 +2,14 @@ package gui.toolbarButton;
 
 import controller.list.ListCreateAndEditController;
 import gui.components.ToolBarComponent;
+import model.events.EventType;
+import model.events.ToolbarComponentEvent;
 import gui.dialog.ListDialog;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Tooltip;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
-
-import java.io.IOException;
-import java.net.URL;
 
 public class CreateListToolbarButton extends ToolbarButton {
 
@@ -44,7 +37,7 @@ public class CreateListToolbarButton extends ToolbarButton {
         ProductListDTO productListDTO = controller.getProductList();
         if (productListDTO !=null)
             toolBar.getMainController().getUserProductList().add(productListDTO);
-        toolBar.getMainController().getListTreeViewController().reload();
+        toolBar.fireEvent(new ToolbarComponentEvent(this, EventType.ComponentEventType.LIST_CREATED));
 
     }
 }

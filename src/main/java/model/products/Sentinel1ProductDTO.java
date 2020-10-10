@@ -5,7 +5,7 @@ import javafx.beans.property.StringProperty;
 
 import java.util.Calendar;
 
-public class Sentinel1ProductDTO extends ProductDTO {
+public class Sentinel1ProductDTO extends SentinelProductDTO {
     private final StringProperty sensorOperationalMode;
     private final StringProperty polarizationMode;
 

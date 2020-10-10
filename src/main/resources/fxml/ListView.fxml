@@ -32,9 +32,9 @@
                </rowConstraints>
                <children>
                   <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="493.0" prefWidth="18.0" GridPane.columnIndex="1" />
-                  <BorderPane prefHeight="498.0" prefWidth="383.0" style="-fx-background-color: #f4f4f4;">
+                  <BorderPane prefHeight="498.0" prefWidth="383.0">
                      <center>
-                        <JFXListView fx:id="productListView" minWidth="333.0" prefHeight="436.0" prefWidth="338.0" style="-fx-background-color: #f4f4f4;" styleClass="productResultsList" BorderPane.alignment="CENTER" />
+                        <JFXListView fx:id="productListView" minWidth="333.0" prefHeight="436.0" prefWidth="338.0" styleClass="productResultsList" BorderPane.alignment="CENTER" />
                      </center>
                      <top>
                         <Label contentDisplay="CENTER" prefHeight="38.0" prefWidth="103.0" styleClass="h1" stylesheets="@../css/main.css" text="Products" textOverrun="CLIP" BorderPane.alignment="CENTER" />
@@ -77,10 +77,13 @@
                               <RowConstraints maxHeight="366.1999816894531" minHeight="10.0" percentHeight="107.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <AnchorPane fx:id="mapPane" minHeight="0.0" prefHeight="334.0" prefWidth="286.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <AnchorPane fx:id="mapPane" minHeight="0.0" prefHeight="321.0" prefWidth="342.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <GridPane.margin>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </GridPane.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
                               </AnchorPane>
                               <GridPane GridPane.columnIndex="1">
                                 <columnConstraints>
@@ -97,21 +100,21 @@
                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.60001220703126" minWidth="10.0" percentWidth="100.0" prefWidth="205.60001220703126" />
                                 </columnConstraints>
                                 <rowConstraints>
-                                  <RowConstraints maxHeight="357.59999389648436" minHeight="0.0" prefHeight="357.59999389648436" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="359.20001831054685" minHeight="10.0" prefHeight="72.0000061035156" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="357.59999389648436" minHeight="0.0" prefHeight="56.39997253417971" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="377.2000396728516" minHeight="10.0" prefHeight="370.0000274658203" valignment="CENTER" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <ImageView fx:id="image" fitHeight="315.0" fitWidth="315.0" pickOnBounds="true" preserveRatio="true">
+                                    <ImageView fx:id="image" fitHeight="315.0" fitWidth="315.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                        <GridPane.margin>
-                                          <Insets left="20.0" />
+                                          <Insets left="5.0" />
                                        </GridPane.margin>
                                        <image>
                                           <Image url="@../img/no_photo.jpg" />
                                        </image>
                                     </ImageView>
-                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
+                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                                        <children>
-                                          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                                          <HBox alignment="CENTER" prefHeight="74.0" prefWidth="328.0">
                                              <children>
                                                 <Button fx:id="addAreaOfProduct" mnemonicParsing="false" prefHeight="26.0" prefWidth="117.0" text="Add area of work" />
                                                 <Button fx:id="deleteSelectedArea" mnemonicParsing="false" text="Delete">
@@ -119,11 +122,6 @@
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
                                                 </Button>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                                             <children>
-                                                <Button mnemonicParsing="false" text="Delete product" />
                                              </children>
                                           </HBox>
                                        </children>

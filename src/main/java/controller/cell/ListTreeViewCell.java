@@ -61,7 +61,7 @@ public class ListTreeViewCell extends TreeCell<Pair<String,Object>> {
                 GlyphsDude.setIcon(title, FontAwesomeIcon.FOLDER);
             } else if (product.getValue() instanceof ProductDTO) {
                 ProductDTO productDTO = (ProductDTO)product.getValue();
-                title.setText(productDTO.getPlatformName() + "-" + productDTO.getProductType());
+                title.setText(product.getKey());
                 GlyphsDude.setIcon(title, FontAwesomeIcon.IMAGE);
             }
             setText(null);

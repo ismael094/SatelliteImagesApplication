@@ -67,10 +67,11 @@
                                     <ChoiceBox fx:id="sensorMode" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
                                  </children>
                               </Pane>
-                              <Pane fx:id="cloudPane" prefHeight="40.0" prefWidth="273.0">
+                              <Pane fx:id="cloudPane" prefHeight="80.0" prefWidth="273.0">
                                  <children>
                                     <Label layoutY="12.0" styleClass="bold" text="Cloud Coverage" />
-                                    <TextField fx:id="cloudCoverage" layoutX="129.0" layoutY="8.0" prefHeight="25.0" prefWidth="174.0" />
+                                    <TextField fx:id="cloudCoverage" layoutX="129.0" layoutY="8.0" prefHeight="25.0" prefWidth="174.0" promptText="0" />
+                                    <TextField fx:id="cloudCoverageTo" layoutX="129.0" layoutY="38.0" prefWidth="174.0" promptText="25" />
                                  </children>
                               </Pane>
                               <Pane fx:id="dateStartPane" prefHeight="40.0" prefWidth="273.0">
@@ -140,7 +141,7 @@
                               <ColumnConstraints minWidth="10.0" percentWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints minHeight="10.0" percentHeight="100.0"  />
+                              <RowConstraints minHeight="10.0" percentHeight="100.0" />
                            </rowConstraints>
                            <children>
                             <AnchorPane fx:id="mapPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" prefHeight="494.0" prefWidth="651.0" />

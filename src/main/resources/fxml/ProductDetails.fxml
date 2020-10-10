@@ -45,6 +45,12 @@
                               </Pane>
                               <Pane prefHeight="40.0" prefWidth="374.0">
                                  <children>
+                                    <Label layoutX="14.0" layoutY="11.0" prefHeight="17.0" prefWidth="108.0" styleClass="title" text="Id" />
+                                    <Label fx:id="id" layoutX="165.0" layoutY="11.0" prefHeight="17.0" prefWidth="209.0" text="Label" />
+                                 </children>
+                              </Pane>
+                              <Pane prefHeight="40.0" prefWidth="374.0">
+                                 <children>
                                     <Label layoutX="14.0" layoutY="11.0" styleClass="title" text="Platform Name">
                                        <font>
                                           <Font name="System Bold" size="14.0" />

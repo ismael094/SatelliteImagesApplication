@@ -215,7 +215,12 @@ public class GTMap extends Canvas {
         graphics.setBackground(java.awt.Color.WHITE);
         graphics.clearRect(0, 0, (int) getWidth(), (int) getHeight());
         Rectangle rectangle = new Rectangle((int) getWidth(), (int) getHeight());
-        draw.paint(graphics, rectangle, mapContent.getViewport().getBounds());
+        try {
+            draw.paint(graphics, rectangle, mapContent.getViewport().getBounds());
+        } catch (java.lang.NullPointerException ex) {
+            resetMap();
+        }
+
     }
 
     public void removeLayer(String title) {

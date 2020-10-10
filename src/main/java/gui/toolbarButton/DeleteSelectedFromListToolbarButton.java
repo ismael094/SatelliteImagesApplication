@@ -3,8 +3,12 @@ package gui.toolbarButton;
 import controller.interfaces.TabItem;
 import controller.interfaces.ProductTabItem;
 import gui.components.ToolBarComponent;
+import model.events.EventType;
+import model.events.ToolbarComponentEvent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
+import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 import model.list.ProductListDTO;
 
 public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
@@ -17,6 +21,10 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
+        Tooltip tooltip = new Tooltip("Delete all products selected");
+        tooltip.setShowDelay(new Duration(0.1));
+        tooltip.setHideDelay(new Duration(0.5));
+        setTooltip(tooltip);
     }
 
     @Override
@@ -27,5 +35,6 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
             ProductListDTO productListDTO = ((ProductTabItem) controllerOf).getProductList();
             productListDTO.remove(((ProductTabItem)controllerOf).getSelectedProducts());
         }
+        toolBar.fireEvent(new ToolbarComponentEvent(this, EventType.ComponentEventType.LIST_UPDATED));
     }
 }

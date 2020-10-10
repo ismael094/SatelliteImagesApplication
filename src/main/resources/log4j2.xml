@@ -6,17 +6,19 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-        <File name="MyFile" fileName="logs/log.log" immediateFlush="false">
+        <RollingFile name="RollingFile" fileName="logs/log.log" filePattern="logs/log-%d{dd-MM-yyyy}.log"
+                     ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
-        </File>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
     </Appenders>
 
     <Loggers>
         <Root level="INFO">
             <Appender-ref ref="Console"/>
-            <Appender-ref ref="MyFile"/>
+            <Appender-ref ref="RollingFile"/>
         </Root>
     </Loggers>
 

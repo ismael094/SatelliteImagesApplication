@@ -2,29 +2,35 @@ package controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
+import controller.download.DownloadController;
 import gui.components.*;
 import controller.search.CopernicusOpenSearchController;
-import controller.search.SearchController;
-import gui.components.listener.ComponentEventType;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
+import model.events.DownloadEvent;
+import model.events.EventType;
 import model.list.ProductListDTO;
+import model.listeners.DownloadListener;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.database.ProductListDBDAO;
 import services.database.UserDBDAO;
+import services.download.DownloadManager;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -53,7 +59,10 @@ public class SatelliteApplicationController implements Initializable {
     private Pane spinnerWait;
     @FXML
     private ScrollPane rootPane;
-
+    @FXML
+    private GridPane lowBar;
+    @FXML
+    private AnchorPane downloadPane;
     @FXML
     private JFXSpinner wait;
 
@@ -62,6 +71,7 @@ public class SatelliteApplicationController implements Initializable {
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
+    private DownloadManager downloadManager;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -83,20 +93,46 @@ public class SatelliteApplicationController implements Initializable {
         initListTreeViewComponent();
         initMenuComponent();
         initToolBarComponent();
+        initDownloadManager();
 
         initListeners();
     }
 
+    private void initDownloadManager() {
+        this.downloadManager = new DownloadManager(2);
+        downloadManager.addListener(EventType.DownloadEventType.COMPLETED, event -> {
+            if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
+                consoleDebug.appendText("Download completed!\n");
+        });
+        new Thread(downloadManager).start();
+        URL location = getClass().getResource("/fxml/DownloadsView.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader(location);
+        Parent parent = null;
+        try {
+            parent = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        downloadPane.getChildren().add(parent);
+        AnchorPane.setRightAnchor(parent,0.0);
+        AnchorPane.setLeftAnchor(parent,0.0);
+        AnchorPane.setTopAnchor(parent,0.0);
+        AnchorPane.setBottomAnchor(parent,0.0);
+        DownloadController controller = fxmlLoader.getController();
+        controller.setDownload(downloadManager);
+
+    }
+
     private void initListeners() {
-        toolBarComponent.addComponentListener(ComponentEventType.LIST_CREATED,event -> {
+        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_CREATED, event -> {
             listTreeViewComponent.reload();
 
         });
-        toolBarComponent.addComponentListener(ComponentEventType.LIST_DELETED,event -> {
+        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_DELETED,event -> {
             listTreeViewComponent.reload();
 
         });
-        toolBarComponent.addComponentListener(ComponentEventType.LIST_UPDATED,event -> {
+        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_UPDATED,event -> {
             listTreeViewComponent.reload();
 
         });
@@ -156,6 +192,10 @@ public class SatelliteApplicationController implements Initializable {
 
     public ObservableList<ProductListDTO> getUserProductList() {
         return user.getProductListsDTO();
+    }
+
+    public DownloadManager getDownload() {
+        return downloadManager;
     }
 
     public void showWaitSpinner() {

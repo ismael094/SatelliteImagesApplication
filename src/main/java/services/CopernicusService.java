@@ -7,12 +7,16 @@ import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.entities.Product;
 import utils.http.CopernicusHTTPAuthManager;
 
-import java.io.IOException;
-import java.io.InputStream;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
+
+import static utils.http.HTTPReadUtil.readFromURL;
 
 /**
  * Service to get access in Copernicus Open Access Hub using API.
@@ -77,7 +81,31 @@ public class CopernicusService {
         return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getContentFromURL(url);
     }
 
-    /**
+    public HttpURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
+        if (httpManager == null)
+            throw new NotAuthenticatedException("Not authenticated");
+        return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getConnectionFromURL(url);
+    }
+
+    public boolean isProductOnline(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
+        if (httpManager == null)
+            throw new NotAuthenticatedException("Not authenticated");
+        HttpsURLConnection connection = CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(), pair.getValue()).getConnectionFromURL(new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('" + id + "')/Online/$value"));
+        String s = readFromURL(connection.getInputStream());
+        connection.disconnect();
+        return s != null && s.equals("true");
+    }
+
+    public String getMD5CheckSum(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
+        if (httpManager == null)
+            throw new NotAuthenticatedException("Not authenticated");
+        HttpsURLConnection connection = CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(), pair.getValue()).getConnectionFromURL(new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('" + id + "')/Checksum/Value/$value"));
+        String s = readFromURL(connection.getInputStream());
+        connection.disconnect();
+        return s;
+    }
+
+    /*/**
      * Get the image preview of a product
      * @param id id of product
      * @return image as InputStream
@@ -85,10 +113,10 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
-    public InputStream getPreview(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
+    /*public InputStream getPreview(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
         String url = "https://scihub.copernicus.eu/dhus/odata/v1/Products('"+id+"')/Products('Quicklook')/$value";
         return getContentFromURL(new URL(url));
-    }
+    }*/
 
     public boolean isConnected() {
         return isConnected;

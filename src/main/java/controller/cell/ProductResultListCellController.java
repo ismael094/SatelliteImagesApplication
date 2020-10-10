@@ -70,7 +70,8 @@ public class ProductResultListCellController extends ListCell<ProductDTO> {
             platformName.setText(product.getPlatformName());
             instrumentName.setText(product.getProductType());
             size.setText(product.getSize());
-
+            /*if (product.getStatus().equals("Offline"))
+                root.getStyleClass().add("archived");*/
             details.setOnMouseClicked(e->{
                 detailsEvent(product);
             });

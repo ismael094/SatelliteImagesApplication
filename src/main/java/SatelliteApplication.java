@@ -12,11 +12,16 @@ import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.FileUtils;
 import utils.database.MongoDBConfiguration;
 import utils.database.MongoDBManager;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.util.Properties;
+import java.util.prefs.Preferences;
 
 
 public class SatelliteApplication extends Application {
@@ -28,12 +33,19 @@ public class SatelliteApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Preferences myConnectionPrefs = Preferences.userRoot().node("downloadPreferences");
+        if (myConnectionPrefs.get("productFolder", null) == null) {
+            myConnectionPrefs.put("productFolder", FileUtils.DEFAULT_DOWNLOAD_FOLDER);
+            myConnectionPrefs.put("listFolder", FileUtils.DEFAULT_LIST_FOLDER);
+            myConnectionPrefs.put("mode", "multiple");
+        }
 
         initDatabase();
 
         UserDTO userDTO = loginWindows();
-        System.out.println(userDTO.getProductListsDTO().size());
-        if (userDTO.getEmail().isEmpty()) {
+
+        if (userDTO.getId() == null) {
+            logger.atInfo().log("===Closing Satellite App===");
             Platform.exit();
             System.exit(0);
         }

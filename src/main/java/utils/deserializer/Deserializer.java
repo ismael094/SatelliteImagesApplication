@@ -3,10 +3,16 @@ package utils.deserializer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.exception.AuthenticationException;
+import model.exception.NotAuthenticatedException;
 import model.products.ProductDTO;
 import model.products.ProductProperties;
+import services.CopernicusService;
 
+import java.io.IOException;
 import java.util.List;
+
+import static java.lang.System.currentTimeMillis;
 
 public abstract class Deserializer {
     public static final String DOUBLE_ARRAY = "double";
@@ -51,6 +57,17 @@ public abstract class Deserializer {
         product.setProductType((String)getPropertyByName(PRODUCT_TYPE,stringProperties));
         product.setPlatformName((String)getPropertyByName(PLATFORM_NAME,stringProperties));
         product.setIngestionDate((String)getPropertyByName(INGESTION_DATE,getDateProperties(node)));
+        /*try {
+            String productOnline = CopernicusService.getInstance().isProductOnline(node.get(ID).asText());
+
+            if (productOnline != null)
+                if (productOnline.equals("true"))
+                    product.setStatus("Online");
+                else
+                    product.setStatus("Offline");
+        } catch (IOException | AuthenticationException | NotAuthenticatedException e) {
+            product.setStatus("Offline");
+        }*/
     }
 
     public abstract ProductDTO deserialize(JsonNode product);

@@ -6,13 +6,14 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import utils.OpenSearchProductDeserializer;
 
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.TimeZone;
 
 @JsonDeserialize(using = OpenSearchProductDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProductDTO {
+public abstract class ProductDTO {
     protected StringProperty id;
     protected ObjectProperty<Calendar> ingestionDate;
     protected StringProperty title;
@@ -134,15 +135,11 @@ public class ProductDTO {
         this.status.set(status);
     }
 
-    public double getSizeAsDouble() {
-        if (size == null)
-            return 0.0;
-        double p;
-        if (size.get().contains("MB"))
-            return Double.parseDouble(size.get().substring(0,size.get().indexOf(" ")))/1024.0;
-        else
-            return Double.parseDouble(size.get().substring(0,size.get().indexOf(" ")));
-    }
+    public abstract double getSizeAsDouble();
+
+    public abstract URL getDownloadURL();
+
+    public abstract URL getPreviewURL();
 
     @Override
     public String toString() {

@@ -1,11 +1,16 @@
 package utils.database;
 
+import com.mongodb.*;
 import com.mongodb.client.MongoClients;
+import com.mongodb.connection.ConnectionPoolSettings;
+import com.mongodb.connection.SocketSettings;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import model.restriction.Restriction;
 import services.entities.ProductList;
 import services.entities.User;
+
+import java.util.concurrent.TimeUnit;
 
 public class MongoDBManager {
     private String serverURL = "mongodb+srv://<user>:<password>@cluster0.r8dm6.mongodb.net/<database>?retryWrites=true&w=majority";
@@ -41,7 +46,12 @@ public class MongoDBManager {
     }
 
     public void connect() {
-        client = MongoClients.create(serverURL);
+        MongoClientSettings build = MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(serverURL))
+                .applyToSocketSettings(builder -> builder.connectTimeout(10000, TimeUnit.MILLISECONDS))
+                .build();
+
+        client = MongoClients.create(build);
         datastore = Morphia.createDatastore(client, database);
         datastore.getMapper().map(User.class);
         datastore.getMapper().mapPackage("model");

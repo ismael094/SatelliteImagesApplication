@@ -197,6 +197,14 @@ public class ProductListDTO {
 
     public void addRestriction(Restriction restriction) {
         restrictions.add(restriction);
+        System.out.println(products.size());
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        products.forEach(e->{
+            if (!validate(e))
+                productDTOS.add(e);
+        });
+        products.removeAll(productDTOS);
+        System.out.println(products.size());
         save();
     }
 

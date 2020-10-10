@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
@@ -40,16 +41,17 @@
          <Separator orientation="VERTICAL" prefHeight="466.0" prefWidth="14.0" GridPane.columnIndex="1" />
         </GridPane>
 
-        <GridPane prefHeight="134.0" prefWidth="1300.0" GridPane.rowIndex="2">
+        <GridPane fx:id="lowBar" prefHeight="134.0" prefWidth="1300.0" GridPane.rowIndex="2">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="70.0" />
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="19.0" />
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="58.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="329.0" percentWidth="27.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints percentHeight="100.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <TextArea fx:id="consoleDebug" editable="false" maxHeight="200" prefHeight="100.0" GridPane.columnIndex="1" />
+         <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" />
         </GridPane>
         <Pane fx:id="spinnerWait" maxHeight="0.0" maxWidth="0.0" GridPane.rowIndex="1">
             <JFXSpinner fx:id="wait" layoutX="750.0" layoutY="-50.0" />

@@ -31,12 +31,8 @@ public class ProductList_ {
 
     @Before
     public void init() {
-        product = new ProductDTO(
-                new SimpleStringProperty(),new SimpleStringProperty(),
-                new SimpleStringProperty(),new SimpleStringProperty(),
-                new SimpleStringProperty(),new SimpleStringProperty(),
-                new SimpleStringProperty(),new SimpleObjectProperty<>());
-
+        product = SentinelData.getProduct();
+        productMock = mock(ProductDTO.class);
         p1 = mock(ProductDTO.class);
         productListDTO = new ProductListDTO(
                 new SimpleStringProperty("List1"),

@@ -9,9 +9,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.products.ProductDTO;
@@ -26,12 +28,16 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 
 public class CopernicusProductDetailsController_ implements TabItem {
 
     private final FXMLLoader loader;
     private Parent parent;
+    @FXML
+    private Label id;
     @FXML
     private Label sensorMode;
     @FXML
@@ -60,8 +66,10 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private ImageView image;
     private ProductDTO product;
     private GTMap gtMap;
-    static final Logger logger = LogManager.getLogger(CopernicusProductDetailsController_.class.getName());
     private TabPaneComponent tabPaneComponent;
+    private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    static final Logger logger = LogManager.getLogger(CopernicusProductDetailsController_.class.getName());
 
     public CopernicusProductDetailsController_(ProductDTO product) {
         this.product = product;
@@ -115,10 +123,14 @@ public class CopernicusProductDetailsController_ implements TabItem {
 
     private void setProductDetails() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
         name.textProperty().bind(product.titleProperty());
+        Tooltip tp = new Tooltip(product.getTitle());
+        tp.setShowDelay(new Duration(300));
+        name.setTooltip(tp);
+        id.setText(product.getId());
         platName.textProperty().bind(product.platformNameProperty());
         productType.textProperty().bind(product.productTypeProperty());
         size.textProperty().bind(product.sizeProperty());
-        ingestionDate.textProperty().bind(product.ingestionDateProperty().asString());
+        ingestionDate.setText(sdf.format(product.getIngestionDate().getTime()));
 
         if (product.getPlatformName().equals("Sentinel-1"))
             setSentinel1Data();
@@ -156,7 +168,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
 
     private void setImagePreview() throws AuthenticationException, IOException, NotAuthenticatedException {
         CopernicusService service = CopernicusService.getInstance();
-        try (InputStream contentFromURL = service.getPreview(product.getId())) {
+        try (InputStream contentFromURL = service.getContentFromURL(product.getPreviewURL())) {
             image.setImage(new Image(contentFromURL, image.getFitWidth(), image.getFitHeight(), false, false));
         } catch (IOException e) {
             logger.atInfo().log("No preview image found for product name {}", product.getTitle());

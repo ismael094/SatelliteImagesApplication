@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -19,11 +20,15 @@ import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import model.products.Sentinel2ProductDTO;
+import utils.FileUtils;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
+
+import static utils.Configuration.getProductDownloadFolderLocation;
 
 public class ProductListCell extends ListCell<ProductDTO> {
     private final ProductListDTO productListDTO;
@@ -47,7 +52,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
     @FXML
     private MenuItem remove;
     @FXML
-    private MenuItem download;
+    private MenuItem downloadManager;
     @FXML
     private MenuItem add;
     @FXML
@@ -58,6 +63,10 @@ public class ProductListCell extends ListCell<ProductDTO> {
     private Button contextButton;
     @FXML
     private ContextMenu contextMenu;
+    @FXML
+    private ImageView verified;
+    @FXML
+    private ImageView downloaded;
 
     private ProductDTO product;
 
@@ -86,6 +95,10 @@ public class ProductListCell extends ListCell<ProductDTO> {
                     e.printStackTrace();
                 }
             }
+
+            verified.setAccessibleText("Areas of work verified");
+            downloaded.setVisible(FileUtils.productExists(product.getTitle()));
+            downloaded.setAccessibleText("Product downloaded");
 
             initData(product);
             setText(null);
@@ -137,7 +150,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
 
     private void setButtonIcon() {
         GlyphsDude.setIcon(contextButton,FontAwesomeIcon.BARS);
-        GlyphsDude.setIcon(download, FontAwesomeIcon.DOWNLOAD);
+        GlyphsDude.setIcon(downloadManager, FontAwesomeIcon.DOWNLOAD);
         GlyphsDude.setIcon(add, FontAwesomeIcon.PLUS);
         GlyphsDude.setIcon(remove, FontAwesomeIcon.TRASH);
         GlyphsDude.setIcon(search, FontAwesomeIcon.SEARCH);
@@ -148,10 +161,12 @@ public class ProductListCell extends ListCell<ProductDTO> {
             defaultStyle();
             return;
         }
+
         List<String> area = productListDTO.areasOfWorkOfProduct(product.getFootprint());
 
-        if (area == null)
+        if (area == null) {
             defaultStyle();
+        }
          else if(area.size() == 0) {
             invalidStyle();
         } else {
@@ -201,11 +216,13 @@ public class ProductListCell extends ListCell<ProductDTO> {
         defaultStyle();
         root.getStyleClass().add("workingAreaInvalid");
         showFootprint.setDisable(false);
+        verified.setVisible(false);
     }
 
     private void validStyle() {
         defaultStyle();
-        root.getStyleClass().add("workingAreaValid");
+        //root.getStyleClass().add("workingAreaValid");
+        verified.setVisible(true);
     }
 
     private void defaultStyle() {

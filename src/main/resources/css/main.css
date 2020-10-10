@@ -119,7 +119,7 @@
 }
 
 .workingAreaInvalid {
-    -fx-background-color: #EE4545;
+    -fx-background-color: #FC9999;
 }
 
 .workingAreaInvalid .workingAreaIcon {
@@ -130,4 +130,12 @@
     -fx-width: 25px;
     -fx-height: 25px;
      -fx-font-size: .5em;
+}
+
+.archived{
+    -fx-background-color: #686868;
+}
+
+.downloadPaused .progressBar {
+    -fx-accent: red;
 }

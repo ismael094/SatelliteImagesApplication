@@ -3,6 +3,7 @@ package model;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
+import model.products.SentinelProductDTO;
 import org.apache.logging.log4j.core.appender.routing.Route;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +11,13 @@ import services.entities.Product;
 
 import javax.xml.bind.DatatypeConverter;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Product_ {
+public class SentinelProduct_ {
 
     ProductDTO product;
 
@@ -75,7 +78,7 @@ public class Product_ {
 
     @Test
     public void test_constructor() {
-        ProductDTO p = new ProductDTO(
+        ProductDTO p = new SentinelProductDTO(
                 new SimpleStringProperty(SentinelData.ID),new SimpleStringProperty(SentinelData.TITLE),
                 new SimpleStringProperty(SentinelData.PLATFORM_NAME),new SimpleStringProperty(SentinelData.PRODUCT_TYPE),
                 new SimpleStringProperty(SentinelData.FOOTPRINT),new SimpleStringProperty(SentinelData.SIZE),
@@ -104,6 +107,18 @@ public class Product_ {
     public void should_return_size_in_Mb_as_double_less_than_one() {
         product.setSize("766 MB");
         assertThat(product.getSizeAsDouble()).isEqualTo(766.0/1024.0);
+    }
+
+    @Test
+    public void should_return_preview_url_with_id() throws MalformedURLException {
+        product.setId(SentinelData.ID);
+        assertThat(product.getPreviewURL()).isEqualTo(new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('"+SentinelData.ID+"')/Products('Quicklook')/$value"));
+    }
+
+    @Test
+    public void should_return_download_url_with_id() throws MalformedURLException {
+        product.setId(SentinelData.ID);
+        assertThat(product.getDownloadURL()).isEqualTo(new URL("https://scihub.copernicus.eu/dhus/odata/v1/Products('"+SentinelData.ID+"')/$value"));
     }
 
     /*@Test

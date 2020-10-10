@@ -4,6 +4,8 @@
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
@@ -38,7 +40,7 @@
                         <MenuItem fx:id="add" mnemonicParsing="false" text="Add to..." />
                         <MenuItem fx:id="remove" mnemonicParsing="false" text="Remove product" />
                         <MenuItem fx:id="search" mnemonicParsing="false" text="Search product..." />
-                        <MenuItem fx:id="download" mnemonicParsing="false" text="Download product..." />
+                        <MenuItem fx:id="downloadManager" mnemonicParsing="false" text="Download product..." />
                     </items>
                   </ContextMenu>
                </contextMenu>
@@ -76,6 +78,16 @@
       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <Button fx:id="showFootprint" disable="true" layoutX="20.0" layoutY="25.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="26.0" styleClass="workingAreaIcon" />
+            <ImageView fx:id="verified" fitHeight="25.0" fitWidth="30.0" layoutX="21.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../img/verified.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="downloaded" fitHeight="25.0" fitWidth="21.0" layoutX="23.0" layoutY="98.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../img/downloaded.png" />
+               </image>
+            </ImageView>
          </children>
       </Pane>
    </children>

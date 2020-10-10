@@ -28,12 +28,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
+import services.download.DownloadManager;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ListInformationController implements TabItem, ProductTabItem {
+public class ListInformationController extends ProductTabItem implements TabItem {
     private final FXMLLoader loader;
     private Parent parent;
     private final ProductListDTO productListDTO;
@@ -62,7 +63,8 @@ public class ListInformationController implements TabItem, ProductTabItem {
     static final Logger logger = LogManager.getLogger(ListInformationController.class.getName());
 
 
-    public ListInformationController(ProductListDTO productList) {
+    public ListInformationController(ProductListDTO productList, DownloadManager download) {
+        super(download);
         this.productListDTO = productList;
         this.loader = new FXMLLoader(getClass().getResource("/fxml/ListView.fxml"));
         this.loader.setController(this);
@@ -98,7 +100,7 @@ public class ListInformationController implements TabItem, ProductTabItem {
                 initData();
                 try {
                     if (productListDTO.count() > 0) {
-                        InputStream preview = CopernicusService.getInstance().getPreview(productListDTO.getProducts().get(0).getId());
+                        InputStream preview = CopernicusService.getInstance().getContentFromURL(productListDTO.getProducts().get(0).getPreviewURL());
                         loadImage(new Image(preview));
                     } else
                         loadImage(new Image("/img/no_photo.jpg"));
@@ -118,6 +120,17 @@ public class ListInformationController implements TabItem, ProductTabItem {
     @Override
     public ObservableList<ProductDTO> getSelectedProducts() {
         return productListView.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public void setSelectedProducts(ObservableList<ProductDTO> products) {
+        productListView.getSelectionModel().clearSelection();
+        productListView.getSelectionModel().select(products.get(0));
+    }
+
+    @Override
+    public void refreshProducts() {
+        productListView.refresh();
     }
 
     @Override
@@ -212,6 +225,7 @@ public class ListInformationController implements TabItem, ProductTabItem {
 
     private void onAreaOfWorkChangeRefreshListView() {
         productListDTO.getAreasOfWork().addListener((ListChangeListener<String>) c -> {
+            productListView.applyCss();
             productListView.refresh();
             productListView.applyCss();
             productListView.refresh();
@@ -221,11 +235,12 @@ public class ListInformationController implements TabItem, ProductTabItem {
 
     private void onProductSelectedLoadPreviewImage() {
         productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
+
             Task<InputStream> task = new Task<>() {
                 @Override
                 protected InputStream call() throws Exception {
                     tabPaneComponent.getMainController().showWaitSpinner();
-                    return CopernicusService.getInstance().getPreview(newValue.getId());
+                    return CopernicusService.getInstance().getContentFromURL(newValue.getPreviewURL());
                 }
             };
             task.setOnSucceeded(e-> {

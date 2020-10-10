@@ -86,7 +86,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty(), new SimpleStringProperty());
         productListDTO.setName(product.getName());
         productListDTO.setDescription(product.getDescription());
-        productListDTO.setProducts(FXCollections.observableList(productDBDAO.toDAO(product.getProducts())));
+        productListDTO.setProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getProducts())));
         productListDTO.setRestrictions(product.getRestrictions());
         productListDTO.setAreasOfWork(FXCollections.observableList(product.getAreasOfWork()));
         productListDTO.setId(product.getId());
@@ -107,7 +107,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         ProductList productList = new ProductList();
         productList.setName(productListDTO.getName());
         productList.setDescription(productListDTO.getDescription());
-        productList.setProducts(productDBDAO.toEntity(productListDTO.getProducts()));
+        productList.setProducts(productDBDAO.getMapper().toEntity(productListDTO.getProducts()));
         productList.setRestrictions(productListDTO.getRestrictions());
         productList.setAreasOfWork(productListDTO.getAreasOfWork());
         if (productListDTO.getProducts().size()>0)

@@ -3,6 +3,8 @@ package gui.toolbarButton;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import gui.components.ToolBarComponent;
+import model.events.EventType;
+import model.events.ToolbarComponentEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -42,7 +44,7 @@ public class AddAllToListToolbarButton extends ToolbarButton{
         List<ProductListDTO> productListDTO = getProductList();
         if (productListDTO.size()>0){
             productListDTO.forEach(pL->pL.addProduct(openSearcher));
-            toolBar.getMainController().getListTreeViewController().reload();
+            toolBar.fireEvent(new ToolbarComponentEvent(this, EventType.ComponentEventType.LIST_UPDATED));
         }
     }
 

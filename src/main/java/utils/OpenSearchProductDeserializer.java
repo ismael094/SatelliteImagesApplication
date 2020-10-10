@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import model.products.ProductDTO;
-import utils.deserializer.DefaultDeserializer;
+import utils.deserializer.DefaultSentinelDeserializer;
 import utils.deserializer.Deserializer;
 import utils.deserializer.Sentinel1Deserializer;
 import utils.deserializer.Sentinel2Deserializer;
@@ -33,7 +33,7 @@ public class OpenSearchProductDeserializer extends StdDeserializer<ProductDTO> {
         deserializerMap = new HashMap<>();
         deserializerMap.put(SENTINEL1,new Sentinel1Deserializer());
         deserializerMap.put(SENTINEL2,new Sentinel2Deserializer());
-        deserializerMap.put(DEFAULT_DESERIALIZER,new DefaultDeserializer());
+        deserializerMap.put(DEFAULT_DESERIALIZER,new DefaultSentinelDeserializer());
 
     }
 

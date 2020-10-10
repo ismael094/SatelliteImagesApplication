@@ -72,7 +72,7 @@ public class ProductDBDAO_ {
 
     @Test
     public void productDTO_to_entity() {
-        Product product = productDAO.toEntity(productDTO);
+        Product product = productDAO.getMapper().toEntity(productDTO);
         assertThat(product.getId()).isEqualTo(productDTO.getId());
         assertThat(product.getFootprint()).isEqualTo(productDTO.getFootprint());
         assertThat(product.getProductType()).isEqualTo(productDTO.getProductType());
@@ -83,7 +83,7 @@ public class ProductDBDAO_ {
     public void entity_to_ProductDTO() {
         productDAO.save(productDTO);
         Product product = mongodb.getDatastore().find(Product.class).filter(Filters.eq("id", productDTO.getId())).first();
-        ProductDTO productDTO = productDAO.toDAO(product);
+        ProductDTO productDTO = productDAO.getMapper().toDAO(product);
         assertThat(product.getId()).isEqualTo(productDTO.getId());
         assertThat(product.getFootprint()).isEqualTo(productDTO.getFootprint());
         assertThat(product.getProductType()).isEqualTo(productDTO.getProductType());

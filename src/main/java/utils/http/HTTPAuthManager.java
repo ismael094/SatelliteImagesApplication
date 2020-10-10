@@ -2,6 +2,7 @@ package utils.http;
 
 import model.exception.AuthenticationException;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -13,6 +14,8 @@ public interface HTTPAuthManager {
     void setCredentials(String username, String password);
 
     InputStream getContentFromURL(URL url) throws IOException, AuthenticationException;
+
+    HttpsURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException;
 
     void closeConnection();
 }

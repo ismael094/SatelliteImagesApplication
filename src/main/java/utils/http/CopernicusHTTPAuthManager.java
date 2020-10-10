@@ -8,6 +8,8 @@ import javax.inject.Singleton;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuthManager {
 
@@ -16,6 +18,7 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
 
 
     private HttpsURLConnection connection;
+    private Map<Integer,String> errors;
 
     @Singleton
     private static CopernicusHTTPAuthManager httpManager;
@@ -25,10 +28,21 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         setCredentials(username, password);
         setAuthenticator();
         login();
+        System.setProperty("http.keepAlive", "false");
+        errors = new HashMap<>();
+        errors.put(429,"Too many request");
+        errors.put(403,"Maximum number of 2 concurrent flows achieved");
     }
 
     public static CopernicusHTTPAuthManager getNewHttpManager(String username, String password) throws AuthenticationException {
         return new CopernicusHTTPAuthManager(username,password);
+    }
+
+    public static CopernicusHTTPAuthManager getHttpManager(String username, String password) throws AuthenticationException {
+
+        if (httpManager == null)
+            httpManager = new CopernicusHTTPAuthManager(username,password);
+        return httpManager;
     }
 
     @Override
@@ -50,6 +64,11 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
 
     @Override
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException {
+        return getConnectionFromURL(url).getInputStream();
+    }
+
+    @Override
+    public HttpsURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException {
         setAuthenticator();
         URL path = new URL(url.toString().replace(" ", "%20"));
         connection = null;
@@ -58,9 +77,8 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-length", "0");
-        isConnectionResponseOK(connection.getResponseCode());
-        return connection.getInputStream();
-
+        isConnectionResponseOK(connection);
+        return connection;
     }
 
     @Override
@@ -68,13 +86,17 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         connection.disconnect();
     }
 
-    private void isConnectionResponseOK(int responseCode) throws HttpResponseException, AuthenticationException {
-        if (responseCode == 401) {
-            logger.atWarn().log("URL respond with {} code, login error?",responseCode);
+    private void isConnectionResponseOK(HttpsURLConnection connection) throws IOException, AuthenticationException {
+        if (connection.getResponseCode() == 401) {
+            logger.atWarn().log("URL respond with {} code, login error?",connection.getResponseCode());
+
+            connection.disconnect();
             throw new AuthenticationException("Incorrect username or password");
-        } else if (responseCode != 200) {
-            logger.atWarn().log("URL respond with {} code",responseCode);
-            throw new HttpResponseException(responseCode,"Resource not available");
+        } else if (connection.getResponseCode() != 200) {
+            logger.atWarn().log("URL respond with {} code {}",connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),""));
+            connection.getInputStream().close();
+            connection.disconnect();
+            throw new HttpResponseException(connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),"Resource not available"));
         }
     }
 

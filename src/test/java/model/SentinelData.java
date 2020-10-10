@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import model.products.Sentinel2ProductDTO;
+import model.products.SentinelProductDTO;
 import services.entities.Product;
 
 import javax.xml.bind.DatatypeConverter;
@@ -29,7 +30,7 @@ public class SentinelData {
     public static final double WATER_PERCENTAGE_COVERAGE = 32.013375;
 
     public static ProductDTO getProduct() {
-        return new ProductDTO(
+        return new SentinelProductDTO(
                 new SimpleStringProperty(SentinelData.ID),new SimpleStringProperty(SentinelData.TITLE),
                 new SimpleStringProperty(SentinelData.PLATFORM_NAME),new SimpleStringProperty(SentinelData.PRODUCT_TYPE),
                 new SimpleStringProperty(SentinelData.FOOTPRINT),new SimpleStringProperty(SentinelData.SIZE),
