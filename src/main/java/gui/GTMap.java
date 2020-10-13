@@ -146,6 +146,9 @@ public class GTMap extends Canvas {
 
     public void highlightFeatures(List<String> ids, String layerName, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor)  {
         FeatureLayer layer = (FeatureLayer) getLayerByName(layerName);
+        if (layer == null)
+            return;
+
         List<FeatureIdImpl> collect = ids.stream().map(FeatureIdImpl::new).collect(Collectors.toList());
 
         Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(layer));

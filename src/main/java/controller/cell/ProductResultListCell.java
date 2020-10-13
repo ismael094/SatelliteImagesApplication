@@ -3,10 +3,8 @@ package controller.cell;
 import com.jfoenix.controls.JFXButton;
 import controller.search.CopernicusProductDetailsController_;
 import gui.components.TabPaneComponent;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
@@ -17,9 +15,8 @@ import javafx.util.Duration;
 import model.products.ProductDTO;
 
 import java.io.IOException;
-import java.net.URL;
 
-public class ProductResultListCellController extends ListCell<ProductDTO> {
+public class ProductResultListCell extends ListCell<ProductDTO> {
     private final TabPaneComponent tabPaneComponent;
     private FXMLLoader loader;
 
@@ -38,7 +35,7 @@ public class ProductResultListCellController extends ListCell<ProductDTO> {
     @FXML
     private JFXButton details;
 
-    public ProductResultListCellController(TabPaneComponent component) {
+    public ProductResultListCell(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -70,11 +67,7 @@ public class ProductResultListCellController extends ListCell<ProductDTO> {
             platformName.setText(product.getPlatformName());
             instrumentName.setText(product.getProductType());
             size.setText(product.getSize());
-            /*if (product.getStatus().equals("Offline"))
-                root.getStyleClass().add("archived");*/
-            details.setOnMouseClicked(e->{
-                detailsEvent(product);
-            });
+            details.setOnMouseClicked(e-> detailsEvent(product));
             setText(null);
             setGraphic(root);
         }

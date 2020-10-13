@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class DownloadController implements Initializable {
+    public static final String ICON_SIZE = "0.8em";
     @FXML
     private Label time;
     @FXML
@@ -76,9 +77,9 @@ public class DownloadController implements Initializable {
         setTooltip("Pause downloads",pause);
         setTooltip("Cancel all downloads",stop);
         GlyphsDude.setIcon(clearQueue, FontAwesomeIcon.TRASH_ALT);
-        GlyphsDude.setIcon(stop, FontAwesomeIcon.STOP,"0.8em");
-        GlyphsDude.setIcon(pause, FontAwesomeIcon.PAUSE,"0.8em");
-        GlyphsDude.setIcon(resume, FontAwesomeIcon.PLAY,"0.8em");
+        GlyphsDude.setIcon(stop, FontAwesomeIcon.STOP, ICON_SIZE);
+        GlyphsDude.setIcon(pause, FontAwesomeIcon.PAUSE,ICON_SIZE);
+        GlyphsDude.setIcon(resume, FontAwesomeIcon.PLAY,ICON_SIZE);
     }
 
     private void initProperties(DownloadManager downloadManager) {
@@ -89,7 +90,6 @@ public class DownloadController implements Initializable {
 
     private void initQueueList(DownloadManager downloadManager) {
         queueList.setItems(downloadManager.getHistorical());
-        //queueList.setCellFactory(e -> new DownloadListCell(downloadManager));
         queueList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 

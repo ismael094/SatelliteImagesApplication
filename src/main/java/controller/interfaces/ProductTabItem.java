@@ -5,7 +5,6 @@ import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import services.download.DownloadManager;
-import utils.DownloadConfiguration;
 
 import java.util.prefs.Preferences;
 

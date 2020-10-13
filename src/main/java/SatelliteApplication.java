@@ -8,27 +8,22 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.FileUtils;
-import utils.ThemeConfiguration;
 import utils.database.MongoDBConfiguration;
 import utils.database.MongoDBManager;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
-import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
 
 
 public class SatelliteApplication extends Application {
-    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
+    static final Logger logger = LogManager.getLogger(SatelliteApplication.class.getName());
 
     JMetro jMetro;
 
@@ -45,15 +40,15 @@ public class SatelliteApplication extends Application {
 
         initDatabase();
 
-        UserDTO userDTO = loginWindows();
+        UserDTO userDTO = getLoginUserDialog();
 
-        if (userDTO.getId() == null) {
+        if (userDTO == null || userDTO.getId() == null) {
             logger.atInfo().log("===Closing Satellite App===");
             Platform.exit();
             System.exit(0);
         }
         
-        URL location = getClass().getResource("/fxml/MainApp.fxml");
+        URL location = getClass().getResource("/fxml/Main_new.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = new Scene(fxmlLoader.load());
 
@@ -82,7 +77,7 @@ public class SatelliteApplication extends Application {
 
     }
 
-    private UserDTO loginWindows() {
+    private UserDTO getLoginUserDialog() {
         URL location = getClass().getResource("/fxml/LoginView.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = null;

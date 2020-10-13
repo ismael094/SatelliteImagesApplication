@@ -3,20 +3,18 @@ package gui.toolbarButton;
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
+import de.jensd.fx.glyphs.GlyphIcons;
+import de.jensd.fx.glyphs.GlyphsDude;
 import gui.components.ToolBarComponent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
+import javafx.util.Duration;
 import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
-import utils.ThemeConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +31,17 @@ public abstract class ToolbarButton extends Button implements EventHandler<Actio
     }
 
     public abstract void init();
+
+    protected void setIcon(GlyphIcons icon, String size) {
+        GlyphsDude.setIcon(this,icon,size);
+    }
+
+    protected void setTooltip(String name) {
+        Tooltip tooltip = new Tooltip(name);
+        tooltip.setShowDelay(new Duration(0.1));
+        tooltip.setHideDelay(new Duration(0.5));
+        setTooltip(tooltip);
+    }
 
     protected List<ProductListDTO> getProductLists() {
         List<ProductListDTO> productListDTO = new ArrayList<>();

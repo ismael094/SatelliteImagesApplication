@@ -2,12 +2,11 @@ package controller.search;
 
 import com.jfoenix.controls.*;
 import controller.interfaces.TabItem;
-import controller.cell.ProductResultListCellController;
+import controller.cell.ProductResultListCell;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -30,8 +29,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 import jfxtras.styles.jmetro.JMetro;
-import model.list.ProductListDTO;
-import model.openSearcher.ProductParameters;
 import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
 import model.products.ProductDTO;
@@ -46,9 +43,6 @@ import utils.AlertFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +70,6 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     @FXML
     private Pane polarisationPane;
     @FXML
-
     private ChoiceBox<String> productTypeList;
     @FXML
     private ChoiceBox<String> platformList;
@@ -237,20 +230,22 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         mapPane.getChildren().addAll(mapController.getView());
         AnchorPane.setLeftAnchor(mapController.getView(),0.0);
         AnchorPane.setRightAnchor(mapController.getView(),0.0);
+        AnchorPane.setTopAnchor(mapController.getView(),0.0);
+        AnchorPane.setBottomAnchor(mapController.getView(),0.0);
     }
 
     private void onMouseClickInMapHighlightSelectedProductsEvent() {
         BorderPane view = (BorderPane)mapController.getView();
         view.getCenter().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
             //If there are not selected products in map, deselect items in listview
-            if (mapController.getSelectedProduct() == null) {
+            if (mapController.getSelectedFeatureId() == null) {
                 resultProductsList.getSelectionModel().clearSelection();
                 return;
             }
 
             //Get selected product
             ProductDTO product = resultProductsList.getItems().stream()
-                    .filter(p -> p.getId().equals(mapController.getSelectedProduct()))
+                    .filter(p -> p.getId().equals(mapController.getSelectedFeatureId()))
                     .findFirst()
                     .orElse(null);
 
@@ -526,7 +521,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
                     FXCollections.observableArrayList(response.get().getProducts());
 
             resultProductsList.setItems(tObservableArray);
-            resultProductsList.setCellFactory(e -> new ProductResultListCellController(tabPaneComponent));
+            resultProductsList.setCellFactory(e -> new ProductResultListCell(tabPaneComponent));
             clearMap();
             OpenSearchResponse openSearchResponse = response.get();
             if (openSearchResponse.getProducts().size() > 0) {
@@ -540,7 +535,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
             setSpinnerVisible(false);
             resultsPane.setVisible(true);
             searchParameters.setVisible(false);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException | InterruptedException e) {
             logger.atLevel(Level.ERROR).log("Error while retrieving search results: {0}",e);
             e.printStackTrace();
         }
@@ -564,7 +559,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     private void setPagination(int numOfProducts, int rows) {
         if (numOfProducts > rows) {
             setPaginationVisible(true);
-            double numPages = Math.ceil((numOfProducts/rows)+0.5f);
+            double numPages = Math.ceil((numOfProducts/(double)rows)+0.5f);
             pagination.setPageCount((int)numPages);
         } else
             setPaginationVisible(false);
@@ -605,7 +600,8 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     private void addCloudCoverageParameter() {
         if (isCloudCoverageValid(cloudCoverage) && isCloudCoverageValid(cloudCoverageTo)) {
-            addCloudCoverageParsed("[" + cloudCoverage.getText() + " TO " + cloudCoverageTo.getText() + "]");
+            searcher.addJoinRangeParameter(SentinelProductParameters.CLOUD_COVER_PERCENTAGE,
+                    cloudCoverage.getText(),cloudCoverageTo.getText());
         } else {
             if (isCloudCoverageValid(cloudCoverage))
                 addCloudCoverageParsed(cloudCoverage.getText());
@@ -644,24 +640,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     private void addDateRangeFilter() {
         if (dateStart.getValue() != null || dateFinish.getValue() != null)
-            searcher.addSearchParameter(SentinelProductParameters.INGESTION_DATE,getFromToIngestionDate(dateStart.getValue(),dateFinish.getValue()));
-    }
-
-    //REFACTOR to OpenSearch
-
-    private String getFromToIngestionDate(LocalDate start, LocalDate finish) {
-        String startS = getDateString(start,"*",0,0,0,":00.001");
-        String endS = getDateString(finish,"NOW",23,59,59,".999");
-        return "["+ startS+ " TO " + endS + "]";
-    }
-
-    private String getDateString(LocalDate date, String dateNull, int hour, int minute, int seconds, String nano) {
-        if (date == null)
-            return dateNull;
-
-        LocalDateTime localDateTimeFinish = date.atTime(hour, minute, seconds, 0);
-        localDateTimeFinish.atZone(ZoneId.of("UTC"));
-        return localDateTimeFinish.toString()+nano+"Z";
+            searcher.addDateParameter(SentinelProductParameters.INGESTION_DATE,dateStart.getValue(),dateFinish.getValue());
     }
 
     private void addPlatformNameParameter() {

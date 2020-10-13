@@ -3,7 +3,6 @@ package controller.cell;
 import controller.GTMapSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -66,8 +65,6 @@ public class ProductListCell extends ListCell<ProductDTO> {
     @FXML
     private ImageView downloaded;
 
-    private ProductDTO product;
-
     public ProductListCell(ProductListDTO productListDTO, GTMapSearchController controller) {
         this.productListDTO = productListDTO;
         this.mapController = controller;
@@ -83,7 +80,6 @@ public class ProductListCell extends ListCell<ProductDTO> {
             setGraphic(null);
 
         } else {
-            this.product = product;
             if (loader == null) {
                 loader = new FXMLLoader(getClass().getResource("/fxml/ProductListCellView.fxml"));
                 loader.setController(this);
@@ -147,15 +143,11 @@ public class ProductListCell extends ListCell<ProductDTO> {
 
     private void onActionContextButtonShowContextButton() {
         contextButton.setText("");
-        contextButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            contextMenu.show(contextButton,e.getScreenX(),e.getScreenY());
-        });
+        contextButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> contextMenu.show(contextButton,e.getScreenX(),e.getScreenY()));
     }
 
     private void onActionInRemoveButtonDeleteSelectedAreaOfWork(ProductDTO product) {
-        remove.setOnAction(e->{
-            productListDTO.remove(product);
-        });
+        remove.setOnAction(e-> productListDTO.remove(product));
     }
 
     private void setButtonIcon() {

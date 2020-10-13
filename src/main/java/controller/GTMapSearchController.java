@@ -27,9 +27,8 @@ public class GTMapSearchController {
 
     private final GTMap geotoolsMap;
     private final BorderPane border;
-    private HBox hbox;
     private boolean isSearchAreaDrawing;
-    private Point2D initialCoodinates;
+    private Point2D initialCoordinates;
     private double baseDragedX;
     private double baseDragedY;
 
@@ -160,9 +159,9 @@ public class GTMapSearchController {
     }
 
     private void createSearchArea(Point2D end) {
-        geotoolsMap.createLayerFromCoordinates(initialCoodinates,end,"searchArea");
+        geotoolsMap.createLayerFromCoordinates(initialCoordinates,end,"searchArea");
         try {
-            searchArea = geotoolsMap.getWKTFromCoordinates(initialCoodinates,end);
+            searchArea = geotoolsMap.getWKTFromCoordinates(initialCoordinates,end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -178,7 +177,7 @@ public class GTMapSearchController {
     }
 
     private void setInitialCoordinates(double x, double y) {
-        initialCoodinates = new Point2D(x,y);
+        initialCoordinates = new Point2D(x,y);
         isSearchAreaDrawing = true;
     }
 
@@ -208,7 +207,7 @@ public class GTMapSearchController {
     }
 
     public HBox controlBar() {
-        hbox = new HBox();
+        HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
 
@@ -225,9 +224,7 @@ public class GTMapSearchController {
     private Button getResetMapButton() {
         Button resetMap = GlyphsDude.createIconButton(FontAwesomeIcon.EXPAND,"Reset map");
         resetMap.setAccessibleText("Reset map");
-        resetMap.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
-            geotoolsMap.resetMap();
-        });
+        resetMap.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> geotoolsMap.resetMap());
         return resetMap;
     }
 
@@ -253,7 +250,7 @@ public class GTMapSearchController {
         geotoolsMap.focusOnLayer(layer);
     }
 
-    public String getSelectedProduct() {
+    public String getSelectedFeatureId() {
         return geotoolsMap.getSelectedFeatureID();
     }
 

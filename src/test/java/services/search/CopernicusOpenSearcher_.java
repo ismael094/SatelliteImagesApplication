@@ -8,6 +8,11 @@ import org.junit.rules.ExpectedException;
 import services.CopernicusService;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -92,6 +97,57 @@ public class CopernicusOpenSearcher_ {
         openSearcher.clearSearchParameters();
         openSearcher.addSearchParameter(SentinelProductParameters.PRODUCT_TYPE,"SLC");
         assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=25&q=(producttype:SLC)");
+    }
+
+    @Test
+    public void set_range_of_date_with_date_start_null() throws MalformedURLException {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
+        LocalDate date = LocalDate.of(2020,10,13);
+        LocalDateTime localDateTime = date.atTime(23, 59, 59);
+        ZonedDateTime utc = localDateTime.atZone(ZoneId.of("UTC"));
+
+        openSearcher.addDateParameter(SentinelProductParameters.INGESTION_DATE,null, date);
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=25&q=(ingestionDate:[* TO "+formatter.format(utc)+".999Z])");
+    }
+
+    @Test
+    public void set_range_of_date_with_date_finish_null() throws MalformedURLException {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
+        LocalDate date = LocalDate.of(2020,10,10);
+        LocalDateTime localDateTime = date.atTime(0, 0, 0);
+        ZonedDateTime utc = localDateTime.atZone(ZoneId.of("UTC"));
+
+        openSearcher.addDateParameter(SentinelProductParameters.INGESTION_DATE,date, null);
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=25&q=(ingestionDate:["+formatter.format(utc)+".001Z TO NOW])");
+    }
+
+    @Test
+    public void set_range_of_date_with_date_not_null() throws MalformedURLException {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
+        LocalDate dateStart = LocalDate.of(2020,10,13);
+        LocalDateTime localDateTimeStart = dateStart.atTime(0, 0, 0);
+        ZonedDateTime utcStart = localDateTimeStart.atZone(ZoneId.of("UTC"));
+
+        LocalDate dateFinish = LocalDate.of(2020,10,10);
+        LocalDateTime localDateTimeFinish = dateFinish.atTime(23, 59, 59);
+        ZonedDateTime utcFinish = localDateTimeFinish.atZone(ZoneId.of("UTC"));
+
+        openSearcher.addDateParameter(SentinelProductParameters.INGESTION_DATE,dateStart, dateFinish);
+        assertThat(openSearcher.getURL().toString()).isEqualTo(
+                URL+"start=0&rows=25&q=" +
+                        "(ingestionDate:["+formatter.format(utcStart) + ".001Z"
+                        +" TO "+
+                        formatter.format(utcFinish)+".999Z])");
+    }
+
+    @Test
+    public void set_range_of_cloud_coverage() throws MalformedURLException {
+
+        openSearcher.addJoinRangeParameter(SentinelProductParameters.CLOUD_COVER_PERCENTAGE,"0", "25");
+        assertThat(openSearcher.getURL().toString()).isEqualTo(URL+"start=0&rows=25&q=(cloudcoverpercentage:[0 TO 25])");
     }
 }
 

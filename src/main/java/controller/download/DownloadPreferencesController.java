@@ -10,15 +10,12 @@ import utils.DownloadConfiguration;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 import static utils.DownloadConfiguration.*;
 
 public class DownloadPreferencesController implements Initializable {
     @FXML
     private CheckBox autoDownload;
-    @FXML
-    private DialogPane dialogPane;
     @FXML
     private TextField path;
     @FXML
@@ -33,7 +30,7 @@ public class DownloadPreferencesController implements Initializable {
     private RadioButton multipleDownload;
 
     public static final ButtonType APPLY = new ButtonType("Apply");
-    public static final ButtonType CANCEL = new ButtonType("Cancel");
+    public static final ButtonType CANCEL_CLOSE = new ButtonType("Cancel");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

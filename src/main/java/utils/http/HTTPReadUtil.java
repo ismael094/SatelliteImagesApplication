@@ -8,6 +8,7 @@ public class HTTPReadUtil {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream))) {
             res = in.readLine();
         }
+        inputStream.close();
         return res;
     }
 }

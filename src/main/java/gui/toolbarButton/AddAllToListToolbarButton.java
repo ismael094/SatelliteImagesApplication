@@ -29,11 +29,8 @@ public class AddAllToListToolbarButton extends ToolbarButton{
     @Override
     public void init() {
         setOnAction(this);
-        GlyphsDude.setIcon(this, MaterialDesignIcon.IMAGE_MULTIPLE,"1.5em");
-        Tooltip tooltip = new Tooltip("Add all products to list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.IMAGE_MULTIPLE,"1.5em");
+        setTooltip("Add all products to list");
     }
 
     @Override
@@ -45,7 +42,7 @@ public class AddAllToListToolbarButton extends ToolbarButton{
         }
 
         List<ProductListDTO> productListDTO = getProductLists();
-        if (productListDTO.size()>0){
+        if (!productListDTO.isEmpty()){
             productListDTO.forEach(pL->{
                 pL.addProduct(openSearcher);
             });

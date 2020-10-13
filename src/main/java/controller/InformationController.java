@@ -5,20 +5,18 @@ import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import services.database.ProductListDBDAO;
 
 import java.io.IOException;
 
 public class InformationController implements TabItem {
-    private final FXMLLoader loader;
     private Parent parent;
     private TabPaneComponent setTabPaneComponent;
 
     public InformationController() {
-        this.loader = new FXMLLoader(getClass().getResource("/fxml/InformationView.fxml"));
-        this.loader.setController(this);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/InformationView.fxml"));
+        loader.setController(this);
         try {
-            parent = this.loader.load();
+            parent = loader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,7 +34,7 @@ public class InformationController implements TabItem {
 
     @Override
     public Task<Parent> start() {
-        return new Task<Parent>() {
+        return new Task<>() {
             @Override
             protected Parent call() throws Exception {
                 return parent;

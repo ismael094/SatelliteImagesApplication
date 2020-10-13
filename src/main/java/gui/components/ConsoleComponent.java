@@ -7,7 +7,6 @@ import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
 import javafx.scene.Parent;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

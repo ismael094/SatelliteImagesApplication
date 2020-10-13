@@ -24,8 +24,6 @@ public class DownloadListCell extends ListCell<DownloadItem> {
     @FXML
     private Button cancelDownload;
 
-    private DownloadItem item;
-
     public DownloadListCell(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
@@ -35,12 +33,10 @@ public class DownloadListCell extends ListCell<DownloadItem> {
         super.updateItem(item, empty);
 
         if(empty || item == null) {
-
             setText(null);
             setGraphic(null);
 
         } else {
-            this.item = item;
             if (loader == null) {
                 loader = new FXMLLoader(getClass().getResource("/fxml/DownloadListCell.fxml"));
                 loader.setController(this);
@@ -50,6 +46,9 @@ public class DownloadListCell extends ListCell<DownloadItem> {
                     e.printStackTrace();
                 }
             }
+
+            prefWidthProperty().bind(getListView().prefWidthProperty().subtract(2));
+            setMaxWidth(Control.USE_PREF_SIZE);
 
             GlyphsDude.setIcon(cancelDownload,FontAwesomeIcon.REMOVE,"0.6em");
 

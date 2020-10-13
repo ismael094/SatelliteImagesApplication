@@ -1,10 +1,8 @@
 package controller.identification;
 
-import controller.SatelliteApplicationController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -57,7 +55,7 @@ public class RegisterController implements Initializable {
 
         root.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
-        register.disableProperty().bind(BindFieldsEmpty());
+        register.disableProperty().bind(bindFieldsIfThereAreEmpty());
 
         register.setOnMouseClicked(this::register);
     }
@@ -78,7 +76,7 @@ public class RegisterController implements Initializable {
         AlertFactory.showErrorDialog(ERROR_TITLE,ERROR_HEADER,context);
     }
 
-    private BooleanBinding BindFieldsEmpty() {
+    private BooleanBinding bindFieldsIfThereAreEmpty() {
         return Bindings.isEmpty(email.textProperty())
                 .or(Bindings.isEmpty(password.textProperty()))
                 .or(Bindings.isEmpty(firstName.textProperty())

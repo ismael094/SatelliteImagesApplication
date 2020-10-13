@@ -24,11 +24,8 @@ public class DeleteListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
-        GlyphsDude.setIcon(this, MaterialDesignIcon.FOLDER_REMOVE,"1.5em");
-        Tooltip tooltip = new Tooltip("Delete list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.FOLDER_REMOVE,"1.5em");
+        setTooltip("Delete list");
     }
 
     @Override

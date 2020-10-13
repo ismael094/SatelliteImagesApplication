@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +25,8 @@ import static java.lang.System.currentTimeMillis;
 public class OpenSearcher implements SearchService {
     public static final String ALL = "*";
     public static final String AND = " AND ";
+    public static final String ALL_FROM = "*";
+    public static final String TO_NOW = "NOW";
     private final String URL = "https://scihub.copernicus.eu/dhus/search?format=json";
     private CopernicusService service;
     private int productsPerPage;
@@ -128,5 +133,33 @@ public class OpenSearcher implements SearchService {
 
     public int getProductsPerPage() {
         return this.productsPerPage;
+    }
+
+    public void addDateParameter(SentinelProductParameters dateParameter, LocalDate dateStart, LocalDate dateFinish) {
+        if (dateStart != null || dateFinish != null)
+            addJoinRangeParameter(dateParameter,getDateFromString(dateStart),getDateToString(dateFinish));
+    }
+
+    private String getDateFromString(LocalDate date) {
+        return getDateString(date, ALL_FROM,0,0,0,":00.001");
+    }
+
+    private String getDateToString(LocalDate date) {
+        return getDateString(date, TO_NOW,23,59,59,".999");
+    }
+
+    private String getDateString(LocalDate date, String dateNull, int hour, int minute, int seconds, String nano) {
+        if (date == null)
+            return dateNull;
+
+        LocalDateTime localDateTimeFinish = date.atTime(hour, minute, seconds, 0);
+        localDateTimeFinish.atZone(ZoneId.of("UTC"));
+        return localDateTimeFinish.toString()+nano+"Z";
+    }
+
+
+
+    public void addJoinRangeParameter(SentinelProductParameters parameter, String from, String to) {
+        addSearchParameter(parameter,"["+ from+ " TO " + to + "]");
     }
 }

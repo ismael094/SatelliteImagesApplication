@@ -25,11 +25,8 @@ public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
     @Override
     public void init() {
         setOnAction(this);
-        GlyphsDude.setIcon(this, MaterialDesignIcon.DOWNLOAD,"1.5em");
-        Tooltip tooltip = new Tooltip("Download selected products in the current list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.DOWNLOAD,"1.5em");
+        setTooltip("Download selected products in the current list");
     }
 
     @Override

@@ -22,7 +22,6 @@ import javafx.scene.control.TreeView;
 import javafx.util.Pair;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
-import utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +44,7 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
         setRoot(pL);
         setCellFactory(e -> new ListTreeViewCell());
         OnMouseClickedOpenListController();
-        getChildren().addListener((ListChangeListener<Node>) c -> {
-            System.out.println("CHANGE?");
-        });
+        getChildren().addListener((ListChangeListener<Node>) c -> System.out.println("CHANGE?"));
     }
 
     private void setOnMouseEntered() {
@@ -68,21 +65,17 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
 
     private void OnMouseClickedOpenListController() {
         setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1)
-                return;
-
-            TreeItem<Pair<String,Object>> selectedItem = getSelectionModel().getSelectedItem();
-            if (selectedItem.getValue().getValue() instanceof ProductListDTO) {
-                ProductListDTO productListDTO = (ProductListDTO)selectedItem.getValue().getValue();
-                mainController.getTabController().load(new ListInformationController(productListDTO,mainController.getDownload()));
+            TreeItem<Pair<String, Object>> selectedItem = getSelectionModel().getSelectedItem();
+            if (event.getClickCount() > 1 && selectedItem.getValue().getValue() instanceof ProductListDTO) {
+                ProductListDTO productListDTO = (ProductListDTO) selectedItem.getValue().getValue();
+                mainController.getTabController().load(new ListInformationController(productListDTO, mainController.getDownload()));
             } else {
                 TreeItem<Pair<String, Object>> parent = selectedItem.getParent();
                 if (parent != null && parent.getValue().getValue() instanceof ProductListDTO) {
-                    ProductListDTO productListDTO = (ProductListDTO)parent.getValue().getValue();
-                    Tab tab = mainController.getTabController().get(productListDTO.getId().toString());
-                    if (tab!=null) {
-                        TabItem controllerOf = mainController.getTabController().getControllerOf(tab);
-                        ((ProductTabItem)controllerOf).setSelectedProducts(FXCollections.observableArrayList((ProductDTO)selectedItem.getValue().getValue()));
+                    ProductListDTO productListDTO = (ProductListDTO) parent.getValue().getValue();
+                    TabItem controller = mainController.getTabController().getControllerOf(productListDTO.getId().toString());
+                    if (controller != null) {
+                        ((ProductTabItem) controller).setSelectedProducts(FXCollections.observableArrayList((ProductDTO) selectedItem.getValue().getValue()));
                     }
 
                 }

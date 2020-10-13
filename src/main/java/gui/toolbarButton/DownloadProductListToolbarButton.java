@@ -10,8 +10,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
-import model.events.EventType;
-import model.events.ToolbarComponentEvent;
 import model.list.ProductListDTO;
 import services.download.DownloadItem;
 import services.download.DownloadManager;
@@ -29,12 +27,9 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
     @Override
     public void init() {
 
-        GlyphsDude.setIcon(this, MaterialDesignIcon.FOLDER_DOWNLOAD,"1.5em");
         setOnAction(this);
-        Tooltip tooltip = new Tooltip("Download all product in the current list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.FOLDER_DOWNLOAD,"1.5em");
+        setTooltip("Download all product in the current list");
     }
 
     @Override
@@ -54,14 +49,11 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
                 list = productList.get(0);
         }
 
-        DownloadManager download = toolBar.getMainController().getDownload();
         FileUtils.saveObjectToJson(list);
-        list.getProducts().forEach(p->{
-            download.add(new DownloadItem(p));
-        });
-        list.getGroundTruthProducts().forEach(p->{
-            download.add(new DownloadItem(p));
-        });
+
+        list.getProducts().forEach(p-> toolBar.getMainController().getDownload().add(new DownloadItem(p)));
+
+        list.getGroundTruthProducts().forEach(p-> toolBar.getMainController().getDownload().add(new DownloadItem(p)));
 
     }
 }

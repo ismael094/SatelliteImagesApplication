@@ -266,18 +266,13 @@ public class DownloadManager implements Runnable {
     public synchronized void cancel() {
         logger.atError().log("Cancel all downloads!");
         queue.clear();
-        stop();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 downloading.forEach(t -> {
+                    t.setCommand(DownloadEnum.DownloadCommand.STOP);
                     while (t.isRunning()) {
                         t.cancel();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
                     }
                 });
                 logger.atInfo().log("All downloads stopped");
@@ -294,9 +289,7 @@ public class DownloadManager implements Runnable {
 
     public synchronized void resume() {
         logger.atInfo().log("Resume downloads!");
-        downloading.forEach(t->{
-            t.setCommand(DownloadEnum.DownloadCommand.START);
-        });
+        downloading.forEach(t-> t.setCommand(DownloadEnum.DownloadCommand.START));
     }
 
     public ObservableList<DownloadItem> getHistorical() {
@@ -318,10 +311,6 @@ public class DownloadManager implements Runnable {
     public synchronized void clearQueue() {
         queue.clear();
         historical.clear();
-    }
-
-    public double getTimeLeft() {
-        return timeLeft.get();
     }
 
     public DoubleProperty timeLeftProperty() {

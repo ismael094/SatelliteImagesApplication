@@ -17,15 +17,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.System.currentTimeMillis;
 
 public class DownloadItemThread extends Service<Boolean> {
     private final DownloadItem item;
-    private volatile DownloadEnum.DownloadCommand command;
-    private volatile DownloadEnum.DownloadStatus status;
-    private volatile int numOfBytesRead;
-    private volatile long contentLength;
+    private DownloadEnum.DownloadCommand command;
+    private DownloadEnum.DownloadStatus status;
+    private AtomicInteger numOfBytesRead;
+    private AtomicLong contentLength;
 
     static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DownloadItemThread.class.getName());
     private long startTime;
@@ -33,6 +35,8 @@ public class DownloadItemThread extends Service<Boolean> {
     public DownloadItemThread(DownloadItem item) {
         this.item = item;
         startTime = 0;
+        contentLength = new AtomicLong(0);
+        numOfBytesRead = new AtomicInteger(0);
     }
 
     public synchronized void setCommand(DownloadEnum.DownloadCommand command) {
@@ -71,47 +75,64 @@ public class DownloadItemThread extends Service<Boolean> {
             }
 
             private boolean initDownload() throws IOException, InterruptedException, NoSuchAlgorithmException, NotAuthenticatedException, AuthenticationException {
+                String temporalFileLocation = item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip";
+                String finalFileLocation = item.getLocation() +"\\"+ item.getProductDTO().getTitle() + ".zip";
+
                 Thread.sleep(400);
+
                 HttpURLConnection connection = CopernicusService.getInstance().getConnectionFromURL(item.getProductDTO().getDownloadURL());
-                String location = item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip";
+
+                //Init download bytes data
+                numOfBytesRead = new AtomicInteger(0);
+                contentLength = new AtomicLong(getContentLength(connection.getContentLength()));
+
+                //Open streams and init buffer
                 InputStream inputStream = connection.getInputStream();
                 BufferedInputStream in = new BufferedInputStream(inputStream);
-                FileOutputStream fileOutputStream = new FileOutputStream(location);
-
+                FileOutputStream fileOutputStream = new FileOutputStream(temporalFileLocation);
                 byte buffer[] = new byte[1024];
-                numOfBytesRead = 0;
-                contentLength = getContentLength(connection.getContentLength());
-                int bytesRead;
 
-                logger.atInfo().log("Downloading started!  {}", location);
+
+                logger.atInfo().log("Downloading started!  {}", temporalFileLocation);
                 MessageDigest md = MessageDigest.getInstance("MD5");
+                int bytesRead;
                 startTime = currentTimeMillis();
                 while (true) {
+
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
-                        stoppedStatus();
+                        setStoppedStatus();
                         close(fileOutputStream, inputStream, in, connection);
-                        Files.deleteIfExists(Path.of(item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip"));
+                        Files.deleteIfExists(Path.of(temporalFileLocation));
                         Thread.sleep(2000);
                         return false;
                     }
 
-                    if (command != DownloadEnum.DownloadCommand.PAUSE) {
-                        downloadingStatus();
+                    if (command == DownloadEnum.DownloadCommand.PAUSE) {
+                        if (status != DownloadEnum.DownloadStatus.PAUSED)
+                            setPausedStatus();
+                        Thread.sleep(1000);
+                    } else {
+                        if (status != DownloadEnum.DownloadStatus.DOWNLOADING)
+                            setDownloadingStatus();
+
                         bytesRead = in.read(buffer, 0, 1024);
-                        if (downloadFinish(bytesRead)) {
-                            finishedStatus();
+                        if (isDownloadFinish(bytesRead)) {
+                            setFinishedStatus();
                             close(fileOutputStream, inputStream, in, connection);
-                            new File(item.getLocation() + "\\" + item.getProductDTO().getId() + ".zip").renameTo(new File(item.getLocation() + "\\"+ item.getProductDTO().getTitle() + ".zip"));
-                            logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", ((((contentLength / 1024.0) / 1024.0) / 1024.0)), ((currentTimeMillis() - startTime) / 1000.0) / 60.0);
+                            boolean wasFileRename = new File(temporalFileLocation).renameTo(new File(finalFileLocation));
+                            if (wasFileRename)
+                                logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", getContentLengthInGb(contentLength.get() / 1024.0, 1024.0, 1024.0), getContentLengthInGb(currentTimeMillis() - startTime, 1000.0, 60.0));
+                            else {
+                                Files.deleteIfExists(Path.of(temporalFileLocation));
+                                logger.atError().log("Not able to rename file {}",temporalFileLocation);
+                                return false;
+                            }
                             return checkMD5(md);
                         }
                         addBytesRead(bytesRead);
                         fileOutputStream.write(buffer, 0, bytesRead);
                         md.update(buffer, 0, bytesRead);
-                        updateProgress(numOfBytesRead/1024.0, contentLength);
-                    } else {
-                        pausedStatus();
-                        Thread.sleep(1000);
+                        updateProgress(numOfBytesRead.get()/1024.0, contentLength.get());
                     }
                 }
             }
@@ -135,14 +156,18 @@ public class DownloadItemThread extends Service<Boolean> {
                 connection.disconnect();
             }
 
-            private boolean downloadFinish(int bytesRead) {
+            private boolean isDownloadFinish(int bytesRead) {
                 return bytesRead == -1;
             }
         };
     }
 
+    private double getContentLengthInGb(double v, double v2, double v3) {
+        return ((v) / v2) / v3;
+    }
+
     private synchronized void addBytesRead(int bytes) {
-        numOfBytesRead+=bytes;
+        numOfBytesRead.addAndGet(bytes);
     }
 
     private long getContentLength(long contentLength) {
@@ -152,19 +177,19 @@ public class DownloadItemThread extends Service<Boolean> {
             return (long) (item.getProductDTO().getSizeAsDouble()*1024*1024);
     }
 
-    private void stoppedStatus() {
+    private void setStoppedStatus() {
         setStatus(DownloadEnum.DownloadStatus.STOPPED);
     }
 
-    private void pausedStatus() {
+    private void setPausedStatus() {
         setStatus(DownloadEnum.DownloadStatus.PAUSED);
     }
 
-    private void downloadingStatus() {
+    private void setDownloadingStatus() {
         setStatus(DownloadEnum.DownloadStatus.DOWNLOADING);
     }
 
-    private void finishedStatus() {
+    private void setFinishedStatus() {
         setStatus(DownloadEnum.DownloadStatus.FINISHED);
     }
 
@@ -173,7 +198,7 @@ public class DownloadItemThread extends Service<Boolean> {
     }
 
     public synchronized double getTimeLeft() {
-        return (numOfBytesRead/1024) == 0 ? 0 : (double)(((contentLength-(numOfBytesRead/1024))/(numOfBytesRead/1024))*(currentTimeMillis()-startTime)/1000)/60;
+        return (numOfBytesRead.get()/1024.0) == 0 ? 0 : ((contentLength.get()-(numOfBytesRead.get()/1024.0))/(numOfBytesRead.get()/1024.0))*(currentTimeMillis()-startTime)/1000 /60;
 
     }
 }

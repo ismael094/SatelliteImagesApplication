@@ -30,11 +30,8 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
-        GlyphsDude.setIcon(this, MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
-        Tooltip tooltip = new Tooltip("Add selected products to list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
+        setTooltip("Add selected products to list");
         disableProperty().bind(toolBar.getMainController().getTabController().getIsSearchControllerOpenProperty().not());
     }
 

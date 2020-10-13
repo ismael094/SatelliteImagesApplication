@@ -103,7 +103,7 @@
    </header>
    <buttonTypes>
       <DownloadPreferencesController fx:constant="APPLY" />
-      <DownloadPreferencesController fx:constant="CANCEL" />
+      <DownloadPreferencesController fx:constant="CANCEL_CLOSE" />
    </buttonTypes>
 
 </DialogPane>

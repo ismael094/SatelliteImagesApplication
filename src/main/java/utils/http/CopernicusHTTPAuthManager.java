@@ -45,6 +45,7 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         return httpManager;
     }
 
+
     @Override
     public void login() throws AuthenticationException {
         try {
@@ -74,6 +75,7 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         connection = null;
         connection = (HttpsURLConnection) path.openConnection();
         connection.setRequestProperty("Accept-Encoding", "identity");
+        connection.setConnectTimeout(5000);
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-length", "0");

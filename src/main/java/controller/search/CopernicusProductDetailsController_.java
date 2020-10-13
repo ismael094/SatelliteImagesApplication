@@ -6,7 +6,6 @@ import gui.components.TabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -27,10 +26,8 @@ import services.CopernicusService;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ResourceBundle;
 
 public class CopernicusProductDetailsController_ implements TabItem {
 
@@ -64,8 +61,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private Label ingestionDate;
     @FXML
     private ImageView image;
-    private ProductDTO product;
-    private GTMap gtMap;
+    private final ProductDTO product;
     private TabPaneComponent tabPaneComponent;
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -118,7 +114,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
         if (product!=null)
             setProductDetails();
         else
-            logger.atError().log("Error while retrieving product data");
+            logger.atError().log("Error while retrieving product data! Null reference of product!");
     }
 
     private void setProductDetails() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
@@ -177,7 +173,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
     }
 
     private void setMap() throws ParseException {
-        gtMap = new GTMap(300, 300,false);
+        GTMap gtMap = new GTMap(300, 300, false);
         map.getChildren().add(gtMap);
         gtMap.createFeatureFromWKT(product.getFootprint(),product.getId(),"products");
         gtMap.createAndDrawLayer("products", Color.BLACK, null);

@@ -24,12 +24,9 @@ public class CreateListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
-        //de.jensd.fx.glyphs.
-        GlyphsDude.setIcon(this,MaterialDesignIcon.FOLDER_PLUS,"1.5em");
-        Tooltip tooltip = new Tooltip("Create new list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+
+        setIcon(MaterialDesignIcon.FOLDER_PLUS,"1.5em");
+        setTooltip("Create new list");
     }
 
 

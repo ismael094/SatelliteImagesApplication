@@ -4,7 +4,6 @@ import controller.interfaces.TabItem;
 import controller.list.ListCreateAndEditController;
 import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import model.events.EventType;
@@ -29,11 +28,9 @@ public class EditListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
-        GlyphsDude.setIcon(this, MaterialDesignIcon.PENCIL_BOX,"1.5em");
-        Tooltip tooltip = new Tooltip("Edit selected list");
-        tooltip.setShowDelay(new Duration(0.1));
-        tooltip.setHideDelay(new Duration(0.5));
-        setTooltip(tooltip);
+        setIcon(MaterialDesignIcon.PENCIL_BOX,"1.5em");
+        setTooltip("Edit selected list");
+
     }
 
     @Override

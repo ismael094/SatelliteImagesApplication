@@ -22,28 +22,33 @@
     <RowConstraints maxHeight="370.0000061035156" minHeight="10.0" prefHeight="91.20001220703125" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TabPane fx:id="tabpane" prefHeight="134.0" prefWidth="299.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="Download">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="downloadingList" prefHeight="104.0" prefWidth="166.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Queue">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="queueList" prefHeight="104.0" prefWidth="166.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
+      <AnchorPane>
+         <children>
+            <TabPane fx:id="tabpane" prefHeight="134.0" prefWidth="299.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+              <tabs>
+                <Tab text="Download">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <ListView fx:id="downloadingList" prefHeight="104.0" prefWidth="166.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab text="Queue">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <ListView fx:id="queueList" prefHeight="104.0" prefWidth="166.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+            <Label fx:id="time" prefHeight="18.0" prefWidth="59.0" text="0 min left" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="7.0" />
+         </children>
+      </AnchorPane>
       <AnchorPane prefHeight="137.0" prefWidth="146.0" GridPane.columnIndex="1">
          <children>
             <Pane layoutX="2.0" layoutY="30.0" prefHeight="103.0" prefWidth="37.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="30.0">
@@ -57,7 +62,6 @@
                   <Button fx:id="stop" layoutX="10.0" layoutY="71.0" mnemonicParsing="false" textFill="RED" />
                </children>
             </Pane>
-            <Label fx:id="time" layoutX="-84.0" layoutY="9.0" prefHeight="18.0" prefWidth="59.0" text="0 min left" />
             <Button fx:id="clearQueue" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="0.0" AnchorPane.topAnchor="0.0" />
          </children>
          <padding>

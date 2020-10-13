@@ -1,14 +1,11 @@
 package controller;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
 import gui.components.*;
-import controller.search.CopernicusOpenSearchController;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,19 +36,8 @@ public class SatelliteApplicationController implements Initializable {
     private ToolBarComponent toolBarComponent;
     private ConsoleComponent consoleComponent;
 
-    //private final ListTreeViewManager listTreeViewManager;
-    //private final ConsoleManager consoleManager;
-    //private MainAppController mainController;
     @FXML
     private VBox menu;
-    @FXML
-    private JFXButton selected;
-    @FXML
-    private TreeView<Object> listTree;
-    @FXML
-    private JFXButton test;
-    @FXML
-    private TextArea consoleDebug;
     @FXML
     private GridPane gridPane;
     @FXML
@@ -59,14 +45,11 @@ public class SatelliteApplicationController implements Initializable {
     @FXML
     private ScrollPane rootPane;
     @FXML
-    private GridPane lowBar;
-    @FXML
     private AnchorPane downloadPane;
     @FXML
+    private AnchorPane console;
+    @FXML
     private JFXSpinner wait;
-
-    private CopernicusOpenSearchController copernicusOpenSearchController;
-    private List<Component> components;
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
@@ -77,13 +60,6 @@ public class SatelliteApplicationController implements Initializable {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
-
-        components = new ArrayList<>();
-        components.add(toolBarComponent);
-        components.add(tabPaneComponent);
-        components.add(listTreeViewComponent);
-        components.add(menuController);
-        components.add(consoleComponent);
         wait.setVisible(false);
         initComponents();
     }
@@ -96,16 +72,14 @@ public class SatelliteApplicationController implements Initializable {
         initConsoleComponent();
         initDownloadManager();
 
-
-
         initListeners();
     }
 
     private void initDownloadManager() {
         this.downloadManager = new DownloadManager(2);
         downloadManager.addListener(EventType.DownloadEventType.COMPLETED, event -> {
-            if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
-                consoleDebug.appendText("Download completed!\n");
+            //if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
+                //consoleDebug.appendText("Download completed!\n");
         });
         new Thread(downloadManager).start();
         URL location = getClass().getResource("/fxml/DownloadView.fxml");
@@ -139,17 +113,6 @@ public class SatelliteApplicationController implements Initializable {
             listTreeViewComponent.reload();
             consoleComponent.println((String) event.getValue());
         });
-    }
-
-    private void saveProductList() {
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                UserDBDAO.getInstance().save(user);
-                return null;
-            }
-        };
-        new Thread(task).start();
     }
 
     private void initToolBarComponent() {
@@ -189,7 +152,11 @@ public class SatelliteApplicationController implements Initializable {
         logger.atInfo().log("Init ConsoleComponent...");
         consoleComponent = new ConsoleComponent(this);
         consoleComponent.init();
-        lowBar.add(consoleComponent,1,0);
+        console.getChildren().add(consoleComponent);
+        AnchorPane.setRightAnchor(consoleComponent,0.0);
+        AnchorPane.setLeftAnchor(consoleComponent,0.0);
+        AnchorPane.setTopAnchor(consoleComponent,0.0);
+        AnchorPane.setBottomAnchor(consoleComponent,0.0);
         logger.atInfo().log("ConsoleComponent loaded");
     }
 
