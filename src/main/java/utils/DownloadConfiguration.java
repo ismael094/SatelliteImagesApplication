@@ -4,7 +4,7 @@ import services.download.DownloadEnum;
 
 import java.util.prefs.Preferences;
 
-public class Configuration {
+public class DownloadConfiguration {
 
     private static final Preferences downloadPreferences = Preferences.userRoot().node("downloadPreferences");
 
@@ -18,6 +18,14 @@ public class Configuration {
 
     public static DownloadEnum.DownloadMode getDownloadModeLocation() {
         return downloadPreferences.get("mode", "multiple").equals("multiple") ? DownloadEnum.DownloadMode.MULTIPLE : DownloadEnum.DownloadMode.SINGLE;
+    }
+
+    public static boolean getAutodownload() {
+        return downloadPreferences.get("autodownload", "false").equals("true");
+    }
+
+    public static void setAutodownload(String mode) {
+        downloadPreferences.put("autodownload", mode);
     }
 
     public static void setDownloadMode(String location) {

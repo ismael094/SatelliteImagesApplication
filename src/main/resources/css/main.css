@@ -58,48 +58,9 @@
      -fx-font-weight: bold;
    }
 
-.toolbarIcon {
-    -fx-width: 25px;
-    -fx-height: 25px;
-    -fx-font-size: .5em;
-}
-
 .myTab {
     -fx-border-color: grey ;
     -fx-border-width: 1 ;
-}
-
-#addToList {
-    -fx-graphic: url("../img/addToList.png");
-
-}
-
-#createList {
-    -fx-graphic: url("../img/createList.png");
-}
-
-#downloadSingle {
-    -fx-graphic: url("../img/downloadSingle.png");
-}
-
-#downloadAll {
-    -fx-graphic: url("../img/downloadAll.png");
-}
-
-#selectAll {
-    -fx-graphic: url("../img/selectAll.png");
-}
-
-#deleteSelected {
-    -fx-graphic: url("../img/deleteSelected.png");
-}
-
-#editList {
-    -fx-graphic: url("../img/editList.png");
-}
-
-#deleteList {
-    -fx-graphic: url("../img/deleteList.png");
 }
 
 #createListDialog {

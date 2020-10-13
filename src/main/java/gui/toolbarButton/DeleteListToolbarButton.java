@@ -1,5 +1,7 @@
 package gui.toolbarButton;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import model.events.EventType;
 import model.events.ToolbarComponentEvent;
@@ -22,6 +24,7 @@ public class DeleteListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
+        GlyphsDude.setIcon(this, MaterialDesignIcon.FOLDER_REMOVE,"1.5em");
         Tooltip tooltip = new Tooltip("Delete list");
         tooltip.setShowDelay(new Duration(0.1));
         tooltip.setHideDelay(new Duration(0.5));
@@ -33,6 +36,6 @@ public class DeleteListToolbarButton extends ToolbarButton {
         List<ProductListDTO> productList = showAndGetList(SelectionMode.MULTIPLE,"Delete list");
         ProductListDBDAO.getInstance().delete(productList);
         toolBar.getMainController().getUserProductList().removeAll(productList);
-        toolBar.fireEvent(new ToolbarComponentEvent(this,EventType.ComponentEventType.LIST_DELETED));
+        toolBar.fireEvent(new ToolbarComponentEvent<>(this,EventType.ComponentEventType.LIST_DELETED,"Lists successfully deleted!"));
     }
 }

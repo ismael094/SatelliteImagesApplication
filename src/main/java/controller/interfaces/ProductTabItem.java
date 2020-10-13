@@ -5,10 +5,11 @@ import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import services.download.DownloadManager;
+import utils.DownloadConfiguration;
 
 import java.util.prefs.Preferences;
 
-public abstract class ProductTabItem {
+public abstract class ProductTabItem implements TabItem{
     private final DownloadManager downloadManager;
 
     public ProductTabItem(DownloadManager downloadManager) {

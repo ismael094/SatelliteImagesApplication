@@ -3,6 +3,7 @@ package controller.cell;
 import controller.GTMapSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -26,9 +27,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
-
-import static utils.Configuration.getProductDownloadFolderLocation;
 
 public class ProductListCell extends ListCell<ProductDTO> {
     private final ProductListDTO productListDTO;
@@ -97,14 +95,26 @@ public class ProductListCell extends ListCell<ProductDTO> {
             }
 
             verified.setAccessibleText("Areas of work verified");
+
+            Tooltip.install(verified,getNewTooltip("Areas of work verified"));
+
+            Tooltip.install(downloaded,getNewTooltip("Product downloaded"));
+
             downloaded.setVisible(FileUtils.productExists(product.getTitle()));
-            downloaded.setAccessibleText("Product downloaded");
 
             initData(product);
             setText(null);
             setGraphic(root);
         }
 
+    }
+
+    private Tooltip getNewTooltip(String title) {
+        Tooltip tooltip = new Tooltip(title);
+        tooltip.setShowDelay(new Duration(200));
+        tooltip.setHideDelay(new Duration(200));
+        tooltip.setFont(new Font(8));
+        return tooltip;
     }
 
     private void initData(ProductDTO product) {

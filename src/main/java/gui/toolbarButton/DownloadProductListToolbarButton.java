@@ -2,12 +2,16 @@ package gui.toolbarButton;
 
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
+import model.events.EventType;
+import model.events.ToolbarComponentEvent;
 import model.list.ProductListDTO;
 import services.download.DownloadItem;
 import services.download.DownloadManager;
@@ -24,6 +28,8 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
 
     @Override
     public void init() {
+
+        GlyphsDude.setIcon(this, MaterialDesignIcon.FOLDER_DOWNLOAD,"1.5em");
         setOnAction(this);
         Tooltip tooltip = new Tooltip("Download all product in the current list");
         tooltip.setShowDelay(new Duration(0.1));
@@ -53,5 +59,9 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
         list.getProducts().forEach(p->{
             download.add(new DownloadItem(p));
         });
+        list.getGroundTruthProducts().forEach(p->{
+            download.add(new DownloadItem(p));
+        });
+
     }
 }

@@ -1,6 +1,6 @@
 package model.openSearcher;
 
-public enum SentinelProductParameters {
+public enum SentinelProductParameters implements ProductParameters {
     PLATFORM_NAME("platformname"),
     PRODUCT_TYPE("producttype"),
     FOOTPRINT("footprint"),
@@ -19,6 +19,7 @@ public enum SentinelProductParameters {
         this.name = name;
     }
 
+    @Override
     public String getParameterName() {
         return name;
     }

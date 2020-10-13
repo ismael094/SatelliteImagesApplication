@@ -4,8 +4,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserDTO {
     private ObjectId id;
@@ -14,6 +18,7 @@ public class UserDTO {
     private StringProperty firstName;
     private StringProperty lastName;
     private ObservableList<ProductListDTO> productListsDTO;
+    private ObservableMap<String,Map<String, String>> searchParameters;
 
     public UserDTO() {
         this.productListsDTO = FXCollections.observableArrayList();
@@ -26,6 +31,7 @@ public class UserDTO {
         this.lastName = lastName;
         this.id = null;
         this.productListsDTO = FXCollections.observableArrayList();
+        this.searchParameters = FXCollections.observableHashMap();
     }
 
     public UserDTO(String email, String password, String firstName, String lastName) {
@@ -34,6 +40,7 @@ public class UserDTO {
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.productListsDTO = FXCollections.observableArrayList();
+        this.searchParameters = FXCollections.observableHashMap();
     }
 
     public void addProductList(ProductListDTO productListDTO) {
@@ -102,5 +109,21 @@ public class UserDTO {
 
     public void setLastName(String lastName) {
         this.lastName.set(lastName);
+    }
+
+    public void saveSearch(String s, Map<String, String> parameters) {
+        this.searchParameters.put(s,parameters);
+        searchParameters.forEach((key,value)->{
+            System.out.println("fdsfdsf"+key);
+        });
+    }
+
+    public ObservableMap<String, Map<String, String>> getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(Map<String, Map<String, String>> searchParameters) {
+        if (searchParameters!=null)
+            this.searchParameters = FXCollections.observableMap(searchParameters);
     }
 }

@@ -8,6 +8,7 @@ import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
@@ -67,6 +68,9 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
 
     private void OnMouseClickedOpenListController() {
         setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1)
+                return;
+
             TreeItem<Pair<String,Object>> selectedItem = getSelectionModel().getSelectedItem();
             if (selectedItem.getValue().getValue() instanceof ProductListDTO) {
                 ProductListDTO productListDTO = (ProductListDTO)selectedItem.getValue().getValue();
@@ -76,8 +80,11 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
                 if (parent != null && parent.getValue().getValue() instanceof ProductListDTO) {
                     ProductListDTO productListDTO = (ProductListDTO)parent.getValue().getValue();
                     Tab tab = mainController.getTabController().get(productListDTO.getId().toString());
-                    TabItem controllerOf = mainController.getTabController().getControllerOf(tab);
-                    ((ProductTabItem)controllerOf).setSelectedProducts(FXCollections.observableArrayList((ProductDTO)selectedItem.getValue().getValue()));
+                    if (tab!=null) {
+                        TabItem controllerOf = mainController.getTabController().getControllerOf(tab);
+                        ((ProductTabItem)controllerOf).setSelectedProducts(FXCollections.observableArrayList((ProductDTO)selectedItem.getValue().getValue()));
+                    }
+
                 }
             }
 
@@ -126,5 +133,13 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
             getRoot().getChildren().add(treeItem);
         }
         getRoot().setExpanded(true);
+    }
+
+    public ProductListDTO getSelected() {
+        ObservableList<TreeItem<Pair<String, Object>>> selectedItems = getSelectionModel().getSelectedItems();
+        if (selectedItems.size() > 0 && selectedItems.get(0).getValue().getValue() instanceof ProductListDTO) {
+            return (ProductListDTO) selectedItems.get(0).getValue().getValue();
+        }
+        return null;
     }
 }

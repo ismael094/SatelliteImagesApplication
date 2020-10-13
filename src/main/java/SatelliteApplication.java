@@ -13,6 +13,7 @@ import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.FileUtils;
+import utils.ThemeConfiguration;
 import utils.database.MongoDBConfiguration;
 import utils.database.MongoDBManager;
 
@@ -23,13 +24,13 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
+import static utils.ThemeConfiguration.getJMetroStyled;
+
 
 public class SatelliteApplication extends Application {
-
-
-
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
-    JMetro jMetro = new JMetro(Style.LIGHT);
+
+    JMetro jMetro;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -39,6 +40,8 @@ public class SatelliteApplication extends Application {
             myConnectionPrefs.put("listFolder", FileUtils.DEFAULT_LIST_FOLDER);
             myConnectionPrefs.put("mode", "multiple");
         }
+
+        jMetro = getJMetroStyled();
 
         initDatabase();
 
@@ -89,11 +92,14 @@ public class SatelliteApplication extends Application {
             e.printStackTrace();
             return null;
         }
+        JMetro jMetro = getJMetroStyled();
+
         jMetro.setScene(scene);
         LoginController controller = fxmlLoader.getController();
         Stage stage = new Stage();
         stage.setResizable(false);
         stage.setScene(scene);
+
         stage.showAndWait();
         return controller.getUser();
     }

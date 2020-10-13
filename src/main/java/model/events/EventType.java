@@ -18,6 +18,7 @@ public class EventType {
 
     public enum DownloadEventType {
         COMPLETED("completed"),
+        STARTED("started"),
         ERROR("error");
         private final String name;
 

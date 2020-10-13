@@ -28,9 +28,11 @@ public class DownloadItemThread extends Service<Boolean> {
     private volatile long contentLength;
 
     static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DownloadItemThread.class.getName());
+    private long startTime;
 
     public DownloadItemThread(DownloadItem item) {
         this.item = item;
+        startTime = 0;
     }
 
     public synchronized void setCommand(DownloadEnum.DownloadCommand command) {
@@ -83,7 +85,7 @@ public class DownloadItemThread extends Service<Boolean> {
 
                 logger.atInfo().log("Downloading started!  {}", location);
                 MessageDigest md = MessageDigest.getInstance("MD5");
-                long startTime = currentTimeMillis();
+                startTime = currentTimeMillis();
                 while (true) {
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
                         stoppedStatus();
@@ -103,7 +105,7 @@ public class DownloadItemThread extends Service<Boolean> {
                             logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", ((((contentLength / 1024.0) / 1024.0) / 1024.0)), ((currentTimeMillis() - startTime) / 1000.0) / 60.0);
                             return checkMD5(md);
                         }
-                        numOfBytesRead += bytesRead;
+                        addBytesRead(bytesRead);
                         fileOutputStream.write(buffer, 0, bytesRead);
                         md.update(buffer, 0, bytesRead);
                         updateProgress(numOfBytesRead/1024.0, contentLength);
@@ -139,6 +141,10 @@ public class DownloadItemThread extends Service<Boolean> {
         };
     }
 
+    private synchronized void addBytesRead(int bytes) {
+        numOfBytesRead+=bytes;
+    }
+
     private long getContentLength(long contentLength) {
         if (contentLength > 0)
             return contentLength/1024;
@@ -164,5 +170,10 @@ public class DownloadItemThread extends Service<Boolean> {
 
     private synchronized void setStatus(DownloadEnum.DownloadStatus status) {
         this.status = status;
+    }
+
+    public synchronized double getTimeLeft() {
+        return (numOfBytesRead/1024) == 0 ? 0 : (double)(((contentLength-(numOfBytesRead/1024))/(numOfBytesRead/1024))*(currentTimeMillis()-startTime)/1000)/60;
+
     }
 }

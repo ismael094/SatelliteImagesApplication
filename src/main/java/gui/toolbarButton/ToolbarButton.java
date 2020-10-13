@@ -13,10 +13,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Modality;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
+import utils.ThemeConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static utils.ThemeConfiguration.getJMetroStyled;
 
 public abstract class ToolbarButton extends Button implements EventHandler<ActionEvent> {
     protected ToolBarComponent toolBar;
@@ -24,12 +29,12 @@ public abstract class ToolbarButton extends Button implements EventHandler<Actio
     public ToolbarButton(ToolBarComponent toolBar) {
         super();
         this.toolBar = toolBar;
-        getStyleClass().add("toolbarIcon");
+        //getStyleClass().add("toolbarIcon");
     }
 
     public abstract void init();
 
-    protected List<ProductListDTO> getProductList() {
+    protected List<ProductListDTO> getProductLists() {
         List<ProductListDTO> productListDTO = new ArrayList<>();
         if (toolBar.getMainController().getUserProductList().size() == 0) {
             ProductListDTO productListDTO1 = new ProductListDTO(new SimpleStringProperty("Default"),
@@ -45,10 +50,23 @@ public abstract class ToolbarButton extends Button implements EventHandler<Actio
         return productListDTO;
     }
 
+    protected ProductListDTO getSingleProductList() {
+        if (toolBar.getMainController().getUserProductList().size() > 0) {
+            if (toolBar.getMainController().getListTreeViewController().getSelected() != null)
+                return toolBar.getMainController().getListTreeViewController().getSelected();
+            else {
+                ObservableList<ProductListDTO> productListDTOS = showAndGetList(SelectionMode.SINGLE, "Choose one or more list to add");
+                return productListDTOS.size() > 0 ? productListDTOS.get(0) : null;
+            }
+        }
+        return null;
+    }
+
     protected ObservableList<ProductListDTO> showAndGetList(SelectionMode selectionMode,String title) {
         ListView<ProductListDTO> productListListView = new ListView<>(toolBar.getMainController().getUserProductList());
         productListListView.getSelectionModel().setSelectionMode(selectionMode);
         JFXAlert alert = new JFXAlert(this.getScene().getWindow());
+
         alert.initModality(Modality.WINDOW_MODAL);
         alert.setOverlayClose(true);
         JFXDialogLayout layout = new JFXDialogLayout();
@@ -59,6 +77,9 @@ public abstract class ToolbarButton extends Button implements EventHandler<Actio
         closeButton.setOnAction(e -> alert.hideWithAnimation());
         layout.setActions(closeButton);
         alert.setContent(layout);
+        JMetro jMetro = getJMetroStyled();
+
+        jMetro.setScene(alert.getDialogPane().getScene());
         alert.showAndWait();
         return productListListView.getSelectionModel().getSelectedItems();
     }

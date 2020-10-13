@@ -50,7 +50,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 public class GTMap extends Canvas {
@@ -63,7 +62,6 @@ public class GTMap extends Canvas {
     private boolean repaint = true;
     private final List<FeatureIdImpl> selectedFeatures;
     private MapContent mapContent;
-    private Geometry searchAreaWKT;
     private String selectedFeatureID;
     private final Map<String,List<SimpleFeature>> layers;
 
@@ -144,8 +142,6 @@ public class GTMap extends Canvas {
 
         if (simpleFeatures != null)
             simpleFeatures.clear();
-
-
     }
 
     public void highlightFeatures(List<String> ids, String layerName, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor)  {
@@ -201,10 +197,6 @@ public class GTMap extends Canvas {
         return new SimpleFeatureBuilder(builder.buildFeatureType());
     }
 
-    public String getWKT() {
-        return searchAreaWKT == null ? "" : searchAreaWKT.toText();
-    }
-
     public void drawMap(GraphicsContext gc) {
         if (!repaint) {
             return;
@@ -252,7 +244,7 @@ public class GTMap extends Canvas {
         Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(featureLayer));
         selectedRule.setFilter(ff.id(Set.copyOf(selectedFeatures)));
 
-        Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,1f,getLayerGeometryAttribute(featureLayer));
+        Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,0.5f,getLayerGeometryAttribute(featureLayer));
         notSelectedRule.setElseFilter(true);
 
         Style selectedStyle = createSelectedFeatureStyle(selectedFeatures, selectedRule, notSelectedRule);
@@ -335,6 +327,16 @@ public class GTMap extends Canvas {
         doSetDisplayArea(envelope);
     }
 
+    public String getWKTFromCoordinates(Point2D initial, Point2D end) throws ParseException {
+        Coordinate[] squareCoordinates = getSquareCoordinates(initial.getX(), initial.getY(), end.getX(), end.getY());
+        return getWKTFromCoordinates(squareCoordinates).toText();
+    }
+
+    private Geometry getWKTFromCoordinates(Coordinate[] coordinates) throws ParseException {
+        Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
+        return readWKTString(polygon.toText());
+    }
+
     public void createLayerFromCoordinates(Point2D initial, Point2D end, String layerName) {
         try {
             drawPolygonFromCoordinates(getSquareCoordinates(initial.getX(), initial.getY(), end.getX(), end.getY()),layerName);
@@ -347,8 +349,7 @@ public class GTMap extends Canvas {
 
         SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
         Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
-        searchAreaWKT = readWKTString(polygon.toText());
-        featureBuilder.add(searchAreaWKT);
+        featureBuilder.add(getWKTFromCoordinates(coordinates));
 
         removeLayer(layerName);
 
@@ -436,5 +437,4 @@ public class GTMap extends Canvas {
     public String getSelectedFeatureID() {
         return selectedFeatureID;
     }
-
 }

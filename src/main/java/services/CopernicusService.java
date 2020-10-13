@@ -22,7 +22,7 @@ import static utils.http.HTTPReadUtil.readFromURL;
  * Service to get access in Copernicus Open Access Hub using API.
  * Singleton class, if instance is not created, it shows a dialog
  * to enter credentials.
- * Be careful, login() must be called inside a Task, and getInstance() inside
+ * Be careful, login() must be called inside in JavaFX Thread
  * JavaFX Thread
  */
 public class CopernicusService {
@@ -31,7 +31,6 @@ public class CopernicusService {
     private static CopernicusService instance;
 
     private CopernicusHTTPAuthManager httpManager;
-    private boolean isConnected;
     private Pair<String, String> pair;
 
     private CopernicusService() {
@@ -67,7 +66,7 @@ public class CopernicusService {
     }
 
     /**
-     * Get content of resource of URL. To use this method you should
+     * Get content of resource of URL. To use this method you should be outside JavaFX Thread
      * @param url URL of API resource
      * @return Content as inputstream
      * @throws IOException error reading content from URL
@@ -81,12 +80,28 @@ public class CopernicusService {
         return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getContentFromURL(url);
     }
 
+    /**
+     * Get HttpURL connection from URL
+     * @param url URL of API resource
+     * @return Content as inputstream
+     * @throws IOException error reading content from URL
+     * @throws AuthenticationException if credentials are wrong
+     * @throws NotAuthenticatedException no credentials setted
+     */
     public HttpURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
         return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getConnectionFromURL(url);
     }
 
+    /**
+     * Verify is a product is available to download
+     * @param id id of the product
+     * @return True if product is available to download; false if it is not
+     * @throws IOException error reading content from URL
+     * @throws AuthenticationException if credentials are wrong
+     * @throws NotAuthenticatedException no credentials setted
+     */
     public boolean isProductOnline(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
@@ -96,6 +111,14 @@ public class CopernicusService {
         return s != null && s.equals("true");
     }
 
+    /**
+     * Get the file checksum of a product
+     * @param id id of the product
+     * @return MD5 Checksum of the file product
+     * @throws IOException error reading content from URL
+     * @throws AuthenticationException if credentials are wrong
+     * @throws NotAuthenticatedException no credentials setted
+     */
     public String getMD5CheckSum(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
@@ -117,8 +140,4 @@ public class CopernicusService {
         String url = "https://scihub.copernicus.eu/dhus/odata/v1/Products('"+id+"')/Products('Quicklook')/$value";
         return getContentFromURL(new URL(url));
     }*/
-
-    public boolean isConnected() {
-        return isConnected;
-    }
 }

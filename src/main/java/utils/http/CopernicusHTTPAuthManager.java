@@ -89,13 +89,12 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
     private void isConnectionResponseOK(HttpsURLConnection connection) throws IOException, AuthenticationException {
         if (connection.getResponseCode() == 401) {
             logger.atWarn().log("URL respond with {} code, login error?",connection.getResponseCode());
-
-            connection.disconnect();
+            closeConnection();
             throw new AuthenticationException("Incorrect username or password");
         } else if (connection.getResponseCode() != 200) {
             logger.atWarn().log("URL respond with {} code {}",connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),""));
             connection.getInputStream().close();
-            connection.disconnect();
+            closeConnection();
             throw new HttpResponseException(connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),"Resource not available"));
         }
     }
@@ -107,10 +106,4 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
     protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password.toCharArray());
     }
-
-    /*private final class BasicAuthenticator extends Authenticator {
-        protected PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication(username, password.toCharArray());
-        }
-    }*/
 }

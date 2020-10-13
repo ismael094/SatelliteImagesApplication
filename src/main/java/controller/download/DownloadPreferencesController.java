@@ -5,16 +5,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import services.download.DownloadEnum;
-import utils.FileUtils;
+import utils.DownloadConfiguration;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
-import static utils.Configuration.*;
+import static utils.DownloadConfiguration.*;
 
 public class DownloadPreferencesController implements Initializable {
+    @FXML
+    private CheckBox autoDownload;
     @FXML
     private DialogPane dialogPane;
     @FXML
@@ -29,16 +31,13 @@ public class DownloadPreferencesController implements Initializable {
     private RadioButton singleDownload;
     @FXML
     private RadioButton multipleDownload;
-    private Preferences preferences;
 
     public static final ButtonType APPLY = new ButtonType("Apply");
+    public static final ButtonType CANCEL = new ButtonType("Cancel");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ToggleGroup group = new ToggleGroup();
-
-
-        preferences = Preferences.userRoot().node("downloadPreferences");
 
         if (getDownloadModeLocation() == DownloadEnum.DownloadMode.MULTIPLE)
             multipleDownload.setSelected(true);
@@ -49,6 +48,8 @@ public class DownloadPreferencesController implements Initializable {
         multipleDownload.setToggleGroup(group);
         path.setText(getProductDownloadFolderLocation());
         pathList.setText(getListDownloadFolderLocation());
+
+        autoDownload.setSelected(DownloadConfiguration.getAutodownload());
 
         openProductFileChooser.setOnAction(e->path.setText(getFileChooser("Product Folder",path.getText())));
         openListFileChooser.setOnAction(e->path.setText(getFileChooser("List Folder",pathList.getText())));
@@ -69,5 +70,10 @@ public class DownloadPreferencesController implements Initializable {
             setDownloadMode("single");
         else
             setDownloadMode("multiple");
+
+        if (autoDownload.isSelected())
+            DownloadConfiguration.setAutodownload("true");
+        else
+            DownloadConfiguration.setAutodownload("false");
     }
 }

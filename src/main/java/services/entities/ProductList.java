@@ -20,11 +20,14 @@ public class ProductList {
     private List<Product> products;
     private List<Restriction> restrictions;
     private List<String> areasOfWork;
+    @Reference
+    private List<Product> groundTruthProducts;
 
     public ProductList() {
         products = new ArrayList<>();
         restrictions = new ArrayList<>();
         areasOfWork = new ArrayList<>();
+        groundTruthProducts = new ArrayList<>();
     }
 
     public ObjectId getId() {
@@ -73,5 +76,13 @@ public class ProductList {
 
     public void setAreasOfWork(List<String> areasOfWork) {
         this.areasOfWork = areasOfWork;
+    }
+
+    public void setGroundTruthProducts(List<Product> groundTruthProducts) {
+        this.groundTruthProducts = groundTruthProducts;
+    }
+
+    public List<Product> getGroundTruthProducts() {
+        return groundTruthProducts;
     }
 }

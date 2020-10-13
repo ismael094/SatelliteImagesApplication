@@ -42,6 +42,8 @@ public class GTMapSearchController {
     private Color notSelectedFeaturesBorderColor;
     private Color notSelectedFeaturesFillColor;
     private boolean dragged;
+    private String searchArea;
+    private String selectedLayerEvent;
 
     public GTMapSearchController(double width, double height, boolean controlBarActive) {
         wasPrimaryButtonClicked = new SimpleBooleanProperty(false);
@@ -86,11 +88,12 @@ public class GTMapSearchController {
     }
 
     public void addSelectedAreaEvent(String layer) {
+        setLayerSelectedAreaEvent(layer);
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
             if (t.getClickCount() == 1 && wasPrimaryButtonClicked.get() && !dragged) {
                 wasPrimaryButtonClicked.set(false);
                 try {
-                    geotoolsMap.selectFeature(new Point2D(t.getX(),t.getY()),t.isControlDown(),layer, selectedFeaturesBorderColor, selectedFeaturesFillColor, notSelectedFeaturesBorderColor, notSelectedFeaturesFillColor);
+                    geotoolsMap.selectFeature(new Point2D(t.getX(),t.getY()),t.isControlDown(),this.selectedLayerEvent, selectedFeaturesBorderColor, selectedFeaturesFillColor, notSelectedFeaturesBorderColor, notSelectedFeaturesFillColor);
                 } catch (IOException e) {
                     logger.atError().log("Not able to style selected features: {0}",e);
                 }
@@ -100,6 +103,10 @@ public class GTMapSearchController {
             dragged=false;
             t.consume();
         });
+    }
+
+    public void setLayerSelectedAreaEvent(String layer) {
+        this.selectedLayerEvent = layer;
     }
 
     private void addMapMouseReleasedEvent() {
@@ -154,6 +161,15 @@ public class GTMapSearchController {
 
     private void createSearchArea(Point2D end) {
         geotoolsMap.createLayerFromCoordinates(initialCoodinates,end,"searchArea");
+        try {
+            searchArea = geotoolsMap.getWKTFromCoordinates(initialCoodinates,end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSearchArea(String wkt) {
+        this.searchArea = wkt;
     }
 
     private void setBaseDraggedPosition(MouseEvent e) {
@@ -220,12 +236,13 @@ public class GTMapSearchController {
         clearButton.setAccessibleText("Delete selection");
         clearButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
             geotoolsMap.removeLayer("searchArea");
+            searchArea = null;
         });
         return clearButton;
     }
 
     public String getWKT() {
-        return geotoolsMap.getWKT();
+        return searchArea;
     }
 
     public void clearMap(String layer) {

@@ -6,7 +6,9 @@ import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity("users")
 @Indexes(
@@ -21,14 +23,16 @@ public class User {
     private String firstName;
     @Reference
     private List<ProductList> productLists;
+    private Map<String, Map<String, String>> searchParameters;
 
-    public User(ObjectId id, String email, String password, String firstName, String lastName) {
+    public User(ObjectId id, String email, String password, String firstName, String lastName, Map<String, Map<String, String>> searchParameters) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.lastName = lastName;
         this.firstName = firstName;
         this.productLists = new ArrayList<>();
+        this.searchParameters = searchParameters;
     }
 
     public User() {
@@ -81,5 +85,13 @@ public class User {
 
     public void setProductLists(List<ProductList> productLists) {
         this.productLists = productLists;
+    }
+
+    public Map<String, Map<String, String>> getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(Map<String, Map<String, String>> searchParameters) {
+        this.searchParameters = searchParameters;
     }
 }

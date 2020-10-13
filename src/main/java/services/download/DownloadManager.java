@@ -1,5 +1,7 @@
 package services.download;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import model.events.DownloadEvent;
 import model.events.EventType;
 import javafx.application.Platform;
@@ -11,6 +13,7 @@ import model.exception.ProductNotAvailableException;
 import model.listeners.DownloadListener;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
+import utils.AlertFactory;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -23,10 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.prefs.*;
 
-import static utils.Configuration.getDownloadModeLocation;
-import static utils.Configuration.getProductDownloadFolderLocation;
+import static utils.DownloadConfiguration.getDownloadModeLocation;
+import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
 
 public class DownloadManager implements Runnable {
 
@@ -38,26 +40,22 @@ public class DownloadManager implements Runnable {
     private volatile ObservableList<DownloadItem> downloadingObservable;
 
     private volatile int filesDownloading;
-    private volatile boolean wait;
     private volatile int downloadAttempts;
     private final Map<EventType.DownloadEventType, List<DownloadListener>> listeners;
-    private Preferences preferences;
-    private String location;
     private final int maxFilesDownloading;
+    private DoubleProperty timeLeft;
 
 
     public DownloadManager(int maxFilesDownloading) {
+        this.timeLeft = new SimpleDoubleProperty(0.0);
         this.maxFilesDownloading = maxFilesDownloading;
         this.queue = new ConcurrentLinkedQueue<>();
         this.downloading = new ArrayList<>();
         historical = FXCollections.observableArrayList();
         downloadingObservable = FXCollections.observableArrayList();
         filesDownloading = 0;
-        wait = false;
         downloadAttempts = 5;
         listeners = new HashMap<>();
-        preferences = Preferences.userRoot().node("downloadPreferences");
-        location = getProductDownloadFolderLocation();
     }
 
     public synchronized void add(DownloadItem item) {
@@ -92,7 +90,7 @@ public class DownloadManager implements Runnable {
         while (true) {
             if ((filesDownloading < getNumMaxOfFileDownloading() && queue.size() > 0) && downloadAttempts>0) {
                 addDownloadingFile();
-                downloadItem();
+                processItem();
             }
 
             if (filesDownloading == 0 && downloadAttempts == 0) {
@@ -101,6 +99,17 @@ public class DownloadManager implements Runnable {
                 Platform.runLater(()->historical.clear());
                 restoreAttempts();
             }
+            double time = 0;
+            for (DownloadItemThread t : downloading) {
+                if (t.getTimeLeft() > time)
+                    time = t.getTimeLeft();
+            }
+
+            double finalTime = time;
+            Platform.runLater(()->{
+                timeLeft.set(finalTime);
+            });
+
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -110,9 +119,9 @@ public class DownloadManager implements Runnable {
         }
     }
 
-    private synchronized void downloadItem() {
+    private synchronized void processItem() {
         DownloadItem poll = queue.poll();
-        poll.setLocation(location);
+        poll.setLocation(getProductDownloadFolderLocation());
 
         DownloadItemThread downloadItemThread = new DownloadItemThread(poll);
         downloading.add(downloadItemThread);
@@ -136,7 +145,7 @@ public class DownloadManager implements Runnable {
 
         Platform.runLater(() -> {
             historical.remove(poll);
-            poll.setTask(task.progressProperty());
+            poll.setProgressProperty(task.progressProperty());
             downloadingObservable.add(poll);
         });
     }
@@ -184,9 +193,11 @@ public class DownloadManager implements Runnable {
             return;
         }
 
-        if (e.getSource().getException() instanceof ProductNotAvailableException)
+        if (e.getSource().getException() instanceof ProductNotAvailableException) {
             logger.atWarn().log("Product not available for download! Request made. Try to download it later! {}", poll.getProductDTO().getTitle());
-        else if (e.getSource().getException() instanceof FileAlreadyExistsException)
+            AlertFactory.showErrorDialog("Product not available", "Product not available","Product " +poll.getProductDTO().getTitle() + " not available. Request done! Try to download it in the next days!");
+        }
+         else if (e.getSource().getException() instanceof FileAlreadyExistsException)
             logger.atWarn().log("Product already exits {}", poll.getProductDTO().getTitle());
         else {
             logger.atError().log("Exception '{}' while downloading! {}.zip", e.getSource().getException().getLocalizedMessage(), poll.getProductDTO().getTitle());
@@ -194,12 +205,11 @@ public class DownloadManager implements Runnable {
         }
     }
 
-    private boolean deleteFile(DownloadItem item) {
+    private void deleteFile(DownloadItem item) {
         try {
-            return Files.deleteIfExists(Path.of(item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip"));
+            Files.deleteIfExists(Path.of(item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip"));
         } catch (IOException ioException) {
             ioException.printStackTrace();
-            return false;
         }
     }
 
@@ -270,6 +280,7 @@ public class DownloadManager implements Runnable {
                         }
                     }
                 });
+                logger.atInfo().log("All downloads stopped");
                 return null;
             }
         };
@@ -307,5 +318,13 @@ public class DownloadManager implements Runnable {
     public synchronized void clearQueue() {
         queue.clear();
         historical.clear();
+    }
+
+    public double getTimeLeft() {
+        return timeLeft.get();
+    }
+
+    public DoubleProperty timeLeftProperty() {
+        return timeLeft;
     }
 }

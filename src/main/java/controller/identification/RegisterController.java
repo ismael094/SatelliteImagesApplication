@@ -11,7 +11,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +29,8 @@ public class RegisterController implements Initializable {
     public static final String ERROR_HEADER = "Register";
     public static final String ERROR_CONTEXT = "Sorry, that email is already registered in the application";
     public static final String ERROR_FORMAT = "Email must be in yyyy@yyy.yy format";
+    @FXML
+    private BorderPane root;
     @FXML
     private TextField lastName;
     @FXML
@@ -50,6 +54,8 @@ public class RegisterController implements Initializable {
 
         userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
         bindProperties();
+
+        root.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
         register.disableProperty().bind(BindFieldsEmpty());
 

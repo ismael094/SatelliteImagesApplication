@@ -24,6 +24,7 @@ public class ProductListDTO {
     private final IntegerProperty count;
     private List<Restriction> restrictions;
     private ObservableList<String> areasOfWork;
+    private ObservableList<ProductDTO> groundTruthProducts;
 
     public ProductListDTO(StringProperty name, StringProperty description) {
         this.listeners = new ArrayList<>();
@@ -34,6 +35,7 @@ public class ProductListDTO {
         this.count  = new SimpleIntegerProperty();
         this.restrictions = new ArrayList<>();
         this.areasOfWork = FXCollections.observableArrayList();
+        this.groundTruthProducts = FXCollections.observableArrayList();
     }
 
     public void addListener(ProductListDTOChangeListener listener) {
@@ -62,6 +64,7 @@ public class ProductListDTO {
         this.count  = new SimpleIntegerProperty();
         this.restrictions = new ArrayList<>();
         this.areasOfWork = FXCollections.observableArrayList();
+        this.groundTruthProducts = FXCollections.observableArrayList();
     }
 
     public ObjectId getId() {
@@ -258,4 +261,23 @@ public class ProductListDTO {
         return restrictions;
     }
 
+    public ObservableList<ProductDTO> getGroundTruthProducts() {
+        return groundTruthProducts;
+    }
+
+    public void setGroundTruthProducts(ObservableList<ProductDTO> groundTruthProducts) {
+        this.groundTruthProducts = groundTruthProducts;
+    }
+
+    public void addGroundTruthProduct(List<ProductDTO> openSearcher) {
+        if (openSearcher.size() > 0) {
+            this.groundTruthProducts.addAll(openSearcher);
+            save();
+        }
+    }
+
+    public void removeGroundTruth(ProductDTO productDTO) {
+        this.groundTruthProducts.remove(productDTO);
+        save();
+    }
 }

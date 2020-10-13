@@ -5,25 +5,24 @@ import controller.search.SearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
-import model.events.EventType;
-import model.events.ToolbarComponentEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
-import services.download.DownloadItem;
-import utils.DownloadConfiguration;
+import utils.AlertFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AddSelectedToListToolbarButton extends ToolbarButton {
+public class AddGroundTruthToListToolbarButton extends ToolbarButton {
 
-    public AddSelectedToListToolbarButton(ToolBarComponent toolBarComponent) {
+    public AddGroundTruthToListToolbarButton(ToolBarComponent toolBarComponent) {
         super(toolBarComponent);
-        setId("addToList");
+        setId("addToListGround");
     }
 
 
@@ -31,7 +30,7 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
     public void init() {
         setOnAction(this);
         GlyphsDude.setIcon(this, MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
-        Tooltip tooltip = new Tooltip("Add selected products to list");
+        Tooltip tooltip = new Tooltip("Add selected products as ground truth");
         tooltip.setShowDelay(new Duration(0.1));
         tooltip.setHideDelay(new Duration(0.5));
         setTooltip(tooltip);
@@ -45,14 +44,21 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
             event.consume();
             return;
         }
-        List<ProductListDTO> productListDTO = getProductLists();
-        if (productListDTO.size()>0){
-            productListDTO.forEach(pL->pL.addProduct(openSearcher));
-            toolBar.fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to list"));
-            if (DownloadConfiguration.getAutodownload())
-                openSearcher.forEach(p->{
-                    toolBar.getMainController().getDownload().add(new DownloadItem(p));
-                });
+        ProductListDTO productListDTO = getSingleProductList();
+        List<ProductDTO> validProducts = new ArrayList<>();
+        if (productListDTO != null){
+            openSearcher.forEach(p->{
+                if (p.getPlatformName().equals("Sentinel-2") && productListDTO.areasOfWorkOfProduct(p.getFootprint()).size() > 0) {
+                    validProducts.add(p);
+                    AlertFactory.showSuccessDialog("Ground Truth","Ground truth product succesfully added","Product " + p.getTitle()+
+                            " successfully added as ground truth in list named " + productListDTO.getName());
+                } else {
+                    AlertFactory.showErrorDialog("Error","Error","Product not valid as a ground truth. Must be a Sentinel-2 image and contain an area of work");
+                }
+            });
+            productListDTO.addGroundTruthProduct(validProducts);
+         } else {
+            AlertFactory.showErrorDialog("Error","Error","ERROR");
         }
     }
 

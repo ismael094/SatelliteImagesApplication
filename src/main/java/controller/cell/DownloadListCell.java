@@ -57,8 +57,8 @@ public class DownloadListCell extends ListCell<DownloadItem> {
 
             title.setText(item.getProductDTO().getTitle());
 
-            if (item.getTask() != null) {
-                bar.progressProperty().bind(item.getTask());
+            if (item.getProgressProperty() != null) {
+                bar.progressProperty().bind(item.getProgressProperty());
             }
 
             setText(null);

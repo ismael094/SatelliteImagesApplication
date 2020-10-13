@@ -6,23 +6,21 @@ import controller.download.DownloadController;
 import gui.components.*;
 import controller.search.CopernicusOpenSearchController;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.events.DownloadEvent;
 import model.events.EventType;
 import model.list.ProductListDTO;
-import model.listeners.DownloadListener;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +37,7 @@ public class SatelliteApplicationController implements Initializable {
     private MenuComponent menuController;
     private ListTreeViewComponent listTreeViewComponent;
     private ToolBarComponent toolBarComponent;
+    private ConsoleComponent consoleComponent;
 
     //private final ListTreeViewManager listTreeViewManager;
     //private final ConsoleManager consoleManager;
@@ -84,6 +83,7 @@ public class SatelliteApplicationController implements Initializable {
         components.add(tabPaneComponent);
         components.add(listTreeViewComponent);
         components.add(menuController);
+        components.add(consoleComponent);
         wait.setVisible(false);
         initComponents();
     }
@@ -93,7 +93,10 @@ public class SatelliteApplicationController implements Initializable {
         initListTreeViewComponent();
         initMenuComponent();
         initToolBarComponent();
+        initConsoleComponent();
         initDownloadManager();
+
+
 
         initListeners();
     }
@@ -105,7 +108,7 @@ public class SatelliteApplicationController implements Initializable {
                 consoleDebug.appendText("Download completed!\n");
         });
         new Thread(downloadManager).start();
-        URL location = getClass().getResource("/fxml/DownloadsView.fxml");
+        URL location = getClass().getResource("/fxml/DownloadView.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent parent = null;
         try {
@@ -126,15 +129,15 @@ public class SatelliteApplicationController implements Initializable {
     private void initListeners() {
         toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_CREATED, event -> {
             listTreeViewComponent.reload();
-
+            consoleComponent.println((String) event.getValue());
         });
         toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_DELETED,event -> {
             listTreeViewComponent.reload();
-
+            consoleComponent.println((String) event.getValue());
         });
         toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_UPDATED,event -> {
             listTreeViewComponent.reload();
-
+            consoleComponent.println((String) event.getValue());
         });
     }
 
@@ -182,6 +185,14 @@ public class SatelliteApplicationController implements Initializable {
         logger.atInfo().log("MenuComponent loaded");
     }
 
+    private void initConsoleComponent() {
+        logger.atInfo().log("Init ConsoleComponent...");
+        consoleComponent = new ConsoleComponent(this);
+        consoleComponent.init();
+        lowBar.add(consoleComponent,1,0);
+        logger.atInfo().log("ConsoleComponent loaded");
+    }
+
     public TabPaneComponent getTabController() {
         return tabPaneComponent;
     }
@@ -192,6 +203,10 @@ public class SatelliteApplicationController implements Initializable {
 
     public ObservableList<ProductListDTO> getUserProductList() {
         return user.getProductListsDTO();
+    }
+
+    public UserDTO getUser() {
+        return user;
     }
 
     public DownloadManager getDownload() {
@@ -218,6 +233,11 @@ public class SatelliteApplicationController implements Initializable {
             UserDBDAO instance = UserDBDAO.getInstance();
             instance.updateProductList(user);
             System.out.println("update user");
+        });
+
+        user.getSearchParameters().addListener((MapChangeListener<String, Map<String, String>>) change -> {
+            UserDBDAO instance = UserDBDAO.getInstance();
+            instance.save(user);
         });
         listTreeViewComponent.reload();
     }

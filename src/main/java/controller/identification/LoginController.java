@@ -10,11 +10,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
@@ -22,12 +24,15 @@ import org.apache.logging.log4j.Logger;
 import services.database.UserDBDAO;
 import utils.AlertFactory;
 import utils.Encryptor;
+import utils.ThemeConfiguration;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
+    @FXML
+    private AnchorPane root;
     @FXML
     private CheckBox remember;
     @FXML
@@ -50,6 +55,8 @@ public class LoginController implements Initializable {
 
         bindProperties();
 
+        root.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+
         signIn.disableProperty().bind(bindEmailAndPasswordEmpty());
 
         signIn.setOnMouseClicked(this::login);
@@ -65,12 +72,17 @@ public class LoginController implements Initializable {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        JMetro jMetro = new JMetro(Style.LIGHT);
-        jMetro.setScene(scene);
+        JMetro jMetro;
+        if (ThemeConfiguration.getThemeMode().equals("light"))
+            jMetro = new JMetro(Style.LIGHT);
+        else
+            jMetro = new JMetro(Style.DARK);
+
         Stage stage = new Stage();
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
+        jMetro.setScene(scene);
         stage.show();
     }
 

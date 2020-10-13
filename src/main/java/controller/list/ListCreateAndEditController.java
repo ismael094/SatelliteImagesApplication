@@ -189,6 +189,8 @@ public class ListCreateAndEditController implements Initializable {
 
         if (restrictionSwitch.isSelected()) {
             createRestrictions();
+        } else {
+            productListDTO.getRestrictions().clear();
         }
         logger.atInfo().log("New product list ({}) created",productListDTO.getName());
         return productListDTO;

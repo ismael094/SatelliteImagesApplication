@@ -22,12 +22,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.ProductOData;
 import model.list.ProductListDTO;
+import model.openSearcher.ProductParameters;
 import model.products.ProductDTO;
 import services.search.ODataSearcher;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class CopernicusODataSearchController implements SearchController, TabItem {
@@ -87,6 +89,16 @@ public class CopernicusODataSearchController implements SearchController, TabIte
         //System.out.println(model.filter.evaluate());
         list.getItems().addAll(ODataSearcher.getImages(filter));
         addContextMenu();
+    }
+
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return null;
     }
 
     @Override

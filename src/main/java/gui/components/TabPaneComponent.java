@@ -42,6 +42,7 @@ public class TabPaneComponent extends TabPane implements Component {
         getStyleClass().add("myTab");
         setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         setPrefWidth(Double.MAX_VALUE);
+        setTabDragPolicy(TabDragPolicy.REORDER);
     }
 
     @Override
@@ -85,6 +86,22 @@ public class TabPaneComponent extends TabPane implements Component {
         .orElse(null);
     }
 
+    public void select(String id) {
+        select(getTabs().stream()
+                .filter(Objects::nonNull)
+                .filter(t->t.getId().equals(id))
+                .findAny()
+                .orElse(null));
+    }
+
+    public boolean isLoaded(String id) {
+        return getTabs().stream()
+                .filter(Objects::nonNull)
+                .filter(t->t.getId().equals(id))
+                .findAny()
+                .orElse(null) != null;
+    }
+
     public Tab getActive() {
         return getSelectionModel().getSelectedItem();
     }
@@ -96,6 +113,11 @@ public class TabPaneComponent extends TabPane implements Component {
     public TabItem getControllerOf(Tab tab) {
         return loadedControllers.getOrDefault(tab.getId(),null);
     }
+
+    public TabItem getControllerOf(String id) {
+        return loadedControllers.getOrDefault(id,null);
+    }
+
 
     public void load(TabItem item) {
         if (loadedControllers.getOrDefault(item.getItemId(),null)!=null){

@@ -2,6 +2,8 @@ package gui.toolbarButton;
 
 import controller.interfaces.TabItem;
 import controller.interfaces.ProductTabItem;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import model.events.EventType;
 import model.events.ToolbarComponentEvent;
@@ -21,6 +23,7 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
     @Override
     public void init() {
         setOnAction(this);
+        GlyphsDude.setIcon(this, MaterialDesignIcon.DELETE_VARIANT,"1.5em");
         Tooltip tooltip = new Tooltip("Delete all products selected");
         tooltip.setShowDelay(new Duration(0.1));
         tooltip.setHideDelay(new Duration(0.5));
@@ -35,6 +38,6 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
             ProductListDTO productListDTO = ((ProductTabItem) controllerOf).getProductList();
             productListDTO.remove(((ProductTabItem)controllerOf).getSelectedProducts());
         }
-        toolBar.fireEvent(new ToolbarComponentEvent(this, EventType.ComponentEventType.LIST_UPDATED));
+        toolBar.fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"Products deleted from list"));
     }
 }

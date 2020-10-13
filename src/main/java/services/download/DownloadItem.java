@@ -30,11 +30,11 @@ public class DownloadItem {
         return location;
     }
 
-    public ReadOnlyDoubleProperty getTask() {
+    public ReadOnlyDoubleProperty getProgressProperty() {
         return progressProperty;
     }
 
-    public void setTask(ReadOnlyDoubleProperty progressProperty) {
+    public void setProgressProperty(ReadOnlyDoubleProperty progressProperty) {
         this.progressProperty = progressProperty;
     }
 }

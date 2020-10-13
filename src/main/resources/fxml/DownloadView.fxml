@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -21,25 +22,6 @@
     <RowConstraints maxHeight="370.0000061035156" minHeight="10.0" prefHeight="91.20001220703125" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <AnchorPane prefHeight="137.0" prefWidth="146.0" GridPane.columnIndex="1">
-         <children>
-            <Pane layoutX="2.0" layoutY="30.0" prefHeight="103.0" prefWidth="37.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="30.0">
-               <children>
-                  <Button fx:id="pause" layoutX="10.0" layoutY="40.0" lineSpacing="10.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="16.0" textFill="#ff8000">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="resume" layoutX="10.0" layoutY="8.0" mnemonicParsing="false" prefHeight="23.0" textFill="#00ff04" />
-                  <Button fx:id="stop" layoutX="10.0" layoutY="71.0" mnemonicParsing="false" textFill="RED" />
-               </children>
-            </Pane>
-            <Button fx:id="clearQueue" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="0.0" AnchorPane.topAnchor="0.0" />
-         </children>
-         <padding>
-            <Insets top="4.0" />
-         </padding>
-      </AnchorPane>
       <TabPane fx:id="tabpane" prefHeight="134.0" prefWidth="299.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Download">
@@ -62,5 +44,25 @@
           </Tab>
         </tabs>
       </TabPane>
+      <AnchorPane prefHeight="137.0" prefWidth="146.0" GridPane.columnIndex="1">
+         <children>
+            <Pane layoutX="2.0" layoutY="30.0" prefHeight="103.0" prefWidth="37.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="30.0">
+               <children>
+                  <Button fx:id="pause" layoutX="10.0" layoutY="40.0" lineSpacing="10.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="16.0" textFill="#ff8000">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="resume" layoutX="10.0" layoutY="8.0" mnemonicParsing="false" prefHeight="23.0" textFill="#00ff04" />
+                  <Button fx:id="stop" layoutX="10.0" layoutY="71.0" mnemonicParsing="false" textFill="RED" />
+               </children>
+            </Pane>
+            <Label fx:id="time" layoutX="-84.0" layoutY="9.0" prefHeight="18.0" prefWidth="59.0" text="0 min left" />
+            <Button fx:id="clearQueue" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+         <padding>
+            <Insets top="4.0" />
+         </padding>
+      </AnchorPane>
    </children>
 </GridPane>

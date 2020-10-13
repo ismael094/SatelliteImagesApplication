@@ -11,7 +11,9 @@ import utils.Encryptor;
 import utils.database.MongoDBManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserDBDAO implements DAO<UserDTO> {
 
@@ -85,6 +87,7 @@ public class UserDBDAO implements DAO<UserDTO> {
         if (user == null)
             return null;
         UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
+        userDTO.setSearchParameters(user.getSearchParameters());
         userDTO.setId(user.getId());
         if (user.getProductLists() == null)
             userDTO.setProductListsDTO(FXCollections.observableArrayList());
@@ -97,7 +100,11 @@ public class UserDBDAO implements DAO<UserDTO> {
         String hashedPass = userDTO.getPassword();
         if (!userDTO.getPassword().startsWith("$2a$10"))
             hashedPass = Encryptor.hashString(userDTO.getPassword());
-        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName());
+
+        userDTO.getSearchParameters().forEach((key,value)->{
+            System.out.println("ÑPÑP"+key);
+        });
+        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
 
         if (userDTO.getProductListsDTO().size()>0) {
             user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));

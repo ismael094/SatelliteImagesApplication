@@ -6,8 +6,8 @@ import model.list.ProductListDTO;
 import java.io.File;
 import java.io.IOException;
 
-import static utils.Configuration.getListDownloadFolderLocation;
-import static utils.Configuration.getProductDownloadFolderLocation;
+import static utils.DownloadConfiguration.getListDownloadFolderLocation;
+import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
 
 public class FileUtils {
     public static String DEFAULT_DOWNLOAD_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Products";

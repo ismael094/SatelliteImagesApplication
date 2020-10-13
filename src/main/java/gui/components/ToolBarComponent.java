@@ -45,7 +45,9 @@ public class ToolBarComponent extends ToolBar implements Component{
         buttonProductListMap.put("selectAll",new AddAllToListToolbarButton(this));
         buttonProductListMap.put("addToList", new AddSelectedToListToolbarButton(this));
         buttonProductListMap.put("deleteSelected",new DeleteSelectedFromListToolbarButton(this));
+        buttonProductListMap.put("addGroundToList",new AddGroundTruthToListToolbarButton(this));
         buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
+        buttonDownloadMap.put("downloadSingle",new DownloadSelectedProductToolbarButton(this));
     }
 
     @Override
@@ -60,7 +62,7 @@ public class ToolBarComponent extends ToolBar implements Component{
         //createButton("createList","");
         //createButton("addToList","");
         //createButton("selectAll","");
-        createButton("downloadSingle","");
+        //createButton("downloadSingle","");
         //createButton("downloadAll","");
 
     }
