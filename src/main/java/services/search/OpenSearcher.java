@@ -105,6 +105,10 @@ public class OpenSearcher implements SearchService {
         return this.searchParameters;
     }
 
+    public void setSearchParameters(Map<SentinelProductParameters, String> searchParameters) {
+        this.searchParameters = searchParameters;
+    }
+
     public void clearSearchParameters() {
         this.searchParameters.clear();
     }

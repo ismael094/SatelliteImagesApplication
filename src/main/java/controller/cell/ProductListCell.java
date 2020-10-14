@@ -90,6 +90,9 @@ public class ProductListCell extends ListCell<ProductDTO> {
                 }
             }
 
+            prefWidthProperty().bind(getListView().prefWidthProperty().subtract(2));
+            setMaxWidth(Control.USE_PREF_SIZE);
+
             verified.setAccessibleText("Areas of work verified");
 
             Tooltip.install(verified,getNewTooltip("Areas of work verified"));
@@ -107,8 +110,8 @@ public class ProductListCell extends ListCell<ProductDTO> {
 
     private Tooltip getNewTooltip(String title) {
         Tooltip tooltip = new Tooltip(title);
-        tooltip.setShowDelay(new Duration(200));
-        tooltip.setHideDelay(new Duration(200));
+        //tooltip.setShowDelay(new Duration(200));
+        //tooltip.setHideDelay(new Duration(200));
         tooltip.setFont(new Font(8));
         return tooltip;
     }
@@ -209,7 +212,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
     private void setTitle(ProductDTO product) {
         set(title, product.titleProperty());
         Tooltip tooltip = new Tooltip(product.getTitle());
-        tooltip.setShowDelay(new Duration(0.2));
+        //tooltip.setShowDelay(new Duration(0.2));
         tooltip.setFont(Font.font(10));
         title.setTooltip(tooltip);
     }

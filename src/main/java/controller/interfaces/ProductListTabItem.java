@@ -8,10 +8,10 @@ import services.download.DownloadManager;
 
 import java.util.prefs.Preferences;
 
-public abstract class ProductTabItem implements TabItem{
+public abstract class ProductListTabItem implements TabItem{
     private final DownloadManager downloadManager;
 
-    public ProductTabItem(DownloadManager downloadManager) {
+    public ProductListTabItem(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
         downloadManager.addListener(EventType.DownloadEventType.COMPLETED, event -> {
             refreshProducts();

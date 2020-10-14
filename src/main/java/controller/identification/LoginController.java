@@ -90,7 +90,7 @@ public class LoginController implements Initializable {
         userDTO.emailProperty().bindBidirectional(email.textProperty());
         userDTO.passwordProperty().bindBidirectional(password.textProperty());
         Tooltip tooltip = new Tooltip("example@example.com");
-        tooltip.setShowDelay(new Duration(300));
+        //tooltip.setShowDelay(new Duration(300));
         tooltip.setFont(new Font(10));
         email.setTooltip(tooltip);
     }

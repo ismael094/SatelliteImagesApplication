@@ -126,6 +126,16 @@ public class CopernicusODataSearchController implements SearchController, TabIte
         return null;
     }
 
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
+    }
+
     public String getId() {
         return null;
     }

@@ -40,6 +40,9 @@ public class ListTreeViewCell extends TreeCell<Pair<String,Object>> {
                     e.printStackTrace();
                 }
             }
+            prefWidthProperty().bind(getTreeView().prefWidthProperty().subtract(2));
+            setMaxWidth(Control.USE_PREF_SIZE);
+
             if (product.getValue() == null)
                 title.setText("My lists");
             else if (product.getValue() instanceof ProductListDTO) {

@@ -1,16 +1,19 @@
 package services.database;
 
-import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.Query;
+import dev.morphia.query.UpdateOperations;
 import model.SentinelData;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import org.junit.Before;
 import org.junit.Test;
 import services.entities.Product;
+import services.entities.User;
 import utils.database.MongoDBManager;
 import utils.MongoDB_;
 
 import javax.xml.bind.DatatypeConverter;
+import java.util.List;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +51,20 @@ public class ProductDBDAO_ {
     }
 
     @Test
+    public void get_collection() {
+        Query<Product> email = mongodb.getDatastore().find(Product.class)
+                .field("_t")
+                .equal("Sentinel1Product");
+        UpdateOperations<Product> ops = mongodb.getDatastore()
+                .createUpdateOperations(Product.class)
+                .push("className", "services.entities.Sentinel1Product");
+
+        mongodb.getDatastore().update(email,ops);
+        List<ProductDTO> dbProductDTO = productDAO.getCollection();
+        dbProductDTO.forEach(p-> System.out.println(p.getClass()));
+    }
+
+    @Test
     public void save_and_delete_user_collection() {
         productDAO.save(productDTO);
         ProductDTO dbProductDTO = productDAO.findFirst(productDTO);
@@ -65,6 +82,7 @@ public class ProductDBDAO_ {
         assertThat(dbProductDTO).isNotNull();
         assertThat(dbProductDTO.getId()).isEqualTo(sentinelDAO.getId());
         assertThat(dbProductDTO.getIngestionDate()).isEqualTo(sentinelDAO.getIngestionDate());
+        assertThat(dbProductDTO).isInstanceOf(Sentinel1ProductDTO.class);
         productDAO.delete(dbProductDTO);
         dbProductDTO = productDAO.findFirst(sentinelDAO);
         assertThat(dbProductDTO).isNull();
@@ -82,7 +100,11 @@ public class ProductDBDAO_ {
     @Test
     public void entity_to_ProductDTO() {
         productDAO.save(productDTO);
-        Product product = mongodb.getDatastore().find(Product.class).filter(Filters.eq("id", productDTO.getId())).first();
+        Product product = mongodb.getDatastore()
+                .find(Product.class)
+                .field("id")
+                .equal(productDTO.getId())
+                .first();
         ProductDTO productDTO = productDAO.getMapper().toDAO(product);
         assertThat(product.getId()).isEqualTo(productDTO.getId());
         assertThat(product.getFootprint()).isEqualTo(productDTO.getFootprint());

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -16,12 +17,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-<ScrollPane fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <AnchorPane>
          <children>
@@ -46,74 +45,74 @@
                                           <Insets left="120.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <Pane minWidth="25.0" prefHeight="35.0" prefWidth="355.0">
+                                    <AnchorPane prefHeight="35.0" prefWidth="355.0">
                                        <VBox.margin>
                                           <Insets top="5.0" />
                                        </VBox.margin>
                                        <children>
-                                          <Label layoutY="6.0" text="Load search" />
-                                          <ChoiceBox fx:id="loadSearch" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                                          <Label layoutY="6.0" text="Load search" AnchorPane.leftAnchor="0.0" />
+                                          <ChoiceBox fx:id="loadSearch" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane minWidth="25.0" prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane prefHeight="35.0" prefWidth="355.0">
                                        <children>
-                                          <ChoiceBox fx:id="platformList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
-                                          <Label layoutY="12.0" prefHeight="17.0" prefWidth="63.0" styleClass="bold" text="Platform" />
+                                          <ChoiceBox fx:id="platformList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
+                                          <Label layoutY="12.0" prefHeight="17.0" prefWidth="63.0" styleClass="bold" text="Platform" AnchorPane.leftAnchor="0.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane prefHeight="35.0" prefWidth="355.0">
                                        <children>
-                                          <Label layoutY="12.0" prefHeight="17.0" prefWidth="86.0" styleClass="bold" text="Product" />
-                                          <ChoiceBox fx:id="productTypeList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                                          <Label layoutY="12.0" prefHeight="17.0" prefWidth="86.0" styleClass="bold" text="Product" AnchorPane.leftAnchor="0.0" />
+                                          <ChoiceBox fx:id="productTypeList" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane fx:id="polarisationPane" prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane fx:id="polarisationPane">
                                        <children>
-                                          <Label layoutY="12.0" styleClass="bold" text="Polarization" />
-                                          <ChoiceBox fx:id="polarisation" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                                          <Label layoutY="12.0" styleClass="bold" text="Polarization" AnchorPane.leftAnchor="0.0" />
+                                          <ChoiceBox fx:id="polarisation" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane fx:id="sensorPane" prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane fx:id="sensorPane">
                                        <children>
-                                          <Label layoutY="12.0" styleClass="bold" text="Sensor Mode" />
-                                          <ChoiceBox fx:id="sensorMode" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" />
+                                          <Label layoutY="12.0" styleClass="bold" text="Sensor Mode" AnchorPane.leftAnchor="0.0" />
+                                          <ChoiceBox fx:id="sensorMode" layoutX="129.0" layoutY="7.0" prefHeight="25.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane fx:id="cloudPane" prefHeight="80.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane fx:id="cloudPane">
                                        <children>
-                                          <Label layoutY="12.0" styleClass="bold" text="Cloud Coverage" />
-                                          <TextField fx:id="cloudCoverage" layoutX="129.0" layoutY="8.0" prefHeight="25.0" prefWidth="174.0" promptText="0" />
-                                          <TextField fx:id="cloudCoverageTo" layoutX="129.0" layoutY="38.0" prefWidth="174.0" promptText="25" />
+                                          <Label layoutY="12.0" styleClass="bold" text="Cloud Coverage" AnchorPane.leftAnchor="0.0" />
+                                          <TextField fx:id="cloudCoverage" layoutX="129.0" layoutY="8.0" prefHeight="25.0" prefWidth="174.0" promptText="0" AnchorPane.rightAnchor="53.0" />
+                                          <TextField fx:id="cloudCoverageTo" layoutX="129.0" layoutY="38.0" prefWidth="174.0" promptText="25" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane fx:id="dateStartPane" prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane>
                                        <children>
-                                          <Label fx:id="labelStart" layoutY="12.0" prefHeight="18.0" prefWidth="71.0" styleClass="bold" text="Date Start" />
-                                          <DatePicker fx:id="dateStart" layoutX="129.0" layoutY="8.0" prefWidth="174.0" />
+                                          <Label fx:id="labelStart" layoutY="12.0" prefHeight="18.0" prefWidth="71.0" styleClass="bold" text="Date Start" AnchorPane.leftAnchor="0.0" />
+                                          <DatePicker fx:id="dateStart" layoutX="129.0" layoutY="8.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane prefHeight="40.0" prefWidth="273.0">
+                                    </AnchorPane>
+                                    <AnchorPane>
                                        <children>
-                                          <Label layoutY="12.0" prefHeight="18.0" prefWidth="86.0" styleClass="bold" text="Date Finish" />
-                                          <DatePicker fx:id="dateFinish" layoutX="129.0" layoutY="8.0" prefWidth="174.0" />
+                                          <Label layoutY="12.0" prefHeight="18.0" prefWidth="86.0" styleClass="bold" text="Date Finish" AnchorPane.leftAnchor="0.0" />
+                                          <DatePicker fx:id="dateFinish" layoutX="129.0" layoutY="8.0" prefWidth="174.0" AnchorPane.rightAnchor="53.0" />
                                        </children>
-                                    </Pane>
-                                    <Pane prefHeight="34.0" prefWidth="280.0">
+                                    </AnchorPane>
+                                    <AnchorPane>
                                        <children>
-                                          <Label layoutY="12.0" styleClass="bold" text="Products per page" />
-                                          <ChoiceBox fx:id="rows" layoutX="181.0" layoutY="8.0" prefHeight="25.0" prefWidth="63.0" />
+                                          <Label layoutY="12.0" styleClass="bold" text="Products per page" AnchorPane.leftAnchor="0.0" />
+                                          <ChoiceBox fx:id="rows" layoutX="181.0" layoutY="8.0" prefHeight="25.0" prefWidth="63.0" AnchorPane.rightAnchor="112.0" />
                                        </children>
-                                    </Pane>
+                                    </AnchorPane>
                                     <AnchorPane nodeOrientation="RIGHT_TO_LEFT" prefHeight="30.0" prefWidth="305.0">
                                        <VBox.margin>
                                           <Insets bottom="25.0" top="20.0" />
                                        </VBox.margin>
                                        <children>
                                           <Button id="search" fx:id="search" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="95.0" layoutY="1.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Search" AnchorPane.leftAnchor="142.0" AnchorPane.rightAnchor="142.0" />
-                                          <Button fx:id="saveSearch" layoutX="268.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="88.0" text="Save search" />
+                                          <Button fx:id="saveSearch" layoutX="268.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="88.0" text="Save search" AnchorPane.rightAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="showResults" text="Show Results &gt;">
+                                    <Button fx:id="showResults" text="Previous Search">
                                        <VBox.margin>
                                           <Insets bottom="5.0" left="140.0" />
                                        </VBox.margin>
@@ -124,17 +123,18 @@
                                     <Insets left="15.0" />
                                  </padding>
                               </VBox>
+                              <JFXButton fx:id="show" layoutX="291.0" layoutY="-1.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="resultsPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="resultsPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <BorderPane prefHeight="477.0" prefWidth="369.0" AnchorPane.bottomAnchor="16.799999999999955" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <top>
-                                    <HBox fx:id="resultPaneHeader" alignment="BASELINE_RIGHT" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                    <HBox fx:id="resultPaneHeader" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                        <children>
-                                          <Label layoutY="15.0" styleClass="h2" text="Result List">
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutY="15.0" styleClass="h2" text="Result List">
                                              <HBox.margin>
-                                                <Insets right="110.0" />
+                                                <Insets right="150.0" />
                                              </HBox.margin>
                                           </Label>
                                        </children>

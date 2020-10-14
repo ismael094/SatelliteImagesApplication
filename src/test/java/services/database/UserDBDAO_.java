@@ -1,6 +1,5 @@
 package services.database;
 
-import dev.morphia.query.experimental.filters.Filters;
 import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
@@ -96,8 +95,10 @@ public class UserDBDAO_ {
         userDAO.save(userDTO);
         UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNotNull();
+        assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(0);
         userDTO.addProductList(productListDTO);
         userDAO.updateProductList(userDTO);
+        assertThat(ProductListDBDAO.getInstance().find(productListDTO).size()).isEqualTo(1);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO.getProductListsDTO()).isNotNull();
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
@@ -118,13 +119,13 @@ public class UserDBDAO_ {
 
     @Test
     public void entity_to_UserDTO() {
-        User user = mongodb.getDatastore().find(User.class).filter(Filters.eq("email", "a@a.com")).first();
+        /*User user = mongodb.getDatastore().find(User.class).filter(Filters.eq("email", "a@a.com")).first();
         UserDTO userDTO = userDAO.toDAO(user);
         assertThat(userDTO.getEmail()).isEqualTo(user.getEmail());
         assertThat(userDTO.getPassword()).isEqualTo(user.getPassword());
         assertThat(userDTO.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(userDTO.getLastName()).isEqualTo(user.getLastName());
-        assertThat(userDTO.getId()).isEqualTo(user.getId());
+        assertThat(userDTO.getId()).isEqualTo(user.getId());*/
     }
 }
 

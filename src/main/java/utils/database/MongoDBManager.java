@@ -20,6 +20,7 @@ public class MongoDBManager {
 
     private static MongoDBManager instance;
     private String user;
+    private Morphia morphia;
 
     public MongoDBManager() {
     }
@@ -51,21 +52,25 @@ public class MongoDBManager {
                 .applyToSocketSettings(builder -> builder.connectTimeout(10000, TimeUnit.MILLISECONDS))
                 .build();
 
-        client = MongoClients.create(build);
-        datastore = Morphia.createDatastore(client, database);
+        MongoClientURI mongoClientURI = new MongoClientURI(serverURL);
+        morphia = new Morphia();
+        datastore = morphia.createDatastore(new MongoClient(mongoClientURI), database);
+        //client = MongoClients.create(build);
+        /*datastore = Morphia.createDatastore(client, database);
         datastore.getMapper().map(User.class);
         datastore.getMapper().mapPackage("model");
         datastore.getMapper().mapPackageFromClass(ProductList.class);
         datastore.getMapper().mapPackageFromClass(Restriction.class);
-        datastore.ensureIndexes();
+        datastore.ensureIndexes();*/
+
     }
     public boolean isConnected() {
         return datastore != null;
     }
 
     public void map(Class... javaClasses) {
-        for (Class javaClass : javaClasses)
-            datastore.getMapper().map(javaClass);
+        /*for (Class javaClass : javaClasses)
+            datastore.getMapper().map(javaClass);*/
     }
 
     public Datastore getDatastore() {
@@ -73,7 +78,7 @@ public class MongoDBManager {
     }
 
     public void close() {
-        client.close();
+        //client.close();
         datastore = null;
     }
 }

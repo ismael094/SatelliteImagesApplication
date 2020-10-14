@@ -91,7 +91,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
 
     @Override
     public Task<Parent> start() {
-        return new Task<>() {
+        return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
                 initViewData();
@@ -110,6 +110,16 @@ public class CopernicusProductDetailsController_ implements TabItem {
         return product.getId();
     }
 
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
+    }
+
     public void initViewData() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
         if (product!=null)
             setProductDetails();
@@ -120,7 +130,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private void setProductDetails() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
         name.textProperty().bind(product.titleProperty());
         Tooltip tp = new Tooltip(product.getTitle());
-        tp.setShowDelay(new Duration(300));
+        //tp.setShowDelay(new Duration(300));
         name.setTooltip(tp);
         id.setText(product.getId());
         platName.textProperty().bind(product.platformNameProperty());

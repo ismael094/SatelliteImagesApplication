@@ -111,7 +111,7 @@ public class GTMapSearchController {
     private void addMapMouseReleasedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
             if(e.isSecondaryButtonDown() && isSearchAreaDrawing) {
-                createSearchArea(new Point2D(e.getX(),e.getY()));
+                createSearchArea(createPoint(geotoolsMap.transformSceneToWorldCoordinate(e.getX(), e.getY())));
                 isSearchAreaDrawing = false;
             }
             e.consume();
@@ -121,7 +121,7 @@ public class GTMapSearchController {
     private void addMapMouseMovedEvent() {
         geotoolsMap.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
             if (isSearchAreaDrawing) {
-                createSearchArea(new Point2D(e.getX(),e.getY()));
+                createSearchArea(createPoint(geotoolsMap.transformSceneToWorldCoordinate(e.getX(), e.getY())));
             }
             e.consume();
         });
@@ -144,9 +144,9 @@ public class GTMapSearchController {
             wasSecondaryButtonClicked.set(e.isSecondaryButtonDown());
             if (e.isSecondaryButtonDown()) {
                 if (!isSearchAreaDrawing) {
-                    setInitialCoordinates(e.getX(), e.getY());
+                    initialCoordinates = createPoint(geotoolsMap.transformSceneToWorldCoordinate(e.getX(), e.getY()));
                 } else {
-                    createSearchArea(new Point2D(e.getX(),e.getY()));
+                    createSearchArea(createPoint(geotoolsMap.transformSceneToWorldCoordinate(e.getX(), e.getY())));
                     isSearchAreaDrawing = false;
                 }
             }
@@ -176,9 +176,9 @@ public class GTMapSearchController {
         baseDragedY = e.getSceneY();
     }
 
-    private void setInitialCoordinates(double x, double y) {
-        initialCoordinates = new Point2D(x,y);
+    private Point2D createPoint(double[] coordinates) {
         isSearchAreaDrawing = true;
+        return new Point2D(coordinates[0],coordinates[1]);
     }
 
     public void printProductsInMap(List<ProductDTO> products, Color borderColor, Color fillColor) {

@@ -3,7 +3,7 @@ package controller.list;
 import com.jfoenix.controls.JFXListView;
 import controller.GTMapSearchController;
 import controller.cell.ProductListCell;
-import controller.interfaces.ProductTabItem;
+import controller.interfaces.ProductListTabItem;
 import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -40,7 +40,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ListInformationController extends ProductTabItem {
+public class ListInformationController extends ProductListTabItem {
     public static final String GROUND_TRUTH = "groundTruth";
     public static final String DEFAULT_IMAGE = "/img/no_photo.jpg";
     public static final String AREA_OF_WORK_LAYER = "default";
@@ -113,7 +113,7 @@ public class ListInformationController extends ProductTabItem {
     public Task<Parent> start() {
         CopernicusService service = CopernicusService.getInstance();
 
-        return new Task<>() {
+        return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
                 service.login();
@@ -145,9 +145,10 @@ public class ListInformationController extends ProductTabItem {
 
     @Override
     public void setSelectedProducts(ObservableList<ProductDTO> products) {
-        productListView.getSelectionModel().clearSelection();
-        productListView.getSelectionModel().select(products.get(0));
+        productListView.setFocusTraversable(true);
         productListView.getFocusModel().focus(productListView.getItems().indexOf(products.get(0)));
+        productListView.getSelectionModel().select(productListView.getItems().indexOf(products.get(0)));
+        productListView.scrollTo(products.get(0));
     }
 
     @Override
@@ -163,6 +164,16 @@ public class ListInformationController extends ProductTabItem {
     @Override
     public String getItemId() {
         return productListDTO.getId().toString();
+    }
+
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
     }
 
     private void initData() {
@@ -195,8 +206,8 @@ public class ListInformationController extends ProductTabItem {
         selectGroundTruth.setOnMouseClicked(e->{
             if (selectGroundTruth.isSelected()) {
                 mapController.setLayerSelectedAreaEvent(GROUND_TRUTH);
-                mapController.setSelectedFeaturesBorderColor(Color.decode("#00976C"), Color.decode("#ACDACD"));
-                mapController.setNotSelectedFeaturesBorderColor(Color.GREEN, null);
+                mapController.setSelectedFeaturesBorderColor(Color.decode("#00976C"), Color.decode("#00976C"));
+                mapController.setNotSelectedFeaturesBorderColor(Color.GREEN, Color.GREEN);
             } else {
                 mapController.setLayerSelectedAreaEvent(AREA_OF_WORK_LAYER);
                 mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
@@ -247,7 +258,7 @@ public class ListInformationController extends ProductTabItem {
     }
 
     private void initMapController() {
-        mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(),true);
+        mapController = new GTMapSearchController(500,500,true);
         mapController.addSelectedAreaEvent(AREA_OF_WORK_LAYER);
         mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
         mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
@@ -335,7 +346,7 @@ public class ListInformationController extends ProductTabItem {
             if (idSelected.equals(newValue.getId()))
                 return;
             idSelected = newValue.getId();
-            Task<InputStream> task = new Task<>() {
+            Task<InputStream> task = new Task<InputStream>() {
                 @Override
                 protected InputStream call() throws Exception {
                     tabPaneComponent.getMainController().showWaitSpinner();
@@ -345,11 +356,11 @@ public class ListInformationController extends ProductTabItem {
             task.setOnSucceeded(e-> {
                 try {
                     loadPreviewImage(task.get());
+                    task.get().close();
                 } catch (Exception ioException) {
                     ioException.printStackTrace();
                 }
             });
-
 
             task.setOnFailed(e->loadDefaultImage());
             new Thread(task).start();

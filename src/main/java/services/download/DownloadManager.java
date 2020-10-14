@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,7 +208,7 @@ public class DownloadManager implements Runnable {
 
     private void deleteFile(DownloadItem item) {
         try {
-            Files.deleteIfExists(Path.of(item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip"));
+            Files.deleteIfExists(Paths.get(item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip"));
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
@@ -249,7 +250,7 @@ public class DownloadManager implements Runnable {
 
         if (downloadItemThread != null) {
             downloadItemThread.setCommand(DownloadEnum.DownloadCommand.STOP);
-            Task<Void> task = new Task<>() {
+            Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
                     while (downloadItemThread.isRunning()) {
@@ -266,7 +267,7 @@ public class DownloadManager implements Runnable {
     public synchronized void cancel() {
         logger.atError().log("Cancel all downloads!");
         queue.clear();
-        Task<Void> task = new Task<>() {
+        Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 downloading.forEach(t -> {

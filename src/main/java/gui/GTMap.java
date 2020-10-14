@@ -152,7 +152,7 @@ public class GTMap extends Canvas {
         List<FeatureIdImpl> collect = ids.stream().map(FeatureIdImpl::new).collect(Collectors.toList());
 
         Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(layer));
-        selectedRule.setFilter(ff.id(Set.copyOf(collect)));
+        selectedRule.setFilter(ff.id(new HashSet<>(collect)));
 
         Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,1f,getLayerGeometryAttribute(layer));
         notSelectedRule.setElseFilter(true);
@@ -245,7 +245,7 @@ public class GTMap extends Canvas {
         }
 
         Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(featureLayer));
-        selectedRule.setFilter(ff.id(Set.copyOf(selectedFeatures)));
+        selectedRule.setFilter(ff.id(new HashSet<>(selectedFeatures)));
 
         Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,0.5f,getLayerGeometryAttribute(featureLayer));
         notSelectedRule.setElseFilter(true);
@@ -332,10 +332,10 @@ public class GTMap extends Canvas {
 
     public String getWKTFromCoordinates(Point2D initial, Point2D end) throws ParseException {
         Coordinate[] squareCoordinates = getSquareCoordinates(initial.getX(), initial.getY(), end.getX(), end.getY());
-        return getWKTFromCoordinates(squareCoordinates).toText();
+        return getGeometryFromCoordinates(squareCoordinates).toText();
     }
 
-    private Geometry getWKTFromCoordinates(Coordinate[] coordinates) throws ParseException {
+    private Geometry getGeometryFromCoordinates(Coordinate[] coordinates) throws ParseException {
         Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
         return readWKTString(polygon.toText());
     }
@@ -352,7 +352,7 @@ public class GTMap extends Canvas {
 
         SimpleFeatureBuilder featureBuilder = getSimpleFeatureBuilder(Polygon.class);
         Polygon polygon = JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
-        featureBuilder.add(getWKTFromCoordinates(coordinates));
+        featureBuilder.add(getGeometryFromCoordinates(coordinates));
 
         removeLayer(layerName);
 
@@ -361,22 +361,22 @@ public class GTMap extends Canvas {
     }
 
     private Coordinate[] getSquareCoordinates(double initX, double initY, double endX, double endY) {
-        double[] startCoordinates = transformSceneToWorldCoordinate(initX, initY);
-        double[] endCoordinates = transformSceneToWorldCoordinate(endX, endY);
+        //double[] startCoordinates = transformSceneToWorldCoordinate(initX, initY);
+        //double[] endCoordinates = transformSceneToWorldCoordinate(endX, endY);
         double diffX = endX - initX;
         double diffY = endY - initY;
         double[] upRightCorner = transformSceneToWorldCoordinate(initX+diffX,initY);
         double[] downLeftCorner = transformSceneToWorldCoordinate(initX,initY+diffY);
         return new Coordinate[] {
-                new Coordinate(startCoordinates[0],startCoordinates[1]),
-                new Coordinate(upRightCorner[0],upRightCorner[1]),
-                new Coordinate(endCoordinates[0],endCoordinates[1]),
-                new Coordinate(downLeftCorner[0],downLeftCorner[1]),
-                new Coordinate(startCoordinates[0],startCoordinates[1])
+                new Coordinate(initX,initY),
+                new Coordinate(initX+diffX,initY),
+                new Coordinate(endX,endY),
+                new Coordinate(initX,initY+diffY),
+                new Coordinate(initX,initY)
         };
     }
 
-    private double[] transformSceneToWorldCoordinate(double x, double y) {
+    public double[] transformSceneToWorldCoordinate(double x, double y) {
         DirectPosition2D geoCoords = new DirectPosition2D(x, y);
         DirectPosition2D result = new DirectPosition2D();
         mapContent.getViewport().getScreenToWorld().transform(geoCoords, result);
@@ -391,9 +391,9 @@ public class GTMap extends Canvas {
 
     private void initPaintThread() {
         logger.atInfo().log("Init map refresh thread");
-        ScheduledService<Boolean> svc = new ScheduledService<>() {
+        ScheduledService<Boolean> svc = new ScheduledService<Boolean>() {
             protected Task<Boolean> createTask() {
-                return new Task<>() {
+                return new Task<Boolean>() {
                     protected Boolean call() {
                         Platform.runLater(() -> drawMap(graphicsContext));
                         return true;

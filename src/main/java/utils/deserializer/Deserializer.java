@@ -27,7 +27,7 @@ public abstract class Deserializer {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String DATE_ARRAY = "date";
     public static final String INGESTION_DATE = "ingestiondate";
-    TypeReference<List<ProductProperties>> typeRef = new TypeReference<>() {};
+    TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
 
     public List<ProductProperties> getStringProperties(JsonNode product) {
         return mapper.convertValue(product.get(STR_ARRAY), typeRef);

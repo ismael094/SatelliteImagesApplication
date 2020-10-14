@@ -1,6 +1,6 @@
 package services.database;
 
-import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.Key;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
@@ -34,22 +34,23 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
 
     @Override
     public List<ProductListDTO> getCollection() {
-        return toDAO(database.getDatastore().find(ProductList.class).iterator().toList());
+        return toDAO(database.getDatastore().find(ProductList.class).asList());
     }
 
     @Override
     public List<ProductListDTO> find(ProductListDTO dao) {
         return toDAO(database.getDatastore()
                 .find(ProductList.class)
-                .filter(Filters.eq("id", dao.getId()))
-                .iterator()
-                .toList());
+                .field("id")
+                .equal(dao.getId())
+                .asList());
     }
 
     public ProductListDTO findByName(ProductListDTO dao) {
         return toDAO(database.getDatastore()
                 .find(ProductList.class)
-                .filter(Filters.eq("name", dao.getName()))
+                .field("name")
+                .equal(dao.getName())
                 .first());
     }
 
@@ -57,14 +58,16 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
     public ProductListDTO findFirst(ProductListDTO dao) {
         return toDAO(database.getDatastore()
                 .find(ProductList.class)
-                .filter(Filters.eq("id", dao.getId()))
+                .field("id")
+                .equal(dao.getId())
                 .first());
     }
 
     @Override
     public void save(ProductListDTO dao) {
-        ProductList save = database.getDatastore().save(toEntity(dao));
-        dao.setId(save.getId());
+        Key<ProductList> save = database.getDatastore().save(toEntity(dao));
+        ObjectId id = (ObjectId)save.getId();
+        dao.setId(id);
     }
 
     @Override

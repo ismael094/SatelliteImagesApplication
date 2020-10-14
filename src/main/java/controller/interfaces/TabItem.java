@@ -10,4 +10,6 @@ public interface TabItem {
     Task<Parent> start();
     String getName();
     String getItemId();
+    void undo();
+    void redo();
 }

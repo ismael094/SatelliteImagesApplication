@@ -2,12 +2,13 @@ package gui.components;
 
 import controller.SatelliteApplicationController;
 import controller.download.DownloadPreferencesController;
+import controller.interfaces.TabItem;
 import controller.search.CopernicusOpenSearchController;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import model.events.EventType;
@@ -17,7 +18,6 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utils.ThemeConfiguration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,8 +58,24 @@ public class MenuComponent extends MenuBar implements Component{
             mainController.getDownload().cancel();
             System.exit(0);
         });
+
+        close.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
         file.getItems().addAll(dark,light,close);
         Menu edit = new Menu("Edit");
+        MenuItem undo = new MenuItem("Undo");
+        undo.setOnAction(e->{
+            Tab active = mainController.getTabController().getActive();
+            TabItem controllerOf = mainController.getTabController().getControllerOf(active);
+            controllerOf.undo();
+        });
+        undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        MenuItem redo = new MenuItem("Redo");
+        redo.setOnAction(e->{
+            Tab active = mainController.getTabController().getActive();
+            mainController.getTabController().getControllerOf(active).redo();
+        });
+        redo.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        edit.getItems().addAll(undo,redo);
         Menu search = new Menu("Searchers");
         Menu lists = new Menu("List");
         MenuItem create = new MenuItem("Create new list");

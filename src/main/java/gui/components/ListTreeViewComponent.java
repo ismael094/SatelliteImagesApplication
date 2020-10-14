@@ -2,14 +2,13 @@ package gui.components;
 
 import controller.SatelliteApplicationController;
 import controller.cell.ListTreeViewCell;
-import controller.interfaces.ProductTabItem;
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Tab;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
@@ -75,7 +74,7 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
                     ProductListDTO productListDTO = (ProductListDTO) parent.getValue().getValue();
                     TabItem controller = mainController.getTabController().getControllerOf(productListDTO.getId().toString());
                     if (controller != null) {
-                        ((ProductTabItem) controller).setSelectedProducts(FXCollections.observableArrayList((ProductDTO) selectedItem.getValue().getValue()));
+                        ((ProductListTabItem) controller).setSelectedProducts(FXCollections.observableArrayList((ProductDTO) selectedItem.getValue().getValue()));
                     }
 
                 }

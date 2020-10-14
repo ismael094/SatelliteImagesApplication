@@ -42,7 +42,7 @@ public class TabPaneComponent extends TabPane implements Component {
         getStyleClass().add("myTab");
         setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         setPrefWidth(Double.MAX_VALUE);
-        setTabDragPolicy(TabDragPolicy.REORDER);
+        //setTabDragPolicy(TabDragPolicy.REORDER);
     }
 
     @Override

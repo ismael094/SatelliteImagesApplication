@@ -17,6 +17,10 @@ public class OpenSearchResponse {
 
     @JsonProperty("opensearch:totalResults")
     private int numOfProducts = 0;
+    @JsonProperty("opensearch:startIndex")
+    private int startIndex = 0;
+    @JsonProperty("opensearch:itemsPerPage")
+    private int rows = 0;
     @JsonProperty("entry")
     private List<ProductDTO> products = new ArrayList<>();
 
@@ -34,5 +38,21 @@ public class OpenSearchResponse {
 
     public void setProducts(List<ProductDTO> products) {
         this.products = products;
+    }
+
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
     }
 }

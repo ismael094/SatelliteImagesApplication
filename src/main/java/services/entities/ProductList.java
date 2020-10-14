@@ -16,11 +16,11 @@ public class ProductList {
     private ObjectId id;
     private String name;
     private String description;
-    @Reference
+    @Reference(idOnly = true, ignoreMissing=true)
     private List<Product> products;
     private List<Restriction> restrictions;
     private List<String> areasOfWork;
-    @Reference
+    @Reference(idOnly = true, ignoreMissing=true)
     private List<Product> groundTruthProducts;
 
     public ProductList() {

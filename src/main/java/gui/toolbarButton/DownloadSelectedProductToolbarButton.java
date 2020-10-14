@@ -1,16 +1,13 @@
 package gui.toolbarButton;
 
-import controller.interfaces.ProductTabItem;
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
-import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
 import model.products.ProductDTO;
 import services.download.DownloadItem;
 import services.download.DownloadManager;
@@ -34,7 +31,7 @@ public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
         Tab active = toolBar.getMainController().getTabController().getActive();
         TabItem controllerOf = toolBar.getMainController().getTabController().getControllerOf(active);
 
-        if (controllerOf instanceof ProductTabItem) {
+        if (controllerOf instanceof ProductListTabItem) {
             ListInformationController listController = (ListInformationController)controllerOf;
             ObservableList<ProductDTO> selectedProducts = listController.getSelectedProducts();
             DownloadManager download = toolBar.getMainController().getDownload();

@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.ToggleSwitch?>
 
-<ScrollPane fx:id="rootPane" fitToHeight="true" fitToWidth="true" prefHeight="496.0" prefWidth="1089.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fx:id="rootPane" fitToHeight="true" fitToWidth="true" prefHeight="605.0" prefWidth="1262.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <AnchorPane prefHeight="494.0" prefWidth="1086.0">
          <children>
@@ -38,7 +38,7 @@
                         <JFXListView fx:id="productListView" minWidth="333.0" prefHeight="436.0" prefWidth="338.0" styleClass="productResultsList" BorderPane.alignment="CENTER" />
                      </center>
                      <top>
-                        <Label contentDisplay="CENTER" prefHeight="38.0" prefWidth="103.0" styleClass="h1" stylesheets="@../css/main.css" text="Products" textOverrun="CLIP" BorderPane.alignment="CENTER" />
+                        <Label contentDisplay="CENTER" prefHeight="45.0" prefWidth="133.0" styleClass="h1" stylesheets="@../css/main.css" text="Products" textOverrun="CLIP" BorderPane.alignment="CENTER" />
                      </top>
                      <bottom>
                         <GridPane prefHeight="24.0" prefWidth="388.0" BorderPane.alignment="CENTER">
@@ -72,11 +72,11 @@
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="342.0" percentWidth="50.0" />
                      </columnConstraints>
                      <rowConstraints>
-                        <RowConstraints maxHeight="366.1999816894531" minHeight="40.0" percentHeight="14.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="366.1999816894531" minHeight="345.0" percentHeight="107.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="366.1999816894531" minHeight="60.0" percentHeight="17.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="366.1999816894531" minHeight="345.0" percentHeight="104.0" prefHeight="276.4000244140625" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <AnchorPane fx:id="mapPane" minHeight="0.0" minWidth="322.0" prefHeight="321.0" prefWidth="342.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <AnchorPane fx:id="mapPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="322.0" prefHeight="417.0" prefWidth="340.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </GridPane.margin>
@@ -86,7 +86,7 @@
                         </AnchorPane>
                         <GridPane alignment="CENTER" GridPane.columnIndex="1">
                           <columnConstraints>
-                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
@@ -104,19 +104,19 @@
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.60001220703126" minWidth="10.0" percentWidth="100.0" prefWidth="205.60001220703126" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints maxHeight="357.59999389648436" minHeight="40.0" prefHeight="56.39997253417971" vgrow="SOMETIMES" />
-                            <RowConstraints maxHeight="377.2000396728516" minHeight="315.0" prefHeight="370.0000274658203" valignment="CENTER" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="357.59999389648436" minHeight="40.0" prefHeight="79.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="440.0" minHeight="315.0" prefHeight="439.0" valignment="CENTER" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <ImageView fx:id="image" fitHeight="315.0" fitWidth="315.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                              <ImageView fx:id="image" fitHeight="355.0" fitWidth="355.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                  <GridPane.margin>
-                                    <Insets left="5.0" />
+                                    <Insets />
                                  </GridPane.margin>
                                  <image>
                                     <Image url="@../img/no_photo.jpg" />
                                  </image>
                               </ImageView>
-                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                              <VBox alignment="CENTER" prefHeight="93.0" prefWidth="406.0">
                                  <children>
                                     <HBox alignment="CENTER" prefHeight="74.0" prefWidth="328.0">
                                        <children>

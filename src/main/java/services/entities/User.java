@@ -21,7 +21,7 @@ public class User {
     private String password;
     private String lastName;
     private String firstName;
-    @Reference
+    @Reference(idOnly = true, ignoreMissing=true)
     private List<ProductList> productLists;
     private Map<String, Map<String, String>> searchParameters;
 

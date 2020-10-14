@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProductMapper_ {
     private InputStream jsonContent,jsonContentOne;
     private JSONObject str;
-    TypeReference<List<ProductProperties>> typeRef = new TypeReference<>() {};
+    TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
 
     @Before
     public void getJSONExample() throws FileNotFoundException, JSONException {
@@ -79,16 +79,18 @@ public class ProductMapper_ {
     }
 
     @Test
-    public void given_a_json_data_with_one_entry_should_return_OpenDataResultPOJO() throws JAXBException, IOException {
+    public void given_a_json_data_with_one_entry_should_return_OpenDataResultPOJO() throws IOException {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContentOne);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
+        assertThat(response.getRows()).isEqualTo(75);
+        assertThat(response.getStartIndex()).isEqualTo(1);
         assertThat(response.getProducts().size()).isEqualTo(1);
         assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
         assertThat(((Sentinel1ProductDTO)response.getProducts().get(0)).getPolarizationMode()).isEqualTo("VV");
     }
 
     @Test
-    public void given_a_json_data_should_return_OpenDataResultPOJO() throws JAXBException, IOException {
+    public void given_a_json_data_should_return_OpenDataResultPOJO() throws IOException {
         OpenSearchResponse response = ProductMapper.getResponse(jsonContent);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getProducts().size()).isEqualTo(4);

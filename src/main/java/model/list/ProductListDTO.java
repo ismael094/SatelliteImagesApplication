@@ -46,7 +46,7 @@ public class ProductListDTO {
         //ProductListEvent event = new ProductListEvent(this,"change");
         //listeners.forEach(l->l.onProductListChange(event));
         ProductListDTO p = this;
-        Task<Void> task = new Task<>() {
+        Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 ProductListDBDAO.getInstance().save(p);

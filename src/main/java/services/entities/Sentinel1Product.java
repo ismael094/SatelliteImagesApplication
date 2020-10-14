@@ -1,7 +1,9 @@
 package services.entities;
 
 
+import dev.morphia.annotations.Entity;
 
+@Entity("products")
 public class Sentinel1Product extends Product {
     private String sensorOperationalMode;
     private String polarizationMode;

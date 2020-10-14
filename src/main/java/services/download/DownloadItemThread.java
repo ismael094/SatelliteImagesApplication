@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,7 +58,7 @@ public class DownloadItemThread extends Service<Boolean> {
 
     @Override
     protected Task<Boolean> createTask() {
-        return new Task<>() {
+        return new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
                 setStatus(DownloadEnum.DownloadStatus.DOWNLOADING);
@@ -102,7 +103,7 @@ public class DownloadItemThread extends Service<Boolean> {
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
                         setStoppedStatus();
                         close(fileOutputStream, inputStream, in, connection);
-                        Files.deleteIfExists(Path.of(temporalFileLocation));
+                        Files.deleteIfExists(Paths.get(temporalFileLocation));
                         Thread.sleep(2000);
                         return false;
                     }
@@ -123,7 +124,7 @@ public class DownloadItemThread extends Service<Boolean> {
                             if (wasFileRename)
                                 logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", getContentLengthInGb(contentLength.get() / 1024.0, 1024.0, 1024.0), getContentLengthInGb(currentTimeMillis() - startTime, 1000.0, 60.0));
                             else {
-                                Files.deleteIfExists(Path.of(temporalFileLocation));
+                                Files.deleteIfExists(Paths.get(temporalFileLocation));
                                 logger.atError().log("Not able to rename file {}",temporalFileLocation);
                                 return false;
                             }

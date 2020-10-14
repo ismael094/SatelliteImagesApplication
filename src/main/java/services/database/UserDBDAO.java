@@ -1,8 +1,8 @@
 package services.database;
 
-
-import dev.morphia.query.experimental.filters.Filters;
-import dev.morphia.query.experimental.updates.UpdateOperators;
+import dev.morphia.query.Query;
+import dev.morphia.query.UpdateOperations;
+import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
 import model.products.ProductDTO;
 import model.user.UserDTO;
@@ -35,28 +35,37 @@ public class UserDBDAO implements DAO<UserDTO> {
 
     @Override
     public List<UserDTO> getCollection() {
-        return toDAO(database.getDatastore().find(User.class).iterator().toList());
+        return toDAO(database.getDatastore().find(User.class).asList());
     }
 
     @Override
     public List<UserDTO> find(UserDTO dao) {
         return toDAO(database.getDatastore()
                 .find(User.class)
-                .filter(Filters.eq("password", Encryptor.hashString(dao.getPassword())),Filters.eq("email",dao.getEmail()))
-                .iterator()
-                .toList());
+                .field("password")
+                .equal(Encryptor.hashString(dao.getPassword()))
+                .field("email")
+                .equal(dao.getEmail())
+                .asList());
     }
 
     @Override
     public UserDTO findFirst(UserDTO dao) {
         return toDAO(database.getDatastore()
                 .find(User.class)
-                .filter(Filters.eq("password",Encryptor.hashString(dao.getPassword())),Filters.eq("email",dao.getEmail()))
+                .field("password")
+                .equal(Encryptor.hashString(dao.getPassword()))
+                .field("email")
+                .equal(dao.getEmail())
                 .first());
     }
 
     public UserDTO findByEmail(UserDTO userDTO) {
-        return toDAO(database.getDatastore().find(User.class).filter(Filters.eq("email", userDTO.getEmail())).first());
+        return toDAO(database.getDatastore()
+                .find(User.class)
+                .field("email")
+                .equal(userDTO.getEmail())
+                .first());
     }
 
     @Override
@@ -122,9 +131,20 @@ public class UserDBDAO implements DAO<UserDTO> {
             if (productListDBDAO.findByName(pL) == null)
                 productListDBDAO.save(pL);
         });
-        database.getDatastore().find(User.class)
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .set("productLists", productListDBDAO.toEntity(user.getProductListsDTO()));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
                 .filter(Filters.eq("email", user.getEmail()))
                 .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
-                .execute();
+                .execute();*/
     }
 }

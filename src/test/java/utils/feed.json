@@ -10,7 +10,7 @@
     },
     "id": "https://scihub.copernicus.eu/dhus/search?q=*",
     "opensearch:totalResults": "30432470",
-    "opensearch:startIndex": "0",
+    "opensearch:startIndex": "1",
     "opensearch:itemsPerPage": "100",
     "opensearch:Query": {
       "role": "request",

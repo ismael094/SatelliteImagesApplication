@@ -24,32 +24,37 @@
             <RowConstraints maxHeight="595.0" minHeight="471.00000762939453" percentHeight="70.0" prefHeight="503.00000762939453" vgrow="SOMETIMES" />
             <RowConstraints percentHeight="20.0" vgrow="SOMETIMES" />
         </rowConstraints>
-        <VBox fx:id="menu" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="62.0" prefWidth="1286.0" GridPane.hgrow="SOMETIMES" GridPane.vgrow="SOMETIMES" />
-        <GridPane fx:id="gridPane" GridPane.rowIndex="1">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="19.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="352.6" minWidth="0.0" percentWidth="1.0" prefWidth="206.79998779296875" />
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="81.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints vgrow="SOMETIMES" />
-            </rowConstraints>
-            <GridPane.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </GridPane.margin>
-            <TreeView fx:id="listTree" minWidth="150.0" prefHeight="456.0" prefWidth="269.0" />
-         <Separator orientation="VERTICAL" prefHeight="466.0" prefWidth="14.0" GridPane.columnIndex="1" />
-        </GridPane>
-        <Pane fx:id="spinnerWait" maxHeight="0.0" maxWidth="0.0" GridPane.rowIndex="1">
-            <JFXSpinner fx:id="wait" layoutX="750.0" layoutY="-50.0" />
-        </Pane>
-      <SplitPane dividerPositions="0.1932629618131015, 0.6969885128841974" prefHeight="160.0" prefWidth="200.0" GridPane.rowIndex="2">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-          <AnchorPane fx:id="console" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-            <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" />
-        </items>
-      </SplitPane>
+        <children>
+            <VBox fx:id="menu" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="62.0" prefWidth="1286.0" GridPane.hgrow="SOMETIMES" GridPane.vgrow="SOMETIMES" />
+            <GridPane fx:id="gridPane" GridPane.rowIndex="1">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" percentWidth="19.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="352.6" minWidth="0.0" percentWidth="1.0" prefWidth="206.79998779296875" />
+                    <ColumnConstraints hgrow="SOMETIMES" percentWidth="81.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="SOMETIMES" />
+                </rowConstraints>
+                <GridPane.margin>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                </GridPane.margin>
+
+                <children>
+                    <TreeView fx:id="listTree" minWidth="150.0" prefHeight="456.0" prefWidth="269.0" />
+                    <Separator orientation="VERTICAL" prefHeight="466.0" prefWidth="14.0" GridPane.columnIndex="1" />
+                </children>
+            </GridPane>
+            <Pane fx:id="spinnerWait" maxHeight="0.0" maxWidth="0.0" GridPane.rowIndex="1">
+                <JFXSpinner fx:id="wait" layoutX="750.0" layoutY="-50.0" />
+            </Pane>
+          <SplitPane dividerPositions="0.1932629618131015, 0.6969885128841974" prefHeight="160.0" prefWidth="200.0" GridPane.rowIndex="2">
+            <items>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+              <AnchorPane fx:id="console" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" />
+            </items>
+          </SplitPane>
+        </children>
     </GridPane>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" />

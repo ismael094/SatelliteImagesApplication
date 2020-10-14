@@ -1,5 +1,8 @@
 package services.entities;
 
+import dev.morphia.annotations.Entity;
+
+@Entity("products")
 public class Sentinel2Product extends Product {
     private double cloudCoverPercentage;
     private double vegetationPercentageCoverage;

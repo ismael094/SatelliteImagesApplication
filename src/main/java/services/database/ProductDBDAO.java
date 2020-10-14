@@ -1,6 +1,5 @@
 package services.database;
 
-import dev.morphia.query.experimental.filters.Filters;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,23 +41,24 @@ public class ProductDBDAO implements DAO<ProductDTO> {
 
     @Override
     public List<ProductDTO> getCollection() {
-        return mapper.toDAO(database.getDatastore().find(Product.class).iterator().toList());
+        return mapper.toDAO(database.getDatastore().find(Product.class).asList());
     }
 
     @Override
     public List<ProductDTO> find(ProductDTO dao) {
         return mapper.toDAO(database.getDatastore()
                 .find(Product.class)
-                .filter(Filters.eq("id", dao.getId()))
-                .iterator()
-                .toList());
+                .field("id")
+                .equal(dao.getId())
+                .asList());
     }
 
     @Override
     public ProductDTO findFirst(ProductDTO dao) {
         return mapper.toDAO(database.getDatastore()
                 .find(Product.class)
-                .filter(Filters.eq("id", dao.getId()))
+                .field("id")
+                .equal(dao.getId())
                 .first());
     }
 

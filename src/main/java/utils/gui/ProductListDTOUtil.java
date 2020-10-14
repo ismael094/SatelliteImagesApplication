@@ -3,9 +3,8 @@ package utils.gui;
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
-import controller.interfaces.ProductTabItem;
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
-import controller.list.ListInformationController;
 import gui.components.TabPaneComponent;
 import gui.components.ToolBarComponent;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,8 +27,8 @@ public class ProductListDTOUtil {
         Tab active = tabPaneComponent.getActive();
         TabItem controller = tabPaneComponent.getControllerOf(active);
         ProductListDTO list;
-        if (controller instanceof ProductTabItem) {
-            return ((ProductTabItem)controller).getProductList();
+        if (controller instanceof ProductListTabItem) {
+            return ((ProductListTabItem)controller).getProductList();
         }
         return null;
     }

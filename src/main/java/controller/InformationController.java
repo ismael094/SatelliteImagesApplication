@@ -34,7 +34,7 @@ public class InformationController implements TabItem {
 
     @Override
     public Task<Parent> start() {
-        return new Task<>() {
+        return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
                 return parent;
@@ -50,5 +50,15 @@ public class InformationController implements TabItem {
     @Override
     public String getItemId() {
         return "InformationID";
+    }
+
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
     }
 }
