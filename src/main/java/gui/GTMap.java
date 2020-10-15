@@ -321,7 +321,7 @@ public class GTMap extends Canvas {
     }
 
     public void scroll(double deltaY) {
-        mapContent.getViewport().setFixedBoundsOnResize(true);
+        //mapContent.getViewport().f(true);
         ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
         double percent = (deltaY / getWidth())*-1;
         double deltaW = envelope.getWidth() * percent;

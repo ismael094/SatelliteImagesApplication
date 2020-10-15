@@ -50,9 +50,7 @@ public class AddAllToListToolbarButton extends ToolbarButton{
 
             toolBar.fireEvent(new ToolbarComponentEvent<String>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to lists"));
             if (DownloadConfiguration.getAutodownload())
-                openSearcher.forEach(p->{
-                    toolBar.getMainController().getDownload().add(new DownloadItem(p));
-                });
+                openSearcher.forEach(p-> toolBar.getMainController().getDownload().download(p));
         }
     }
 

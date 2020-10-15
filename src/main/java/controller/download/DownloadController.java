@@ -9,9 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import services.download.DownloadManager;
+import services.download.CopernicusDownloader;
 import services.download.DownloadItem;
 
 import java.net.URL;
@@ -37,38 +36,38 @@ public class DownloadController implements Initializable {
     private ListView<DownloadItem> downloadingList;
     @FXML
     private ListView<DownloadItem> queueList;
-    private DownloadManager downloadManager;
+    private CopernicusDownloader copernicusDownloader;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         tabpane.getStyleClass().add(JMetroStyleClass.UNDERLINE_TAB_PANE);
     }
 
-    public void setDownload(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
+    public void setDownload(CopernicusDownloader copernicusDownloader) {
+        this.copernicusDownloader = copernicusDownloader;
 
-        time.textProperty().bind(Bindings.format("%.1f", downloadManager.timeLeftProperty()).concat(" min left"));
+        time.textProperty().bind(Bindings.format("%.1f", copernicusDownloader.timeLeftProperty()).concat(" min left"));
 
-        time.visibleProperty().bind(downloadManager.timeLeftProperty().isEqualTo(0).not());
+        time.visibleProperty().bind(copernicusDownloader.timeLeftProperty().isEqualTo(0).not());
 
         initDownloadingList();
 
-        initProperties(downloadManager);
+        initProperties(copernicusDownloader);
 
-        initQueueList(downloadManager);
+        initQueueList(copernicusDownloader);
 
         initButtonsIconAndTooltip();
 
         stop.getStyleClass().add("-icons-color: blue;");
 
-        setButtonOnActionEvent(downloadManager);
+        setButtonOnActionEvent(copernicusDownloader);
     }
 
-    private void setButtonOnActionEvent(DownloadManager downloadManager) {
-        stop.setOnAction(event -> cancelDownload(downloadManager));
-        pause.setOnAction(event -> pauseDownload(downloadManager));
-        resume.setOnAction(event -> resumeDownload(downloadManager));
-        clearQueue.setOnAction(event -> clearQueue(downloadManager));
+    private void setButtonOnActionEvent(CopernicusDownloader copernicusDownloader) {
+        stop.setOnAction(event -> cancelDownload(copernicusDownloader));
+        pause.setOnAction(event -> pauseDownload(copernicusDownloader));
+        resume.setOnAction(event -> resumeDownload(copernicusDownloader));
+        clearQueue.setOnAction(event -> clearQueue(copernicusDownloader));
     }
 
     private void initButtonsIconAndTooltip() {
@@ -82,20 +81,20 @@ public class DownloadController implements Initializable {
         GlyphsDude.setIcon(resume, FontAwesomeIcon.PLAY,ICON_SIZE);
     }
 
-    private void initProperties(DownloadManager downloadManager) {
-        resume.disableProperty().bind(Bindings.isEmpty(downloadManager.getDownloading()));
-        stop.disableProperty().bind(Bindings.isEmpty(downloadManager.getDownloading()));
-        pause.disableProperty().bind(Bindings.isEmpty(downloadManager.getDownloading()));
+    private void initProperties(CopernicusDownloader copernicusDownloader) {
+        resume.disableProperty().bind(Bindings.isEmpty(copernicusDownloader.getDownloading()));
+        stop.disableProperty().bind(Bindings.isEmpty(copernicusDownloader.getDownloading()));
+        pause.disableProperty().bind(Bindings.isEmpty(copernicusDownloader.getDownloading()));
     }
 
-    private void initQueueList(DownloadManager downloadManager) {
-        queueList.setItems(downloadManager.getHistorical());
+    private void initQueueList(CopernicusDownloader copernicusDownloader) {
+        queueList.setItems(copernicusDownloader.getHistorical());
         queueList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     private void initDownloadingList() {
-        downloadingList.setItems(downloadManager.getDownloading());
-        downloadingList.setCellFactory(e -> new DownloadListCell(downloadManager));
+        downloadingList.setItems(copernicusDownloader.getDownloading());
+        downloadingList.setCellFactory(e -> new DownloadListCell(copernicusDownloader));
         downloadingList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
@@ -107,23 +106,23 @@ public class DownloadController implements Initializable {
         button.setTooltip(t);
     }
 
-    private void clearQueue(DownloadManager downloadManager) {
-        downloadManager.clearQueue();
+    private void clearQueue(CopernicusDownloader copernicusDownloader) {
+        copernicusDownloader.clearQueue();
     }
 
-    private void resumeDownload(DownloadManager downloadManager) {
-        downloadManager.resume();
+    private void resumeDownload(CopernicusDownloader copernicusDownloader) {
+        copernicusDownloader.resume();
         root.getStyleClass().remove("downloadPaused");
         root.applyCss();
     }
 
-    private void pauseDownload(DownloadManager downloadManager) {
-        downloadManager.pause();
+    private void pauseDownload(CopernicusDownloader copernicusDownloader) {
+        copernicusDownloader.pause();
         root.getStyleClass().add("downloadPaused");
         root.applyCss();
     }
 
-    private void cancelDownload(DownloadManager downloadManager) {
-        downloadManager.cancel();
+    private void cancelDownload(CopernicusDownloader copernicusDownloader) {
+        copernicusDownloader.cancel();
     }
 }

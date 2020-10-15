@@ -48,7 +48,7 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
             toolBar.fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to list"));
             if (DownloadConfiguration.getAutodownload())
                 openSearcher.forEach(p->{
-                    toolBar.getMainController().getDownload().add(new DownloadItem(p));
+                    toolBar.getMainController().getDownload().download(p);
                 });
         }
     }

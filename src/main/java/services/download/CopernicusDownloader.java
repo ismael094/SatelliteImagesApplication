@@ -10,7 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import model.exception.ProductNotAvailableException;
+import model.list.ProductListDTO;
 import model.listeners.DownloadListener;
+import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import utils.AlertFactory;
@@ -19,7 +21,6 @@ import utils.FileUtils;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +32,9 @@ import java.util.concurrent.ExecutionException;
 import static utils.DownloadConfiguration.getDownloadModeLocation;
 import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
 
-public class DownloadManager implements Runnable {
+public class CopernicusDownloader implements Downloader, Runnable {
 
-    static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DownloadManager.class.getName());
+    static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CopernicusDownloader.class.getName());
 
     private volatile  List<DownloadItemThread> downloading;
     private volatile ConcurrentLinkedQueue<DownloadItem> queue;
@@ -47,7 +48,7 @@ public class DownloadManager implements Runnable {
     private DoubleProperty timeLeft;
 
 
-    public DownloadManager(int maxFilesDownloading) {
+    public CopernicusDownloader(int maxFilesDownloading) {
         this.timeLeft = new SimpleDoubleProperty(0.0);
         this.maxFilesDownloading = maxFilesDownloading;
         this.queue = new ConcurrentLinkedQueue<>();
@@ -59,7 +60,27 @@ public class DownloadManager implements Runnable {
         listeners = new HashMap<>();
     }
 
-    public synchronized void add(DownloadItem item) {
+
+    @Override
+    public synchronized void download(ProductListDTO productList) {
+        productList.getProducts().forEach(p->add(new DownloadItem(p)));
+        productList.getGroundTruthProducts().forEach(p->add(new DownloadItem(p)));
+    }
+
+    @Override
+    public synchronized void download(ProductDTO productDTO) {
+        add(new DownloadItem(productDTO));
+    }
+
+    @Override
+    public DoubleProperty timeLeftProperty() {
+        return timeLeft;
+    }
+
+
+
+
+    private synchronized void add(DownloadItem item) {
         if (queue.contains(item) || historical.contains(item) || FileUtils.fileExists(item.getProductDTO().getTitle()))
             return;
         queue.add(item);
@@ -236,15 +257,17 @@ public class DownloadManager implements Runnable {
         downloadingObservable.remove(poll);
     }
 
+
     private void stop() {
         downloading.forEach(t-> t.setCommand(DownloadEnum.DownloadCommand.STOP));
     }
 
-    public synchronized void remove(DownloadItem item) {
-        logger.atWarn().log("{} stopped",item.getProductDTO().getTitle());
+    @Override
+    public synchronized void remove(ProductDTO productDTO) {
+        logger.atWarn().log("{} stopped",productDTO.getTitle());
 
         DownloadItemThread downloadItemThread = downloading.stream()
-                .filter(t -> t.getId().equals(item.getProductDTO().getId()))
+                .filter(t -> t.getId().equals(productDTO.getId()))
                 .findAny()
                 .orElse(null);
 
@@ -264,6 +287,7 @@ public class DownloadManager implements Runnable {
 
     }
 
+    @Override
     public synchronized void cancel() {
         logger.atError().log("Cancel all downloads!");
         queue.clear();
@@ -283,11 +307,13 @@ public class DownloadManager implements Runnable {
         new Thread(task).start();
     }
 
+    @Override
     public synchronized void pause() {
         logger.atInfo().log("Paused downloads!");
         downloading.forEach(t-> t.setCommand(DownloadEnum.DownloadCommand.PAUSE));
     }
 
+    @Override
     public synchronized void resume() {
         logger.atInfo().log("Resume downloads!");
         downloading.forEach(t-> t.setCommand(DownloadEnum.DownloadCommand.START));
@@ -314,7 +340,4 @@ public class DownloadManager implements Runnable {
         historical.clear();
     }
 
-    public DoubleProperty timeLeftProperty() {
-        return timeLeft;
-    }
 }

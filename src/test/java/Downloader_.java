@@ -1,4 +1,3 @@
-import model.SentinelData;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -9,8 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
-import services.download.DownloadManager;
-import services.download.DownloadItem;
+import services.download.CopernicusDownloader;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -94,8 +92,8 @@ public class Downloader_ {
 
     @Test
     public void the_test() throws InterruptedException {
-        DownloadManager downloadManager = new DownloadManager(2);
-        Thread thread = new Thread(downloadManager);
+        CopernicusDownloader copernicusDownloader = new CopernicusDownloader(2);
+        Thread thread = new Thread(copernicusDownloader);
         thread.start();
         Thread.sleep(1000);
     }

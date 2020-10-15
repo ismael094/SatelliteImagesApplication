@@ -4,16 +4,17 @@ import javafx.collections.ObservableList;
 import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
-import services.download.DownloadManager;
+import services.download.CopernicusDownloader;
+import services.download.Downloader;
 
 import java.util.prefs.Preferences;
 
 public abstract class ProductListTabItem implements TabItem{
-    private final DownloadManager downloadManager;
+    private final Downloader downloader;
 
-    public ProductListTabItem(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
-        downloadManager.addListener(EventType.DownloadEventType.COMPLETED, event -> {
+    public ProductListTabItem(Downloader downloader) {
+        this.downloader = downloader;
+        downloader.addListener(EventType.DownloadEventType.COMPLETED, event -> {
             refreshProducts();
             System.out.println("REFRESHING");
         });

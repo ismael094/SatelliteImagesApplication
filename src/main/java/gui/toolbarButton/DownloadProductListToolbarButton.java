@@ -2,17 +2,13 @@ package gui.toolbarButton;
 
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
-import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
 import model.list.ProductListDTO;
 import services.download.DownloadItem;
-import services.download.DownloadManager;
 import utils.FileUtils;
 
 import java.util.List;
@@ -51,9 +47,6 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
 
         FileUtils.saveObjectToJson(list);
 
-        list.getProducts().forEach(p-> toolBar.getMainController().getDownload().add(new DownloadItem(p)));
-
-        list.getGroundTruthProducts().forEach(p-> toolBar.getMainController().getDownload().add(new DownloadItem(p)));
-
+        toolBar.getMainController().getDownload().download(list);
     }
 }

@@ -23,7 +23,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.database.UserDBDAO;
-import services.download.DownloadManager;
+import services.download.CopernicusDownloader;
+import services.download.Downloader;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,7 +54,7 @@ public class SatelliteApplicationController implements Initializable {
 
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
-    private DownloadManager downloadManager;
+    private CopernicusDownloader copernicusDownloader;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -76,12 +77,12 @@ public class SatelliteApplicationController implements Initializable {
     }
 
     private void initDownloadManager() {
-        this.downloadManager = new DownloadManager(2);
-        downloadManager.addListener(EventType.DownloadEventType.COMPLETED, event -> {
+        this.copernicusDownloader = new CopernicusDownloader(2);
+        copernicusDownloader.addListener(EventType.DownloadEventType.COMPLETED, event -> {
             //if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
                 //consoleDebug.appendText("Download completed!\n");
         });
-        new Thread(downloadManager).start();
+        new Thread(copernicusDownloader).start();
         URL location = getClass().getResource("/fxml/DownloadView.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent parent = null;
@@ -96,7 +97,7 @@ public class SatelliteApplicationController implements Initializable {
         AnchorPane.setTopAnchor(parent,0.0);
         AnchorPane.setBottomAnchor(parent,0.0);
         DownloadController controller = fxmlLoader.getController();
-        controller.setDownload(downloadManager);
+        controller.setDownload(copernicusDownloader);
 
     }
 
@@ -176,8 +177,8 @@ public class SatelliteApplicationController implements Initializable {
         return user;
     }
 
-    public DownloadManager getDownload() {
-        return downloadManager;
+    public Downloader getDownload() {
+        return copernicusDownloader;
     }
 
     public void showWaitSpinner() {

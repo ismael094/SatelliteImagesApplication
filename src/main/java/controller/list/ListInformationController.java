@@ -31,7 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
-import services.download.DownloadManager;
+import services.download.CopernicusDownloader;
+import services.download.Downloader;
 import utils.AlertFactory;
 
 import java.awt.*;
@@ -82,7 +83,7 @@ public class ListInformationController extends ProductListTabItem {
     static final Logger logger = LogManager.getLogger(ListInformationController.class.getName());
 
 
-    public ListInformationController(ProductListDTO productList, DownloadManager download) {
+    public ListInformationController(ProductListDTO productList, Downloader download) {
         super(download);
         idSelected = "";
         this.productListDTO = productList;
@@ -312,8 +313,13 @@ public class ListInformationController extends ProductListTabItem {
         size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
         title.textProperty().bind(productListDTO.nameProperty());
         description.textProperty().bind(productListDTO.descriptionProperty());
-        searchGroundTruth.disableProperty().bind(Bindings.isEmpty(productListDTO.getAreasOfWork()));
+        searchGroundTruth.disableProperty()
+                .bind(
+                        Bindings.isEmpty(productListDTO.getAreasOfWork())
+                                .or(selectGroundTruth.selectedProperty()
+                                        .not()));
         deleteGroundTruth.disableProperty().bind(selectGroundTruth.selectedProperty().not());
+
     }
 
     private void printAreasOfWork() {

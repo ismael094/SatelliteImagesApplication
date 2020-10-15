@@ -97,6 +97,7 @@ public class DownloadItemThread extends Service<Boolean> {
                 logger.atInfo().log("Downloading started!  {}", temporalFileLocation);
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 int bytesRead;
+                int tries = 5;
                 startTime = currentTimeMillis();
                 while (true) {
 
@@ -117,6 +118,17 @@ public class DownloadItemThread extends Service<Boolean> {
                             setDownloadingStatus();
 
                         bytesRead = in.read(buffer, 0, 1024);
+                        if (bytesRead == 0 && tries >0){
+                            tries--;
+                            System.out.println("Bytes not readed");
+                            in.mark(1024);
+                            Thread.sleep(5000);
+                            in.reset();
+                            continue;
+                        } else if (tries == 0) {
+                            logger.atError().log("No connection");
+                            return false;
+                        }
                         if (isDownloadFinish(bytesRead)) {
                             setFinishedStatus();
                             close(fileOutputStream, inputStream, in, connection);

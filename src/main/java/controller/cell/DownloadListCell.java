@@ -6,13 +6,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import services.download.CopernicusDownloader;
 import services.download.DownloadItem;
-import services.download.DownloadManager;
+import services.download.Downloader;
 
 import java.io.IOException;
 
 public class DownloadListCell extends ListCell<DownloadItem> {
-    private final DownloadManager downloadManager;
+    private final Downloader downloader;
     private FXMLLoader loader;
 
     @FXML
@@ -24,8 +25,8 @@ public class DownloadListCell extends ListCell<DownloadItem> {
     @FXML
     private Button cancelDownload;
 
-    public DownloadListCell(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
+    public DownloadListCell(Downloader downloader) {
+        this.downloader = downloader;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class DownloadListCell extends ListCell<DownloadItem> {
 
             GlyphsDude.setIcon(cancelDownload,FontAwesomeIcon.REMOVE,"0.6em");
 
-            cancelDownload.setOnAction(e-> downloadManager.remove(item));
+            cancelDownload.setOnAction(e-> downloader.remove(item.getProductDTO()));
 
             title.setText(item.getProductDTO().getTitle());
 

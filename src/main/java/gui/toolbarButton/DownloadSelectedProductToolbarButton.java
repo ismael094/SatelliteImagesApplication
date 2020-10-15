@@ -9,8 +9,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
 import model.products.ProductDTO;
+import services.download.CopernicusDownloader;
 import services.download.DownloadItem;
-import services.download.DownloadManager;
+import services.download.Downloader;
 
 public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
 
@@ -34,10 +35,8 @@ public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
         if (controllerOf instanceof ProductListTabItem) {
             ListInformationController listController = (ListInformationController)controllerOf;
             ObservableList<ProductDTO> selectedProducts = listController.getSelectedProducts();
-            DownloadManager download = toolBar.getMainController().getDownload();
-            selectedProducts.forEach(p->{
-                download.add(new DownloadItem(p));
-            });
+            Downloader download = toolBar.getMainController().getDownload();
+            selectedProducts.forEach(download::download);
         }
     }
 }
