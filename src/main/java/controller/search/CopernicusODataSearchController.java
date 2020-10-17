@@ -92,12 +92,12 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     @Override
-    public void setParameters(Map<String, String> parameters) {
+    public void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses) {
 
     }
 
     @Override
-    public Map<String, String> getParameters() {
+    public Map<String, String> getParametersOfAllResponses() {
         return null;
     }
 

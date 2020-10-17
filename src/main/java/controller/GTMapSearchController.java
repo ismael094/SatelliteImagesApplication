@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.GTMap;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import model.products.ProductDTO;
@@ -45,11 +47,12 @@ public class GTMapSearchController {
     private String selectedLayerEvent;
 
     public GTMapSearchController(double width, double height, boolean controlBarActive) {
+
         wasPrimaryButtonClicked = new SimpleBooleanProperty(false);
         wasSecondaryButtonClicked = new SimpleBooleanProperty(false);
         isSearchAreaDrawing = false;
         HBox controlBar = controlBar();
-        geotoolsMap = new GTMap((int) width, (int) (height-controlBar.getHeight()),false);
+        geotoolsMap = new GTMap((int)width,(int)height,false);
         border = new BorderPane();
         if (controlBarActive)
             border.setTop(controlBar);

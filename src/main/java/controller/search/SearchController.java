@@ -8,8 +8,8 @@ import java.util.Map;
 
 public interface SearchController {
     void search();
-    void setParameters(Map<String, String> parameters);
-    Map<String, String> getParameters();
+    void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses);
+    Map<String, String> getParametersOfAllResponses();
     ObservableList<ProductDTO> getSelectedProducts();
     ObservableList<ProductDTO> getProducts();
 }

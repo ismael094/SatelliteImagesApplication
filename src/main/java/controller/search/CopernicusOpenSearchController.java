@@ -7,6 +7,7 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +17,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -55,8 +58,8 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";
-    private final ObservableList<OpenSearchResponse> responseHistoric;
-    private final ObservableList<Map<String,String>> parametersHistoric;
+    private final ObservableList<OpenSearchResponse> allResponses;
+    private final ObservableList<Map<String,String>> parametersOfAllResponses;
     private int cursor;
     private final String id;
     private final FXMLLoader loader;
@@ -132,7 +135,19 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         } catch (IOException e) {
             e.printStackTrace();
         }
-        initGTMapController();
+        geotoolsController();
+
+        setControlsMap();
+
+        allResponses = FXCollections.observableArrayList();
+        parametersOfAllResponses = FXCollections.observableArrayList();
+        cursor = 0;
+
+        showResults.visibleProperty().bind(Bindings.isEmpty(allResponses).not());
+        showResults.setOnAction(e->undo());
+    }
+
+    private void setControlsMap() {
         control = new HashMap<>();
         control.put(SentinelProductParameters.PLATFORM_NAME.getParameterName(),platformList);
         control.put(SentinelProductParameters.PRODUCT_TYPE.getParameterName(),productTypeList);
@@ -142,11 +157,6 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         control.put(SentinelProductParameters.INGESTION_DATE.getParameterName()+"_to",dateFinish);
         control.put(SentinelProductParameters.CLOUD_COVER_PERCENTAGE.getParameterName()+"_from",cloudCoverage);
         control.put(SentinelProductParameters.CLOUD_COVER_PERCENTAGE.getParameterName()+"_to",cloudCoverageTo);
-        responseHistoric = FXCollections.observableArrayList();
-        parametersHistoric = FXCollections.observableArrayList();
-        showResults.visibleProperty().bind(Bindings.isEmpty(responseHistoric).not());
-        showResults.setOnAction(e->undo());
-        cursor = 0;
     }
 
     public String getId() {
@@ -188,8 +198,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     @Override
     public String getName() {
-
-        return getClass().getSimpleName();
+        return "Copernicus Open Search";
     }
 
     @Override
@@ -200,14 +209,15 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     private void initViewData() {
         setSpinnerVisible(false);
         setPaginationVisible(false);
-        initProductsPerPage();
-        setSatelliteList();
-        setSentinel1Data();
-        setProductsList();
-        initResultPaneHeader();
+        productsPerPage();
+        satellites();
+        sentinel1Data();
+        productsListView();
+        resultsPane();
         onActionInPaginationFireSearchEvent();
-        onSearchButtonActionSearchEvent();
+        onActionInSearchButtonFireSearchEvent();
         onCloudCoverageChangeAllowOnlyNumbers();
+
         Tooltip tp = new Tooltip("Example: [5.3 TO 25.8], or single number");
         cloudCoverage.setTooltip(tp);
         Tooltip.install(cloudCoverage,tp);
@@ -222,7 +232,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         });
     }
 
-    private void onSearchButtonActionSearchEvent() {
+    private void onActionInSearchButtonFireSearchEvent() {
         search.setOnMouseClicked(e->{
             searcher.setStartProductIndex(0);
             isRedoOrUndo = false;
@@ -230,12 +240,11 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         });
     }
 
-    private void initGTMapController() {
+    private void geotoolsController() {
         mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(), true);
         mapController.addSelectedAreaEvent("products");
 
         onMouseClickInMapHighlightSelectedProductsEvent();
-
         mapPane.getChildren().addAll(mapController.getView());
         AnchorPane.setLeftAnchor(mapController.getView(),0.0);
         AnchorPane.setRightAnchor(mapController.getView(),0.0);
@@ -321,7 +330,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         });
     }
 
-    private void initProductsPerPage() {
+    private void productsPerPage() {
         rows.setItems(FXCollections.observableArrayList(
                 25,50,75,100));
         rows.setValue(25);
@@ -333,7 +342,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
             });
     }
 
-    private void setSentinel1Data() {
+    private void sentinel1Data() {
         setSentinel1Instruments();
         setSentinel1SensorMode();
         setSentinel1Polarisation();
@@ -351,7 +360,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         sensorMode.setValue("All");
     }
 
-    private void setProductsList() {
+    private void productsListView() {
         resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         resultProductsList.setOnMouseClicked(highlightInMapSelectedProductInListView());
     }
@@ -368,7 +377,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         };
     }
 
-    private void setSatelliteList() {
+    private void satellites() {
         platformList.setItems(FXCollections.observableArrayList(
                 SENTINEL_1, SENTINEL_2));
 
@@ -428,7 +437,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         productTypeList.setValue("All");
     }
 
-    private void initResultPaneHeader() {
+    private void resultsPane() {
         resultsPane.setVisible(false);
         Button iconButton = GlyphsDude.createIconButton(FontAwesomeIcon.ARROW_LEFT,"");
         iconButton.setAccessibleText("Close results");
@@ -481,11 +490,14 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
         response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
         response.setOnFailed(this::onFailedSearch);
         new Thread(response).start();
+        Platform.runLater(()->{
+            AlertFactory.showSuccessDialog("Search","Search petition made","Waiting to retrieve products. This can last several minutes!");
+        });
     }
 
     @Override
-    public void setParameters(Map<String, String> parameters) {
-        parameters.forEach((key,value)->{
+    public void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses) {
+        parametersOfAllResponses.forEach((key, value)->{
             Control control = this.control.get(key);
             if (control instanceof ChoiceBox)
                 ((ChoiceBox<String>)control).setValue(value);
@@ -497,7 +509,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
                 try {
                     mapController.clearMap("searchArea");
                     mapController.addProductWKT(value,"myId","searchArea");
-                    mapController.drawFeaturesOfLayer("searchArea",Color.RED,null);
+                    mapController.drawFeaturesOfLayer("searchArea", Color.RED,null);
                     mapController.setSearchArea(value);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -511,7 +523,7 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     }
 
     @Override
-    public HashMap<String, String> getParameters() {
+    public HashMap<String, String> getParametersOfAllResponses() {
         HashMap<String,String> res = new HashMap<>();
         res.put(SentinelProductParameters.PLATFORM_NAME.getParameterName(), platformList.getValue());
         res.put(SentinelProductParameters.PRODUCT_TYPE.getParameterName(), productTypeList.getValue());
@@ -550,10 +562,10 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
 
     @Override
     public void redo() {
-        if (cursor < 0 || cursor >= responseHistoric.size())
+        if (cursor < 0 || cursor >= allResponses.size())
             return;
-        setProductResults(responseHistoric.get(cursor));
-        setParameters(parametersHistoric.get(cursor));
+        setProductResults(allResponses.get(cursor));
+        setParametersOfAllResponses(parametersOfAllResponses.get(cursor));
         cursor++;
         redoOrUndoOperation(true);
     }
@@ -566,15 +578,15 @@ public class CopernicusOpenSearchController implements TabItem, SearchController
     public void undo() {
         if (cursor <= 1)
             return;
-        setProductResults(responseHistoric.get(cursor-2));
-        setParameters(parametersHistoric.get(cursor-2));
+        setProductResults(allResponses.get(cursor-2));
+        setParametersOfAllResponses(parametersOfAllResponses.get(cursor-2));
         cursor--;
         redoOrUndoOperation(true);
     }
 
     private void saveSearchData(Task<OpenSearchResponse> response) throws InterruptedException, ExecutionException {
-        responseHistoric.add(cursor,response.get());
-        parametersHistoric.add(cursor,getParameters());
+        allResponses.add(cursor,response.get());
+        parametersOfAllResponses.add(cursor, getParametersOfAllResponses());
         cursor++;
     }
 

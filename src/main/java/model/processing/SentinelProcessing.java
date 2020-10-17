@@ -1,8 +1,6 @@
 package model.processing;
 
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.GPF;
+
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -11,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class SentinelProcessing implements Processing {
-    protected final Map<String,Object> parameters;
+    /*protected final Map<String,Object> parameters;
 
     public SentinelProcessing() {
         this.parameters = new HashMap<>();
@@ -66,6 +64,6 @@ public abstract class SentinelProcessing implements Processing {
         public String getName() {
             return name;
         }
-    }
+    }*/
 
 }

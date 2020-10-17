@@ -1,14 +1,13 @@
 package model.processing;
 
 import model.products.ProductDTO;
-import org.esa.snap.core.datamodel.Product;
 
 import java.util.Map;
 
 public abstract class Sentinel1Processing extends SentinelProcessing {
 
 
-    public Product getThermalNoiseRemoval(Product product, Map<String, Object> parameters) {
+    /*public Product getThermalNoiseRemoval(Product product, Map<String, Object> parameters) {
         return createProduct(Operator.THERMAL_NOISE_REMOVAL,product,parameters);
     }
 
@@ -68,6 +67,6 @@ public abstract class Sentinel1Processing extends SentinelProcessing {
     protected Map<String, Object> getThermalNoiseRemovalParameters() {
         parameters.clear();
         return parameters;
-    }
+    }*/
 
 }

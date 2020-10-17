@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
@@ -61,10 +60,10 @@ public class LoginController implements Initializable {
 
         signIn.setOnMouseClicked(this::login);
 
-        signUp.setOnAction(this::initRegister);
+        signUp.setOnAction(this::showRegisterView);
     }
 
-    private void initRegister(ActionEvent actionEvent) {
+    private void showRegisterView(ActionEvent actionEvent) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/RegisterView.fxml"));
         Scene scene = null;
         try {

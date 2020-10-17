@@ -16,8 +16,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <meminitial>2048m</meminitial>
-                    <maxmem>2024m</maxmem>
                 </configuration>
             </plugin>
 
@@ -359,58 +357,17 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-core</artifactId>
             <version>${snap.version}</version>
-            <type>nbm</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.geotools</groupId>
-                    <artifactId>gt-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-gpf</artifactId>
             <version>${snap.version}</version>
-            <type>nbm</type>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-geotiff</artifactId>
-            <version>${snap.version}</version>
-            <type>nbm</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-commons</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-rcp</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-op-calibration</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-io</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-op-insar</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.esa.s1tbx</groupId>
-            <artifactId>s1tbx-op-sar-processing</artifactId>
             <version>${snap.version}</version>
         </dependency>
 
@@ -423,6 +380,21 @@
     </dependencies>
 
     <repositories>
+        <repository>
+            <id>snap-maven-snapshot</id>
+            <name>Public Maven Repository for SNAP</name>
+            <url>https://snap-build-server.tilaa.cloud/nexus/repository/snap-maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+
+
         <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
@@ -454,20 +426,6 @@
             </snapshots>
         </repository>
 
-        <repository>
-            <id>snap-repo-public</id>
-            <name>Public Maven Repository for SNAP</name>
-            <url>https://snap-build-server.tilaa.cloud/nexus/repository/snap-maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
 
     </repositories>
-
 </project>

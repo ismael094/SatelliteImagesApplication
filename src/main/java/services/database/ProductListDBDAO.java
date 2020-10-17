@@ -68,6 +68,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         Key<ProductList> save = database.getDatastore().save(toEntity(dao));
         ObjectId id = (ObjectId)save.getId();
         dao.setId(id);
+        System.out.println("list saved");
     }
 
     @Override

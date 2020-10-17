@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import model.exception.AuthenticationException;
@@ -61,6 +62,10 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private Label ingestionDate;
     @FXML
     private ImageView image;
+    @FXML
+    private AnchorPane imageContainer;
+
+
     private final ProductDTO product;
     private TabPaneComponent tabPaneComponent;
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -143,6 +148,9 @@ public class CopernicusProductDetailsController_ implements TabItem {
         else if (product.getPlatformName().equals("Sentinel-2"))
             setSentinel2Data();
 
+        //image.fitHeightProperty().bind(imageContainer.heightProperty());
+        //image.fitWidthProperty().bind(imageContainer.widthProperty());
+
         setMap();
         setImagePreview();
     }
@@ -175,15 +183,15 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private void setImagePreview() throws AuthenticationException, IOException, NotAuthenticatedException {
         CopernicusService service = CopernicusService.getInstance();
         try (InputStream contentFromURL = service.getContentFromURL(product.getPreviewURL())) {
-            image.setImage(new Image(contentFromURL, image.getFitWidth(), image.getFitHeight(), false, false));
+            image.setImage(new Image(contentFromURL));
         } catch (IOException e) {
             logger.atInfo().log("No preview image found for product name {}", product.getTitle());
-            image.setImage(new Image(getClass().getResource("/img/no_photo.jpg").openStream(), image.getFitWidth(), image.getFitHeight(), false, false));
+            image.setImage(new Image(getClass().getResource("/img/no_photo.jpg").openStream()));
         }
     }
 
     private void setMap() throws ParseException {
-        GTMap gtMap = new GTMap(300, 300, false);
+        GTMap gtMap = new GTMap((int)map.getPrefWidth(), (int)map.getPrefHeight(), false);
         map.getChildren().add(gtMap);
         gtMap.createFeatureFromWKT(product.getFootprint(),product.getId(),"products");
         gtMap.createAndDrawLayer("products", Color.BLACK, null);

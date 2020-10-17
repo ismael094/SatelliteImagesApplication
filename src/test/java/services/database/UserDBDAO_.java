@@ -6,13 +6,14 @@ import model.list.ProductListDTO;
 import model.user.UserDTO;
 import org.junit.Before;
 import org.junit.Test;
-import utils.MongoDB_;
+import utils.database.MongoDB_;
 import services.entities.User;
 import utils.Encryptor;
 import utils.database.MongoDBManager;
 
 import java.util.List;
 
+import static java.lang.System.currentTimeMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserDBDAO_ {
@@ -68,10 +69,12 @@ public class UserDBDAO_ {
         userDTO.setPassword("password");
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
-        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name"), new SimpleStringProperty("Description"));
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
+
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
+
         UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
@@ -85,11 +88,12 @@ public class UserDBDAO_ {
 
     @Test
     public void update_user_collection_with_product_list() {
+        long start = currentTimeMillis();
         userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
-        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name"), new SimpleStringProperty("Description"));
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name5"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
         //userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
@@ -97,7 +101,7 @@ public class UserDBDAO_ {
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(0);
         userDTO.addProductList(productListDTO);
-        userDAO.updateProductList(userDTO);
+        userDAO.addProductList(userDTO, productListDTO);
         assertThat(ProductListDBDAO.getInstance().find(productListDTO).size()).isEqualTo(1);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO.getProductListsDTO()).isNotNull();
@@ -105,6 +109,7 @@ public class UserDBDAO_ {
         userDAO.delete(dbUserDTO);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNull();
+        assertThat(currentTimeMillis()-start).isLessThan(4000);
     }
 
     @Test

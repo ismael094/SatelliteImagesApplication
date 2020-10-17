@@ -68,8 +68,8 @@ public class GTMap extends Canvas {
     static final Logger logger = LogManager.getLogger(GTMap.class.getName());
 
 
-    public GTMap(int width, int height,boolean oms) {
-        super(width, height);
+    public GTMap(int width, int height, boolean oms) {
+        super(width,height);
         layers = new HashMap<>();
         graphicsContext = getGraphicsContext2D();
         draw = new StreamingRenderer();

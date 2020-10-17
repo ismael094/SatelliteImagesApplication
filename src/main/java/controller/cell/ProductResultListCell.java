@@ -14,7 +14,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 import model.openSearcher.SentinelProductParameters;
 import model.products.ProductDTO;
 
@@ -89,7 +88,7 @@ public class ProductResultListCell extends ListCell<ProductDTO> {
                 TabItem copernicusOpenSearch = tabPaneComponent.getControllerOf("Copernicus Open Search");
                 CopernicusOpenSearchController controller = (CopernicusOpenSearchController)copernicusOpenSearch;
                 Map<String, String> parameters = getParameters();
-                controller.setParameters(parameters);
+                controller.setParametersOfAllResponses(parameters);
                 controller.search();
             });
 

@@ -4,11 +4,10 @@ import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
 import model.restriction.PlatformRestriction;
-import model.restriction.ProductTypeRestriction;
 import org.junit.Before;
 import org.junit.Test;
 import utils.database.MongoDBManager;
-import utils.MongoDB_;
+import utils.database.MongoDB_;
 
 import java.util.List;
 

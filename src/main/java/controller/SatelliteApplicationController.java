@@ -198,8 +198,20 @@ public class SatelliteApplicationController implements Initializable {
     public void setUser(UserDTO userDTO) {
         this.user = userDTO;
         user.getProductListsDTO().addListener((ListChangeListener<ProductListDTO>) c -> {
-            UserDBDAO instance = UserDBDAO.getInstance();
-            instance.updateProductList(user);
+            while (c.next())
+                if (c.wasAdded()) {
+                    UserDBDAO instance = UserDBDAO.getInstance();
+                    System.out.println(c.getAddedSubList().size());
+                    c.getAddedSubList().forEach(p-> instance.addProductList(user,p));
+                } else {
+                    UserDBDAO instance = UserDBDAO.getInstance();
+                    c.getRemoved().forEach(p->{
+                        instance.removeProductList(user,p);
+                    });
+
+                }
+
+
             System.out.println("update user");
         });
 

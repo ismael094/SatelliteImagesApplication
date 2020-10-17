@@ -8,9 +8,8 @@ import model.products.Sentinel1ProductDTO;
 import org.junit.Before;
 import org.junit.Test;
 import services.entities.Product;
-import services.entities.User;
 import utils.database.MongoDBManager;
-import utils.MongoDB_;
+import utils.database.MongoDB_;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.List;

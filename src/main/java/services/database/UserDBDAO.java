@@ -4,6 +4,7 @@ import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
+import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import model.user.UserDTO;
 import services.entities.User;
@@ -70,13 +71,14 @@ public class UserDBDAO implements DAO<UserDTO> {
 
     @Override
     public void save(UserDTO dao) {
+        dao.getProductListsDTO().forEach(productListDBDAO::save);
         database.getDatastore().save(toEntity(dao));
     }
 
     @Override
     public void delete(UserDTO dao) {
+        //dao.getProductListsDTO().forEach(productListDBDAO::delete);
         database.getDatastore().delete(toEntity(dao));
-        dao.getProductListsDTO().forEach(productListDBDAO::delete);
     }
 
     @Override
@@ -110,17 +112,10 @@ public class UserDBDAO implements DAO<UserDTO> {
         if (!userDTO.getPassword().startsWith("$2a$10"))
             hashedPass = Encryptor.hashString(userDTO.getPassword());
 
-        userDTO.getSearchParameters().forEach((key,value)->{
-            System.out.println("ÑPÑP"+key);
-        });
         User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
 
         if (userDTO.getProductListsDTO().size()>0) {
             user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));
-            userDTO.getProductListsDTO().forEach(pL->{
-                if (productListDBDAO.findByName(pL) == null)
-                    productListDBDAO.save(pL);
-            });
         }
 
         return user;
@@ -138,6 +133,44 @@ public class UserDBDAO implements DAO<UserDTO> {
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .set("productLists", productListDBDAO.toEntity(user.getProductListsDTO()));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();*/
+    }
+
+    public void addProductList(UserDTO user, ProductListDTO productListDTO) {
+        productListDBDAO.save(productListDTO);
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .push("productLists", productListDBDAO.toEntity(productListDTO));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();*/
+    }
+
+    public void removeProductList(UserDTO user, ProductListDTO productListDTO) {
+        //user.getProductListsDTO().forEach(productListDBDAO::save);
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .removeAll("productLists", productListDBDAO.toEntity(productListDTO));
 
         UpdateResults update = database.getDatastore().update(email, ops);
         System.out.println(update.getUpdatedCount());

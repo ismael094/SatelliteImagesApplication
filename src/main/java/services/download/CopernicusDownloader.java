@@ -190,7 +190,11 @@ public class CopernicusDownloader implements Downloader, Runnable {
     private void onFailed(DownloadItemThread thread, WorkerStateEvent e) {
         thread.setCommand(DownloadEnum.DownloadCommand.STOP);
         thread.cancel();
-
+        try {
+            thread.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
         fireEvent(new DownloadEvent<>(this, EventType.DownloadEventType.ERROR));
 
         handleError(thread.getDownloadItem(), e);

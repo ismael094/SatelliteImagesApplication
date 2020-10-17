@@ -32,6 +32,10 @@ public class DownloadItemThread extends Service<Boolean> {
 
     static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DownloadItemThread.class.getName());
     private long startTime;
+    private InputStream inputStream;
+    private BufferedInputStream in;
+    private FileOutputStream fileOutputStream;
+    private HttpURLConnection connection;
 
     public DownloadItemThread(DownloadItem item) {
         this.item = item;
@@ -81,16 +85,16 @@ public class DownloadItemThread extends Service<Boolean> {
 
                 Thread.sleep(400);
 
-                HttpURLConnection connection = CopernicusService.getInstance().getConnectionFromURL(item.getProductDTO().getDownloadURL());
+                connection = CopernicusService.getInstance().getConnectionFromURL(item.getProductDTO().getDownloadURL());
 
                 //Init download bytes data
                 numOfBytesRead = new AtomicInteger(0);
                 contentLength = new AtomicLong(getContentLength(connection.getContentLength()));
 
                 //Open streams and init buffer
-                InputStream inputStream = connection.getInputStream();
-                BufferedInputStream in = new BufferedInputStream(inputStream);
-                FileOutputStream fileOutputStream = new FileOutputStream(temporalFileLocation);
+                inputStream = connection.getInputStream();
+                in = new BufferedInputStream(inputStream);
+                fileOutputStream = new FileOutputStream(temporalFileLocation);
                 byte buffer[] = new byte[1024];
 
 
@@ -103,7 +107,7 @@ public class DownloadItemThread extends Service<Boolean> {
 
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
                         setStoppedStatus();
-                        close(fileOutputStream, inputStream, in, connection);
+                        close();
                         Files.deleteIfExists(Paths.get(temporalFileLocation));
                         Thread.sleep(2000);
                         return false;
@@ -131,7 +135,7 @@ public class DownloadItemThread extends Service<Boolean> {
                         }
                         if (isDownloadFinish(bytesRead)) {
                             setFinishedStatus();
-                            close(fileOutputStream, inputStream, in, connection);
+                            close();
                             boolean wasFileRename = new File(temporalFileLocation).renameTo(new File(finalFileLocation));
                             if (wasFileRename)
                                 logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", getContentLengthInGb(contentLength.get() / 1024.0, 1024.0, 1024.0), getContentLengthInGb(currentTimeMillis() - startTime, 1000.0, 60.0));
@@ -160,19 +164,21 @@ public class DownloadItemThread extends Service<Boolean> {
                 return md5.toUpperCase().equals(checksum);
             }
 
-            private void close(FileOutputStream fileOutputStream, InputStream inputStream, BufferedInputStream in, HttpURLConnection connection) throws IOException {
-                inputStream.close();
-                in.close();
-                fileOutputStream.close();
-                if (connection.getInputStream() != null)
-                    connection.getInputStream().close();
-                connection.disconnect();
-            }
+
 
             private boolean isDownloadFinish(int bytesRead) {
                 return bytesRead == -1;
             }
         };
+    }
+
+    public void close() throws IOException {
+        inputStream.close();
+        in.close();
+        fileOutputStream.close();
+        if (connection.getInputStream() != null)
+            connection.getInputStream().close();
+        connection.disconnect();
     }
 
     private double getContentLengthInGb(double v, double v2, double v3) {

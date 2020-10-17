@@ -19,4 +19,18 @@ public class WKTUtil {
         Geometry contains = wktReader.read(wktContains);
         return container.contains(contains);
     }
+
+    /**
+     * Method to check if a WKT polygon intersects another
+     * @param wktContainer WKT String container
+     * @param wktIntersects WKT String to check if its intersect in container
+     * @return true if wktContains intersects wktContainer, if not, return false
+     * @throws ParseException Error while reading WKT
+     */
+    public static boolean workingAreaIntersects(String wktContainer, String wktIntersects) throws ParseException {
+        WKTReader wktReader = new WKTReader(JTSFactoryFinder.getGeometryFactory());
+        Geometry container = wktReader.read(wktContainer);
+        Geometry contains = wktReader.read(wktIntersects);
+        return container.intersects(contains);
+    }
 }
