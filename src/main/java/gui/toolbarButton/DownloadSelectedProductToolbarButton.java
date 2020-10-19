@@ -5,6 +5,7 @@ import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
+import gui.events.DownloadSelectedProductEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
@@ -22,21 +23,8 @@ public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
 
     @Override
     public void init() {
-        setOnAction(this);
+        setOnAction(new DownloadSelectedProductEvent(toolBar.getMainController()));
         setIcon(MaterialDesignIcon.DOWNLOAD,"1.5em");
         setTooltip("Download selected products in the current list");
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
-        Tab active = toolBar.getMainController().getTabController().getActive();
-        TabItem controllerOf = toolBar.getMainController().getTabController().getControllerOf(active);
-
-        if (controllerOf instanceof ProductListTabItem) {
-            ListInformationController listController = (ListInformationController)controllerOf;
-            ObservableList<ProductDTO> selectedProducts = listController.getSelectedProducts();
-            Downloader download = toolBar.getMainController().getDownload();
-            selectedProducts.forEach(download::download);
-        }
     }
 }

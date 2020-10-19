@@ -5,6 +5,8 @@ import controller.search.SearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
+import gui.events.AddSelectedToListEvent;
+import gui.events.DeleteListEvent;
 import model.events.EventType;
 import model.events.ToolbarComponentEvent;
 import javafx.collections.ObservableList;
@@ -29,35 +31,9 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
 
     @Override
     public void init() {
-        setOnAction(this);
+        setOnAction(new AddSelectedToListEvent(toolBar.getMainController()));
         setIcon(MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
         setTooltip("Add selected products to list");
         disableProperty().bind(toolBar.getMainController().getTabController().getIsSearchControllerOpenProperty().not());
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
-        ObservableList<ProductDTO> openSearcher = getSelectedProducts();
-        if (openSearcher == null || openSearcher.size() == 0) {
-            event.consume();
-            return;
-        }
-        List<ProductListDTO> productListDTO = getProductLists();
-        if (productListDTO.size()>0){
-            productListDTO.forEach(pL->pL.addProduct(openSearcher));
-            toolBar.fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to list"));
-            if (DownloadConfiguration.getAutodownload())
-                openSearcher.forEach(p->{
-                    toolBar.getMainController().getDownload().download(p);
-                });
-        }
-    }
-
-    private ObservableList<ProductDTO> getSelectedProducts() {
-        Tab tab = toolBar.getMainController().getTabController().getActive();
-        TabItem controller = toolBar.getMainController().getTabController().getControllerOf(tab);
-        if (controller instanceof SearchController)
-            return ((SearchController<ProductDTO>) controller).getSelectedProducts();
-        return null;
     }
 }

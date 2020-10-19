@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class SatelliteApplicationController implements Initializable {
+public class MainController implements Initializable {
     private TabPaneComponent tabPaneComponent;
     private MenuComponent menuController;
     private ListTreeViewComponent listTreeViewComponent;
@@ -57,7 +57,7 @@ public class SatelliteApplicationController implements Initializable {
     @FXML
     private JFXSpinner wait;
 
-    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
+    static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private UserDTO user;
     private CopernicusDownloader copernicusDownloader;
     private Processing processor;
@@ -65,7 +65,6 @@ public class SatelliteApplicationController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
         wait.setVisible(false);
         initComponents();
@@ -176,6 +175,10 @@ public class SatelliteApplicationController implements Initializable {
         return tabPaneComponent;
     }
 
+    public ToolBarComponent getToolBarComponent() {
+        return toolBarComponent;
+    }
+
     public ListTreeViewComponent getListTreeViewController() {
         return listTreeViewComponent;
     }
@@ -190,6 +193,10 @@ public class SatelliteApplicationController implements Initializable {
 
     public Downloader getDownload() {
         return copernicusDownloader;
+    }
+
+    public Parent getRoot() {
+        return rootPane;
     }
 
     public void showWaitSpinner() {
@@ -221,8 +228,6 @@ public class SatelliteApplicationController implements Initializable {
                     });
 
                 }
-
-
             System.out.println("update user");
         });
 

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface Processing {
     void process(ProductListDTO productList);
-    void process(ProductDTO productList, List<String> areasOfWork, Workflow workflow);
+    void process(ProductDTO productList, List<String> areasOfWork, Workflow workflow, String path);
 }

@@ -1,7 +1,6 @@
 package services.processing;
 
 
-import controller.SatelliteApplicationController;
 import model.list.ProductListDTO;
 import model.processing.*;
 import model.products.ProductDTO;
@@ -51,7 +50,7 @@ public class SentinelProcessing implements Processing {
         logger.atInfo().log("Starting to process list {}",productList.getName());
         Map<String, List<String>> productsAreasOfWorks = productList.getProductsAreasOfWorks();
         productList.getProducts().forEach(p-> {
-            process(p, productsAreasOfWorks.get(p.getId()), workflowType.get(WorkflowType.GRD));
+            process(p, productsAreasOfWorks.get(p.getId()), workflowType.get(WorkflowType.GRD), productList.getName());
         });
 
         logger.atInfo().log("====== List Processed =========");
@@ -59,7 +58,7 @@ public class SentinelProcessing implements Processing {
     }
 
     @Override
-    public void process(ProductDTO product, List<String> areasOfWork, Workflow workflow) {
+    public void process(ProductDTO product, List<String> areasOfWork, Workflow workflow, String path) {
         if (!FileUtils.productExists(product.getTitle())) {
             logger.atError().log("File {}.zip doesn't exists",product.getTitle());
             return;
@@ -73,7 +72,7 @@ public class SentinelProcessing implements Processing {
         logger.atInfo().log("====== Processing product {}",product.getTitle());
         try {
             Product read = readProduct(DownloadConfiguration.getProductDownloadFolderLocation()+"\\"+ product.getTitle()+".zip");
-            startProcess(read, product, areasOfWork, workflow);
+            startProcess(read, product, areasOfWork, workflow,path);
             logger.atInfo().log("====== Processing ended! =========");
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -82,13 +81,13 @@ public class SentinelProcessing implements Processing {
 
     }
 
-    private void startProcess(Product snapProduct, ProductDTO productDTO, List<String> areasOfWork, Workflow workflow) throws IOException, ParseException {
+    private void startProcess(Product snapProduct, ProductDTO productDTO, List<String> areasOfWork, Workflow workflow, String path) throws IOException, ParseException {
         List<Product> subsets = new LinkedList<>();
         subsets.add(snapProduct);
         for (Operation op : workflow.getOperations()) {
             logger.atInfo().log("Operation: {}",op.getName());
             if (op.getName() == Operator.READ) {
-                readProduct(DownloadConfiguration.getProductDownloadFolderLocation()+"\\"+ productDTO.getTitle()+".zip");
+                readProduct(DownloadConfiguration.getProductDownloadFolderLocation()+"\\"+path+"\\"+ productDTO.getTitle()+".zip");
             } else if (op.getName() == Operator.WRITE) {
                 int x = 0;
                 for (Product j : subsets) {

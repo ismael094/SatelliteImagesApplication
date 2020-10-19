@@ -1,6 +1,6 @@
 
 import controller.identification.LoginController;
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -52,7 +52,7 @@ public class SatelliteApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = new Scene(fxmlLoader.load());
 
-        SatelliteApplicationController controller = fxmlLoader.getController();
+        MainController controller = fxmlLoader.getController();
         controller.setUser(userDTO);
         primaryStage.setMaximized(true);
 

@@ -1,9 +1,10 @@
 package gui.components;
 
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import controller.download.DownloadPreferencesController;
 import controller.interfaces.TabItem;
 import controller.search.CopernicusOpenSearchController;
+import gui.events.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -28,10 +29,10 @@ import static utils.ThemeConfiguration.setThemeMode;
 
 public class MenuComponent extends MenuBar implements Component{
 
-    private final SatelliteApplicationController mainController;
-    static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
+    private final MainController mainController;
+    static final Logger logger = LogManager.getLogger(MainController.class.getName());
 
-    public MenuComponent(SatelliteApplicationController mainController) {
+    public MenuComponent(MainController mainController) {
         super();
         this.mainController = mainController;
     }
@@ -78,19 +79,49 @@ public class MenuComponent extends MenuBar implements Component{
         edit.getItems().addAll(undo,redo);
         Menu search = new Menu("Searchers");
         Menu lists = new Menu("List");
+
         MenuItem create = new MenuItem("Create new list");
+        create.setOnAction(new CreateListEvent(mainController));
+
+        MenuItem editList = new MenuItem("Edit list");
+        editList.setOnAction(new EditListEvent(mainController));
+
+        MenuItem delete = new MenuItem("Delete list");
+        delete.setOnAction(new DeleteListEvent(mainController));
+
         MenuItem addSel = new MenuItem("Add selected products to list");
+        addSel.setOnAction(new AddSelectedToListEvent(mainController));
+
         MenuItem addAll = new MenuItem("Add all product to list");
+        addAll.setOnAction(new AddAllToListEvent(mainController));
+
+        MenuItem deselect = new MenuItem("Delete selected products from list");
+        deselect.setOnAction(new DeleteSelectedFromListEvent(mainController));
+
+        MenuItem preferenceImg = new MenuItem("Preference image...");
+        preferenceImg.setOnAction(new AddReferenceImageEvent(mainController));
+
+
+        lists.getItems().addAll(create,editList, delete,addSel,addAll,deselect,new SeparatorMenuItem(),preferenceImg);
+
         MenuItem searcher = new MenuItem("Copernicus Open Search");
         Menu downloads = new Menu("Downloads");
+
+        MenuItem downloadList = new MenuItem("Download current list");
+        downloadList.setOnAction(new DownloadProductListEvent(mainController));
+
+        MenuItem downloadProducts = new MenuItem("Download selected products");
+        downloadProducts.setOnAction(new DownloadSelectedProductEvent(mainController));
+
         MenuItem preferences = new MenuItem("Preferences");
+
+        downloads.getItems().addAll(downloadList,downloadProducts,preferences);
+
         Menu processing = new Menu("Processing");
         MenuItem listProcessing = new MenuItem("Process list");
         listProcessing.setOnAction(e->mainController.process());
         processing.getItems().add(listProcessing);
-        downloads.getItems().add(preferences);
         preferences.setOnAction(e->openDownloadPreferences());
-        lists.getItems().addAll(create,addSel,addAll);
         searcher.setOnAction(e -> mainController.getTabController().load(new CopernicusOpenSearchController("id")));
         search.getItems().addAll(searcher);
         this.getMenus().addAll(file,edit,search,lists,downloads,processing);
@@ -120,7 +151,7 @@ public class MenuComponent extends MenuBar implements Component{
     }
 
     @Override
-    public SatelliteApplicationController getMainController() {
+    public MainController getMainController() {
         return mainController;
     }
 

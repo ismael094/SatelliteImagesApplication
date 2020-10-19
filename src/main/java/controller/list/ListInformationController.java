@@ -368,8 +368,8 @@ public class ListInformationController extends ProductListTabItem {
                                 .or(selectReferenceImage.selectedProperty()
                                         .not()));
         deleteGroundTruth.disableProperty().bind(selectReferenceImage.selectedProperty().not());
-        image.fitWidthProperty().bind(multimediaPane.widthProperty());
-        image.fitHeightProperty().bind(multimediaPane.heightProperty());
+        image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
+        image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));
     }
 
     private void drawInMapTheAreasOfWork() {

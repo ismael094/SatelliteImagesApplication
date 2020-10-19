@@ -1,6 +1,6 @@
 package gui.components;
 
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import javafx.scene.control.TextArea;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
@@ -13,10 +13,10 @@ import java.util.List;
 public class ConsoleComponent extends TextArea implements Component {
 
     public static final String LINE = "\n";
-    private final SatelliteApplicationController mainController;
+    private final MainController mainController;
     private final List<ComponentChangeListener> listTreeViewListener;
 
-    public ConsoleComponent(SatelliteApplicationController mainController) {
+    public ConsoleComponent(MainController mainController) {
         super();
         this.mainController = mainController;
         this.listTreeViewListener = new ArrayList<>();
@@ -33,7 +33,7 @@ public class ConsoleComponent extends TextArea implements Component {
     }
 
     @Override
-    public SatelliteApplicationController getMainController() {
+    public MainController getMainController() {
         return mainController;
     }
 

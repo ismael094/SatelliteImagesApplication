@@ -69,25 +69,44 @@
                   </BorderPane>
                   <AnchorPane GridPane.columnIndex="2">
                      <children>
-                        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="485.0" prefWidth="605.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="605.0" prefWidth="811.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" prefWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints maxHeight="194.0" minHeight="0.0" percentHeight="15.0" prefHeight="110.0" vgrow="SOMETIMES" />
-                              <RowConstraints maxHeight="603.0" minHeight="211.0" percentHeight="93.0" prefHeight="493.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="194.0" minHeight="0.0" percentHeight="15.0" prefHeight="33.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="603.0" minHeight="40.0" percentHeight="10.0" prefHeight="190.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="603.0" minHeight="67.0" percentHeight="80.0" prefHeight="364.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <GridPane prefHeight="430.0" prefWidth="326.0" GridPane.rowIndex="1">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.60001220703126" minWidth="10.0" percentWidth="100.0" prefWidth="205.60001220703126" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints maxHeight="472.0" minHeight="400.0" prefHeight="451.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="440.0" minHeight="47.0" prefHeight="68.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                </rowConstraints>
+                              <GridPane alignment="CENTER" prefHeight="190.0" prefWidth="405.0" GridPane.rowIndex="1">
+                                 <columnConstraints>
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints maxHeight="89.0" minHeight="10.0" prefHeight="84.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="49.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <GridPane>
+                                    <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                       <children>
+                                          <Button fx:id="searchGroundTruth" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Search reference image..." />
+                                          <Button fx:id="deleteGroundTruth" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="31.0" prefWidth="188.0" text="Delete reference image" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
+                                       <children>
+                                          <Button fx:id="addAreaOfProduct" mnemonicParsing="false" prefHeight="26.0" prefWidth="146.0" text="Add area of work" />
+                                          <Button fx:id="deleteSelectedArea" mnemonicParsing="false" text="Delete Area of work" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </GridPane>
+                              <AnchorPane GridPane.rowIndex="2">
+                                 <children>
+                                    <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <columnConstraints>
                                           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="528.0" minWidth="285.0" percentWidth="40.0" prefWidth="285.0" />
                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="564.0" minWidth="10.0" percentWidth="60.0" prefWidth="526.0" />
@@ -101,12 +120,12 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </padding>
                                              <children>
-                                                <ToggleSwitch fx:id="selectReferenceImage" layoutX="297.0" layoutY="9.0" prefHeight="18.0" prefWidth="143.0" text="Image reference Layer" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="9.0" />
+                                                <ToggleSwitch fx:id="selectReferenceImage" layoutX="297.0" layoutY="9.0" prefHeight="18.0" prefWidth="143.0" style="-fx-background-color: white;" text="Image reference Layer" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="9.0" />
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane fx:id="multimediaPane" minWidth="300.0" prefHeight="411.0" prefWidth="273.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                              <children>
-                                                <ImageView fx:id="image" fitHeight="280.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+                                                <ImageView fx:id="image" fitHeight="280.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" smooth="false">
                                                    <image>
                                                       <Image url="@../img/no_photo.jpg" />
                                                    </image>
@@ -121,33 +140,8 @@
                                           </AnchorPane>
                                        </children>
                                     </GridPane>
-                                    <GridPane alignment="CENTER" prefHeight="190.0" prefWidth="405.0" GridPane.rowIndex="1">
-                                       <columnConstraints>
-                                          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints maxHeight="89.0" minHeight="10.0" prefHeight="84.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="49.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <children>
-                                          <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                                             <children>
-                                                <Button fx:id="searchGroundTruth" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Search reference image..." />
-                                                <Button fx:id="deleteGroundTruth" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="31.0" prefWidth="188.0" text="Delete reference image" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
-                                             <children>
-                                                <Button fx:id="addAreaOfProduct" mnemonicParsing="false" prefHeight="26.0" prefWidth="146.0" text="Add area of work" />
-                                                <Button fx:id="deleteSelectedArea" mnemonicParsing="false" text="Delete Area of work" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </GridPane>
                                  </children>
-                              </GridPane>
+                              </AnchorPane>
                               <VBox alignment="CENTER" prefHeight="101.0" prefWidth="811.0">
                                  <children>
                                     <Label fx:id="title" styleClass="h1" text="Label">

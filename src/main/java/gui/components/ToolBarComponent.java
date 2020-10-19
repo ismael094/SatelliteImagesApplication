@@ -1,6 +1,6 @@
 package gui.components;
 
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ToolBarComponent extends ToolBar implements Component{
 
-    private final SatelliteApplicationController mainController;
+    private final MainController mainController;
     private Map<String, ToolbarButton> buttonListMap;
     private Map<String, ToolbarButton> buttonProductListMap;
     private Map<String, ToolbarButton> buttonDownloadMap;
@@ -22,7 +22,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     //private final List<ComponentChangeListener> toolBarListener;
     private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
 
-    public ToolBarComponent(SatelliteApplicationController mainController) {
+    public ToolBarComponent(MainController mainController) {
         super();
         this.mainController = mainController;
         this.toolBarListener = new LinkedHashMap<>();
@@ -88,7 +88,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     @Override
-    public SatelliteApplicationController getMainController() {
+    public MainController getMainController() {
         return mainController;
     }
 

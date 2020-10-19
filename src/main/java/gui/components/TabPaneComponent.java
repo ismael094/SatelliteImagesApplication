@@ -1,7 +1,7 @@
 package gui.components;
 
 import controller.interfaces.TabItem;
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import controller.search.SearchController;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
@@ -24,11 +24,11 @@ import static utils.AlertFactory.showErrorDialog;
 
 public class TabPaneComponent extends TabPane implements Component {
     static final Logger logger = LogManager.getLogger(TabPaneComponent.class.getName());
-    private final SatelliteApplicationController mainController;
+    private final MainController mainController;
     private final Map<String,TabItem> loadedControllers;
     private final BooleanProperty isSearchControllerOpen;
 
-    public TabPaneComponent(SatelliteApplicationController mainController) {
+    public TabPaneComponent(MainController mainController) {
         super();
         getStyleClass().add(JMetroStyleClass.UNDERLINE_TAB_PANE);
         setId("TabComponent");
@@ -51,7 +51,7 @@ public class TabPaneComponent extends TabPane implements Component {
     }
 
     @Override
-    public SatelliteApplicationController getMainController() {
+    public MainController getMainController() {
         return mainController;
     }
 

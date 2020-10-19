@@ -1,6 +1,6 @@
 package gui.components;
 
-import controller.SatelliteApplicationController;
+import controller.MainController;
 import controller.cell.ListTreeViewCell;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
@@ -27,10 +27,10 @@ import java.util.List;
 
 public class ListTreeViewComponent extends TreeView<Pair<String,Object>> implements Component  {
 
-    private final SatelliteApplicationController mainController;
+    private final MainController mainController;
     private final List<ComponentChangeListener> listTreeViewListener;
 
-    public ListTreeViewComponent(SatelliteApplicationController mainController) {
+    public ListTreeViewComponent(MainController mainController) {
         super();
         this.mainController = mainController;
         this.listTreeViewListener = new ArrayList<>();
@@ -89,7 +89,7 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
     }
 
     @Override
-    public SatelliteApplicationController getMainController() {
+    public MainController getMainController() {
         return mainController;
     }
 
