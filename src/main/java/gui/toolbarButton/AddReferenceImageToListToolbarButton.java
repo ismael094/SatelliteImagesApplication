@@ -1,26 +1,12 @@
 package gui.toolbarButton;
 
-import controller.interfaces.TabItem;
-import controller.search.SearchController;
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.AddReferenceImageEvent;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Tab;
-import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
-import model.list.ProductListDTO;
-import model.products.ProductDTO;
-import utils.AlertFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+public class AddReferenceImageToListToolbarButton extends ToolbarButton {
 
-public class AddGroundTruthToListToolbarButton extends ToolbarButton {
-
-    public AddGroundTruthToListToolbarButton(ToolBarComponent toolBarComponent) {
+    public AddReferenceImageToListToolbarButton(ToolBarComponent toolBarComponent) {
         super(toolBarComponent);
         setId("addToListGround");
     }

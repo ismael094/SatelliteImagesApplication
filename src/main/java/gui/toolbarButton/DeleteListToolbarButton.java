@@ -1,19 +1,8 @@
 package gui.toolbarButton;
 
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DeleteListEvent;
-import model.events.EventType;
-import model.events.ToolbarComponentEvent;
-import javafx.event.ActionEvent;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
-import model.list.ProductListDTO;
-import services.database.ProductListDBDAO;
-
-import java.util.List;
 
 public class DeleteListToolbarButton extends ToolbarButton {
 

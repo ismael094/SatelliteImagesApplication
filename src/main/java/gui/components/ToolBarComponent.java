@@ -1,6 +1,7 @@
 package gui.components;
 
 import controller.MainController;
+import gui.menu.FileMenu;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
@@ -9,6 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -21,6 +24,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     private List<Map<String, ToolbarButton>> buttonList;
     //private final List<ComponentChangeListener> toolBarListener;
     private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
+    static final Logger logger = LogManager.getLogger(ToolBarComponent.class.getName());
 
     public ToolBarComponent(MainController mainController) {
         super();
@@ -45,7 +49,7 @@ public class ToolBarComponent extends ToolBar implements Component{
         buttonProductListMap.put("selectAll",new AddAllToListToolbarButton(this));
         buttonProductListMap.put("addToList", new AddSelectedToListToolbarButton(this));
         buttonProductListMap.put("deleteSelected",new DeleteSelectedFromListToolbarButton(this));
-        buttonProductListMap.put("addGroundToList",new AddGroundTruthToListToolbarButton(this));
+        buttonProductListMap.put("addGroundToList",new AddReferenceImageToListToolbarButton(this));
         buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
         buttonDownloadMap.put("downloadSingle",new DownloadSelectedProductToolbarButton(this));
     }

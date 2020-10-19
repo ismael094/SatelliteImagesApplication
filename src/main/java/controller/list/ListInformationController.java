@@ -362,11 +362,6 @@ public class ListInformationController extends ProductListTabItem {
         size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
         title.textProperty().bind(productListDTO.nameProperty());
         description.textProperty().bind(productListDTO.descriptionProperty());
-        searchGroundTruth.disableProperty()
-                .bind(
-                        Bindings.isEmpty(productListDTO.getAreasOfWork())
-                                .or(selectReferenceImage.selectedProperty()
-                                        .not()));
         deleteGroundTruth.disableProperty().bind(selectReferenceImage.selectedProperty().not());
         image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
         image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));

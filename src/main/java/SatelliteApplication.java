@@ -1,6 +1,7 @@
 
 import controller.identification.LoginController;
 import controller.MainController;
+import gui.events.AppCloseEvent;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -61,9 +62,7 @@ public class SatelliteApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(t -> {
-            logger.atInfo().log("===Closing Satellite App===");
-            Platform.exit();
-            System.exit(0);
+           new AppCloseEvent(controller).handle(null);
         });
 
     }

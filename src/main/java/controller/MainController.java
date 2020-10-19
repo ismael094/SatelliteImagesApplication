@@ -5,6 +5,7 @@ import controller.download.DownloadController;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import gui.components.*;
+import gui.events.AppCloseEvent;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
@@ -68,6 +69,7 @@ public class MainController implements Initializable {
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
         wait.setVisible(false);
         initComponents();
+
     }
 
     private void initComponents() {

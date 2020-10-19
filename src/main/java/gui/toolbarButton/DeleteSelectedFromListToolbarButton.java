@@ -1,15 +1,8 @@
 package gui.toolbarButton;
 
-import controller.interfaces.TabItem;
-import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DeleteSelectedFromListEvent;
-import model.events.EventType;
-import model.events.ToolbarComponentEvent;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Tab;
-import model.list.ProductListDTO;
 
 public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
 

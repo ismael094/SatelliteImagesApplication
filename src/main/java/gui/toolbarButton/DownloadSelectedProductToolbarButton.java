@@ -1,18 +1,8 @@
 package gui.toolbarButton;
 
-import controller.interfaces.ProductListTabItem;
-import controller.interfaces.TabItem;
-import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DownloadSelectedProductEvent;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Tab;
-import model.products.ProductDTO;
-import services.download.CopernicusDownloader;
-import services.download.DownloadItem;
-import services.download.Downloader;
 
 public class DownloadSelectedProductToolbarButton  extends ToolbarButton{
 
