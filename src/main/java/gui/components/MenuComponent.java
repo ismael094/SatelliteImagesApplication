@@ -84,12 +84,16 @@ public class MenuComponent extends MenuBar implements Component{
         MenuItem searcher = new MenuItem("Copernicus Open Search");
         Menu downloads = new Menu("Downloads");
         MenuItem preferences = new MenuItem("Preferences");
+        Menu processing = new Menu("Processing");
+        MenuItem listProcessing = new MenuItem("Process list");
+        listProcessing.setOnAction(e->mainController.process());
+        processing.getItems().add(listProcessing);
         downloads.getItems().add(preferences);
         preferences.setOnAction(e->openDownloadPreferences());
         lists.getItems().addAll(create,addSel,addAll);
         searcher.setOnAction(e -> mainController.getTabController().load(new CopernicusOpenSearchController("id")));
         search.getItems().addAll(searcher);
-        this.getMenus().addAll(file,edit,search,lists,downloads);
+        this.getMenus().addAll(file,edit,search,lists,downloads,processing);
     }
 
     private void openDownloadPreferences() {

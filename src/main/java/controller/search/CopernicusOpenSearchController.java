@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 import static utils.ThemeConfiguration.getJMetroStyled;
 import static utils.ThemeConfiguration.getThemeMode;
 
-public class CopernicusOpenSearchController implements TabItem, SearchController  {
+public class CopernicusOpenSearchController extends SearchController<ProductDTO>  {
 
     public static final String SENTINEL_1 = "Sentinel-1";
     public static final String SENTINEL_2 = "Sentinel-2";

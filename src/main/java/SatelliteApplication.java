@@ -79,6 +79,7 @@ public class SatelliteApplication extends Application {
 
     private UserDTO getLoginUserDialog() {
         URL location = getClass().getResource("/fxml/LoginView.fxml");
+        System.out.println(location.toString());
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = null;
         try {

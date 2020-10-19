@@ -1,6 +1,5 @@
 package controller.search;
 
-import controller.interfaces.TabItem;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
 import javafx.collections.ObservableList;
@@ -22,7 +21,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.ProductOData;
 import model.list.ProductListDTO;
-import model.openSearcher.ProductParameters;
 import model.products.ProductDTO;
 import services.search.ODataSearcher;
 
@@ -32,12 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class CopernicusODataSearchController implements SearchController, TabItem {
+public class CopernicusODataSearchController extends SearchController<ProductDTO> {
 
     @FXML
     private ImageView image;
-    private ODataSearcher ODataSearcher;
-    private Filter filter;
+    private final ODataSearcher ODataSearcher;
+    private final Filter filter;
     private ContextMenu productContextMenu;
     private List<ProductListDTO> productListDTO;
     private AddProductToProductListDialog addProductToProductListDialog;
@@ -47,7 +45,7 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     private TextArea textArea;
 
     @FXML
-    private ChoiceBox<String> sateliteList;
+    private ChoiceBox<String> satelliteList;
     @FXML
     public ChoiceBox<String> instrumentList;
 
@@ -71,9 +69,9 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     public void initialize() {
-        sateliteList.setItems(FXCollections.observableArrayList(
+        satelliteList.setItems(FXCollections.observableArrayList(
                 "S1", "S2", "S3"));
-        sateliteList.setValue("S1");
+        satelliteList.setValue("S1");
         instrumentList.setItems(FXCollections.observableArrayList(
                 "GRD", "IW"));
         instrumentList.setValue("GRD");
@@ -156,7 +154,7 @@ public class CopernicusODataSearchController implements SearchController, TabIte
     }
 
     private void addFilters() {
-        addNameFilter(sateliteList.getValue());
+        addNameFilter(satelliteList.getValue());
         addWKTFilter(GTMapSearchController.getWKT());
         addInstrumentFilter(instrumentList.getValue());
         if (rangeIsValid()) {

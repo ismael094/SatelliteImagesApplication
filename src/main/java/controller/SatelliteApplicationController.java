@@ -2,10 +2,13 @@ package controller;
 
 import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
+import controller.interfaces.ProductListTabItem;
+import controller.interfaces.TabItem;
 import gui.components.*;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,6 +28,8 @@ import org.apache.logging.log4j.Logger;
 import services.database.UserDBDAO;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
+import services.processing.Processing;
+import services.processing.SentinelProcessing;
 
 import java.io.IOException;
 import java.net.URL;
@@ -55,6 +60,7 @@ public class SatelliteApplicationController implements Initializable {
     static final Logger logger = LogManager.getLogger(SatelliteApplicationController.class.getName());
     private UserDTO user;
     private CopernicusDownloader copernicusDownloader;
+    private Processing processor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -72,8 +78,13 @@ public class SatelliteApplicationController implements Initializable {
         initToolBarComponent();
         initConsoleComponent();
         initDownloadManager();
+        initProcessors();
 
         initListeners();
+    }
+
+    private void initProcessors() {
+        processor = new SentinelProcessing();
     }
 
     private void initDownloadManager() {
@@ -222,4 +233,22 @@ public class SatelliteApplicationController implements Initializable {
         listTreeViewComponent.reload();
     }
 
+    public void process() {
+        Tab active = tabPaneComponent.getActive();
+        TabItem controllerOf = tabPaneComponent.getControllerOf(active);
+        if (controllerOf instanceof ProductListTabItem) {
+            ProductListDTO productList = ((ProductListTabItem) controllerOf).getProductList();
+            Task<Boolean> task = new Task<Boolean>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    processor.process(productList);
+                    return true;
+                }
+            };
+
+            new Thread(task).start();
+
+        }
+
+    }
 }

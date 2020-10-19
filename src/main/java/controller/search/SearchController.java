@@ -1,15 +1,17 @@
 package controller.search;
 
+import controller.interfaces.TabItem;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.ObservableList;
-import model.openSearcher.ProductParameters;
 import model.products.ProductDTO;
 
 import java.util.Map;
 
-public interface SearchController {
-    void search();
-    void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses);
-    Map<String, String> getParametersOfAllResponses();
-    ObservableList<ProductDTO> getSelectedProducts();
-    ObservableList<ProductDTO> getProducts();
+public abstract class SearchController<T> implements TabItem {
+
+    public abstract void search();
+    public abstract void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses);
+    public abstract Map<String, String> getParametersOfAllResponses();
+    public abstract ObservableList<T> getSelectedProducts();
+    public abstract ObservableList<T> getProducts();
 }

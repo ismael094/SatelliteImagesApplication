@@ -53,13 +53,11 @@ public class AddSelectedToListToolbarButton extends ToolbarButton {
         }
     }
 
-
-
     private ObservableList<ProductDTO> getSelectedProducts() {
-        Tab tab = toolBar.getMainController().getTabController().getSelectionModel().getSelectedItem();
+        Tab tab = toolBar.getMainController().getTabController().getActive();
         TabItem controller = toolBar.getMainController().getTabController().getControllerOf(tab);
         if (controller instanceof SearchController)
-            return ((SearchController) controller).getSelectedProducts();
+            return ((SearchController<ProductDTO>) controller).getSelectedProducts();
         return null;
     }
 }

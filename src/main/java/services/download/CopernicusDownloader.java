@@ -77,11 +77,8 @@ public class CopernicusDownloader implements Downloader, Runnable {
         return timeLeft;
     }
 
-
-
-
     private synchronized void add(DownloadItem item) {
-        if (queue.contains(item) || historical.contains(item) || FileUtils.fileExists(item.getProductDTO().getTitle()))
+        if (FileUtils.fileExists(item.getProductDTO().getTitle()) || queue.contains(item) || historical.contains(item) )
             return;
         queue.add(item);
         historical.add(item);

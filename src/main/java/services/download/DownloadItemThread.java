@@ -173,12 +173,21 @@ public class DownloadItemThread extends Service<Boolean> {
     }
 
     public void close() throws IOException {
-        inputStream.close();
-        in.close();
-        fileOutputStream.close();
-        if (connection.getInputStream() != null)
-            connection.getInputStream().close();
-        connection.disconnect();
+        if (inputStream != null)
+            inputStream.close();
+
+        if (in != null)
+            in.close();
+
+        if (fileOutputStream != null)
+            fileOutputStream.close();
+
+        if (connection != null) {
+            if (connection.getInputStream() != null)
+                connection.getInputStream().close();
+            connection.disconnect();
+        }
+
     }
 
     private double getContentLengthInGb(double v, double v2, double v3) {
