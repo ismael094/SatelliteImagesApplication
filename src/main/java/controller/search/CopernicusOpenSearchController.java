@@ -351,7 +351,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private void setSentinel1Polarisation() {
         polarisation.setItems(FXCollections.observableArrayList(
                 "All","VV", "VH","HV","VH","HH+HV","VV+VH"));
-        polarisation.setValue("All");
+        //polarisation.setValue("All");
     }
 
     private void setSentinel1SensorMode() {

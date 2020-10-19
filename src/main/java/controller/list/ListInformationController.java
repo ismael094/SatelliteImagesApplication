@@ -7,6 +7,7 @@ import controller.interfaces.ProductListTabItem;
 import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.TabPaneComponent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -19,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -69,17 +71,16 @@ public class ListInformationController extends ProductListTabItem {
     @FXML
     private AnchorPane mapPane;
     @FXML
-    private Button addAreaOfProduct;
-    @FXML
-    private Button deleteSelectedArea;
-    @FXML
-    private Button searchGroundTruth;
-    @FXML
-    private Button deleteGroundTruth;
-    @FXML
     private ToggleSwitch selectReferenceImage;
     @FXML
     private AnchorPane multimediaPane;
+    @FXML
+    private Button deleteFeature;
+
+    @FXML
+    private Button addAreaOfProduct;
+    @FXML
+    private Button searchGroundTruth;
 
     private String idSelected;
 
@@ -219,6 +220,7 @@ public class ListInformationController extends ProductListTabItem {
 
 
     private void initData() {
+
         bindProperties();
 
         initProductDTOListView();
@@ -235,13 +237,29 @@ public class ListInformationController extends ProductListTabItem {
 
         initAddWorkingAreaButton();
 
-        initDeleteSelectedAreaOfWorkButton();
-
         initMapController();
 
-        onDeleteGroundTruthButtonAction();
-
         onChangeToggleAction();
+
+        onDeleteFeatureActionRemoveFeature();
+        addAreaOfProduct.toFront();
+    }
+
+    private void onDeleteFeatureActionRemoveFeature() {
+        GlyphsDude.setIcon(deleteFeature, MaterialDesignIcon.ERASER);
+        deleteFeature.toFront();
+        deleteFeature.setOnAction(e->{
+            if (selectReferenceImage.isSelected()) {
+                ProductDTO productDTO = productListDTO.getGroundTruthProducts().stream()
+                        .filter(p -> p.getId().equals(mapController.getSelectedFeatureId()))
+                        .findAny()
+                        .orElse(null);
+                productListDTO.removeGroundTruth(productDTO);
+            } else {
+                productListDTO.removeAreaOfWork(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
+                drawInMapTheAreasOfWork();
+            }
+        });
     }
 
     private void onChangeToggleAction() {
@@ -256,17 +274,6 @@ public class ListInformationController extends ProductListTabItem {
                 mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
             }
         });
-    }
-
-    private void onDeleteGroundTruthButtonAction() {
-        GlyphsDude.setIcon(deleteGroundTruth, FontAwesomeIcon.ERASER);
-        deleteGroundTruth.setOnAction(e->{
-            ProductDTO productDTO = productListDTO.getGroundTruthProducts().stream()
-                    .filter(p -> p.getId().equals(mapController.getSelectedFeatureId()))
-                    .findAny()
-                    .orElse(null);
-            productListDTO.removeGroundTruth(productDTO);
-         });
     }
 
     private void onGroundTruthChangeRefreshMap() {
@@ -333,16 +340,9 @@ public class ListInformationController extends ProductListTabItem {
         });
     }
 
-    private void initDeleteSelectedAreaOfWorkButton() {
-        GlyphsDude.setIcon(deleteSelectedArea, FontAwesomeIcon.ERASER);
-        deleteSelectedArea.setOnAction(e->{
-            productListDTO.removeAreaOfWork(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
-            drawInMapTheAreasOfWork();
-        });
-    }
-
     private void initAddWorkingAreaButton() {
-        GlyphsDude.setIcon(addAreaOfProduct, FontAwesomeIcon.LOCATION_ARROW);
+        Tooltip.install(addAreaOfProduct,new Tooltip("Add area of work"));
+        GlyphsDude.setIcon(addAreaOfProduct, MaterialDesignIcon.BOOKMARK_PLUS);
         addAreaOfProduct.setOnAction(event -> {
             if (!mapController.getWKT().isEmpty()) {
                 productListDTO.addAreaOfWork(mapController.getWKT());
@@ -362,7 +362,6 @@ public class ListInformationController extends ProductListTabItem {
         size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
         title.textProperty().bind(productListDTO.nameProperty());
         description.textProperty().bind(productListDTO.descriptionProperty());
-        deleteGroundTruth.disableProperty().bind(selectReferenceImage.selectedProperty().not());
         image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
         image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));
     }

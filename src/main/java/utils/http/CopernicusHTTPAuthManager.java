@@ -75,10 +75,11 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         connection = null;
         connection = (HttpsURLConnection) path.openConnection();
         connection.setRequestProperty("Accept-Encoding", "identity");
-        connection.setConnectTimeout(5000);
+        connection.setConnectTimeout(90000);
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 RuxitSynthetic/1.0 v6418838628 t38550 ath9b965f92 altpub");
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-length", "0");
+        connection.connect();
         isConnectionResponseOK(connection);
         return connection;
     }
@@ -89,11 +90,12 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
     }
 
     private void isConnectionResponseOK(HttpsURLConnection connection) throws IOException, AuthenticationException {
-        if (connection.getResponseCode() == 401) {
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             logger.atWarn().log("URL respond with {} code, login error?",connection.getResponseCode());
             closeConnection();
             throw new AuthenticationException("Incorrect username or password");
-        } else if (connection.getResponseCode() != 200) {
+        } else if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             logger.atWarn().log("URL respond with {} code {}",connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),""));
             connection.getInputStream().close();
             closeConnection();
