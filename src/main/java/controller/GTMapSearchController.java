@@ -6,6 +6,8 @@ import gui.GTMap;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
@@ -26,9 +28,16 @@ import java.util.List;
 
 public class GTMapSearchController {
 
+    @FXML
+    private AnchorPane mapContainer;
+    @FXML
+    private Button delete;
+    @FXML
+    private Button reset;
+
+    private Parent parent;
 
     private final GTMap geotoolsMap;
-    private final BorderPane border;
     private boolean isSearchAreaDrawing;
     private Point2D initialCoordinates;
     private double baseDragedX;
@@ -46,22 +55,35 @@ public class GTMapSearchController {
     private String searchArea;
     private String selectedLayerEvent;
 
-    public GTMapSearchController(double width, double height, boolean controlBarActive) {
+    public GTMapSearchController(double width, double height, boolean showControls) {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GeotoolsMapView.fxml"));
+        loader.setController(this);
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         wasPrimaryButtonClicked = new SimpleBooleanProperty(false);
         wasSecondaryButtonClicked = new SimpleBooleanProperty(false);
         isSearchAreaDrawing = false;
-        HBox controlBar = controlBar();
         geotoolsMap = new GTMap((int)width,(int)height,false);
-        border = new BorderPane();
-        if (controlBarActive)
-            border.setTop(controlBar);
-        else
-            border.setTop(null);
-        border.setCenter(geotoolsMap);
-        border.setLeft(null);
-        border.setRight(null);
+        //geotoolsMap.widthProperty().bind(mapContainer.widthProperty());
+        //geotoolsMap.heightProperty().bind(mapContainer.heightProperty());
+
+        if (showControls) {
+            getDeleteSearchAreaButton();
+            getResetMapButton();
+        }
+        System.out.println(mapContainer.getWidth());
+        mapContainer.getChildren().add(geotoolsMap);
+        AnchorPane.setTopAnchor(geotoolsMap,0.0);
+        AnchorPane.setBottomAnchor(geotoolsMap,0.0);
+        AnchorPane.setRightAnchor(geotoolsMap,0.0);
+        AnchorPane.setLeftAnchor(geotoolsMap,0.0);
         addGeotoolsMapEvents();
+        geotoolsMap.toBack();
         dragged = false;
 
         selectedFeaturesBorderColor = Color.BLUE;
@@ -70,8 +92,26 @@ public class GTMapSearchController {
         notSelectedFeaturesFillColor = null;
     }
 
+    public GTMap getMap() {
+        return geotoolsMap;
+    }
+
+    public HBox controlBar() {
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(15, 12, 15, 12));
+        hbox.setSpacing(10);
+
+
+
+
+        hbox.setSpacing(10f);
+        //hbox.getChildren().addAll(deleteSearchAreaButton,resetMap);
+
+        return hbox;
+    }
+
     public Parent getView() {
-        return border;
+        return parent;
     }
 
     private void addGeotoolsMapEvents() {
@@ -209,36 +249,19 @@ public class GTMapSearchController {
         geotoolsMap.createFeatureFromWKT(wkt,id,layer);
     }
 
-    public HBox controlBar() {
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 12));
-        hbox.setSpacing(10);
-
-        Button deleteSearchAreaButton = getDeleteSearchAreaButton();
-        Button resetMap = getResetMapButton();
-
-
-        hbox.setSpacing(10f);
-        hbox.getChildren().addAll(deleteSearchAreaButton,resetMap);
-
-        return hbox;
+    private void getResetMapButton() {
+        GlyphsDude.setIcon(reset,FontAwesomeIcon.EXPAND,"Reset map");
+        reset.setAccessibleText("Reset map");
+        reset.setOnAction(e-> geotoolsMap.resetMap());
     }
 
-    private Button getResetMapButton() {
-        Button resetMap = GlyphsDude.createIconButton(FontAwesomeIcon.EXPAND,"Reset map");
-        resetMap.setAccessibleText("Reset map");
-        resetMap.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> geotoolsMap.resetMap());
-        return resetMap;
-    }
-
-    private Button getDeleteSearchAreaButton() {
-        Button clearButton = GlyphsDude.createIconButton(FontAwesomeIcon.ERASER,"Delete selection");
-        clearButton.setAccessibleText("Delete selection");
-        clearButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{
+    private void getDeleteSearchAreaButton() {
+        GlyphsDude.setIcon(delete,FontAwesomeIcon.ERASER,"Delete selection");
+        delete.setAccessibleText("Delete selection");
+        delete.setOnAction(e->{
             geotoolsMap.removeLayer("searchArea");
             searchArea = null;
         });
-        return clearButton;
     }
 
     public String getWKT() {

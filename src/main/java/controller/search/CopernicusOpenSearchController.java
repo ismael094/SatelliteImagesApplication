@@ -241,7 +241,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void geotoolsController() {
-        mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(), true);
+        mapController = new GTMapSearchController(1000,630, true);
         mapController.addSelectedAreaEvent("products");
 
         onMouseClickInMapHighlightSelectedProductsEvent();
@@ -253,8 +253,8 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void onMouseClickInMapHighlightSelectedProductsEvent() {
-        BorderPane view = (BorderPane)mapController.getView();
-        view.getCenter().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
+        AnchorPane view = (AnchorPane)mapController.getView();
+        mapController.getMap().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
             //If there are not selected products in map, deselect items in listview
             if (mapController.getSelectedFeatureId() == null) {
                 resultProductsList.getSelectionModel().clearSelection();

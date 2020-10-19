@@ -121,6 +121,13 @@ public class GTMap extends Canvas {
         return FileDataStoreFinder.getDataStore(file);
     }
 
+    /**
+     * Add new feature to layer @layer
+     * @param wktCoordinates WKT string with the area to draw
+     * @param id Id of the feature to identified it
+     * @param layer Name of the layer to draw the feature
+     * @throws ParseException Error reading the WKT String
+     */
     public void createFeatureFromWKT(String wktCoordinates, String id, String layer) throws ParseException {
 
         SimpleFeatureBuilder featureBuilder;
@@ -137,6 +144,10 @@ public class GTMap extends Canvas {
         layers.get(layer).add(featureBuilder.buildFeature(id));
     }
 
+    /**
+     * Clear feature of one layer
+     * @param layer Name of the layer to clear the features
+     */
     public void clearFeatures(String layer) {
         List<SimpleFeature> simpleFeatures = layers.getOrDefault(layer,null);
 
@@ -144,6 +155,15 @@ public class GTMap extends Canvas {
             simpleFeatures.clear();
     }
 
+    /**
+     * Highlight features in a layer using its ID
+     * @param ids IDs of the feature to highlight
+     * @param layerName Name of the layer which contain the features
+     * @param selectedBorderColor Border Color of the selected features
+     * @param selectedFillColor Fill Color of the selected features
+     * @param notSelectedBorderColor Border Color of the not selected features
+     * @param notSelectedFillColor Fill Color of the not selected features
+     */
     public void highlightFeatures(List<String> ids, String layerName, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor)  {
         FeatureLayer layer = (FeatureLayer) getLayerByName(layerName);
         if (layer == null)
@@ -162,6 +182,12 @@ public class GTMap extends Canvas {
         refresh();
     }
 
+    /**
+     * Draw in map a layer and all its features
+     * @param layer Name of the layer
+     * @param borderColor Border color of the features
+     * @param fillColor Fill color of the features
+     */
     public void createAndDrawLayer(String layer, Color borderColor, Color fillColor) {
         removeLayer(layer);
         Layer resultsLayer = createLayer(layers.getOrDefault(layer, new ArrayList<>()),
@@ -200,6 +226,10 @@ public class GTMap extends Canvas {
         return new SimpleFeatureBuilder(builder.buildFeatureType());
     }
 
+    /**
+     * Draw map, all layers and features
+     * @param gc GraphicContext
+     */
     public void drawMap(GraphicsContext gc) {
         if (!repaint) {
             return;
@@ -218,38 +248,63 @@ public class GTMap extends Canvas {
 
     }
 
-    public void removeLayer(String title) {
-        mapContent.layers().remove(getLayerByName(title));
+    /**
+     * Remove layer
+     * @param name Name of the layer to remove
+     */
+    public void removeLayer(String name) {
+        mapContent.layers().remove(getLayerByName(name));
         refresh();
     }
 
+    /**
+     * Refresh map and all his layers
+     */
     public void refresh() {
         doSetDisplayArea(new ReferencedEnvelope(mapContent.getViewport().getBounds()));
     }
 
+    /**
+     * Select features contained in a point
+     * @param point Coordinates
+     * @param multipleSelection Allow to select more than one features
+     * @param layer Name of the layer to get features
+     * @param selectedBorderColor Border color of selected features
+     * @param selectedFillColor Border color of selected features
+     * @param notSelectedBorderColor Border color of not selected features
+     * @param notSelectedFillColor Fill color of not selected features
+     * @throws IOException Error while finding features
+     */
     public void selectFeature(Point2D point, boolean multipleSelection, String layer, Color selectedBorderColor, Color selectedFillColor, Color notSelectedBorderColor, Color notSelectedFillColor) throws IOException {
+        //Find layer
         FeatureLayer featureLayer = (FeatureLayer) getLayerByName(layer);
 
         if (featureLayer == null)
             return;
 
+        //Find features by coordinates
         FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates((int)point.getX(), (int)point.getY(), featureLayer);
 
+        //If multiple option is false, clear selectedFeatures list
         if (!multipleSelection || featureId == null)
             selectedFeatures.clear();
 
+        //If feature already in the list, remove it
         if (featureId != null && !selectedFeatures.contains(featureId))
             selectedFeatures.add(featureId);
         else if (featureId!=null) {
             selectedFeatures.remove(featureId);
         }
 
-        Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.1f, getLayerGeometryAttribute(featureLayer));
+        //Rule to features selected
+        Rule selectedRule = createRule(selectedBorderColor,selectedFillColor, 3f, 0.5f, getLayerGeometryAttribute(featureLayer));
         selectedRule.setFilter(ff.id(new HashSet<>(selectedFeatures)));
 
+        //Rule to not selected features
         Rule notSelectedRule = createRule(notSelectedBorderColor, notSelectedFillColor,1f,0.5f,getLayerGeometryAttribute(featureLayer));
         notSelectedRule.setElseFilter(true);
 
+        //Style layer
         Style selectedStyle = createSelectedFeatureStyle(selectedFeatures, selectedRule, notSelectedRule);
         featureLayer.setStyle(selectedStyle);
 
