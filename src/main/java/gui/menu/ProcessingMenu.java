@@ -1,25 +1,22 @@
 package gui.menu;
 
 import controller.MainController;
-import controller.download.DownloadPreferencesController;
-import controller.workflow.Sentinel1GRDWorkflowController;
+import controller.workflow.MyWorkflowController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import model.processing.Sentinel1GRDDefaultWorkflow;
+import model.processing.Workflow;
 import utils.ThemeConfiguration;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Optional;
-
-import static utils.ThemeConfiguration.getJMetroStyled;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ProcessingMenu extends Menu implements SatInfMenuItem{
     private final MainController mainController;
@@ -32,6 +29,7 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
 
     private void init() {
         MenuItem listProcessing = new MenuItem("Process list");
+        MenuItem myWorkflows = new MenuItem("My Workflows");
         Menu sentinel = new Menu("Sentinel");
         Menu sentinel1 = new Menu("Sentinel 1");
         MenuItem grd = new MenuItem("GRD Workflow");
@@ -48,7 +46,7 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
 
         grd.setOnAction(e->loadView());
         listProcessing.setOnAction(e->mainController.process());
-        getItems().addAll(listProcessing,sentinel);
+        getItems().addAll(myWorkflows,listProcessing,sentinel);
     }
 
     private void loadView() {
@@ -65,9 +63,13 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
         else
             jMetro = new JMetro(Style.DARK);
 
+        MyWorkflowController controller = fxmlLoader.getController();
+        List<Workflow> objects = new LinkedList<>();
+        objects.add(new Sentinel1GRDDefaultWorkflow());
+        controller.setWorkflows(objects);
         Stage stage = new Stage();
         stage.setResizable(false);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.setScene(scene);
         jMetro.setScene(scene);
         stage.show();

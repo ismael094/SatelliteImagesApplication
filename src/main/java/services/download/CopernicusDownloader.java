@@ -15,6 +15,7 @@ import model.listeners.DownloadListener;
 import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
+import services.Service;
 import utils.AlertFactory;
 import utils.FileUtils;
 

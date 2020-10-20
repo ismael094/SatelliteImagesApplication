@@ -1,25 +1,48 @@
 package services.processing;
 
 
+import com.bc.ceres.core.PrintWriterConciseProgressMonitor;
+import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.ProgressMonitorWrapper;
+import com.jfoenix.controls.JFXAlert;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialogLayout;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.stage.Modality;
+import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
 import model.processing.*;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProgressListener;
 import org.esa.snap.core.gpf.GPF;
+import org.jfree.fx.FXGraphics2D;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import utils.DownloadConfiguration;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static utils.ThemeConfiguration.getJMetroStyled;
 
 public class SentinelProcessing implements Processing {
 
@@ -100,7 +123,10 @@ public class SentinelProcessing implements Processing {
                 List<Product> tmp = new LinkedList<>();
                 System.out.println(subsets.size());
                 for (Product j : subsets) {
-                    //subsets.remove(j);
+                    System.out.println("==========");
+                    Band band = j.getBand("Sigma0_VV");
+                    System.out.println("dhsiaof");
+                    example(band.createColorIndexedImage(null));
                     saveProduct(j,ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId()+".dim", String.valueOf(op.getParameters().get("formatName")));
 
                     tmp.add(readProduct(ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId() + ".dim"));
@@ -137,5 +163,30 @@ public class SentinelProcessing implements Processing {
 
     private void closeProducts(List<Product> subsets) {
         subsets.forEach(Product::dispose);
+    }
+
+    private void example(BufferedImage image) {
+        System.out.println(image.getNumXTiles());
+        JFXAlert alert = new JFXAlert();
+        Canvas canvas = new Canvas();
+        GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
+        WritableImage writableImage = SwingFXUtils.toFXImage(image, null);
+        ImageView view = new ImageView(writableImage);
+        view.setFitHeight(200);
+        view.setFitWidth(200);
+        alert.initModality(Modality.WINDOW_MODAL);
+        alert.setOverlayClose(true);
+        JFXDialogLayout layout = new JFXDialogLayout();
+        layout.setHeading(new Label("test"));
+        layout.setBody(view);
+        JFXButton closeButton = new JFXButton("Accept");
+        closeButton.getStyleClass().add("dialog-accept");
+        closeButton.setOnAction(e -> alert.hideWithAnimation());
+        layout.setActions(closeButton);
+        alert.setContent(layout);
+        JMetro jMetro = getJMetroStyled();
+
+        jMetro.setScene(alert.getDialogPane().getScene());
+        Platform.runLater(alert::showAndWait);
     }
 }

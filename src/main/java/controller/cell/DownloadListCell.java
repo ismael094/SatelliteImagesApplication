@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import services.download.CopernicusDownloader;
 import services.download.DownloadItem;
 import services.download.Downloader;
 

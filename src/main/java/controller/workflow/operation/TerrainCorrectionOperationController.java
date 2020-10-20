@@ -1,17 +1,19 @@
 package controller.workflow.operation;
 
+import com.beust.jcommander.Strings;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import model.processing.Operation;
 import model.processing.Operator;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class TerrainCorrectionOperationController implements Initializable, OperationController {
@@ -26,10 +28,11 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     @FXML
     private ChoiceBox<String> demName;
     @FXML
-    private ChoiceBox<String> correctionSourceBands;
+    private ListView<String> correctionSourceBands;
     @FXML
     private CheckBox noDataValueAtSea;
     private Operation operation;
+    private OperationController nextOperationController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -40,6 +43,10 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         initDemName();
         initCorrectionSourceBands();
         initIncidenceAngleControl();
+        correctionSourceBands.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        correctionSourceBands.getItems().addListener((ListChangeListener<String>) c -> {
+            updateInput();
+        });
     }
 
     private void initIncidenceAngleControl() {
@@ -73,8 +80,8 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     private void initCorrectionSourceBands() {
         ObservableList<String> items = FXCollections.observableArrayList("Beta0_VH");
         correctionSourceBands.setItems(items);
-        if (correctionSourceBands.getValue() == null)
-            correctionSourceBands.setValue(items.get(0));
+        /*if (correctionSourceBands.getValue() == null)
+            correctionSourceBands.setValue(items.get(0));*/
     }
 
     private void initDemResamplingControl() {
@@ -99,9 +106,9 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         operation.getParameters().put("imgResamplingMethod", imageResampling.getValue());
         operation.getParameters().put("incidenceAngleForSigma0", incidenceAngle.getValue());
         operation.getParameters().put("demName", demName.getValue());
-        operation.getParameters().put("pixelSpacingInMeter", Integer.parseInt(pixelSpacingInMeter.getValue()));
+        operation.getParameters().put("pixelSpacingInMeter", pixelSpacingInMeter.getValue());
         operation.getParameters().put("nodataValueAtSea", noDataValueAtSea.isSelected());
-        operation.getParameters().put("sourceBands", correctionSourceBands.getValue());
+        operation.getParameters().put("sourceBands", Strings.join(",",correctionSourceBands.getSelectionModel().getSelectedItems()));
     }
 
     @Override
@@ -110,13 +117,36 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         setParameters();
     }
 
+    @Override
+    public void inputBands(ObservableList<String> inputBands) {
+        correctionSourceBands.getItems().clear();
+        correctionSourceBands.getItems().addAll(inputBands);
+    }
+
+    @Override
+    public ObservableList<String> getOutputBands() {
+        return correctionSourceBands.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public void setNextOperationController(OperationController operationController) {
+        this.nextOperationController = operationController;
+        updateInput();
+    }
+
+    @Override
+    public void updateInput() {
+        if (nextOperationController!=null)
+            nextOperationController.inputBands(correctionSourceBands.getSelectionModel().getSelectedItems());
+    }
+
     private void setParameters() {
         selectNoDataValueAtSea((Boolean)(operation.getParameters().getOrDefault("nodataValueAtSea",false)));
         demResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("demResamplingMethod",demResampling.getItems().get(0))));
         imageResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("imgResamplingMethod",imageResampling.getItems().get(0))));
         incidenceAngle.setValue(String.valueOf(operation.getParameters().getOrDefault("incidenceAngleForSigma0",incidenceAngle.getItems().get(0))));
         demName.setValue(String.valueOf(operation.getParameters().getOrDefault("demName",demName.getItems().get(0))));
-        correctionSourceBands.setValue(String.valueOf(operation.getParameters().getOrDefault("sourceBands",correctionSourceBands.getItems().get(0))));
+        correctionSourceBands.getItems().addAll(FXCollections.observableArrayList(Arrays.asList(operation.getParameters().get("sourceBands").toString().split(","))));
         pixelSpacingInMeter.setValue(String.valueOf(operation.getParameters().getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getItems().get(0))));
     }
 }

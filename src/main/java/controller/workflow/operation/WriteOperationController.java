@@ -11,6 +11,7 @@ import model.processing.Operator;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -19,10 +20,11 @@ public class WriteOperationController implements Initializable, OperationControl
     private ChoiceBox<String> writeFormat;
     private Operation operation;
     private Map<String, Object> parameters;
+    private Operation previewOperation;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("HOLAA");
+        previewOperation = null;
         this.parameters = new HashMap<>();
         operation = new Operation(Operator.WRITE, parameters);
         initWriteFormat();
@@ -50,6 +52,26 @@ public class WriteOperationController implements Initializable, OperationControl
         this.operation = operation;
         this.parameters = operation.getParameters();
         setParameters(operation.getParameters());
+    }
+
+    @Override
+    public void inputBands(ObservableList<String> inputBands) {
+        ;
+    }
+
+    @Override
+    public ObservableList<String> getOutputBands() {
+        return null;
+    }
+
+    @Override
+    public void setNextOperationController(OperationController operationController) {
+
+    }
+
+    @Override
+    public void updateInput() {
+
     }
 
     private void setParameters(Map<String, Object> parameters) {

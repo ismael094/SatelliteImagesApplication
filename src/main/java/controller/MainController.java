@@ -110,7 +110,6 @@ public class MainController implements Initializable {
         AnchorPane.setBottomAnchor(parent,0.0);
         DownloadController controller = fxmlLoader.getController();
         controller.setDownload(copernicusDownloader);
-
     }
 
     private void initListeners() {

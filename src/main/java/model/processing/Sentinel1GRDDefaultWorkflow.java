@@ -1,5 +1,10 @@
 package model.processing;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,9 +12,13 @@ import java.util.Map;
 
 public class Sentinel1GRDDefaultWorkflow implements Workflow {
     private final List<Operation> operations;
+    private StringProperty name;
+    private ObjectProperty<WorkflowType> type;
 
     public Sentinel1GRDDefaultWorkflow() {
         operations = new LinkedList<>();
+        name = new SimpleStringProperty("Default GRD workflow");
+        type = new SimpleObjectProperty<>(WorkflowType.GRD);
         getOrbit();
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");
@@ -26,12 +35,32 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
 
     @Override
     public WorkflowType getType() {
-        return WorkflowType.GRD;
+        return type.get();
+    }
+
+    @Override
+    public ObjectProperty<WorkflowType> typeProperty() {
+        return type;
+    }
+
+    @Override
+    public void setType(WorkflowType type) {
+        this.type.set(type);
     }
 
     @Override
     public String getName() {
-        return "Sentinel 1 GRD Default";
+        return name.get();
+    }
+
+    @Override
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     @Override
@@ -74,6 +103,7 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
         parameters.put("outputBetaBand", true);
         parameters.put("selectedPolarisations", "VV,VH");
         parameters.put("outputImageScaleInDb", false);
+        parameters.put("sourceBands", "Intensity_VV,Intensity_VH");
         addOperation(new Operation(Operator.CALIBRATION,parameters));
     }
 

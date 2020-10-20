@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXCheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane fx:controller="controller.workflow.operation.CalibrationOperationController" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="423.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.workflow.operation.CalibrationOperationController">
    <children>
       <GridPane layoutX="38.0" layoutY="85.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -19,24 +19,23 @@
             <RowConstraints maxHeight="94.0" minHeight="40.0" prefHeight="33.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="185.0" minHeight="40.0" prefHeight="34.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="163.0" minHeight="40.0" prefHeight="35.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="141.0" minHeight="40.0" prefHeight="50.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="119.0" minHeight="40.0" prefHeight="50.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="99.0" minHeight="40.0" prefHeight="46.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="135.0" minHeight="10.0" prefHeight="124.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="119.0" minHeight="40.0" prefHeight="109.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="141.0" minHeight="0.0" prefHeight="107.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
             <Label text="Output Sigma" />
             <Label text="Output Beta" GridPane.rowIndex="1" />
             <Label text="Output Gamma" GridPane.rowIndex="2" />
-            <Label text="Source Bands" GridPane.rowIndex="3" />
-            <Label text="Selected Polarisations" GridPane.rowIndex="4" />
-            <Label prefHeight="21.0" prefWidth="114.0" text="Output in Db" GridPane.rowIndex="5" />
+            <Label text="Source Bands" GridPane.rowIndex="5" GridPane.valignment="TOP" />
+            <Label text="Selected Polarisations" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+            <Label prefHeight="21.0" prefWidth="114.0" text="Output in Db" GridPane.rowIndex="3" />
             <JFXCheckBox fx:id="outputSigma" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" />
             <JFXCheckBox fx:id="outputBeta" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <JFXCheckBox fx:id="outputGamma" contentDisplay="GRAPHIC_ONLY" text="CheckBx" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <ChoiceBox fx:id="calibrationSourceBands" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <ChoiceBox fx:id="polarisations" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <JFXCheckBox fx:id="outputInDb" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <JFXCheckBox fx:id="outputInDb" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <ListView fx:id="calibrationSourceBands" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <ListView fx:id="polarisations" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </children>

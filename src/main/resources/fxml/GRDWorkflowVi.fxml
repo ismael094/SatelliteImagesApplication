@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane fx:controller="controller.workflow.Sentinel1GRDWorkflowController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Accordion fx:id="accordion" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <panes>
+            <TitledPane animated="false" prefHeight="227.0" prefWidth="452.0" text="Orbit">
+               <content>
+                  <fx:include fx:id="orbitOperation" source="OrbitOperationView.fxml" />
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Calibration">
+               <content>
+                  <fx:include fx:id="calibrationOperation" source="CalibrationOperationView.fxml" />
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Save and Read BEAM DIM">
+               <content>
+                  <fx:include fx:id="writeAndReadOperation" source="WriteAndReadOperationController.fxml" />
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Terrain Correction">
+               <content>
+                  <fx:include fx:id="terrainCorrectionOperation" source="TerrainCorrectionView.fxml" />
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Write">
+               <content>
+                  <fx:include fx:id="writeOperation" source="WriteOperationView.fxml" />
+               </content>
+            </TitledPane>
+         </panes>
+      </Accordion>
+   </children>
+</AnchorPane>

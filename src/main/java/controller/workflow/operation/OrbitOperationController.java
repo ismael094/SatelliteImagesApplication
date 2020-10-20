@@ -8,11 +8,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.processing.Operation;
 import model.processing.Operator;
+import org.esa.snap.core.util.math.FX;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class OrbitOperationController implements Initializable, OperationController {
     @FXML
@@ -20,9 +19,12 @@ public class OrbitOperationController implements Initializable, OperationControl
     @FXML
     private TextField plyDegree;
     private Operation operation;
+    private Operation previewOperation;
+    private OperationController nextOperationController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        previewOperation = null;
         operation = new Operation(Operator.APPLY_ORBIT_FILE,new HashMap<>());
         initControls();
     }
@@ -53,6 +55,27 @@ public class OrbitOperationController implements Initializable, OperationControl
     public void setOperation(Operation operation) {
         this.operation = operation;
         setParameters();
+    }
+
+    @Override
+    public void inputBands(ObservableList<String> inputBands) {
+        //this.previewOperation = operation;
+    }
+
+    @Override
+    public ObservableList<String> getOutputBands() {
+        return FXCollections.observableArrayList("Intensity_VH","Intensity_VV","Amplitude_VH","Amplitude_VV");
+    }
+
+    @Override
+    public void setNextOperationController(OperationController operationController) {
+        this.nextOperationController = operationController;
+        updateInput();
+    }
+
+    @Override
+    public void updateInput() {
+        nextOperationController.inputBands(getOutputBands());
     }
 
     private void setParameters() {
