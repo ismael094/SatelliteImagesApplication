@@ -24,6 +24,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
 import model.exception.AuthenticationException;
 import model.openSearcher.SentinelProductParameters;
@@ -242,7 +245,9 @@ public class ListInformationController extends ProductListTabItem {
         onChangeToggleAction();
 
         onDeleteFeatureActionRemoveFeature();
+
         addAreaOfProduct.toFront();
+        selectReferenceImage.getStyleClass().add(JMetroStyleClass.BACKGROUND);
     }
 
     private void onDeleteFeatureActionRemoveFeature() {

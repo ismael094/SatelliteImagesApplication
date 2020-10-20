@@ -1,8 +1,5 @@
 package model.processing;
 
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.GPF;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +25,16 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
     }
 
     @Override
+    public WorkflowType getType() {
+        return WorkflowType.GRD;
+    }
+
+    @Override
+    public String getName() {
+        return "Sentinel 1 GRD Default";
+    }
+
+    @Override
     public List<Operation> getOperations() {
         return operations;
     }
@@ -38,23 +45,31 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
     }
 
     @Override
+    public Operation getOperation(Operator operator) {
+        return operations.stream()
+                .filter(o->o.getName() == operator)
+                .findAny()
+                .orElse(null);
+    }
+
+    @Override
     public void removeOperation(Operation operation) {
         operations.remove(operation);
     }
 
-    public void getOrbit() {
+    private void getOrbit() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("orbitType", "Sentinel Precise (Auto Download)");
         parameters.put("polyDegree", 3);
         addOperation(new Operation(Operator.APPLY_ORBIT_FILE,parameters));
     }
 
-    public void getThermalNoiseRemoval() {
+    private void getThermalNoiseRemoval() {
         Map<String, Object> parameters = new HashMap<>();
         addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL,parameters));
     }
 
-    public void getCalibration() {
+    private void getCalibration() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("outputBetaBand", true);
         parameters.put("selectedPolarisations", "VV,VH");
@@ -62,9 +77,8 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
         addOperation(new Operation(Operator.CALIBRATION,parameters));
     }
 
-    public void getTerrainCorrection() {
+    private void getTerrainCorrection() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.clear();
         parameters.put("demResamplingMethod", "NEAREST_NEIGHBOUR");
         parameters.put("imgResamplingMethod", "NEAREST_NEIGHBOUR");
         parameters.put("incidenceAngleForSigma0", "Use incidence angle from Ellipsoid");
@@ -75,18 +89,18 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 
-    public void getWrite(String formatName) {
+    private void getWrite(String formatName) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("formatName", formatName);
         addOperation(new Operation(Operator.WRITE,parameters));
     }
 
-    public void getRead() {
+    private void getRead() {
         Map<String, Object> parameters = new HashMap<>();
         addOperation(new Operation(Operator.READ,parameters));
     }
 
-    public void getSubset() {
+    private void getSubset() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("copyMetadata", true);
         parameters.put("sourceBands", "Beta0_VH");

@@ -351,13 +351,16 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private void setSentinel1Polarisation() {
         polarisation.setItems(FXCollections.observableArrayList(
                 "All","VV", "VH","HV","VH","HH+HV","VV+VH"));
-        //polarisation.setValue("All");
+
+        if (polarisation.getValue() == null)
+            polarisation.setValue("All");
     }
 
     private void setSentinel1SensorMode() {
         sensorMode.setItems(FXCollections.observableArrayList(
                 "All","SM", "IW","EW","WV"));
-        sensorMode.setValue("All");
+        if (sensorMode.getValue() == null)
+            sensorMode.setValue("All");
     }
 
     private void productsListView() {
@@ -396,7 +399,9 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
                     }
                 );
-        platformList.setValue(SENTINEL_1);
+
+        if (platformList.getValue() == null)
+            platformList.setValue(SENTINEL_1);
 
         setCloudCoverageDisabled();
     }
@@ -434,7 +439,9 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private void setSentinel1Instruments() {
         productTypeList.setItems(FXCollections.observableArrayList(
                 "All","GRD", "OCN","SLC"));
-        productTypeList.setValue("All");
+        System.out.println(productTypeList.getValue());
+        if (productTypeList.getValue() == null)
+            productTypeList.setValue("All");
     }
 
     private void resultsPane() {
