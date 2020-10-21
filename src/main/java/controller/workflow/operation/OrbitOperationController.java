@@ -1,5 +1,7 @@
 package controller.workflow.operation;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +10,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.processing.Operation;
 import model.processing.Operator;
-import org.esa.snap.core.util.math.FX;
 
 import java.net.URL;
 import java.util.*;
@@ -31,6 +32,15 @@ public class OrbitOperationController implements Initializable, OperationControl
 
     private void initControls() {
         initOrbitTypeControl();
+        initPolyDegree();
+    }
+
+    private void initPolyDegree() {
+        plyDegree.setText("3");
+        plyDegree.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty())
+                plyDegree.setText(oldValue);
+        });
     }
 
     private void initOrbitTypeControl() {
@@ -58,8 +68,13 @@ public class OrbitOperationController implements Initializable, OperationControl
     }
 
     @Override
-    public void inputBands(ObservableList<String> inputBands) {
+    public void setInputBands(ObservableList<String> inputBands) {
         //this.previewOperation = operation;
+    }
+
+    @Override
+    public ObservableList<String> getInputBands() {
+        return FXCollections.observableArrayList();
     }
 
     @Override
@@ -75,7 +90,12 @@ public class OrbitOperationController implements Initializable, OperationControl
 
     @Override
     public void updateInput() {
-        nextOperationController.inputBands(getOutputBands());
+        nextOperationController.setInputBands(getOutputBands());
+    }
+
+    @Override
+    public OperationController getNextOperationController() {
+        return nextOperationController;
     }
 
     private void setParameters() {

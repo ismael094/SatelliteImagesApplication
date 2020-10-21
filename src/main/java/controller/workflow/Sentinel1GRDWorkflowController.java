@@ -81,11 +81,29 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
         operationsMap.put(Operator.WRITE_AND_READ,writeAndReadOperationController);
         operationsMap.put(Operator.TERRAIN_CORRECTION,terrainCorrectionOperationController);
         operationsMap.put(Operator.WRITE,writeOperationController);
+    }
 
-        calibrationOperationController.getCalibrationSourceBands().addListener((ListChangeListener<String>) c -> {
-            while (c.next()) {
+    public WriteAndReadOperationController getWriteAndReadOperationController() {
+        return writeAndReadOperationController;
+    }
 
-            }
-        });
+    public OrbitOperationController getOrbitOperationController() {
+        return orbitOperationController;
+    }
+
+    public CalibrationOperationController getCalibrationOperationController() {
+        return calibrationOperationController;
+    }
+
+    public TerrainCorrectionOperationController getTerrainCorrectionOperationController() {
+        return terrainCorrectionOperationController;
+    }
+
+    public WriteOperationController getWriteOperationController() {
+        return writeOperationController;
+    }
+
+    public Map<Operator, OperationController> getOperationsMap() {
+        return operationsMap;
     }
 }

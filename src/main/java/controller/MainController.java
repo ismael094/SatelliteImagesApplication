@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
+import controller.workflow.ProcessingController;
 import gui.components.*;
 import gui.events.AppCloseEvent;
 import javafx.collections.ListChangeListener;
@@ -22,6 +23,7 @@ import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.events.EventType;
 import model.list.ProductListDTO;
+import model.processing.FXProgressMonitor;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +45,10 @@ public class MainController implements Initializable {
     private ToolBarComponent toolBarComponent;
     private ConsoleComponent consoleComponent;
 
+    @FXML
+    private GridPane processing;
+    @FXML
+    private ProcessingController processingController;
     @FXML
     private VBox menu;
     @FXML
@@ -85,7 +91,7 @@ public class MainController implements Initializable {
     }
 
     private void initProcessors() {
-        processor = new SentinelProcessing();
+        processor = new SentinelProcessing(processingController);
     }
 
     private void initDownloadManager() {
@@ -110,6 +116,14 @@ public class MainController implements Initializable {
         AnchorPane.setBottomAnchor(parent,0.0);
         DownloadController controller = fxmlLoader.getController();
         controller.setDownload(copernicusDownloader);
+
+
+
+        AnchorPane.setRightAnchor(processing,0.0);
+        AnchorPane.setLeftAnchor(processing,0.0);
+        AnchorPane.setTopAnchor(processing,0.0);
+        AnchorPane.setBottomAnchor(processing,0.0);
+
     }
 
     private void initListeners() {

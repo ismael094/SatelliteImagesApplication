@@ -24,9 +24,14 @@ public class WriteAndReadOperationController implements Initializable, Operation
     }
 
     @Override
-    public void inputBands(ObservableList<String> inputBands) {
+    public void setInputBands(ObservableList<String> inputBands) {
         this.inputBands = inputBands;
         updateInput();
+    }
+
+    @Override
+    public ObservableList<String> getInputBands() {
+        return inputBands;
     }
 
     @Override
@@ -43,7 +48,12 @@ public class WriteAndReadOperationController implements Initializable, Operation
     @Override
     public void updateInput() {
         if (nextOperationController!=null)
-            nextOperationController.inputBands(inputBands);
+            nextOperationController.setInputBands(inputBands);
+    }
+
+    @Override
+    public OperationController getNextOperationController() {
+        return nextOperationController;
     }
 
     @Override

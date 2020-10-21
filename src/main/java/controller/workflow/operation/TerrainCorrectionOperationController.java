@@ -13,7 +13,6 @@ import model.processing.Operator;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class TerrainCorrectionOperationController implements Initializable, OperationController {
@@ -56,15 +55,8 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
             incidenceAngle.setValue(items.get(0));
     }
 
-    private void initImageResamplingControl() {
-        ObservableList<String> items = FXCollections.observableArrayList("NEAREST_NEIGHBOUR");
-        imageResampling.setItems(items);
-        if (imageResampling.getValue() == null)
-            imageResampling.setValue(items.get(0));
-    }
-
     private void initPixelSpacingInMeter() {
-        ObservableList<String> items = FXCollections.observableArrayList("\"Use incidence angle from Ellipsoid\"");
+        ObservableList<String> items = FXCollections.observableArrayList("Use incidence angle from Ellipsoid");
         pixelSpacingInMeter.setItems(items);
         if (pixelSpacingInMeter.getValue() == null)
             pixelSpacingInMeter.setValue(items.get(0));
@@ -86,9 +78,29 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
 
     private void initDemResamplingControl() {
         ObservableList<String> items = FXCollections.observableArrayList("NEAREST_NEIGHBOUR");
+        items.add("BILINEAR_INTERPOLATION");
+        items.add("CUBIC_CONVOLUTION");
+        items.add("BISINC_5_POINT_INTERPOLATION");
+        items.add("BISINC_11_POINT_INTERPOLATION");
+        items.add("BISINC_21_POINT_INTERPOLATION");
+        items.add("BICUBIC_INTERPOLATION");
+        items.add("DELAUNAY_INTERPOLATION");
         demResampling.setItems(items);
         if (demResampling.getValue() == null)
             demResampling.setValue(items.get(0));
+    }
+
+    private void initImageResamplingControl() {
+        ObservableList<String> items = FXCollections.observableArrayList("NEAREST_NEIGHBOUR");
+        items.add("BILINEAR_INTERPOLATION");
+        items.add("CUBIC_CONVOLUTION");
+        items.add("BISINC_5_POINT_INTERPOLATION");
+        items.add("BISINC_11_POINT_INTERPOLATION");
+        items.add("BISINC_21_POINT_INTERPOLATION");
+        items.add("BICUBIC_INTERPOLATION");
+        imageResampling.setItems(items);
+        if (imageResampling.getValue() == null)
+            imageResampling.setValue(items.get(0));
     }
 
     private void selectNoDataValueAtSea(boolean select) {
@@ -118,9 +130,14 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     }
 
     @Override
-    public void inputBands(ObservableList<String> inputBands) {
+    public void setInputBands(ObservableList<String> inputBands) {
         correctionSourceBands.getItems().clear();
         correctionSourceBands.getItems().addAll(inputBands);
+    }
+
+    @Override
+    public ObservableList<String> getInputBands() {
+        return correctionSourceBands.getItems();
     }
 
     @Override
@@ -137,7 +154,12 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     @Override
     public void updateInput() {
         if (nextOperationController!=null)
-            nextOperationController.inputBands(correctionSourceBands.getSelectionModel().getSelectedItems());
+            nextOperationController.setInputBands(correctionSourceBands.getSelectionModel().getSelectedItems());
+    }
+
+    @Override
+    public OperationController getNextOperationController() {
+        return nextOperationController;
     }
 
     private void setParameters() {
@@ -146,7 +168,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         imageResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("imgResamplingMethod",imageResampling.getItems().get(0))));
         incidenceAngle.setValue(String.valueOf(operation.getParameters().getOrDefault("incidenceAngleForSigma0",incidenceAngle.getItems().get(0))));
         demName.setValue(String.valueOf(operation.getParameters().getOrDefault("demName",demName.getItems().get(0))));
-        correctionSourceBands.getItems().addAll(FXCollections.observableArrayList(Arrays.asList(operation.getParameters().get("sourceBands").toString().split(","))));
+        correctionSourceBands.getItems().addAll(FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("sourceBands","").toString().split(","))));
         pixelSpacingInMeter.setValue(String.valueOf(operation.getParameters().getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getItems().get(0))));
     }
 }

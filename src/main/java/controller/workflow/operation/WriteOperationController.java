@@ -55,8 +55,13 @@ public class WriteOperationController implements Initializable, OperationControl
     }
 
     @Override
-    public void inputBands(ObservableList<String> inputBands) {
-        ;
+    public void setInputBands(ObservableList<String> inputBands) {
+
+    }
+
+    @Override
+    public ObservableList<String> getInputBands() {
+        return FXCollections.observableArrayList();
     }
 
     @Override
@@ -72,6 +77,11 @@ public class WriteOperationController implements Initializable, OperationControl
     @Override
     public void updateInput() {
 
+    }
+
+    @Override
+    public OperationController getNextOperationController() {
+        return null;
     }
 
     private void setParameters(Map<String, Object> parameters) {

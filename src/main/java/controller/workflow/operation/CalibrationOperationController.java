@@ -3,8 +3,6 @@ package controller.workflow.operation;
 import com.beust.jcommander.Strings;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -32,6 +30,7 @@ public class CalibrationOperationController implements Initializable, OperationC
     private ListView<String> polarisations;
     @FXML
     private JFXCheckBox outputInDb;
+
     private Operation operation;
     private Map<String, Object> parameters;
     private ObservableList<String> bands;
@@ -154,9 +153,14 @@ public class CalibrationOperationController implements Initializable, OperationC
     }
 
     @Override
-    public void inputBands(ObservableList<String> inputBands) {
+    public void setInputBands(ObservableList<String> inputBands) {
         calibrationSourceBands.getItems().clear();
         calibrationSourceBands.getItems().addAll(inputBands);
+    }
+
+    @Override
+    public ObservableList<String> getInputBands() {
+        return calibrationSourceBands.getItems();
     }
 
     @Override
@@ -174,7 +178,12 @@ public class CalibrationOperationController implements Initializable, OperationC
     @Override
     public void updateInput() {
         if (nextOperationController!=null)
-            nextOperationController.inputBands(bands);
+            nextOperationController.setInputBands(bands);
+    }
+
+    @Override
+    public OperationController getNextOperationController() {
+        return nextOperationController;
     }
 
     private void addBand(String name, ObservableList<String> res) {
