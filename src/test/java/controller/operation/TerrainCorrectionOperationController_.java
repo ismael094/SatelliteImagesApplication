@@ -9,9 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.Operation;
 import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflow;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -42,7 +41,7 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
 
     @Test
     public void set_operation() {
-        Sentinel1GRDDefaultWorkflow workflow = new Sentinel1GRDDefaultWorkflow();
+        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
         controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));
         assertThat(controller.getOperation().getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
         assertThat(controller.getOutputBands()).isEqualTo(controller.getInputBands());
@@ -50,7 +49,7 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
 
     @Test
     public void select_source_bands() {
-        Sentinel1GRDDefaultWorkflow workflow = new Sentinel1GRDDefaultWorkflow();
+        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
 
         interact(() -> {
             controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));
@@ -64,7 +63,7 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
 
     @Test
     public void get_parameters() {
-        Sentinel1GRDDefaultWorkflow workflow = new Sentinel1GRDDefaultWorkflow();
+        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
 
         interact(() -> {
             controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));

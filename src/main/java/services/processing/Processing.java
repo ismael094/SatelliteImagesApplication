@@ -5,7 +5,7 @@ import javafx.application.Platform;
 import model.list.ProductListDTO;
 import model.processing.FXProgressMonitor;
 import model.processing.ProcessingMonitor;
-import model.processing.Workflow;
+import model.processing.WorkflowDTO;
 import model.products.ProductDTO;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public abstract class Processing {
     }
 
     public abstract void process(ProductListDTO productList);
-    public abstract void process(ProductDTO productList, List<String> areasOfWork, Workflow workflow, String path);
+    public abstract void process(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow, String path);
 
     private void bindMonitors() {
         processingController.setProductListProgressBar(listMonitor.getProgress());

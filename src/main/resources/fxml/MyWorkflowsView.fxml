@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -54,6 +55,11 @@
                </children>
             </GridPane>
             <Button fx:id="saveWorkflow" mnemonicParsing="false" text="Save changes" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="assignToList" mnemonicParsing="false" text="Asign to list" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </Button>
          </children>
       </GridPane>
    </children>

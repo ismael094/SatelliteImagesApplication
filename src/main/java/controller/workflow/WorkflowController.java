@@ -1,8 +1,8 @@
 package controller.workflow;
 
-import model.processing.Workflow;
+import model.processing.WorkflowDTO;
 
 public interface WorkflowController {
-    void setWorkflow(Workflow workflow);
-    Workflow getWorkflow();
+    void setWorkflow(WorkflowDTO workflow);
+    WorkflowDTO getWorkflow();
 }

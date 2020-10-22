@@ -2,7 +2,6 @@ package model;
 
 import model.processing.Operation;
 import model.processing.Operator;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;

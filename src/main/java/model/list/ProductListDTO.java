@@ -1,10 +1,11 @@
 package model.list;
 
-import com.sun.javafx.tk.Toolkit;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import model.processing.WorkflowDTO;
+import model.processing.WorkflowType;
 import model.products.ProductDTO;
 import model.restriction.Restriction;
 import org.bson.types.ObjectId;
@@ -25,6 +26,7 @@ public class ProductListDTO {
     private List<Restriction> restrictions;
     private ObservableList<String> areasOfWork;
     private ObservableList<ProductDTO> groundTruthProducts;
+    private ObservableList<WorkflowDTO> workflows;
 
     public ProductListDTO(StringProperty name, StringProperty description) {
         this.listeners = new ArrayList<>();
@@ -36,6 +38,7 @@ public class ProductListDTO {
         this.restrictions = new ArrayList<>();
         this.areasOfWork = FXCollections.observableArrayList();
         this.groundTruthProducts = FXCollections.observableArrayList();
+        this.workflows = FXCollections.observableArrayList();
     }
 
     public void addListener(ProductListDTOChangeListener listener) {
@@ -279,5 +282,24 @@ public class ProductListDTO {
     public void removeGroundTruth(ProductDTO productDTO) {
         this.groundTruthProducts.remove(productDTO);
         save();
+    }
+
+    public void addWorkflow(WorkflowDTO workflow) {
+        this.workflows.add(workflow);
+    }
+
+    public void addWorkflow(ObservableList<WorkflowDTO> workflow) {
+        this.workflows.addAll(workflow);
+    }
+
+    public WorkflowDTO getWorkflow(WorkflowType type) {
+        return workflows.stream()
+                .filter(w->w.getType() == type)
+                .findAny()
+                .orElse(null);
+    }
+
+    public ObservableList<WorkflowDTO> getWorkflows() {
+        return workflows;
     }
 }

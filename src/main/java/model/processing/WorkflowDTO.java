@@ -5,12 +5,14 @@ import javafx.beans.property.StringProperty;
 
 import java.util.List;
 
-public interface Workflow {
+public interface WorkflowDTO {
     WorkflowType getType();
 
     ObjectProperty<WorkflowType> typeProperty();
 
     void setType(WorkflowType type);
+
+    void setType(String type);
 
     String getName();
 
@@ -25,4 +27,6 @@ public interface Workflow {
     Operation getOperation(Operator operator);
 
     void removeOperation(Operation operation);
+
+    void setOperations(List<Operation> operations);
 }

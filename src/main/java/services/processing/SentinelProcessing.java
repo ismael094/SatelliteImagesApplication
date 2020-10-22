@@ -42,12 +42,12 @@ public class SentinelProcessing extends Processing {
 
     static final Logger logger = LogManager.getLogger(SentinelProcessing.class.getName());
 
-    protected final Map<WorkflowType, Workflow> workflowType;
+    protected final Map<WorkflowType, WorkflowDTO> workflowType;
 
     public SentinelProcessing(ProcessingController processingController) {
         super(processingController);
         this.workflowType = new HashMap<>();
-        this.workflowType.put(WorkflowType.GRD, new Sentinel1GRDDefaultWorkflow());
+        this.workflowType.put(WorkflowType.GRD, new Sentinel1GRDDefaultWorkflowDTO());
     }
 
     protected Product readProduct(String path) throws IOException {
@@ -86,7 +86,7 @@ public class SentinelProcessing extends Processing {
     }
 
     @Override
-    public void process(ProductDTO product, List<String> areasOfWork, Workflow workflow, String path) {
+    public void process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path) {
         if (!FileUtils.productExists(product.getTitle())) {
             logger.atError().log("File {}.zip doesn't exists",product.getTitle());
             return;
@@ -107,7 +107,7 @@ public class SentinelProcessing extends Processing {
         }
     }
 
-    private void startProcess(Product snapProduct, ProductDTO productDTO, List<String> areasOfWork, Workflow workflow, String path) throws IOException, ParseException {
+    private void startProcess(Product snapProduct, ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path) throws IOException, ParseException {
         List<Product> subsets = new LinkedList<>();
         subsets.add(snapProduct);
 

@@ -45,19 +45,22 @@ public class CalibrationOperationController implements Initializable, OperationC
         polarisations.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         calibrationSourceBands.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            handleBands(outputGamma, GAMMA_0);
-            handleBands(outputBeta, BETA_0);
-            handleBands(outputSigma, SIGMA_0);
+            updateBands();
         });
 
         polarisations.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            handleBands(outputGamma, GAMMA_0);
-            handleBands(outputBeta, BETA_0);
-            handleBands(outputSigma, SIGMA_0);
+            updateBands();
         });
         operation = new Operation(Operator.CALIBRATION, parameters);
         initControls();
         bind();
+    }
+
+    private void updateBands() {
+        bands.clear();
+        handleBands(outputGamma, GAMMA_0);
+        handleBands(outputBeta, BETA_0);
+        handleBands(outputSigma, SIGMA_0);
     }
 
     private void bind() {
@@ -69,11 +72,10 @@ public class CalibrationOperationController implements Initializable, OperationC
     }
 
     private void handleBands(CheckBox checkbox, String name) {
+        removeBand(name, bands);
         if (checkbox.isSelected())
             addBand(name, bands);
-        else {
-            removeBand(name, bands);
-        }
+
         updateInput();
     }
 
@@ -165,7 +167,6 @@ public class CalibrationOperationController implements Initializable, OperationC
 
     @Override
     public ObservableList<String> getOutputBands() {
-        System.out.println(bands);
         return bands;
     }
 
@@ -195,13 +196,14 @@ public class CalibrationOperationController implements Initializable, OperationC
 
     private void removeBand(String name, ObservableList<String> res) {
         calibrationSourceBands.getSelectionModel().getSelectedItems().forEach(b->{
+            System.out.println(name+b.split("_")[1]);
             res.remove(name+b.split("_")[1]);
         });
     }
 
     private void setParameters() {
         polarisations.getItems().clear();
-        ObservableList<String> strings = FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("selectedPolarisations", "VH").toString().split(",")));
+        ObservableList<String> strings = FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("selectedPolarisations", "VH,VV").toString().split(",")));
         polarisations.getItems().addAll(strings);
         strings.forEach(s-> polarisations.getSelectionModel().select(s));
         calibrationSourceBands.getItems().clear();

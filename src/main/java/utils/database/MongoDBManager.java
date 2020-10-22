@@ -6,9 +6,11 @@ import com.mongodb.connection.ConnectionPoolSettings;
 import com.mongodb.connection.SocketSettings;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import model.processing.WorkflowDTO;
 import model.restriction.Restriction;
 import services.entities.ProductList;
 import services.entities.User;
+import services.entities.Workflow;
 
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +56,8 @@ public class MongoDBManager {
 
         MongoClientURI mongoClientURI = new MongoClientURI(serverURL);
         morphia = new Morphia();
+        morphia.mapPackageFromClass(Workflow.class);
+        morphia.mapPackageFromClass(WorkflowDTO.class);
         datastore = morphia.createDatastore(new MongoClient(mongoClientURI), database);
         //client = MongoClients.create(build);
         /*datastore = Morphia.createDatastore(client, database);

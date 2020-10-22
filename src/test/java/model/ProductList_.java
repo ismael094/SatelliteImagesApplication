@@ -1,8 +1,9 @@
 package model;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.list.ProductListDTO;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.WorkflowType;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import model.products.Sentinel2ProductDTO;
@@ -226,6 +227,21 @@ public class ProductList_ {
         productListDTO.addProduct(s1);
         assertThat(productListDTO.count()).isEqualTo(1);
         assertThat(productListDTO.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
+    }
+
+    @Test
+    public void add_grd_workflow_to_list() {
+        productListDTO = new ProductListDTO(
+                new SimpleStringProperty("List1"),
+                new SimpleStringProperty("description"));
+        ProductTypeRestriction productTypeRestriction = new ProductTypeRestriction();
+        productTypeRestriction.add("GRD");
+        productListDTO.addRestriction(productTypeRestriction);
+
+        productListDTO.addProduct(SentinelData.getSentinel1Product());
+        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        assertThat(productListDTO.getWorkflow(WorkflowType.GRD).getType()).isEqualTo(WorkflowType.GRD);
+
     }
 
     @Test

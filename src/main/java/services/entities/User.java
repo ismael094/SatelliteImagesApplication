@@ -1,12 +1,10 @@
 package services.entities;
 
 import dev.morphia.annotations.*;
-import javafx.collections.ObservableList;
-import model.list.ProductListDTO;
+import model.processing.WorkflowDTO;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +21,7 @@ public class User {
     private String firstName;
     @Reference(idOnly = true, ignoreMissing=true)
     private List<ProductList> productLists;
+    private List<Workflow> workflows;
     private Map<String, Map<String, String>> searchParameters;
 
     public User(ObjectId id, String email, String password, String firstName, String lastName, Map<String, Map<String, String>> searchParameters) {
@@ -33,6 +32,7 @@ public class User {
         this.firstName = firstName;
         this.productLists = new ArrayList<>();
         this.searchParameters = searchParameters;
+        this.workflows = new ArrayList<>();
     }
 
     public User() {
@@ -93,5 +93,13 @@ public class User {
 
     public void setSearchParameters(Map<String, Map<String, String>> searchParameters) {
         this.searchParameters = searchParameters;
+    }
+
+    public List<Workflow> getWorkflows() {
+        return workflows;
+    }
+
+    public void setWorkflows(List<Workflow> workflows) {
+        this.workflows = workflows;
     }
 }

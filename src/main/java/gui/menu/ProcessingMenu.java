@@ -2,6 +2,8 @@ package gui.menu;
 
 import controller.MainController;
 import controller.workflow.MyWorkflowController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -10,9 +12,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
-import model.processing.Sentinel1GRDDefaultWorkflow;
-import model.processing.Workflow;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.WorkflowDTO;
 import utils.ThemeConfiguration;
+import utils.gui.WorkflowUtil;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -44,13 +47,17 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
 
         sentinel.getItems().addAll(sentinel1,sentinel2);
 
-        grd.setOnAction(e->loadView());
+        myWorkflows.setOnAction(e-> {
+            ObservableList<WorkflowDTO> objects = FXCollections.observableArrayList();
+            objects.add(new Sentinel1GRDDefaultWorkflowDTO());
+            WorkflowUtil.loadMyWorkflowView(mainController,objects);
+        });
         listProcessing.setOnAction(e->mainController.process());
         getItems().addAll(myWorkflows,listProcessing,sentinel);
     }
 
     private void loadView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/GRDWorkflowView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MyWorkflowsView.fxml"));
         Scene scene = null;
         try {
             scene = new Scene(fxmlLoader.load());
@@ -64,8 +71,9 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
             jMetro = new JMetro(Style.DARK);
 
         MyWorkflowController controller = fxmlLoader.getController();
-        List<Workflow> objects = new LinkedList<>();
-        objects.add(new Sentinel1GRDDefaultWorkflow());
+        List<WorkflowDTO> objects = new LinkedList<>();
+        objects.add(new Sentinel1GRDDefaultWorkflowDTO());
+        controller.setMainController(mainController);
         controller.setWorkflows(objects);
         Stage stage = new Stage();
         stage.setResizable(false);

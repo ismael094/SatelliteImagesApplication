@@ -14,7 +14,6 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.*;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
@@ -44,14 +43,14 @@ public class SentinelGRDWorkflow_ extends ApplicationTest {
 
     @Test
     public void set_workflow () {
-        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflow()));
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
 
         assertThat(controller.getWorkflow().getType()).isEqualTo(WorkflowType.GRD);
     }
 
     @Test
     public void creates_map_with_operation_controller () {
-        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflow()));
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
 
         assertThat(controller.getOperationsMap().size()).isGreaterThan(0);
         assertThat(controller.getOperationsMap().get(Operator.CALIBRATION)).isNotNull();
@@ -59,7 +58,7 @@ public class SentinelGRDWorkflow_ extends ApplicationTest {
 
     @Test
     public void inject_next_controller() {
-        SentinelWorkflow workflow = new SentinelWorkflow(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+        GeneralWorkflowDTO workflow = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
         workflow.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));
@@ -78,7 +77,7 @@ public class SentinelGRDWorkflow_ extends ApplicationTest {
 
     @Test
     public void calibration_to_save_dim() {
-        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflow()));
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
         OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
 
         assertThat(operationController).isNotNull();

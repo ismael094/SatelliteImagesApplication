@@ -6,9 +6,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import model.list.ProductListDTO;
+import model.processing.WorkflowDTO;
 import org.bson.types.ObjectId;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class UserDTO {
@@ -19,6 +19,7 @@ public class UserDTO {
     private StringProperty lastName;
     private ObservableList<ProductListDTO> productListsDTO;
     private ObservableMap<String,Map<String, String>> searchParameters;
+    private ObservableList<WorkflowDTO> workflows;
 
     public UserDTO() {
         this.productListsDTO = FXCollections.observableArrayList();
@@ -31,6 +32,7 @@ public class UserDTO {
         this.lastName = lastName;
         this.id = null;
         this.productListsDTO = FXCollections.observableArrayList();
+        this.workflows = FXCollections.observableArrayList();
         this.searchParameters = FXCollections.observableHashMap();
     }
 
@@ -41,6 +43,7 @@ public class UserDTO {
         this.lastName = new SimpleStringProperty(lastName);
         this.productListsDTO = FXCollections.observableArrayList();
         this.searchParameters = FXCollections.observableHashMap();
+        this.workflows = FXCollections.observableArrayList();
     }
 
     public void addProductList(ProductListDTO productListDTO) {
@@ -125,5 +128,21 @@ public class UserDTO {
     public void setSearchParameters(Map<String, Map<String, String>> searchParameters) {
         if (searchParameters!=null)
             this.searchParameters = FXCollections.observableMap(searchParameters);
+    }
+
+    public ObservableList<WorkflowDTO> getWorkflows() {
+        return workflows;
+    }
+
+    public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
+        this.workflows = workflows;
+    }
+
+    public void addWorkflow(WorkflowDTO workflow) {
+        this.workflows.add(workflow);
+    }
+
+    public void removeWorkflow(WorkflowDTO workflow) {
+        this.workflows.remove(workflow);
     }
 }

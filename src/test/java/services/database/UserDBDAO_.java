@@ -3,6 +3,9 @@ package services.database;
 import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
+import model.processing.Operator;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.WorkflowType;
 import model.user.UserDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,6 +84,34 @@ public class UserDBDAO_ {
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
         assertThat(dbUserDTO.getProductListsDTO().get(0).getName()).isEqualTo(productListDTO.getName());
         assertThat(dbUserDTO.getProductListsDTO().get(0).getProducts().get(0).getId()).isEqualTo(productListDTO.getProducts().get(0).getId());
+        userDAO.delete(dbUserDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
+    }
+
+    @Test
+    public void save_and_delete_user_collection_with_product_list_and_workflow() {
+        userDTO.setEmail("email@mail.com");
+        userDTO.setPassword("password");
+        userDTO.setFirstName("firstName");
+        userDTO.setLastName("lastName");
+        userDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
+        productListDTO.addProduct(SentinelData.getProduct());
+
+        userDTO.addProductList(productListDTO);
+        userDAO.save(userDTO);
+
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNotNull();
+        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
+        assertThat(dbUserDTO.getProductListsDTO().get(0).getName()).isEqualTo(productListDTO.getName());
+        assertThat(dbUserDTO.getProductListsDTO().get(0).getProducts().get(0).getId()).isEqualTo(productListDTO.getProducts().get(0).getId());
+        assertThat(dbUserDTO.getWorkflows().size()).isNotNull();
+        assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
+        assertThat(dbUserDTO.getWorkflows().get(0).getOperation(Operator.TERRAIN_CORRECTION).getParameters()).isNotNull();
+        assertThat(dbUserDTO.getWorkflows().get(0).getOperation(Operator.TERRAIN_CORRECTION).getParameters().get("sourceBands")).isEqualTo("Beta0_VH,Beta0_VV");
         userDAO.delete(dbUserDTO);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNull();

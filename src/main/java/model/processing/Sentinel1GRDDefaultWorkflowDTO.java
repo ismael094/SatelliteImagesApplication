@@ -1,24 +1,15 @@
 package model.processing;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-public class Sentinel1GRDDefaultWorkflow implements Workflow {
-    private final List<Operation> operations;
-    private StringProperty name;
-    private ObjectProperty<WorkflowType> type;
+public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
-    public Sentinel1GRDDefaultWorkflow() {
-        operations = new LinkedList<>();
-        name = new SimpleStringProperty("Default GRD workflow");
-        type = new SimpleObjectProperty<>(WorkflowType.GRD);
+    public Sentinel1GRDDefaultWorkflowDTO() {
+        super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.GRD));
         getOrbit();
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");
@@ -31,59 +22,6 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("formatName", s);
         addOperation(new Operation(Operator.WRITE_AND_READ,parameters));
-    }
-
-    @Override
-    public WorkflowType getType() {
-        return type.get();
-    }
-
-    @Override
-    public ObjectProperty<WorkflowType> typeProperty() {
-        return type;
-    }
-
-    @Override
-    public void setType(WorkflowType type) {
-        this.type.set(type);
-    }
-
-    @Override
-    public String getName() {
-        return name.get();
-    }
-
-    @Override
-    public StringProperty nameProperty() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    @Override
-    public List<Operation> getOperations() {
-        return operations;
-    }
-
-    @Override
-    public void addOperation(Operation operation) {
-        operations.add(operation);
-    }
-
-    @Override
-    public Operation getOperation(Operator operator) {
-        return operations.stream()
-                .filter(o->o.getName() == operator)
-                .findAny()
-                .orElse(null);
-    }
-
-    @Override
-    public void removeOperation(Operation operation) {
-        operations.remove(operation);
     }
 
     private void getOrbit() {
@@ -115,7 +53,7 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
         parameters.put("demName", "SRTM 3Sec");
         parameters.put("pixelSpacingInMeter", 10.0);
         parameters.put("nodataValueAtSea", false);
-        parameters.put("sourceBands", "Beta0_VH");
+        parameters.put("sourceBands", "Beta0_VH,Beta0_VV");
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 
@@ -140,8 +78,6 @@ public class Sentinel1GRDDefaultWorkflow implements Workflow {
 
     @Override
     public String toString() {
-        return "Sentinel1GRDDefaultWorkflow{" +
-                "operations=" + operations +
-                '}';
+        return "Sentinel1GRDDefaultWorkflow{}";
     }
 }

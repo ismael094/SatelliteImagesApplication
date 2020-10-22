@@ -1,19 +1,27 @@
 package model.processing;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class SentinelWorkflow implements Workflow{
-    private final List<Operation> operations;
+public class GeneralWorkflowDTO implements WorkflowDTO {
+    private List<Operation> operations;
     private StringProperty name;
     private ObjectProperty<WorkflowType> type;
 
-    public SentinelWorkflow(StringProperty name, ObjectProperty<WorkflowType> type) {
+    public GeneralWorkflowDTO(StringProperty name, ObjectProperty<WorkflowType> type) {
         this.name = name;
         this.type = type;
+        operations = new LinkedList<>();
+    }
+
+    public GeneralWorkflowDTO() {
+        this.name = new SimpleStringProperty();
+        this.type = new SimpleObjectProperty<>();
         operations = new LinkedList<>();
     }
 
@@ -30,6 +38,11 @@ public class SentinelWorkflow implements Workflow{
     @Override
     public void setType(WorkflowType type) {
         this.type.set(type);
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type.set(WorkflowType.valueOf(type));
     }
 
     @Override
@@ -71,8 +84,13 @@ public class SentinelWorkflow implements Workflow{
     }
 
     @Override
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
+    }
+
+    @Override
     public String toString() {
-        return "SentinelWorkflow{" +
+        return "GeneralWorkflow{" +
                 "operations=" + operations +
                 ", name=" + name +
                 ", type=" + type +

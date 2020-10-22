@@ -5,16 +5,14 @@ import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
-import model.products.ProductDTO;
 import model.user.UserDTO;
+import services.database.mappers.WorkflowMapper;
 import services.entities.User;
 import utils.Encryptor;
 import utils.database.MongoDBManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UserDBDAO implements DAO<UserDTO> {
 
@@ -99,11 +97,13 @@ public class UserDBDAO implements DAO<UserDTO> {
             return null;
         UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
         userDTO.setSearchParameters(user.getSearchParameters());
+        userDTO.setWorkflows(FXCollections.observableArrayList(new WorkflowMapper().toDAO(user.getWorkflows())));
         userDTO.setId(user.getId());
         if (user.getProductLists() == null)
             userDTO.setProductListsDTO(FXCollections.observableArrayList());
         else if (user.getProductLists().size()>0)
             userDTO.setProductListsDTO(FXCollections.observableList(productListDBDAO.toDAO(user.getProductLists())));
+
         return userDTO;
     }
 
@@ -113,7 +113,7 @@ public class UserDBDAO implements DAO<UserDTO> {
             hashedPass = Encryptor.hashString(userDTO.getPassword());
 
         User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
-
+        user.setWorkflows(new WorkflowMapper().toEntity(userDTO.getWorkflows()));
         if (userDTO.getProductListsDTO().size()>0) {
             user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));
         }

@@ -5,6 +5,7 @@ import gui.events.*;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import utils.gui.WorkflowUtil;
 
 public class ListMenu extends Menu implements SatInfMenuItem{
 
@@ -39,7 +40,10 @@ public class ListMenu extends Menu implements SatInfMenuItem{
         preferenceImg.setOnAction(new AddReferenceImageEvent(mainController));
 
 
-        getItems().addAll(create,editList, delete,addSel,addAll,deselect,new SeparatorMenuItem(),preferenceImg);
+        MenuItem workflows = new MenuItem("List workflows");
+
+
+        getItems().addAll(create,editList, delete,addSel,addAll,deselect,new SeparatorMenuItem(),preferenceImg,workflows);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package controller.workflow;
 
+import controller.MainController;
 import controller.cell.WorkflowListViewCellController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,7 +13,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import model.list.ProductListDTO;
 import model.processing.*;
+import utils.AlertFactory;
+import utils.gui.ProductListDTOUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +24,9 @@ import java.util.*;
 
 public class MyWorkflowController implements Initializable {
     @FXML
-    public ListView<Workflow> workflowList;
+    private ListView<WorkflowDTO> workflowList;
+    @FXML
+    private Button assignToList;
     @FXML
     private Button addWorkflow;
     @FXML
@@ -31,9 +38,10 @@ public class MyWorkflowController implements Initializable {
     @FXML
     private AnchorPane accordion;
 
-    private Workflow workflow;
+    private WorkflowDTO workflow;
     private Map<WorkflowType, String> workflowControllerMap;
     private WorkflowController activeWorkflowController;
+    private MainController mainController;
 
 
     @Override
@@ -43,7 +51,7 @@ public class MyWorkflowController implements Initializable {
         //workflowList.getItems().add(new Sentinel1GRDDefaultWorkflow());
         //setWorkflow(new Sentinel1GRDDefaultWorkflow());
         addWorkflow.setOnAction(e-> {
-            SentinelWorkflow aDefault = new SentinelWorkflow(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+            GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
             aDefault.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));
@@ -54,9 +62,11 @@ public class MyWorkflowController implements Initializable {
         });
 
         saveWorkflow.setOnAction(e->{
-            Workflow workflow = activeWorkflowController.getWorkflow();
+            WorkflowDTO workflow = activeWorkflowController.getWorkflow();
             System.out.println(workflow);
         });
+
+        onActionInAssignToListAddSelectedWorkflowsToSelectedLists();
 
         removeWorkflow.setOnAction(e->workflowList.getItems().remove(1));
 
@@ -65,19 +75,36 @@ public class MyWorkflowController implements Initializable {
         });
     }
 
-    private void initMap() {
-        workflowControllerMap = new HashMap<>();
-        workflowControllerMap.put(WorkflowType.GRD, "/fxml/GRDWorkflowVi.fxml");
+    private void onActionInAssignToListAddSelectedWorkflowsToSelectedLists() {
+        assignToList.setOnAction(e->{
+            ObservableList<WorkflowDTO> workflows = workflowList.getSelectionModel().getSelectedItems();
+            if (workflows.isEmpty()) {
+                AlertFactory.showErrorDialog("Workflow","No workflows selected!","Select one or more workflows to add to list");
+                return;
+            }
+            List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(mainController.getUserProductList(), mainController.getRoot().getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
+            if (workflows.isEmpty()) {
+                AlertFactory.showErrorDialog("Workflow","No lists selected!","Select one or more lists to add workflows");
+                return;
+            }
+            productListDTOS.forEach(p->p.addWorkflow(workflows));
+            AlertFactory.showSuccessDialog("Workflows added","Workflows added", "All workflows added to selected lists!");
+        });
     }
 
-    public void setWorkflows(List<Workflow> workflows) {
+    private void initMap() {
+        workflowControllerMap = new HashMap<>();
+        workflowControllerMap.put(WorkflowType.GRD, "/fxml/Sentinel1GRDWorkflowView.fxml");
+    }
+
+    public void setWorkflows(List<WorkflowDTO> workflows) {
         workflowList.getItems().addAll(workflows);
         if (workflows.size()>0) {
             loadWorkflow(workflows.get(0));
         }
     }
 
-    private void loadWorkflow(Workflow workflow) {
+    private void loadWorkflow(WorkflowDTO workflow) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(workflowControllerMap.get(workflow.getType())));
         Parent parent = null;
         try {
@@ -95,4 +122,7 @@ public class MyWorkflowController implements Initializable {
     }
 
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 }

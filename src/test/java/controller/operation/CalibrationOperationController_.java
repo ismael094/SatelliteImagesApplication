@@ -9,8 +9,7 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.Operation;
 import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflow;
-import model.processing.WorkflowType;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -103,7 +102,7 @@ public class CalibrationOperationController_ extends ApplicationTest {
     @Test
     public void set_operation() {
         interact(() -> {
-            controller.setOperation(new Sentinel1GRDDefaultWorkflow().getOperation(Operator.CALIBRATION));
+            controller.setOperation(new Sentinel1GRDDefaultWorkflowDTO().getOperation(Operator.CALIBRATION));
         });
 
         assertThat(controller.getOutputSigma().get()).isFalse();

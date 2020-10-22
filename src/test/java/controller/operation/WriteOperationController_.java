@@ -9,7 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflow;
+import model.processing.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -38,7 +38,7 @@ public class WriteOperationController_  extends ApplicationTest {
 
     @Test
     public void set_operation() {
-        Sentinel1GRDDefaultWorkflow workflow = new Sentinel1GRDDefaultWorkflow();
+        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
         controller.setOperation(workflow.getOperation(Operator.WRITE));
         assertThat(controller.getOperation().getName()).isEqualTo(Operator.WRITE);
     }

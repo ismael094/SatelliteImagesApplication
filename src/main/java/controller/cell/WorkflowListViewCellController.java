@@ -1,30 +1,21 @@
 package controller.cell;
 
-import com.google.common.collect.Lists;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import model.processing.Workflow;
+import model.processing.WorkflowDTO;
 import model.processing.WorkflowType;
-import org.jfree.fx.FXHints;
-import services.download.DownloadItem;
-import services.download.Downloader;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-public class WorkflowListViewCellController extends ListCell<Workflow>  {
+public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
     private final BooleanProperty startEdit;
     private FXMLLoader loader;
 
@@ -38,14 +29,14 @@ public class WorkflowListViewCellController extends ListCell<Workflow>  {
     private ChoiceBox<WorkflowType> typeBox;
     @FXML
     private TextField nameField;
-    private Workflow workflow;
+    private WorkflowDTO workflow;
 
     public WorkflowListViewCellController() {
         startEdit = new SimpleBooleanProperty(false);
     }
 
     @Override
-    protected void updateItem(Workflow item, boolean empty) {
+    protected void updateItem(WorkflowDTO item, boolean empty) {
         super.updateItem(item, empty);
         this.workflow = item;
         if(empty || item == null) {

@@ -1,16 +1,21 @@
 package model.processing;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Operation {
-    private final Operator operator;
+    private Operator operator;
     private Map<String, Object> parameters;
 
     public Operation(Operator operator, Map<String, Object> parameters) {
         this.operator = operator;
         this.parameters = parameters;
+    }
+
+    public Operation() {
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
     }
 
     public void addParameter(String key, Object value) {

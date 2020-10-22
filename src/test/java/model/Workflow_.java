@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.processing.Operation;
 import model.processing.Operator;
-import model.processing.SentinelWorkflow;
+import model.processing.GeneralWorkflowDTO;
 import model.processing.WorkflowType;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,11 +14,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 public class Workflow_ {
-    private SentinelWorkflow workflow;
+    private GeneralWorkflowDTO workflow;
 
     @Before
     public void init() {
-        workflow = new SentinelWorkflow(new SimpleStringProperty("name"), new SimpleObjectProperty<>(WorkflowType.GRD));
+        workflow = new GeneralWorkflowDTO(new SimpleStringProperty("name"), new SimpleObjectProperty<>(WorkflowType.GRD));
     }
 
     @Test

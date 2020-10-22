@@ -1,9 +1,6 @@
 package controller.workflow;
 
 import controller.workflow.operation.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -38,7 +35,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @FXML
     private WriteOperationController writeOperationController;
 
-    private Workflow workflow;
+    private WorkflowDTO workflow;
     private Map<Operator, OperationController> operationsMap;
 
     public Sentinel1GRDWorkflowController() {
@@ -46,7 +43,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     }
 
     @Override
-    public void setWorkflow(Workflow workflow) {
+    public void setWorkflow(WorkflowDTO workflow) {
         this.workflow = workflow;
         List<Operation> operations = workflow.getOperations();
         for (int i = 0; i < operations.size(); i++) {
@@ -61,7 +58,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     }
 
     @Override
-    public Workflow getWorkflow() {
+    public WorkflowDTO getWorkflow() {
         List<Operation> operations = workflow.getOperations();
         for (Operation operation : operations) {
             if (operationsMap.containsKey(operation.getName())) {
