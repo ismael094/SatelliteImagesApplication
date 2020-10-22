@@ -66,6 +66,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
                 op.getOperation();
             }
         }
+        System.out.println(workflow);
         return workflow;
     }
 

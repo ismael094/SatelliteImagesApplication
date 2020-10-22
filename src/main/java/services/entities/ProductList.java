@@ -22,12 +22,15 @@ public class ProductList {
     private List<String> areasOfWork;
     @Reference(idOnly = true, ignoreMissing=true)
     private List<Product> groundTruthProducts;
+    @Reference(idOnly = true, ignoreMissing=true)
+    private List<Workflow> workflows;
 
     public ProductList() {
         products = new ArrayList<>();
         restrictions = new ArrayList<>();
         areasOfWork = new ArrayList<>();
         groundTruthProducts = new ArrayList<>();
+        workflows = new ArrayList<>();
     }
 
     public ObjectId getId() {
@@ -84,5 +87,13 @@ public class ProductList {
 
     public List<Product> getGroundTruthProducts() {
         return groundTruthProducts;
+    }
+
+    public List<Workflow> getWorkflows() {
+        return workflows;
+    }
+
+    public void setWorkflows(List<Workflow> workflows) {
+        this.workflows = workflows;
     }
 }

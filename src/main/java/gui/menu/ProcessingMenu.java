@@ -48,9 +48,9 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
         sentinel.getItems().addAll(sentinel1,sentinel2);
 
         myWorkflows.setOnAction(e-> {
-            ObservableList<WorkflowDTO> objects = FXCollections.observableArrayList();
-            objects.add(new Sentinel1GRDDefaultWorkflowDTO());
-            WorkflowUtil.loadMyWorkflowView(mainController,objects);
+            //ObservableList<WorkflowDTO> objects = FXCollections.observableArrayList();
+            //objects.add(new Sentinel1GRDDefaultWorkflowDTO());
+            WorkflowUtil.loadMyWorkflowView(mainController,mainController.getUser().getWorkflows());
         });
         listProcessing.setOnAction(e->mainController.process());
         getItems().addAll(myWorkflows,listProcessing,sentinel);
@@ -71,10 +71,8 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
             jMetro = new JMetro(Style.DARK);
 
         MyWorkflowController controller = fxmlLoader.getController();
-        List<WorkflowDTO> objects = new LinkedList<>();
-        objects.add(new Sentinel1GRDDefaultWorkflowDTO());
         controller.setMainController(mainController);
-        controller.setWorkflows(objects);
+        controller.setWorkflows(mainController.getUser().getWorkflows());
         Stage stage = new Stage();
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL);

@@ -286,10 +286,12 @@ public class ProductListDTO {
 
     public void addWorkflow(WorkflowDTO workflow) {
         this.workflows.add(workflow);
+        save();
     }
 
     public void addWorkflow(ObservableList<WorkflowDTO> workflow) {
         this.workflows.addAll(workflow);
+        save();
     }
 
     public WorkflowDTO getWorkflow(WorkflowType type) {
@@ -301,5 +303,9 @@ public class ProductListDTO {
 
     public ObservableList<WorkflowDTO> getWorkflows() {
         return workflows;
+    }
+
+    public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
+        this.workflows = workflows;
     }
 }

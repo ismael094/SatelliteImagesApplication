@@ -5,6 +5,7 @@ import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
+import model.processing.WorkflowDTO;
 import model.user.UserDTO;
 import services.database.mappers.WorkflowMapper;
 import services.entities.User;
@@ -19,10 +20,12 @@ public class UserDBDAO implements DAO<UserDTO> {
     private static UserDBDAO instance;
     private final MongoDBManager database;
     private final ProductListDBDAO productListDBDAO;
+    private final WorkflowDBDAO workflowDBDAO;
 
     private UserDBDAO() {
         database = MongoDBManager.getMongoDBManager();
         productListDBDAO = ProductListDBDAO.getInstance();
+        workflowDBDAO = WorkflowDBDAO.getInstance();
     }
 
     public static UserDBDAO getInstance() {
@@ -70,12 +73,14 @@ public class UserDBDAO implements DAO<UserDTO> {
     @Override
     public void save(UserDTO dao) {
         dao.getProductListsDTO().forEach(productListDBDAO::save);
+        dao.getWorkflows().forEach(workflowDBDAO::save);
         database.getDatastore().save(toEntity(dao));
     }
 
     @Override
     public void delete(UserDTO dao) {
-        //dao.getProductListsDTO().forEach(productListDBDAO::delete);
+        dao.getProductListsDTO().forEach(productListDBDAO::delete);
+        dao.getWorkflows().forEach(workflowDBDAO::delete);
         database.getDatastore().delete(toEntity(dao));
     }
 
@@ -171,6 +176,63 @@ public class UserDBDAO implements DAO<UserDTO> {
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .removeAll("productLists", productListDBDAO.toEntity(productListDTO));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();*/
+    }
+
+    public void addWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
+        workflowDBDAO.save(workflowDTO);
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .push("workflows", new WorkflowMapper().toEntity(workflowDTO));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();*/
+    }
+
+    public void removeWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
+        //user.getProductListsDTO().forEach(productListDBDAO::save);
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .removeAll("workflows", new WorkflowMapper().toEntity(workflowDTO));
+
+        UpdateResults update = database.getDatastore().update(email, ops);
+        System.out.println(update.getUpdatedCount());
+        ;
+        /*database.getDatastore().find(User.class)
+                .filter(Filters.eq("email", user.getEmail()))
+                .update(UpdateOperators.set("productLists", productListDBDAO.toEntity(user.getProductListsDTO())))
+                .execute();*/
+    }
+
+    public void updateWorkflow(UserDTO user) {
+        //user.getProductListsDTO().forEach(productListDBDAO::save);
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("email")
+                .equal(user.getEmail());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .set("workflows", new WorkflowMapper().toEntity(user.getWorkflows()));
 
         UpdateResults update = database.getDatastore().update(email, ops);
         System.out.println(update.getUpdatedCount());

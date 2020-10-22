@@ -1,11 +1,18 @@
 package services.entities;
 
+import dev.morphia.annotations.Embedded;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
 import model.processing.Operation;
 import model.processing.WorkflowType;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
+@Entity("workflows")
 public class Workflow {
+    @Id
+    private ObjectId id;
     private List<Operation> operations;
     private WorkflowType type;
     private String name;
@@ -22,6 +29,14 @@ public class Workflow {
         this.operations = operations;
         this.type = WorkflowType.valueOf(type);
         this.name = name;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     public List<Operation> getOperations() {

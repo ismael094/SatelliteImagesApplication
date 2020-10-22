@@ -58,17 +58,19 @@ public class MyWorkflowController implements Initializable {
             aDefault.addOperation(new Operation(Operator.TERRAIN_CORRECTION, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE, new HashMap<>()));
             workflowList.getItems().add(aDefault);
-
         });
 
         saveWorkflow.setOnAction(e->{
-            WorkflowDTO workflow = activeWorkflowController.getWorkflow();
-            System.out.println(workflow);
+            activeWorkflowController.getWorkflow();
+            mainController.updateUserWorkflows();
+            AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
 
         onActionInAssignToListAddSelectedWorkflowsToSelectedLists();
 
-        removeWorkflow.setOnAction(e->workflowList.getItems().remove(1));
+        removeWorkflow.setOnAction(e->{
+            workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
+        });
 
         workflowList.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             loadWorkflow(workflowList.getSelectionModel().getSelectedItem());
@@ -97,8 +99,8 @@ public class MyWorkflowController implements Initializable {
         workflowControllerMap.put(WorkflowType.GRD, "/fxml/Sentinel1GRDWorkflowView.fxml");
     }
 
-    public void setWorkflows(List<WorkflowDTO> workflows) {
-        workflowList.getItems().addAll(workflows);
+    public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
+        workflowList.setItems(workflows);
         if (workflows.size()>0) {
             loadWorkflow(workflows.get(0));
         }

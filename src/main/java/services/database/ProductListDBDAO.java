@@ -5,7 +5,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
+import services.database.mappers.WorkflowMapper;
 import services.entities.ProductList;
+import services.entities.Workflow;
 import utils.database.MongoDBManager;
 
 import java.text.DateFormat;
@@ -19,10 +21,12 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
     private final MongoDBManager database;
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private final ProductDBDAO productDBDAO;
+    private final WorkflowMapper workflowMapper;
 
     private ProductListDBDAO() {
         database = MongoDBManager.getMongoDBManager();
         productDBDAO = ProductDBDAO.getInstance();
+        workflowMapper = new WorkflowMapper();
     }
 
     public static ProductListDBDAO getInstance() {
@@ -95,6 +99,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         productListDTO.setAreasOfWork(FXCollections.observableList(product.getAreasOfWork()));
         productListDTO.setGroundTruthProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getGroundTruthProducts())));
         productListDTO.setId(product.getId());
+        productListDTO.setWorkflows(workflowMapper.toDAO(product.getWorkflows()));
         return productListDTO;
     }
 
@@ -116,6 +121,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         productList.setGroundTruthProducts(productDBDAO.getMapper().toEntity(productListDTO.getGroundTruthProducts()));
         productList.setRestrictions(productListDTO.getRestrictions());
         productList.setAreasOfWork(productListDTO.getAreasOfWork());
+        productList.setWorkflows(workflowMapper.toEntity(productListDTO.getWorkflows()));
         if (productListDTO.getProducts().size()>0 || productListDTO.getGroundTruthProducts().size()>0) {
             productListDTO.getProducts().forEach(productDBDAO::save);
             productListDTO.getGroundTruthProducts().forEach(productDBDAO::save);

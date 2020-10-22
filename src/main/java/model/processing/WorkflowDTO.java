@@ -2,6 +2,7 @@ package model.processing;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -29,4 +30,8 @@ public interface WorkflowDTO {
     void removeOperation(Operation operation);
 
     void setOperations(List<Operation> operations);
+
+    ObjectId getId();
+
+    void setId(ObjectId id);
 }

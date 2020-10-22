@@ -24,6 +24,7 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.events.EventType;
 import model.list.ProductListDTO;
 import model.processing.FXProgressMonitor;
+import model.processing.WorkflowDTO;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -230,6 +231,7 @@ public class MainController implements Initializable {
 
     public void setUser(UserDTO userDTO) {
         this.user = userDTO;
+
         user.getProductListsDTO().addListener((ListChangeListener<ProductListDTO>) c -> {
             while (c.next())
                 if (c.wasAdded()) {
@@ -250,7 +252,27 @@ public class MainController implements Initializable {
             UserDBDAO instance = UserDBDAO.getInstance();
             instance.save(user);
         });
+
+        user.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
+            while (c.next())
+                if (c.wasAdded()) {
+                    UserDBDAO instance = UserDBDAO.getInstance();
+                    c.getAddedSubList().forEach(p-> instance.addWorkflow(user,p));
+                } else {
+                    UserDBDAO instance = UserDBDAO.getInstance();
+                    c.getRemoved().forEach(p->{
+                        instance.removeWorkflow(user,p);
+                    });
+
+            }
+        });
+
         listTreeViewComponent.reload();
+    }
+
+    public void updateUserWorkflows() {
+        UserDBDAO instance = UserDBDAO.getInstance();
+        instance.updateWorkflow(user);
     }
 
     public void process() {

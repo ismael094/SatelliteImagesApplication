@@ -41,7 +41,7 @@ public class ListMenu extends Menu implements SatInfMenuItem{
 
 
         MenuItem workflows = new MenuItem("List workflows");
-
+        workflows.setOnAction(new ShowWorkflowsOfListEvent(mainController));
 
         getItems().addAll(create,editList, delete,addSel,addAll,deselect,new SeparatorMenuItem(),preferenceImg,workflows);
     }

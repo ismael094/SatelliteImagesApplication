@@ -21,6 +21,7 @@ public class User {
     private String firstName;
     @Reference(idOnly = true, ignoreMissing=true)
     private List<ProductList> productLists;
+    @Reference(idOnly = true, ignoreMissing=true)
     private List<Workflow> workflows;
     private Map<String, Map<String, String>> searchParameters;
 

@@ -2,6 +2,7 @@ package utils.gui;
 
 import controller.MainController;
 import controller.workflow.MyWorkflowController;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,12 +10,25 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import model.list.ProductListDTO;
 import model.processing.WorkflowDTO;
+import services.database.ProductListDBDAO;
 import utils.ThemeConfiguration;
 
 import java.io.IOException;
 
 public class WorkflowUtil {
+
+    public static void loadMyWorkflowView(MainController mainController, ProductListDTO productListDTO) {
+        loadMyWorkflowView(mainController,productListDTO.getWorkflows());
+        productListDTO.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
+            while (c.next()) {
+                if (c.wasAdded())
+                    c.getAddedSubList().forEach(l->mainController.getUser().addWorkflow(l));
+            }
+            ProductListDBDAO.getInstance().save(productListDTO);
+        });
+    }
 
     public static void loadMyWorkflowView(MainController mainController, ObservableList<WorkflowDTO> workflows) {
         FXMLLoader fxmlLoader = new FXMLLoader(WorkflowUtil.class.getResource("/fxml/MyWorkflowsView.fxml"));

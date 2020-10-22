@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.bson.types.ObjectId;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class GeneralWorkflowDTO implements WorkflowDTO {
     private List<Operation> operations;
     private StringProperty name;
     private ObjectProperty<WorkflowType> type;
+    private ObjectId id;
 
     public GeneralWorkflowDTO(StringProperty name, ObjectProperty<WorkflowType> type) {
         this.name = name;
@@ -86,6 +88,16 @@ public class GeneralWorkflowDTO implements WorkflowDTO {
     @Override
     public void setOperations(List<Operation> operations) {
         this.operations = operations;
+    }
+
+    @Override
+    public ObjectId getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     @Override

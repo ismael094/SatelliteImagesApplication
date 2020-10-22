@@ -1,5 +1,6 @@
 package model.processing;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Operation {
@@ -12,6 +13,7 @@ public class Operation {
     }
 
     public Operation() {
+        this.parameters = new HashMap<>();
     }
 
     public void setOperator(Operator operator) {
