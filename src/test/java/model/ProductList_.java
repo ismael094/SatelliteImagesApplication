@@ -273,11 +273,16 @@ public class ProductList_ {
         product.setId("id");
         product.setSize("755 MB");
         product.setFootprint(FOOTPRINT);
+        p1.setId("id2");
+        p1.setSize("755 MB");
+        doReturn(FOOTPRINT_INVALID).when(p1).getFootprint();
         productListDTO.addProduct(product);
+        productListDTO.addProduct(p1);
         productListDTO.addAreaOfWork(AREA_OF_WORK);
         assertThat(productListDTO.getProductsAreasOfWorks().size()).isEqualTo(1);
-        assertThat(productListDTO.getProductsAreasOfWorks().get("id").size()).isEqualTo(1);
-        assertThat(productListDTO.getProductsAreasOfWorks().get("id").get(0)).isEqualTo(AREA_OF_WORK);
+        assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(1);
+        assertThat(productListDTO.getProductsAreasOfWorks().get(p1)).isNull();
+        assertThat(productListDTO.getProductsAreasOfWorks().get(product).get(0)).isEqualTo(AREA_OF_WORK);
     }
 
     @Test

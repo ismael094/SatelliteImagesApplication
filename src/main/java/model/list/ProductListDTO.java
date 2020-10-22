@@ -227,10 +227,12 @@ public class ProductListDTO {
         return areasOfWork;
     }
 
-    public Map<String,List<String>> getProductsAreasOfWorks() {
-        Map<String, List<String>> areas = new HashMap<>();
+    public Map<ProductDTO,List<String>> getProductsAreasOfWorks() {
+        Map<ProductDTO, List<String>> areas = new HashMap<>();
         products.forEach(p->{
-            areas.put(p.getId(), areasOfWorkOfProduct(p.getFootprint()));
+            List<String> strings = areasOfWorkOfProduct(p.getFootprint());
+            if (!strings.isEmpty())
+                areas.put(p, areasOfWorkOfProduct(p.getFootprint()));
         });
         return areas;
     }

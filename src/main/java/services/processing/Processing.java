@@ -25,7 +25,7 @@ public abstract class Processing {
     }
 
     public abstract void process(ProductListDTO productList);
-    public abstract void process(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow, String path);
+    public abstract void process(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow, String path) throws Exception;
 
     private void bindMonitors() {
         processingController.setProductListProgressBar(listMonitor.getProgress());

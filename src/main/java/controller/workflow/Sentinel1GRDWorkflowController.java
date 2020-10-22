@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Sentinel1GRDWorkflowController implements Initializable, WorkflowController {
+
     @FXML
     private AnchorPane writeAndReadOperation;
     @FXML
@@ -31,12 +32,16 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @FXML
     private TerrainCorrectionOperationController terrainCorrectionOperationController;
     @FXML
+    private AnchorPane subsetOperation;
+    @FXML
+    private SubsetOperationController subsetOperationController;
+    @FXML
     private AnchorPane writeOperation;
     @FXML
     private WriteOperationController writeOperationController;
 
     private WorkflowDTO workflow;
-    private Map<Operator, OperationController> operationsMap;
+    private final Map<Operator, OperationController> operationsMap;
 
     public Sentinel1GRDWorkflowController() {
         operationsMap = new HashMap<>();
@@ -66,18 +71,17 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
                 op.getOperation();
             }
         }
-        System.out.println(workflow);
         return workflow;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         accordion.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        System.out.println(writeAndReadOperationController);
         operationsMap.put(Operator.APPLY_ORBIT_FILE,orbitOperationController);
         operationsMap.put(Operator.CALIBRATION,calibrationOperationController);
         operationsMap.put(Operator.WRITE_AND_READ,writeAndReadOperationController);
         operationsMap.put(Operator.TERRAIN_CORRECTION,terrainCorrectionOperationController);
+        operationsMap.put(Operator.SUBSET,subsetOperationController);
         operationsMap.put(Operator.WRITE,writeOperationController);
     }
 

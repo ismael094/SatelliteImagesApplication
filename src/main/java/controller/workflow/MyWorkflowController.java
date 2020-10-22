@@ -56,13 +56,14 @@ public class MyWorkflowController implements Initializable {
             aDefault.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.TERRAIN_CORRECTION, new HashMap<>()));
+            aDefault.addOperation(new Operation(Operator.SUBSET, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE, new HashMap<>()));
             workflowList.getItems().add(aDefault);
         });
 
         saveWorkflow.setOnAction(e->{
             activeWorkflowController.getWorkflow();
-            mainController.updateUserWorkflows();
+            mainController.updateUserWorkflows(workflowList.getItems());
             AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
 

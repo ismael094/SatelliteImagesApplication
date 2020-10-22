@@ -64,16 +64,20 @@ public class SentinelProcessing extends Processing {
     }
 
     @Override
-    public void process(ProductListDTO productList) {
+    public void process(ProductListDTO productList)  {
         logger.atInfo().log("====== Processing start =========");
         logger.atInfo().log("Starting to process list {}",productList.getName());
 
-        Map<String, List<String>> productsAreasOfWorks = productList.getProductsAreasOfWorks();
+        Map<ProductDTO, List<String>> productsAreasOfWorks = productList.getProductsAreasOfWorks();
 
-        startProductListMonitor("Product list starting", productList.getProducts().size());
+        startProductListMonitor("Product list starting", productsAreasOfWorks.size());
 
-        productList.getProducts().forEach(p-> {
-            process(p, productsAreasOfWorks.get(p.getId()), workflowType.get(WorkflowType.GRD), productList.getName());
+        productsAreasOfWorks.forEach((p,footprints)-> {
+            try {
+                process(p, footprints, productList.getWorkflow(WorkflowType.valueOf(p.getProductType())), productList.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             updateProductListMonitor(
                     (productList.getProducts().indexOf(p)+1.0)+" of "+ productList.getProducts().size(),
                     (productList.getProducts().indexOf(p)+1.0));
@@ -86,14 +90,14 @@ public class SentinelProcessing extends Processing {
     }
 
     @Override
-    public void process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path) {
+    public void process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path) throws Exception {
         if (!FileUtils.productExists(product.getTitle())) {
             logger.atError().log("File {}.zip doesn't exists",product.getTitle());
             return;
         }
 
         if (workflow == null) {
-            logger.atInfo().log("Loaded default Workflow for GRD products");
+            logger.atInfo().log("Loaded default Workflow for {} products",product.getProductType());
             workflow = this.workflowType.get(WorkflowType.valueOf(product.getProductType()));
         }
 
@@ -114,51 +118,56 @@ public class SentinelProcessing extends Processing {
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size());
 
         double i = 0;
-        for (Operation op : workflow.getOperations()) {
-            i++;
-            logger.atInfo().log("Operation: {}",op.getName());
-            if (op.getName() == Operator.READ) {
-                readProduct(DownloadConfiguration.getProductDownloadFolderLocation()+"\\"+path+"\\"+ productDTO.getTitle()+".zip");
-            } else if (op.getName() == Operator.WRITE) {
-                writeOperation(productDTO, subsets, op);
-            } else if (op.getName() == Operator.WRITE_AND_READ) {
-                subsets = writeAndReadOperation(productDTO, subsets, op);
-            } else {
-                List<Product> tmp = new LinkedList<>();
-                if (op.getName() == Operator.SUBSET) {
-                    subsetOperation(areasOfWork, subsets, op, tmp);
+        try {
+            for (Operation op : workflow.getOperations()) {
+                i++;
+                logger.atInfo().log("Operation: {}", op.getName());
+                if (op.getName() == Operator.READ) {
+                    readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + ".zip");
+                } else if (op.getName() == Operator.WRITE) {
+                    writeOperation(productDTO, subsets, op, path);
+                } else if (op.getName() == Operator.WRITE_AND_READ) {
+                    subsets = writeAndReadOperation(productDTO, subsets, op);
                 } else {
-                    for (Product j : subsets) {
-                        tmp.add(createProduct(j, op));
-                        //j.dispose();
+                    List<Product> tmp = new LinkedList<>();
+                    if (op.getName() == Operator.SUBSET) {
+                        subsetOperation(areasOfWork, subsets, op, tmp);
+                    } else {
+                        for (Product j : subsets) {
+                            tmp.add(createProduct(j, op));
+                            //j.dispose();
+                        }
                     }
+                    subsets = tmp;
                 }
-                subsets = tmp;
+
+                updateProductMonitor(i + " of " + workflow.getOperations().size(), i);
+
             }
-
-            updateProductMonitor(i+" of " + workflow.getOperations().size(),i);
-
+        } catch (java.lang.OutOfMemoryError error) {
+            logger.atError().log("Error while processing. OutOfMemory Exception");
+        } finally {
+            productMonitor.done();
+            closeProducts(subsets);
+            snapProduct.closeIO();
+            snapProduct.dispose();
         }
-        productMonitor.done();
-
-        closeProducts(subsets);
-        snapProduct.closeIO();
-        snapProduct.dispose();
     }
 
     private void subsetOperation(List<String> areasOfWork, List<Product> subsets, Operation op, List<Product> tmp) throws ParseException {
         if (areasOfWork.size()>0) {
             for (Product j : subsets) {
                 for (String a : areasOfWork) {
+                    System.out.println(a);
                     op.getParameters().put("geoRegion", new WKTReader().read(a));
                     tmp.add(createProduct(j, op));
                 }
                 //j.dispose();
             }
+            op.getParameters().remove("geoRegion");
         }
     }
 
-    @NotNull
     private List<Product> writeAndReadOperation(ProductDTO productDTO, List<Product> subsets, Operation op) throws IOException {
         List<Product> tmp = new LinkedList<>();
         System.out.println(subsets.size());
@@ -171,10 +180,10 @@ public class SentinelProcessing extends Processing {
         return subsets;
     }
 
-    private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op) throws IOException {
+    private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
         for (Product j : subsets) {
-            saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\Sentinel 1\\" + productDTO.getTitle() + "_" + x, String.valueOf(op.getParameters().get("formatName")));
+            saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getTitle() + "_" + x, String.valueOf(op.getParameters().get("formatName")));
             x++;
         }
         closeProducts(subsets);

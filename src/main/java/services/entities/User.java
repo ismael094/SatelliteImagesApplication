@@ -19,9 +19,9 @@ public class User {
     private String password;
     private String lastName;
     private String firstName;
-    @Reference(idOnly = true, ignoreMissing=true)
+    @Reference(idOnly = true, ignoreMissing=true,lazy = true)
     private List<ProductList> productLists;
-    @Reference(idOnly = true, ignoreMissing=true)
+    @Reference(idOnly = true, ignoreMissing=true,lazy = true)
     private List<Workflow> workflows;
     private Map<String, Map<String, String>> searchParameters;
 

@@ -23,15 +23,13 @@ public class WriteOperationController implements Initializable, OperationControl
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         previewOperation = null;
-        this.parameters = new HashMap<>();
-        operation = new Operation(Operator.WRITE, parameters);
         initWriteFormat();
     }
 
     private void initWriteFormat() {
         ObservableList<String> items = FXCollections.observableArrayList("GeoTIFF", "PolSARPro");
         writeFormat.setItems(items);
-        if (writeFormat.getValue() == null)
+        if (writeFormat.getValue() == null || writeFormat.getValue().isEmpty())
             writeFormat.setValue("GeoTIFF");
     }
 
@@ -42,7 +40,7 @@ public class WriteOperationController implements Initializable, OperationControl
     }
 
     private void getParameters() {
-        parameters.put("formatName",writeFormat.getValue());
+        operation.getParameters().put("formatName",writeFormat.getValue());
     }
 
     @Override

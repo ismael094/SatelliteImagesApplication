@@ -30,10 +30,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.database.UserDBDAO;
+import services.database.WorkflowDBDAO;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
 import services.processing.Processing;
 import services.processing.SentinelProcessing;
+import utils.AlertFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -270,9 +272,9 @@ public class MainController implements Initializable {
         listTreeViewComponent.reload();
     }
 
-    public void updateUserWorkflows() {
-        UserDBDAO instance = UserDBDAO.getInstance();
-        instance.updateWorkflow(user);
+    public void updateUserWorkflows(ObservableList<WorkflowDTO> workflowsDTO) {
+        WorkflowDBDAO instance = WorkflowDBDAO.getInstance();
+        workflowsDTO.forEach(instance::save);
     }
 
     public void process() {
@@ -287,6 +289,8 @@ public class MainController implements Initializable {
                     return true;
                 }
             };
+
+            task.setOnFailed(e-> AlertFactory.showErrorDialog("Error","ERROR","Error while processing products"));
 
             new Thread(task).start();
 

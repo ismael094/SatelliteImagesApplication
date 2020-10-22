@@ -144,9 +144,25 @@ public class CalibrationOperationController implements Initializable, OperationC
         operation.getParameters().put("outputGammaBand",outputGamma.isSelected());
         operation.getParameters().put("outputSigmaBand",outputSigma.isSelected());
         operation.getParameters().put("outputImageScaleInDb",outputInDb.isSelected());
-        operation.getParameters().put("selectedPolarisations", Strings.join(",",polarisations.getSelectionModel().getSelectedItems()));
-        operation.getParameters().put("sourceBands",Strings.join(",",calibrationSourceBands.getSelectionModel().getSelectedItems()));
+        if (polarisations.getSelectionModel().getSelectedItems().isEmpty())
+            setPolarisationParameter(polarisations.getItems());
+        else
+            setPolarisationParameter(polarisations.getSelectionModel().getSelectedItems());
+
+        if (calibrationSourceBands.getSelectionModel().getSelectedItems().isEmpty())
+            setSourceBandsParameter(calibrationSourceBands.getItems());
+        else
+            setSourceBandsParameter(calibrationSourceBands.getSelectionModel().getSelectedItems());
     }
+
+    private void setPolarisationParameter(ObservableList<String> polarisations) {
+        operation.getParameters().put("selectedPolarisations", Strings.join(",",polarisations));
+    }
+
+    private void setSourceBandsParameter(ObservableList<String> polarisations) {
+        operation.getParameters().put("sourceBands", Strings.join(",",polarisations));
+    }
+
 
     @Override
     public void setOperation(Operation operation) {
@@ -196,7 +212,6 @@ public class CalibrationOperationController implements Initializable, OperationC
 
     private void removeBand(String name, ObservableList<String> res) {
         calibrationSourceBands.getSelectionModel().getSelectedItems().forEach(b->{
-            System.out.println(name+b.split("_")[1]);
             res.remove(name+b.split("_")[1]);
         });
     }

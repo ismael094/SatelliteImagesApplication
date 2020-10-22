@@ -1,6 +1,8 @@
 package controller.workflow.operation;
 
 import com.beust.jcommander.Strings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -23,7 +25,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     @FXML
     private ChoiceBox<String> imageResampling;
     @FXML
-    private ChoiceBox<String> pixelSpacingInMeter;
+    private TextField pixelSpacingInMeter;
     @FXML
     private ChoiceBox<String> demName;
     @FXML
@@ -46,6 +48,10 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         correctionSourceBands.getItems().addListener((ListChangeListener<String>) c -> {
             updateInput();
         });
+        correctionSourceBands.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("SELECTED");
+            updateInput();
+        });
     }
 
     private void initIncidenceAngleControl() {
@@ -56,10 +62,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     }
 
     private void initPixelSpacingInMeter() {
-        ObservableList<String> items = FXCollections.observableArrayList("Use incidence angle from Ellipsoid");
-        pixelSpacingInMeter.setItems(items);
-        if (pixelSpacingInMeter.getValue() == null)
-            pixelSpacingInMeter.setValue(items.get(0));
+        pixelSpacingInMeter.setText("10.0");
     }
 
     private void initDemName() {
@@ -118,7 +121,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         operation.getParameters().put("imgResamplingMethod", imageResampling.getValue());
         operation.getParameters().put("incidenceAngleForSigma0", incidenceAngle.getValue());
         operation.getParameters().put("demName", demName.getValue());
-        operation.getParameters().put("pixelSpacingInMeter", pixelSpacingInMeter.getValue());
+        operation.getParameters().put("pixelSpacingInMeter", Double.parseDouble(pixelSpacingInMeter.getText()));
         operation.getParameters().put("nodataValueAtSea", noDataValueAtSea.isSelected());
         operation.getParameters().put("sourceBands", Strings.join(",",correctionSourceBands.getSelectionModel().getSelectedItems()));
     }
@@ -133,6 +136,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     public void setInputBands(ObservableList<String> inputBands) {
         correctionSourceBands.getItems().clear();
         correctionSourceBands.getItems().addAll(inputBands);
+        updateInput();
     }
 
     @Override
@@ -168,7 +172,9 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         imageResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("imgResamplingMethod",imageResampling.getItems().get(0))));
         incidenceAngle.setValue(String.valueOf(operation.getParameters().getOrDefault("incidenceAngleForSigma0",incidenceAngle.getItems().get(0))));
         demName.setValue(String.valueOf(operation.getParameters().getOrDefault("demName",demName.getItems().get(0))));
-        correctionSourceBands.getItems().addAll(FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("sourceBands","").toString().split(","))));
-        pixelSpacingInMeter.setValue(String.valueOf(operation.getParameters().getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getItems().get(0))));
+        ObservableList<String> sourceBands = FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("sourceBands", "").toString().split(",")));
+        sourceBands.forEach(b->correctionSourceBands.getSelectionModel().select(b));
+        correctionSourceBands.getItems().addAll(sourceBands);
+        pixelSpacingInMeter.setText(String.valueOf(operation.getParameters().getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getText())));
     }
 }

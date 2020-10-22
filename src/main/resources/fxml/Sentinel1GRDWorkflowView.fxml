@@ -28,6 +28,11 @@
                   <fx:include fx:id="terrainCorrectionOperation" source="TerrainCorrectionView.fxml" />
                </content>
             </TitledPane>
+            <TitledPane fx:id="subsetPane" animated="false" text="Subset">
+               <content>
+                  <fx:include fx:id="subsetOperation" source="SubsetOperationView.fxml" />
+               </content>
+            </TitledPane>
             <TitledPane animated="false" text="Write">
                <content>
                   <fx:include fx:id="writeOperation" source="WriteOperationView.fxml" />

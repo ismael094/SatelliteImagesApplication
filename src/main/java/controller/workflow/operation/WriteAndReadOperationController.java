@@ -15,6 +15,7 @@ public class WriteAndReadOperationController implements Initializable, Operation
 
     @Override
     public Operation getOperation() {
+        operation.getParameters().put("formatName","BEAM-DIMAP");
         return operation;
     }
 
