@@ -1,15 +1,9 @@
 package utils.database;
 
 import com.mongodb.*;
-import com.mongodb.client.MongoClients;
-import com.mongodb.connection.ConnectionPoolSettings;
-import com.mongodb.connection.SocketSettings;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import model.processing.WorkflowDTO;
-import model.restriction.Restriction;
-import services.entities.ProductList;
-import services.entities.User;
+import model.processing.workflow.WorkflowDTO;
 import services.entities.Workflow;
 
 import java.util.concurrent.TimeUnit;

@@ -1,9 +1,10 @@
-package model.processing;
+package model.processing.workflow;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import model.processing.Operator;
 import org.bson.types.ObjectId;
 
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package controller.workflow;
+package controller.processing;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -9,7 +9,7 @@ import javafx.scene.control.ProgressBar;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ProcessingController implements Initializable {
+public class SimpleProcessingMonitorController implements Initializable {
     @FXML
     private ProgressBar numProductProgress;
     @FXML

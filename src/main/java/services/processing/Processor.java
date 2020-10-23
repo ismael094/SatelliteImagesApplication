@@ -1,22 +1,23 @@
 package services.processing;
 
-import controller.workflow.ProcessingController;
+import controller.processing.SimpleProcessingMonitorController;
 import javafx.application.Platform;
 import model.list.ProductListDTO;
 import model.processing.FXProgressMonitor;
 import model.processing.ProcessingMonitor;
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import model.products.ProductDTO;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
-public abstract class Processing {
-    protected final ProcessingController processingController;
+public abstract class Processor {
+    protected final SimpleProcessingMonitorController processingController;
     protected FXProgressMonitor operationMonitor;
     protected FXProgressMonitor productMonitor;
     protected FXProgressMonitor listMonitor;
 
-    public Processing(ProcessingController processingController) {
+    public Processor(SimpleProcessingMonitorController processingController) {
         this.processingController = processingController;
         this.operationMonitor = new FXProgressMonitor();
         this.productMonitor = new FXProgressMonitor();
@@ -25,7 +26,8 @@ public abstract class Processing {
     }
 
     public abstract void process(ProductListDTO productList);
-    public abstract void process(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow, String path) throws Exception;
+    public abstract BufferedImage process(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception;
+    //public abstract BufferedImage preview(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow) throws Exception;
 
     private void bindMonitors() {
         processingController.setProductListProgressBar(listMonitor.getProgress());

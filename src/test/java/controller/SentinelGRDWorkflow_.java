@@ -1,9 +1,9 @@
 package controller;
 
-import controller.workflow.Sentinel1GRDWorkflowController;
-import controller.workflow.operation.CalibrationOperationController;
-import controller.workflow.operation.OperationController;
-import controller.workflow.operation.WriteAndReadOperationController;
+import controller.processing.workflow.Sentinel1GRDWorkflowController;
+import controller.processing.workflow.operation.CalibrationOperationController;
+import controller.processing.workflow.operation.OperationController;
+import controller.processing.workflow.operation.WriteAndReadOperationController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +13,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.*;
+import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowType;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;

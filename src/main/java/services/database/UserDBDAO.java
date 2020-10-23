@@ -5,7 +5,7 @@ import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import model.user.UserDTO;
 import services.database.mappers.WorkflowMapper;
 import services.entities.User;
@@ -186,7 +186,7 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .execute();*/
     }
 
-    public void addWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
+    public void addNewWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
         workflowDBDAO.save(workflowDTO);
         //save(user);
         Query<User> email = database.getDatastore().find(User.class)
@@ -216,7 +216,7 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .removeAll("workflows", new WorkflowMapper().toEntity(workflowDTO));
 
         UpdateResults update = database.getDatastore().update(email, ops);
-        System.out.println(update.getUpdatedCount());
+        workflowDBDAO.delete(workflowDTO);
         ;
         /*database.getDatastore().find(User.class)
                 .filter(Filters.eq("email", user.getEmail()))

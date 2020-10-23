@@ -1,7 +1,6 @@
 package controller.search;
 
-import controller.GTMapSearchController;
-import controller.workflow.Sentinel1GRDWorkflowController;
+import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

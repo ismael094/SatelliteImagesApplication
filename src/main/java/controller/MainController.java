@@ -4,9 +4,8 @@ import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
-import controller.workflow.ProcessingController;
+import controller.processing.SimpleProcessingMonitorController;
 import gui.components.*;
-import gui.events.AppCloseEvent;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
@@ -23,8 +22,7 @@ import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.events.EventType;
 import model.list.ProductListDTO;
-import model.processing.FXProgressMonitor;
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +31,8 @@ import services.database.UserDBDAO;
 import services.database.WorkflowDBDAO;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
-import services.processing.Processing;
-import services.processing.SentinelProcessing;
+import services.processing.Processor;
+import services.processing.SentinelProcessor;
 import utils.AlertFactory;
 
 import java.io.IOException;
@@ -49,9 +47,9 @@ public class MainController implements Initializable {
     private ConsoleComponent consoleComponent;
 
     @FXML
-    private GridPane processing;
+    private AnchorPane processing;
     @FXML
-    private ProcessingController processingController;
+    private SimpleProcessingMonitorController processingController;
     @FXML
     private VBox menu;
     @FXML
@@ -70,7 +68,7 @@ public class MainController implements Initializable {
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private UserDTO user;
     private CopernicusDownloader copernicusDownloader;
-    private Processing processor;
+    private Processor processor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -94,7 +92,7 @@ public class MainController implements Initializable {
     }
 
     private void initProcessors() {
-        processor = new SentinelProcessing(processingController);
+        processor = new SentinelProcessor(processingController);
     }
 
     private void initDownloadManager() {
@@ -259,7 +257,7 @@ public class MainController implements Initializable {
             while (c.next())
                 if (c.wasAdded()) {
                     UserDBDAO instance = UserDBDAO.getInstance();
-                    c.getAddedSubList().forEach(p-> instance.addWorkflow(user,p));
+                    c.getAddedSubList().forEach(p-> instance.addNewWorkflow(user,p));
                 } else {
                     UserDBDAO instance = UserDBDAO.getInstance();
                     c.getRemoved().forEach(p->{
@@ -275,6 +273,10 @@ public class MainController implements Initializable {
     public void updateUserWorkflows(ObservableList<WorkflowDTO> workflowsDTO) {
         WorkflowDBDAO instance = WorkflowDBDAO.getInstance();
         workflowsDTO.forEach(instance::save);
+    }
+
+    public Processor getProcessor() {
+        return processor;
     }
 
     public void process() {
@@ -296,5 +298,9 @@ public class MainController implements Initializable {
 
         }
 
+    }
+
+    public AnchorPane getProcessing() {
+        return processing;
     }
 }

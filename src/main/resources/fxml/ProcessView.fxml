@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -9,77 +10,85 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 
-<GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.workflow.ProcessingController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
+<AnchorPane prefHeight="223.0" prefWidth="303.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.SimpleProcessingMonitorController">
    <children>
-      <GridPane GridPane.halignment="LEFT" GridPane.valignment="TOP">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-            <AnchorPane prefHeight="55.0" prefWidth="436.0">
-               <children>
-                  <ProgressBar fx:id="numProductProgress" nodeOrientation="LEFT_TO_RIGHT" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-               <padding>
-                  <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
-               </padding>
-            </AnchorPane>
-            <Label fx:id="step" text="Step " GridPane.columnIndex="1" />
-         </children>
-      </GridPane>
-      <GridPane GridPane.rowIndex="1">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="552.0" minWidth="10.0" percentWidth="80.0" prefWidth="475.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="266.0" minWidth="10.0" percentWidth="20.0" prefWidth="118.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-            <AnchorPane prefHeight="55.0" prefWidth="451.0">
-               <children>
-                  <ProgressBar fx:id="productProcess" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <padding>
-                        <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
-                     </padding>
-                  </ProgressBar>
-               </children>
-            </AnchorPane>
-            <Label fx:id="productOperation" text="Label" GridPane.columnIndex="1" />
-         </children>
-      </GridPane>
-      <GridPane GridPane.rowIndex="2">
+      <GridPane layoutY="12.0" prefHeight="174.0" prefWidth="303.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <GridPane GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ProgressBar fx:id="operationProgress" layoutX="80.0" layoutY="16.0" prefWidth="200.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane prefHeight="55.0" prefWidth="436.0">
+                     <children>
+                        <ProgressBar fx:id="numProductProgress" nodeOrientation="LEFT_TO_RIGHT" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
                      <padding>
                         <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
                      </padding>
-                  </ProgressBar>
+                  </AnchorPane>
+                  <Label fx:id="step" GridPane.columnIndex="1" />
                </children>
-            </AnchorPane>
-            <Label fx:id="operation" text="Label" GridPane.columnIndex="1" />
+            </GridPane>
+            <GridPane GridPane.rowIndex="2">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="552.0" minWidth="10.0" percentWidth="80.0" prefWidth="475.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="266.0" minWidth="10.0" percentWidth="20.0" prefWidth="118.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <AnchorPane prefHeight="55.0" prefWidth="451.0">
+                     <children>
+                        <ProgressBar fx:id="productProcess" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <padding>
+                              <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+                           </padding>
+                        </ProgressBar>
+                     </children>
+                  </AnchorPane>
+                  <Label fx:id="productOperation" text="Label" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane GridPane.rowIndex="3">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ProgressBar fx:id="operationProgress" layoutX="80.0" layoutY="16.0" prefWidth="200.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <padding>
+                              <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+                           </padding>
+                        </ProgressBar>
+                     </children>
+                  </AnchorPane>
+                  <Label fx:id="operation" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+            <Label text="Processing..." GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Button mnemonicParsing="false" text="Cancel" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </children>
-</GridPane>
+</AnchorPane>

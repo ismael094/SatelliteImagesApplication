@@ -1,4 +1,4 @@
-package controller.workflow.operation;
+package controller.processing.workflow.operation;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 import model.processing.Operator;
 
 import java.net.URL;

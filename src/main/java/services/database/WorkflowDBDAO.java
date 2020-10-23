@@ -1,11 +1,8 @@
 package services.database;
 
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import services.database.mappers.WorkflowMapper;
-import services.entities.ProductList;
-import services.entities.User;
 import services.entities.Workflow;
-import utils.Encryptor;
 import utils.database.MongoDBManager;
 
 import java.util.List;

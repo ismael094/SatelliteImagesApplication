@@ -27,6 +27,7 @@ public class FXProgressMonitor extends ProcessingMonitor {
     public void done() {
         System.out.println("Work done" );
         progress.set(0);
+        workDone = 0;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package controller.operation;
 
-import controller.workflow.operation.CalibrationOperationController;
+import controller.processing.workflow.operation.CalibrationOperationController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 import model.processing.Operator;
 import model.processing.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;

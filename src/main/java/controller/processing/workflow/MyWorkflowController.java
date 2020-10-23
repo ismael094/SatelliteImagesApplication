@@ -1,4 +1,4 @@
-package controller.workflow;
+package controller.processing.workflow;
 
 import controller.MainController;
 import controller.cell.WorkflowListViewCellController;
@@ -15,6 +15,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import model.list.ProductListDTO;
 import model.processing.*;
+import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.WorkflowType;
 import utils.AlertFactory;
 import utils.gui.ProductListDTOUtil;
 
@@ -52,6 +56,7 @@ public class MyWorkflowController implements Initializable {
         //setWorkflow(new Sentinel1GRDDefaultWorkflow());
         addWorkflow.setOnAction(e-> {
             GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+            aDefault.addOperation(new Operation(Operator.READ, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));

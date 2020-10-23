@@ -4,8 +4,8 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import model.processing.WorkflowDTO;
-import model.processing.WorkflowType;
+import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import model.restriction.Restriction;
 import org.bson.types.ObjectId;
@@ -225,6 +225,16 @@ public class ProductListDTO {
 
     public ObservableList<String> getAreasOfWork() {
         return areasOfWork;
+    }
+
+    public List<ProductDTO> getValidProducts() {
+        List<ProductDTO> res = new ArrayList<>();
+        products.forEach(p->{
+            List<String> strings = areasOfWorkOfProduct(p.getFootprint());
+            if (!strings.isEmpty())
+                res.add(p);
+        });
+        return res;
     }
 
     public Map<ProductDTO,List<String>> getProductsAreasOfWorks() {

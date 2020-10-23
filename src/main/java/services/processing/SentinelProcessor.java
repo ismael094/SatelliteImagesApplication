@@ -4,7 +4,7 @@ package services.processing;
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
-import controller.workflow.ProcessingController;
+import controller.processing.SimpleProcessingMonitorController;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
@@ -16,13 +16,16 @@ import javafx.stage.Modality;
 import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
 import model.processing.*;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
-import org.jetbrains.annotations.NotNull;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import utils.DownloadConfiguration;
@@ -31,23 +34,22 @@ import utils.ProcessingConfiguration;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
 
-public class SentinelProcessing extends Processing {
+public class SentinelProcessor extends Processor {
 
-    static final Logger logger = LogManager.getLogger(SentinelProcessing.class.getName());
+    static final Logger logger = LogManager.getLogger(SentinelProcessor.class.getName());
 
     protected final Map<WorkflowType, WorkflowDTO> workflowType;
+    private BufferedImage colorIndexedImage;
 
-    public SentinelProcessing(ProcessingController processingController) {
+    public SentinelProcessor(SimpleProcessingMonitorController processingController) {
         super(processingController);
         this.workflowType = new HashMap<>();
         this.workflowType.put(WorkflowType.GRD, new Sentinel1GRDDefaultWorkflowDTO());
+        colorIndexedImage = null;
     }
 
     protected Product readProduct(String path) throws IOException {
@@ -71,16 +73,17 @@ public class SentinelProcessing extends Processing {
         Map<ProductDTO, List<String>> productsAreasOfWorks = productList.getProductsAreasOfWorks();
 
         startProductListMonitor("Product list starting", productsAreasOfWorks.size());
-
+        updateProductListMonitor("0 of "+ productList.getProducts().size(),0);
         productsAreasOfWorks.forEach((p,footprints)-> {
             try {
-                process(p, footprints, productList.getWorkflow(WorkflowType.valueOf(p.getProductType())), productList.getName());
+
+                process(p, footprints, productList.getWorkflow(WorkflowType.valueOf(p.getProductType())), productList.getName(),false);
+                updateProductListMonitor(
+                        (productList.getProducts().indexOf(p)+1.0)+" of "+ productList.getProducts().size(),
+                        1);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            updateProductListMonitor(
-                    (productList.getProducts().indexOf(p)+1.0)+" of "+ productList.getProducts().size(),
-                    (productList.getProducts().indexOf(p)+1.0));
         });
 
         listMonitor.done();
@@ -90,10 +93,15 @@ public class SentinelProcessing extends Processing {
     }
 
     @Override
-    public void process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path) throws Exception {
+    public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception {
         if (!FileUtils.productExists(product.getTitle())) {
             logger.atError().log("File {}.zip doesn't exists",product.getTitle());
-            return;
+            return null;
+        }
+
+        if (areasOfWork == null || areasOfWork.size() == 0) {
+            logger.atError().log("No area of work assigned to product {}", product.getTitle());
+            return null;
         }
 
         if (workflow == null) {
@@ -103,18 +111,19 @@ public class SentinelProcessing extends Processing {
 
         logger.atInfo().log("====== Processing product {}",product.getTitle());
         try {
-            Product read = readProduct(DownloadConfiguration.getProductDownloadFolderLocation()+"\\"+ product.getTitle()+".zip");
-            startProcess(read, product, areasOfWork, workflow,path);
+            BufferedImage bufferedImage = startProcess(product, areasOfWork, workflow, path, generateBufferedImage);
             logger.atInfo().log("====== Processing ended! =========");
+            return bufferedImage;
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private void startProcess(Product snapProduct, ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path) throws IOException, ParseException {
+    private BufferedImage startProcess(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBoolean) throws IOException, ParseException {
         List<Product> subsets = new LinkedList<>();
-        subsets.add(snapProduct);
-
+        //subsets.add(snapProduct);
+        Product snapProduct = null;
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size());
 
         double i = 0;
@@ -123,62 +132,77 @@ public class SentinelProcessing extends Processing {
                 i++;
                 logger.atInfo().log("Operation: {}", op.getName());
                 if (op.getName() == Operator.READ) {
-                    readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + ".zip");
+                    snapProduct = readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + productDTO.getTitle() + ".zip");
                 } else if (op.getName() == Operator.WRITE) {
-                    writeOperation(productDTO, subsets, op, path);
+                    if (generateBoolean) {
+                        createBufferedImage(subsets.get(0));
+                    } else
+                        writeOperation(productDTO, subsets, op, path);
                 } else if (op.getName() == Operator.WRITE_AND_READ) {
-                    subsets = writeAndReadOperation(productDTO, subsets, op);
+                    snapProduct = writeAndReadOperation(snapProduct, productDTO, op);
                 } else {
-                    List<Product> tmp = new LinkedList<>();
                     if (op.getName() == Operator.SUBSET) {
-                        subsetOperation(areasOfWork, subsets, op, tmp);
+                        subsets = subsetOperation(snapProduct,areasOfWork, op);
                     } else {
-                        for (Product j : subsets) {
-                            tmp.add(createProduct(j, op));
-                            //j.dispose();
-                        }
+                        if (subsets.isEmpty())
+                            snapProduct = createProduct(snapProduct, op);
                     }
-                    subsets = tmp;
                 }
 
-                updateProductMonitor(i + " of " + workflow.getOperations().size(), i);
+                updateProductMonitor(i + " of " + workflow.getOperations().size(), 1);
+                operationMonitor.done();
 
             }
         } catch (java.lang.OutOfMemoryError error) {
             logger.atError().log("Error while processing. OutOfMemory Exception");
         } finally {
+            operationMonitor.done();
             productMonitor.done();
             closeProducts(subsets);
             snapProduct.closeIO();
             snapProduct.dispose();
         }
+
+        return colorIndexedImage;
     }
 
-    private void subsetOperation(List<String> areasOfWork, List<Product> subsets, Operation op, List<Product> tmp) throws ParseException {
+    private void createBufferedImage(Product product) throws IOException {
+        Band bandAt = product.getBandAt(0);
+        colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
+    }
+
+    /*@Override
+    public BufferedImage preview(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow) throws Exception {
+        Operation operation = workflow.getOperation(Operator.WRITE);
+        operation.setOperator(Operator.CREATE_BUFFERED_IMAGE);
+        List<String> one = new ArrayList<>();
+        one.add(areasOfWork.get(0));
+        process(productList,one,workflow,"Tmp");
+        return colorIndexedImage;
+    }*/
+
+    private List<Product> subsetOperation(Product product, List<String> areasOfWork, Operation op) throws ParseException {
+        List<Product> tmp = new LinkedList<>();
         if (areasOfWork.size()>0) {
-            for (Product j : subsets) {
-                for (String a : areasOfWork) {
-                    System.out.println(a);
-                    op.getParameters().put("geoRegion", new WKTReader().read(a));
-                    tmp.add(createProduct(j, op));
-                }
-                //j.dispose();
+            for (String a : areasOfWork) {
+                System.out.println(a);
+                op.getParameters().put("geoRegion", new WKTReader().read(a));
+                tmp.add(createProduct(product, op));
             }
             op.getParameters().remove("geoRegion");
+        } else {
+            tmp.add(product);
         }
+        return tmp;
     }
 
-    private List<Product> writeAndReadOperation(ProductDTO productDTO, List<Product> subsets, Operation op) throws IOException {
-        List<Product> tmp = new LinkedList<>();
-        System.out.println(subsets.size());
-        for (Product j : subsets) {
-            saveProduct(j,ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId()+".dim", String.valueOf(op.getParameters().get("formatName")));
-            tmp.add(readProduct(ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId() + ".dim"));
-        }
-        closeProducts(subsets);
-        subsets = tmp;
-        return subsets;
+    private Product writeAndReadOperation(Product product, ProductDTO productDTO, Operation op) throws IOException {
+        saveProduct(product,ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId()+".dim", String.valueOf(op.getParameters().get("formatName")));
+        closeProduct(product);
+        return readProduct(ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId() + ".dim");
     }
+
+
 
     private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
@@ -191,6 +215,10 @@ public class SentinelProcessing extends Processing {
 
     private void closeProducts(List<Product> subsets) {
         subsets.forEach(Product::dispose);
+    }
+
+    private void closeProduct(Product product) {
+        product.dispose();
     }
 
     private void example(BufferedImage image) {

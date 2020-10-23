@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class Processing_ {
+public class Processor_ {
 
     @Test
     public void test() throws IOException {

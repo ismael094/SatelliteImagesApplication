@@ -1,12 +1,7 @@
 package gui;
 
-import controller.GTMapSearchController;
-import controller.workflow.Sentinel1GRDWorkflowController;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;

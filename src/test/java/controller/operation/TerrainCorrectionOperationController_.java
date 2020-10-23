@@ -1,7 +1,7 @@
 package controller.operation;
 
-import controller.workflow.Sentinel1GRDWorkflowController;
-import controller.workflow.operation.OperationController;
+import controller.processing.workflow.Sentinel1GRDWorkflowController;
+import controller.processing.workflow.operation.OperationController;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -1,10 +1,9 @@
 package services.entities;
 
-import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
-import model.processing.Operation;
-import model.processing.WorkflowType;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowType;
 import org.bson.types.ObjectId;
 
 import java.util.List;

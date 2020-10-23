@@ -1,4 +1,6 @@
-package model.processing;
+package model.processing.workflow;
+
+import model.processing.Operator;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -3,7 +3,7 @@ package model;
 import javafx.beans.property.SimpleStringProperty;
 import model.list.ProductListDTO;
 import model.processing.Sentinel1GRDDefaultWorkflowDTO;
-import model.processing.WorkflowType;
+import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
 import model.products.Sentinel2ProductDTO;
@@ -279,6 +279,7 @@ public class ProductList_ {
         productListDTO.addProduct(product);
         productListDTO.addProduct(p1);
         productListDTO.addAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.getValidProducts().size()).isEqualTo(1);
         assertThat(productListDTO.getProductsAreasOfWorks().size()).isEqualTo(1);
         assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(1);
         assertThat(productListDTO.getProductsAreasOfWorks().get(p1)).isNull();

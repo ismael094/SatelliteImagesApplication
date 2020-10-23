@@ -1,4 +1,4 @@
-package model.processing;
+package model.processing.workflow;
 
 public enum WorkflowType {
     GRD,SLC

@@ -1,7 +1,6 @@
 package controller;
 
-import controller.workflow.Sentinel1GRDWorkflowController;
-import controller.workflow.operation.OperationController;
+import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +14,6 @@ import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.awt.*;
-import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

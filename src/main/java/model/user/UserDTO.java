@@ -6,7 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import model.list.ProductListDTO;
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import org.bson.types.ObjectId;
 
 import java.util.Map;

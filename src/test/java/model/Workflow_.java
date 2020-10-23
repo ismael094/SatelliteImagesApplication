@@ -2,10 +2,10 @@ package model;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 import model.processing.Operator;
-import model.processing.GeneralWorkflowDTO;
-import model.processing.WorkflowType;
+import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.WorkflowType;
 import org.junit.Before;
 import org.junit.Test;
 

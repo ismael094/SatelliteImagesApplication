@@ -1,7 +1,7 @@
 package utils.gui;
 
 import controller.MainController;
-import controller.workflow.MyWorkflowController;
+import controller.processing.workflow.MyWorkflowController;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
-import model.processing.WorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import services.database.ProductListDBDAO;
 import utils.ThemeConfiguration;
 

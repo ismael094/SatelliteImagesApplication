@@ -1,24 +1,25 @@
-package controller.workflow;
+package controller.processing.workflow;
 
-import controller.workflow.operation.*;
+import controller.processing.workflow.operation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
 import javafx.scene.layout.AnchorPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.processing.*;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowDTO;
 
 import java.net.URL;
 import java.util.*;
 
 public class Sentinel1GRDWorkflowController implements Initializable, WorkflowController {
-
-    @FXML
-    private AnchorPane writeAndReadOperation;
-    @FXML
-    private WriteAndReadOperationController writeAndReadOperationController;
     @FXML
     private Accordion accordion;
+    @FXML
+    private AnchorPane readOperation;
+    @FXML
+    private ReadOperationController readOperationController;
     @FXML
     private AnchorPane orbitOperation;
     @FXML
@@ -27,6 +28,10 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     private AnchorPane calibrationOperation;
     @FXML
     private CalibrationOperationController calibrationOperationController;
+    @FXML
+    private AnchorPane writeAndReadOperation;
+    @FXML
+    private WriteAndReadOperationController writeAndReadOperationController;
     @FXML
     private AnchorPane terrainCorrectionOperation;
     @FXML
@@ -77,32 +82,13 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         accordion.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        operationsMap.put(Operator.READ,readOperationController);
         operationsMap.put(Operator.APPLY_ORBIT_FILE,orbitOperationController);
         operationsMap.put(Operator.CALIBRATION,calibrationOperationController);
         operationsMap.put(Operator.WRITE_AND_READ,writeAndReadOperationController);
         operationsMap.put(Operator.TERRAIN_CORRECTION,terrainCorrectionOperationController);
         operationsMap.put(Operator.SUBSET,subsetOperationController);
         operationsMap.put(Operator.WRITE,writeOperationController);
-    }
-
-    public WriteAndReadOperationController getWriteAndReadOperationController() {
-        return writeAndReadOperationController;
-    }
-
-    public OrbitOperationController getOrbitOperationController() {
-        return orbitOperationController;
-    }
-
-    public CalibrationOperationController getCalibrationOperationController() {
-        return calibrationOperationController;
-    }
-
-    public TerrainCorrectionOperationController getTerrainCorrectionOperationController() {
-        return terrainCorrectionOperationController;
-    }
-
-    public WriteOperationController getWriteOperationController() {
-        return writeOperationController;
     }
 
     public Map<Operator, OperationController> getOperationsMap() {

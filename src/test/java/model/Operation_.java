@@ -1,6 +1,6 @@
 package model;
 
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 import model.processing.Operator;
 import org.junit.Test;
 

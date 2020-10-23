@@ -2,11 +2,10 @@ package services.database;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.list.ProductListDTO;
-import model.processing.GeneralWorkflowDTO;
+import model.processing.workflow.GeneralWorkflowDTO;
 import model.processing.Sentinel1GRDDefaultWorkflowDTO;
-import model.processing.WorkflowDTO;
-import model.processing.WorkflowType;
+import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.WorkflowType;
 import org.junit.Before;
 import org.junit.Test;
 import utils.database.MongoDBManager;

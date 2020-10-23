@@ -1,7 +1,6 @@
 package services.entities;
 
 import dev.morphia.annotations.*;
-import model.processing.WorkflowDTO;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;

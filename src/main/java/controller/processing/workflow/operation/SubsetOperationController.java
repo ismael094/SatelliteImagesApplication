@@ -1,4 +1,4 @@
-package controller.workflow.operation;
+package controller.processing.workflow.operation;
 
 import com.beust.jcommander.Strings;
 import javafx.collections.FXCollections;
@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 
 import java.net.URL;
 import java.util.Arrays;

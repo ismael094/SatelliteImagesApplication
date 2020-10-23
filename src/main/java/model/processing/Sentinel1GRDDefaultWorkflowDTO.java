@@ -2,6 +2,9 @@ package model.processing;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.Operation;
+import model.processing.workflow.WorkflowType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +13,7 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
     public Sentinel1GRDDefaultWorkflowDTO() {
         super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.GRD));
+        getRead();
         getOrbit();
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");

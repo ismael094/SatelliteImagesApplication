@@ -1,21 +1,15 @@
-package controller.workflow.operation;
+package controller.processing.workflow.operation;
 
 import javafx.collections.ObservableList;
-import javafx.fxml.Initializable;
-import model.processing.Operation;
+import model.processing.workflow.Operation;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class WriteAndReadOperationController implements Initializable, OperationController {
-
+public class ReadOperationController implements OperationController {
     private Operation operation;
     private ObservableList<String> inputBands;
     private OperationController nextOperationController;
 
     @Override
     public Operation getOperation() {
-        operation.getParameters().put("formatName","BEAM-DIMAP");
         return operation;
     }
 
@@ -32,12 +26,12 @@ public class WriteAndReadOperationController implements Initializable, Operation
 
     @Override
     public ObservableList<String> getInputBands() {
-        return inputBands;
+        return this.inputBands;
     }
 
     @Override
     public ObservableList<String> getOutputBands() {
-        return inputBands;
+        return this.inputBands;
     }
 
     @Override
@@ -48,17 +42,12 @@ public class WriteAndReadOperationController implements Initializable, Operation
 
     @Override
     public void updateInput() {
-        if (nextOperationController!=null)
+        if (nextOperationController != null)
             nextOperationController.setInputBands(inputBands);
     }
 
     @Override
     public OperationController getNextOperationController() {
         return nextOperationController;
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
     }
 }

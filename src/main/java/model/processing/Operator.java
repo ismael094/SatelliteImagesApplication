@@ -9,7 +9,8 @@ public enum Operator {
     WRITE_AND_READ("WriteAndRead"),
     WRITE("Write"),
     READ("Read"),
-    SUBSET("Subset");
+    SUBSET("Subset"),
+    CREATE_BUFFERED_IMAGE("CreateBufferedImage");
 
     private final String name;
 
