@@ -34,8 +34,8 @@ public class PreviewImageController implements Initializable {
         image.setOnScroll(event -> {
             Rectangle2D viewport = image.getViewport();
             double percent = (event.getDeltaY() / image.getImage().getWidth());
-            double deltaW = viewport.getWidth() * percent;
-            double deltaH = viewport.getHeight() * percent;
+            double deltaW = viewport.getWidth() * percent*3.0;
+            double deltaH = viewport.getHeight() * percent*3.0;
             image.setViewport(new Rectangle2D(viewport.getMinX(),viewport.getMinY(),viewport.getWidth()-deltaW,viewport.getHeight()-deltaH));
         });
     }

@@ -482,6 +482,9 @@ public class ListInformationController extends ProductListTabItem {
                 return SwingFXUtils.toFXImage(preview, null);
             }
         };
+        task.setOnFailed(e->{
+            AlertFactory.showErrorDialog("Error","","Error while setting preview image");
+        });
         task.setOnSucceeded(e-> {
             try {
                 loadView(task.get());

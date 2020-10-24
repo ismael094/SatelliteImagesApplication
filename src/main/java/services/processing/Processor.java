@@ -25,7 +25,7 @@ public abstract class Processor {
         bindMonitors();
     }
 
-    public abstract void process(ProductListDTO productList);
+    public abstract void process(ProductListDTO productList) throws Exception;
     public abstract BufferedImage process(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception;
     //public abstract BufferedImage preview(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow) throws Exception;
 

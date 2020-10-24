@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane fx:id="root" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.identification.LoginController">
+<AnchorPane fx:id="root" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.identification.LoginController">
    <children>
       <BorderPane prefHeight="391.0" prefWidth="719.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>

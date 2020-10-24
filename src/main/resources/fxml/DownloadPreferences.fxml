@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import controller.download.DownloadPreferencesController?>
-<DialogPane fx:id="dialogPane" contentText="Configuration" expanded="true" headerText="Download preferences" prefHeight="487.0" prefWidth="383.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.download.DownloadPreferencesController">
+<DialogPane fx:id="dialogPane" contentText="Configuration" expanded="true" headerText="Download preferences" prefHeight="487.0" prefWidth="383.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.download.DownloadPreferencesController">
    <content>
       <GridPane prefHeight="391.0" prefWidth="383.0">
         <columnConstraints>

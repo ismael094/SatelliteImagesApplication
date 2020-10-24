@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane id="mainPane" fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="700" maxWidth="1.7976931348623157E308" prefHeight="698.0" prefWidth="1300.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<ScrollPane id="mainPane" fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="700" maxWidth="1.7976931348623157E308" prefHeight="698.0" prefWidth="1300.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
 
     <GridPane gridLinesVisible="true" GridPane.rowIndex="0">
         <columnConstraints>

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.WriteOperationController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.WriteOperationController">
    <children>
       <Label layoutX="40.0" layoutY="41.0" text="Format" />
       <ChoiceBox fx:id="writeFormat" layoutX="225.0" layoutY="36.0" prefHeight="31.0" prefWidth="171.0" />

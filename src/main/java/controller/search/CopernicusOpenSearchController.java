@@ -535,7 +535,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         res.put(SentinelProductParameters.PLATFORM_NAME.getParameterName(), platformList.getValue());
         res.put(SentinelProductParameters.PRODUCT_TYPE.getParameterName(), productTypeList.getValue());
 
-        if (mapController.getWKT() != null || !mapController.getWKT().isEmpty())
+        if (mapController.getWKT() != null && !mapController.getWKT().isEmpty())
             res.put(SentinelProductParameters.FOOTPRINT.getParameterName(), mapController.getWKT());
         if (platformList.getValue().equals(SENTINEL_1)) {
             res.put(SentinelProductParameters.POLARISATION_MODE.getParameterName(), polarisation.getValue());

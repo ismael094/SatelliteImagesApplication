@@ -28,6 +28,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import utils.AlertFactory;
 import utils.DownloadConfiguration;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
@@ -66,7 +67,7 @@ public class SentinelProcessor extends Processor {
     }
 
     @Override
-    public void process(ProductListDTO productList)  {
+    public void process(ProductListDTO productList) throws Exception {
         logger.atInfo().log("====== Processing start =========");
         logger.atInfo().log("Starting to process list {}",productList.getName());
 
@@ -76,13 +77,12 @@ public class SentinelProcessor extends Processor {
         updateProductListMonitor("0 of "+ productList.getProducts().size(),0);
         productsAreasOfWorks.forEach((p,footprints)-> {
             try {
-
                 process(p, footprints, productList.getWorkflow(WorkflowType.valueOf(p.getProductType())), productList.getName(),false);
                 updateProductListMonitor(
                         (productList.getProducts().indexOf(p)+1.0)+" of "+ productList.getProducts().size(),
                         1);
             } catch (Exception e) {
-                e.printStackTrace();
+                Platform.runLater(()-> AlertFactory.showErrorDialog("Error","Error", "Error while processing"));
             }
         });
 
@@ -129,6 +129,7 @@ public class SentinelProcessor extends Processor {
         double i = 0;
         try {
             for (Operation op : workflow.getOperations()) {
+                System.out.println(Runtime.getRuntime().freeMemory());
                 i++;
                 logger.atInfo().log("Operation: {}", op.getName());
                 if (op.getName() == Operator.READ) {
@@ -148,6 +149,7 @@ public class SentinelProcessor extends Processor {
                             snapProduct = createProduct(snapProduct, op);
                     }
                 }
+                System.out.println(snapProduct.getPreferredTileSize());
 
                 updateProductMonitor(i + " of " + workflow.getOperations().size(), 1);
                 operationMonitor.done();
@@ -158,9 +160,14 @@ public class SentinelProcessor extends Processor {
         } finally {
             operationMonitor.done();
             productMonitor.done();
-            closeProducts(subsets);
-            snapProduct.closeIO();
+            logger.atInfo().log("Empty resources...");
             snapProduct.dispose();
+            logger.atInfo().log("Empty done...");
+            closeProducts(subsets);
+            System.out.println(Runtime.getRuntime().freeMemory());
+            Runtime.getRuntime().gc();
+            System.out.println("xii" + Runtime.getRuntime().freeMemory());
+
         }
 
         return colorIndexedImage;
@@ -168,6 +175,7 @@ public class SentinelProcessor extends Processor {
 
     private void createBufferedImage(Product product) throws IOException {
         Band bandAt = product.getBandAt(0);
+        logger.atInfo().log("Generating preview image with band {}",bandAt);
         colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
     }
 
@@ -185,9 +193,10 @@ public class SentinelProcessor extends Processor {
         List<Product> tmp = new LinkedList<>();
         if (areasOfWork.size()>0) {
             for (String a : areasOfWork) {
-                System.out.println(a);
                 op.getParameters().put("geoRegion", new WKTReader().read(a));
+                System.out.println(op.getParameters());
                 tmp.add(createProduct(product, op));
+                System.out.println(Arrays.toString(tmp.get(0).getBandNames()));
             }
             op.getParameters().remove("geoRegion");
         } else {
@@ -219,30 +228,5 @@ public class SentinelProcessor extends Processor {
 
     private void closeProduct(Product product) {
         product.dispose();
-    }
-
-    private void example(BufferedImage image) {
-        System.out.println(image.getNumXTiles());
-        JFXAlert alert = new JFXAlert();
-        Canvas canvas = new Canvas();
-        GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
-        WritableImage writableImage = SwingFXUtils.toFXImage(image, null);
-        ImageView view = new ImageView(writableImage);
-        view.setFitHeight(200);
-        view.setFitWidth(200);
-        alert.initModality(Modality.WINDOW_MODAL);
-        alert.setOverlayClose(true);
-        JFXDialogLayout layout = new JFXDialogLayout();
-        layout.setHeading(new Label("test"));
-        layout.setBody(view);
-        JFXButton closeButton = new JFXButton("Accept");
-        closeButton.getStyleClass().add("dialog-accept");
-        closeButton.setOnAction(e -> alert.hideWithAnimation());
-        layout.setActions(closeButton);
-        alert.setContent(layout);
-        JMetro jMetro = getJMetroStyled();
-
-        jMetro.setScene(alert.getDialogPane().getScene());
-        Platform.runLater(alert::showAndWait);
     }
 }
