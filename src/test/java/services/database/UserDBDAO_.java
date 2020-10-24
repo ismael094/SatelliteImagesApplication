@@ -5,8 +5,8 @@ import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
 import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.user.UserDTO;
 import org.junit.Before;
@@ -141,6 +141,8 @@ public class UserDBDAO_ {
         assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
         assertThat(dbUserDTO.getWorkflows().get(0).getId()).isEqualTo(userDTO.getWorkflows().get(0).getId());
         GeneralWorkflowDTO prueba = new GeneralWorkflowDTO(new SimpleStringProperty("Prueba"), new SimpleObjectProperty<>(WorkflowType.SLC));
+
+        userDAO.addNewWorkflow(userDTO,prueba);
         userDAO.addNewWorkflow(userDTO,prueba);
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);

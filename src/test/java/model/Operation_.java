@@ -1,7 +1,7 @@
 package model;
 
-import model.processing.workflow.Operation;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 import org.junit.Test;
 
 import java.util.HashMap;

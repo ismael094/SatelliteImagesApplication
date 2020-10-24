@@ -1,8 +1,8 @@
 package model;
 
-import model.processing.workflow.Operation;
-import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.Before;
 import org.junit.Test;
 

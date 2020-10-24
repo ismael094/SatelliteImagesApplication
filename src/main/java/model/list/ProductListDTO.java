@@ -301,7 +301,7 @@ public class ProductListDTO {
         save();
     }
 
-    public void addWorkflow(ObservableList<WorkflowDTO> workflow) {
+    public void addWorkflow(List<WorkflowDTO> workflow) {
         this.workflows.addAll(workflow);
         save();
     }

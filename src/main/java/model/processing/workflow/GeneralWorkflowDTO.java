@@ -4,7 +4,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.operation.Operation;
 import org.bson.types.ObjectId;
 
 import java.util.LinkedList;

@@ -2,7 +2,7 @@ package controller.processing.workflow.operation;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 
 import java.net.URL;
 import java.util.ResourceBundle;

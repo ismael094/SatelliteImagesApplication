@@ -3,7 +3,7 @@ package services.database;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import org.junit.Before;

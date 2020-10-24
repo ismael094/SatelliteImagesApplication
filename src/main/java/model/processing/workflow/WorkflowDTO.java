@@ -2,7 +2,8 @@ package model.processing.workflow;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.operation.Operation;
 import org.bson.types.ObjectId;
 
 import java.util.List;

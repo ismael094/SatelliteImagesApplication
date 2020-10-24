@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -44,6 +44,7 @@ public class SubsetOperationController implements OperationController, Initializ
     public void setInputBands(ObservableList<String> inputBands) {
         subsetSourceBands.getItems().clear();
         subsetSourceBands.getItems().addAll(inputBands);
+        inputBands.forEach(b->subsetSourceBands.getSelectionModel().select(b));
         updateInput();
     }
 
@@ -81,12 +82,13 @@ public class SubsetOperationController implements OperationController, Initializ
     }
 
     private void setParameters() {
-        subsetSourceBands.getItems().clear();
+
         ObservableList<String> strings = FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("sourceBands", "").toString().split(",")));
-        subsetSourceBands.getItems().addAll(strings);
-        strings.forEach(s-> subsetSourceBands.getSelectionModel().select(s));
-
-
+        if (!strings.get(0).equals("")) {
+            subsetSourceBands.getItems().clear();
+            subsetSourceBands.getItems().addAll(strings);
+            strings.forEach(s-> subsetSourceBands.getSelectionModel().select(s));
+        }
         selectMetadata((Boolean)(operation.getParameters().getOrDefault("copyMetadata",false)));
         selectOutputInDbControl((Boolean)(operation.getParameters().getOrDefault("outputImageScaleInDb",false)));
     }

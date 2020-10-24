@@ -1,6 +1,5 @@
-package model.processing;
+package model.processing.monitor;
 
-import com.bc.ceres.core.ProgressMonitor;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 

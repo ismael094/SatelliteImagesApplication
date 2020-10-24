@@ -1,7 +1,7 @@
 package controller.processing.workflow.operation;
 
 import javafx.collections.ObservableList;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 
 
 public interface OperationController {

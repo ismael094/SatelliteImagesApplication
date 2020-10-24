@@ -2,7 +2,7 @@ package services.entities;
 
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 import model.processing.workflow.WorkflowType;
 import org.bson.types.ObjectId;
 

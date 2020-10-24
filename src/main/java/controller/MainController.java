@@ -22,7 +22,10 @@ import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.events.EventType;
 import model.list.ProductListDTO;
+import model.processing.ProcessorManager;
 import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.WorkflowType;
+import model.products.ProductDTO;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +35,6 @@ import services.database.WorkflowDBDAO;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
 import services.processing.Processor;
-import services.processing.SentinelProcessor;
 import utils.AlertFactory;
 
 import java.io.IOException;
@@ -68,7 +70,7 @@ public class MainController implements Initializable {
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private UserDTO user;
     private CopernicusDownloader copernicusDownloader;
-    private Processor processor;
+    private ProcessorManager processor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,7 +94,7 @@ public class MainController implements Initializable {
     }
 
     private void initProcessors() {
-        processor = new SentinelProcessor(processingController);
+        processor = new ProcessorManager(processingController);
     }
 
     private void initDownloadManager() {
@@ -275,8 +277,12 @@ public class MainController implements Initializable {
         workflowsDTO.forEach(instance::save);
     }
 
-    public Processor getProcessor() {
+    public ProcessorManager getProcessor() {
         return processor;
+    }
+
+    public Processor getProcessorFor(ProductDTO productDTO) {
+        return processor.getProcessor(productDTO);
     }
 
     public void process() {
@@ -287,6 +293,12 @@ public class MainController implements Initializable {
             Task<Boolean> task = new Task<Boolean>() {
                 @Override
                 protected Boolean call() throws Exception {
+                    /*for (ProductDTO p : productList.getProducts()) {
+                        processor.getProcessor(p)
+                                .process(p,productList.areasOfWorkOfProduct(p.getFootprint()),
+                                        productList.getWorkflow(WorkflowType.valueOf(p.getProductType())),
+                                        productList.getName(),false);
+                    }*/
                     processor.process(productList);
                     return true;
                 }

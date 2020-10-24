@@ -6,8 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import model.processing.workflow.Operation;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.*;
@@ -20,6 +20,7 @@ public class OrbitOperationController implements Initializable, OperationControl
     private Operation operation;
     private Operation previewOperation;
     private OperationController nextOperationController;
+    private ObservableList<String> inputBands;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,17 +68,17 @@ public class OrbitOperationController implements Initializable, OperationControl
 
     @Override
     public void setInputBands(ObservableList<String> inputBands) {
-        //this.previewOperation = operation;
+        this.inputBands = inputBands;
     }
 
     @Override
     public ObservableList<String> getInputBands() {
-        return FXCollections.observableArrayList();
+        return inputBands;
     }
 
     @Override
     public ObservableList<String> getOutputBands() {
-        return FXCollections.observableArrayList("Intensity_VH","Intensity_VV","Amplitude_VH","Amplitude_VV");
+        return inputBands;
     }
 
     @Override

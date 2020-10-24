@@ -3,44 +3,29 @@ package controller.processing;
 import com.google.common.collect.Lists;
 import com.jfoenix.controls.JFXSpinner;
 import controller.cell.ProcessingProductCell;
-import controller.cell.ProductListCell;
 import controller.interfaces.TabItem;
 import gui.components.TabPaneComponent;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import model.exception.AuthenticationException;
 import model.list.ProductListDTO;
+import model.processing.ProcessorManager;
 import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import services.CopernicusService;
-import services.processing.Processor;
-import utils.ThemeConfiguration;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 
 public class ProcessingPreviewController implements TabItem {
@@ -58,12 +43,12 @@ public class ProcessingPreviewController implements TabItem {
     private Button executeProcessing;
 
     private ProductListDTO productListDTO;
-    private Processor processor;
+    private ProcessorManager processor;
     private Point2D dragInitialCoordinate;
     private TabPaneComponent tabPaneComponent;
     private Parent parent;
 
-    public ProcessingPreviewController(ProductListDTO productListDTO, Processor processor) {
+    public ProcessingPreviewController(ProductListDTO productListDTO, ProcessorManager processor) {
         this.productListDTO = productListDTO;
         this.processor = processor;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProcessingPreviewView.fxml"));
@@ -137,7 +122,7 @@ public class ProcessingPreviewController implements TabItem {
                     @Override
                     protected Void call() throws Exception {
                         showSpinner();
-                        BufferedImage preview = processor.process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
+                        BufferedImage preview = processor.getProcessor(newValue).process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
                         WritableImage writableImage = SwingFXUtils.toFXImage(preview, null);
                         image.setImage(writableImage);
                         image.setFitWidth(812.0);
@@ -190,7 +175,7 @@ public class ProcessingPreviewController implements TabItem {
         this.productListView.setItems(FXCollections.observableArrayList(productListDTO.getValidProducts()));
     }
 
-    public void setProcessing(Processor processor) {
+    public void setProcessing(ProcessorManager processor) {
         this.processor = processor;
     }
 

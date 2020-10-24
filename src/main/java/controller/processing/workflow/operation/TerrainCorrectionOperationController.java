@@ -7,8 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import model.processing.workflow.Operation;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -133,6 +133,9 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     public void setInputBands(ObservableList<String> inputBands) {
         correctionSourceBands.getItems().clear();
         correctionSourceBands.getItems().addAll(inputBands);
+        inputBands.forEach(b->{
+            correctionSourceBands.getSelectionModel().select(b);
+        });
         updateInput();
     }
 
@@ -155,7 +158,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     @Override
     public void updateInput() {
         if (nextOperationController!=null)
-            nextOperationController.setInputBands(correctionSourceBands.getSelectionModel().getSelectedItems());
+            nextOperationController.setInputBands(getOutputBands());
     }
 
     @Override
@@ -169,9 +172,15 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         imageResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("imgResamplingMethod",imageResampling.getItems().get(0))));
         incidenceAngle.setValue(String.valueOf(operation.getParameters().getOrDefault("incidenceAngleForSigma0",incidenceAngle.getItems().get(0))));
         demName.setValue(String.valueOf(operation.getParameters().getOrDefault("demName",demName.getItems().get(0))));
+
         ObservableList<String> sourceBands = FXCollections.observableArrayList(Arrays.asList(operation.getParameters().getOrDefault("sourceBands", "").toString().split(",")));
-        sourceBands.forEach(b->correctionSourceBands.getSelectionModel().select(b));
-        correctionSourceBands.getItems().addAll(sourceBands);
+        if (!sourceBands.get(0).equals("")) {
+            correctionSourceBands.getItems().clear();
+            correctionSourceBands.getSelectionModel().clearSelection();
+            correctionSourceBands.getItems().addAll(sourceBands);
+            sourceBands.forEach(b->correctionSourceBands.getSelectionModel().select(b));
+        }
+
         pixelSpacingInMeter.setText(String.valueOf(operation.getParameters().getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getText())));
     }
 }

@@ -52,7 +52,10 @@ public class DownloadListCell extends ListCell<DownloadItem> {
 
             GlyphsDude.setIcon(cancelDownload,FontAwesomeIcon.REMOVE,"0.6em");
 
-            cancelDownload.setOnAction(e-> downloader.remove(item.getProductDTO()));
+            cancelDownload.setOnAction(e-> {
+                downloader.remove(item.getProductDTO());
+                setDisable(true);
+            });
 
             title.setText(item.getProductDTO().getTitle());
 

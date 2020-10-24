@@ -156,7 +156,7 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .equal(user.getEmail());
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
-                .push("productLists", productListDBDAO.toEntity(productListDTO));
+                .addToSet("productLists", productListDBDAO.toEntity(productListDTO));
 
         UpdateResults update = database.getDatastore().update(email, ops);
         System.out.println(update.getUpdatedCount());
@@ -194,7 +194,7 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .equal(user.getEmail());
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
-                .push("workflows", new WorkflowMapper().toEntity(workflowDTO));
+                .addToSet("workflows", new WorkflowMapper().toEntity(workflowDTO));
 
         UpdateResults update = database.getDatastore().update(email, ops);
         System.out.println(update.getUpdatedCount());

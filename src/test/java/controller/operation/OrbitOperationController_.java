@@ -2,14 +2,15 @@ package controller.operation;
 
 import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import controller.processing.workflow.operation.OperationController;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -40,7 +41,9 @@ public class OrbitOperationController_ extends ApplicationTest {
     public void set_operation() {
         Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
         controller.setOperation(workflow.getOperation(Operator.APPLY_ORBIT_FILE));
-        assertThat(controller.getOutputBands().size()).isEqualTo(4);
+        controller.setInputBands(FXCollections.observableArrayList("Intensity_VH","Intensity_VV"));
+        assertThat(controller.getOutputBands().size()).isEqualTo(2);
+        assertThat(controller.getInputBands()).isEqualTo(controller.getOutputBands());
         assertThat(controller.getOperation().getParameters().get("polyDegree")).isEqualTo(3);
     }
 

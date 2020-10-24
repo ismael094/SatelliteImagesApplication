@@ -2,12 +2,16 @@ package model;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.workflow.Operation;
-import model.processing.Operator;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -39,5 +43,14 @@ public class Workflow_ {
         assertThat(workflow.getOperation(Operator.APPLY_ORBIT_FILE)).isEqualTo(op);
         workflow.removeOperation(op);
         assertThat(workflow.getOperations().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void add_and_remove_operation() {
+        WorkflowDTO wf = new Sentinel1GRDDefaultWorkflowDTO();
+        Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
+        wf.getOperations().add(4,operation);
+        assertThat(wf.getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
+        assertThat(wf.getOperations().get(4).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
     }
 }

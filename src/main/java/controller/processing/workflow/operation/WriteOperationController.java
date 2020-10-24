@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 
 import java.net.URL;
 import java.util.Map;
@@ -27,8 +27,7 @@ public class WriteOperationController implements Initializable, OperationControl
     private void initWriteFormat() {
         ObservableList<String> items = FXCollections.observableArrayList("GeoTIFF", "PolSARPro");
         writeFormat.setItems(items);
-        if (writeFormat.getValue() == null || writeFormat.getValue().isEmpty())
-            writeFormat.setValue("GeoTIFF");
+        writeFormat.setValue("GeoTIFF");
     }
 
     @Override
@@ -79,6 +78,6 @@ public class WriteOperationController implements Initializable, OperationControl
     }
 
     private void setParameters(Map<String, Object> parameters) {
-        writeFormat.setValue(String.valueOf(parameters.get("formatName")));
+        writeFormat.setValue(String.valueOf(parameters.getOrDefault("formatName","GeoTIFF")));
     }
 }

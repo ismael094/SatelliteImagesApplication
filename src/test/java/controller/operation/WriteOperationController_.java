@@ -8,12 +8,15 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.Operator;
-import model.processing.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +48,8 @@ public class WriteOperationController_  extends ApplicationTest {
 
     @Test
     public void set_write_format() {
+        //Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
+        controller.setOperation(new Operation(Operator.WRITE,new HashMap<>()));
         assertThat(controller.getOperation().getParameters().get("formatName")).isEqualTo("GeoTIFF");
         clickOn("#writeFormat");
         type(KeyCode.DOWN);

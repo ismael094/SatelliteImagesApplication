@@ -14,11 +14,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import model.list.ProductListDTO;
-import model.processing.*;
 import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
+import model.processing.workflow.operation.Operator;
 import utils.AlertFactory;
 import utils.gui.ProductListDTOUtil;
 
@@ -57,6 +57,7 @@ public class MyWorkflowController implements Initializable {
         addWorkflow.setOnAction(e-> {
             GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
             aDefault.addOperation(new Operation(Operator.READ, new HashMap<>()));
+            aDefault.addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
             aDefault.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));

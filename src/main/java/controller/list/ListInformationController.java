@@ -6,10 +6,8 @@ import controller.GTMapSearchController;
 import controller.cell.ProductListCell;
 import controller.interfaces.ProductListTabItem;
 import controller.processing.PreviewImageController;
-import controller.processing.ProcessingPreviewController;
 import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.TabPaneComponent;
 import javafx.application.Platform;
@@ -20,7 +18,6 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,7 +32,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import jfxtras.styles.jmetro.Style;
 import model.list.ProductListDTO;
 import model.exception.AuthenticationException;
 import model.openSearcher.SentinelProductParameters;
@@ -47,8 +43,6 @@ import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
 import services.download.Downloader;
-import services.entities.Product;
-import services.entities.Workflow;
 import utils.AlertFactory;
 import utils.ThemeConfiguration;
 
@@ -56,7 +50,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -478,7 +471,7 @@ public class ListInformationController extends ProductListTabItem {
         Task<WritableImage> task = new Task<WritableImage>() {
             @Override
             protected WritableImage call() throws Exception {
-                BufferedImage preview = tabPaneComponent.getMainController().getProcessor().process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
+                BufferedImage preview = tabPaneComponent.getMainController().getProcessorFor(productDTO).process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
                 return SwingFXUtils.toFXImage(preview, null);
             }
         };

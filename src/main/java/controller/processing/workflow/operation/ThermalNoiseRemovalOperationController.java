@@ -1,9 +1,15 @@
 package controller.processing.workflow.operation;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.Initializable;
 import model.processing.workflow.operation.Operation;
 
-public class ReadOperationController implements OperationController {
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+public class ThermalNoiseRemovalOperationController implements OperationController, Initializable {
     private Operation operation;
     private ObservableList<String> inputBands;
     private OperationController nextOperationController;
@@ -21,17 +27,16 @@ public class ReadOperationController implements OperationController {
     @Override
     public void setInputBands(ObservableList<String> inputBands) {
         this.inputBands = inputBands;
-        updateInput();
     }
 
     @Override
     public ObservableList<String> getInputBands() {
-        return this.inputBands;
+        return inputBands;
     }
 
     @Override
     public ObservableList<String> getOutputBands() {
-        return this.inputBands;
+        return FXCollections.observableArrayList("Intensity_VH","Intensity_VV");
     }
 
     @Override
@@ -43,11 +48,16 @@ public class ReadOperationController implements OperationController {
     @Override
     public void updateInput() {
         if (nextOperationController != null)
-            nextOperationController.setInputBands(inputBands);
+            nextOperationController.setInputBands(getOutputBands());
     }
 
     @Override
     public OperationController getNextOperationController() {
         return nextOperationController;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
     }
 }

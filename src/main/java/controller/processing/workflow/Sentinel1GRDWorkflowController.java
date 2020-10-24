@@ -4,11 +4,12 @@ import controller.processing.workflow.operation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.processing.*;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
 import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.*;
@@ -21,11 +22,15 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @FXML
     private ReadOperationController readOperationController;
     @FXML
+    private AnchorPane thermalNoiseRemovalOperation;
+    @FXML
+    private ThermalNoiseRemovalOperationController thermalNoiseRemovalOperationController;
+    @FXML
     private AnchorPane orbitOperation;
     @FXML
     private OrbitOperationController orbitOperationController;
     @FXML
-    private AnchorPane calibrationOperation;
+    private ScrollPane calibrationOperation;
     @FXML
     private CalibrationOperationController calibrationOperationController;
     @FXML
@@ -83,6 +88,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     public void initialize(URL location, ResourceBundle resources) {
         accordion.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         operationsMap.put(Operator.READ,readOperationController);
+        operationsMap.put(Operator.THERMAL_NOISE_REMOVAL,thermalNoiseRemovalOperationController);
         operationsMap.put(Operator.APPLY_ORBIT_FILE,orbitOperationController);
         operationsMap.put(Operator.CALIBRATION,calibrationOperationController);
         operationsMap.put(Operator.WRITE_AND_READ,writeAndReadOperationController);

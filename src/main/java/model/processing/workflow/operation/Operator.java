@@ -1,4 +1,4 @@
-package model.processing;
+package model.processing.workflow.operation;
 
 public enum Operator {
     APPLY_ORBIT_FILE("Apply-Orbit-File"),

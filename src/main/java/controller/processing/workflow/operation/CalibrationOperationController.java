@@ -8,8 +8,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import model.processing.workflow.Operation;
-import model.processing.Operator;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.*;
@@ -94,7 +94,7 @@ public class CalibrationOperationController implements Initializable, OperationC
     }
 
     private void initCalibrationSourceBandsControl() {
-        ObservableList<String> items = FXCollections.observableArrayList("Intensity_VH", "Intensity_VV", "Amplitude_VV", "Amplitude_VH");
+        ObservableList<String> items = FXCollections.observableArrayList("Intensity_VH", "Intensity_VV");
         calibrationSourceBands.setItems(items);
     }
 
@@ -183,6 +183,13 @@ public class CalibrationOperationController implements Initializable, OperationC
 
     @Override
     public ObservableList<String> getOutputBands() {
+        if (bands.isEmpty()) {
+            ObservableList<String> objects = FXCollections.observableArrayList();
+            polarisations.getSelectionModel().getSelectedItems().forEach(p->{
+                objects.add(SIGMA_0+p);
+            });
+            return objects;
+        }
         return bands;
     }
 
@@ -195,7 +202,7 @@ public class CalibrationOperationController implements Initializable, OperationC
     @Override
     public void updateInput() {
         if (nextOperationController!=null)
-            nextOperationController.setInputBands(bands);
+            nextOperationController.setInputBands(getOutputBands());
     }
 
     @Override
@@ -204,15 +211,15 @@ public class CalibrationOperationController implements Initializable, OperationC
     }
 
     private void addBand(String name, ObservableList<String> res) {
-        calibrationSourceBands.getSelectionModel().getSelectedItems().forEach(b->{
-            if (!res.contains(name+b.split("_")[1]))
-                res.add(name+b.split("_")[1]);
+        polarisations.getSelectionModel().getSelectedItems().forEach(b->{
+            if (!res.contains(name+b))
+                res.add(name+b);
         });
     }
 
     private void removeBand(String name, ObservableList<String> res) {
-        calibrationSourceBands.getSelectionModel().getSelectedItems().forEach(b->{
-            res.remove(name+b.split("_")[1]);
+        polarisations.getSelectionModel().getSelectedItems().forEach(b->{
+            res.remove(name+b);
         });
     }
 
@@ -222,7 +229,7 @@ public class CalibrationOperationController implements Initializable, OperationC
         polarisations.getItems().addAll(strings);
         strings.forEach(s-> polarisations.getSelectionModel().select(s));
         calibrationSourceBands.getItems().clear();
-        ObservableList<String> sourceBands = FXCollections.observableArrayList(Arrays.asList(String.valueOf(operation.getParameters().getOrDefault("sourceBands", "Intensity_VH,Intensity_VV,Amplitude_VH,Amplitude_VV")).split(",")));
+        ObservableList<String> sourceBands = FXCollections.observableArrayList(Arrays.asList(String.valueOf(operation.getParameters().getOrDefault("sourceBands", "Intensity_VH,Intensity_VV")).split(",")));
         calibrationSourceBands.getItems().addAll(sourceBands);
         sourceBands.forEach(s-> calibrationSourceBands.getSelectionModel().select(s));
 

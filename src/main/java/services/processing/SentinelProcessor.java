@@ -1,24 +1,11 @@
 package services.processing;
 
 
-import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialogLayout;
-import controller.processing.SimpleProcessingMonitorController;
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.stage.Modality;
-import jfxtras.styles.jmetro.JMetro;
-import model.list.ProductListDTO;
-import model.processing.*;
-import model.processing.workflow.Operation;
+import model.processing.workflow.operation.Operation;
+import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
+import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +15,6 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import utils.AlertFactory;
 import utils.DownloadConfiguration;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
@@ -37,8 +23,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
-import static utils.ThemeConfiguration.getJMetroStyled;
-
 public class SentinelProcessor extends Processor {
 
     static final Logger logger = LogManager.getLogger(SentinelProcessor.class.getName());
@@ -46,8 +30,8 @@ public class SentinelProcessor extends Processor {
     protected final Map<WorkflowType, WorkflowDTO> workflowType;
     private BufferedImage colorIndexedImage;
 
-    public SentinelProcessor(SimpleProcessingMonitorController processingController) {
-        super(processingController);
+    public SentinelProcessor() {
+        //super(processingController);
         this.workflowType = new HashMap<>();
         this.workflowType.put(WorkflowType.GRD, new Sentinel1GRDDefaultWorkflowDTO());
         colorIndexedImage = null;
@@ -58,7 +42,7 @@ public class SentinelProcessor extends Processor {
     }
 
     protected void saveProduct(Product product, String path, String formatName) throws IOException {
-        Platform.runLater(()->processingController.setOperation("Saving product"));
+        //Platform.runLater(()->processingController.setOperation("Saving product"));
         ProductIO.writeProduct(product,path,formatName, operationMonitor);
     }
 
@@ -66,7 +50,7 @@ public class SentinelProcessor extends Processor {
         return GPF.createProduct(operation.getName().getName(),operation.getParameters(),product);
     }
 
-    @Override
+    /*@Override
     public void process(ProductListDTO productList) throws Exception {
         logger.atInfo().log("====== Processing start =========");
         logger.atInfo().log("Starting to process list {}",productList.getName());
@@ -90,7 +74,7 @@ public class SentinelProcessor extends Processor {
 
         logger.atInfo().log("====== List Processed =========");
 
-    }
+    }*/
 
     @Override
     public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception {
@@ -122,15 +106,12 @@ public class SentinelProcessor extends Processor {
 
     private BufferedImage startProcess(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBoolean) throws IOException, ParseException {
         List<Product> subsets = new LinkedList<>();
-        //subsets.add(snapProduct);
         Product snapProduct = null;
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size());
 
-        double i = 0;
         try {
             for (Operation op : workflow.getOperations()) {
                 System.out.println(Runtime.getRuntime().freeMemory());
-                i++;
                 logger.atInfo().log("Operation: {}", op.getName());
                 if (op.getName() == Operator.READ) {
                     snapProduct = readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + productDTO.getTitle() + ".zip");
@@ -149,9 +130,8 @@ public class SentinelProcessor extends Processor {
                             snapProduct = createProduct(snapProduct, op);
                     }
                 }
-                System.out.println(snapProduct.getPreferredTileSize());
 
-                updateProductMonitor(i + " of " + workflow.getOperations().size(), 1);
+                updateProductMonitor(1);
                 operationMonitor.done();
 
             }
@@ -162,12 +142,10 @@ public class SentinelProcessor extends Processor {
             productMonitor.done();
             logger.atInfo().log("Empty resources...");
             snapProduct.dispose();
+            snapProduct.closeIO();
             logger.atInfo().log("Empty done...");
             closeProducts(subsets);
-            System.out.println(Runtime.getRuntime().freeMemory());
             Runtime.getRuntime().gc();
-            System.out.println("xii" + Runtime.getRuntime().freeMemory());
-
         }
 
         return colorIndexedImage;
@@ -194,9 +172,7 @@ public class SentinelProcessor extends Processor {
         if (areasOfWork.size()>0) {
             for (String a : areasOfWork) {
                 op.getParameters().put("geoRegion", new WKTReader().read(a));
-                System.out.println(op.getParameters());
                 tmp.add(createProduct(product, op));
-                System.out.println(Arrays.toString(tmp.get(0).getBandNames()));
             }
             op.getParameters().remove("geoRegion");
         } else {
@@ -223,7 +199,14 @@ public class SentinelProcessor extends Processor {
     }
 
     private void closeProducts(List<Product> subsets) {
-        subsets.forEach(Product::dispose);
+        subsets.forEach(e->{
+            e.dispose();
+            try {
+                e.closeIO();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
     }
 
     private void closeProduct(Product product) {
