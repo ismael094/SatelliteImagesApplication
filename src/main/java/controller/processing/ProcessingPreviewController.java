@@ -92,16 +92,6 @@ public class ProcessingPreviewController implements TabItem {
         return "P:"+productListDTO.getId();
     }
 
-    @Override
-    public void undo() {
-
-    }
-
-    @Override
-    public void redo() {
-
-    }
-
     public void init() {
         productListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         productListView.setCellFactory(e->new ProcessingProductCell());

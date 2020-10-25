@@ -1,12 +1,15 @@
 package services.processing;
 
 
+import com.mongodb.connection.Stream;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
+import model.products.Sentinel1ProductDTO;
+import model.products.Sentinel2ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esa.snap.core.dataio.ProductIO;
@@ -20,6 +23,7 @@ import utils.FileUtils;
 import utils.ProcessingConfiguration;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -108,11 +112,14 @@ public class SentinelProcessor extends Processor {
         List<Product> subsets = new LinkedList<>();
         Product snapProduct = null;
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size());
-
+        Sentinel1ProductDTO sentinel1 = (Sentinel1ProductDTO)productDTO;
         try {
             for (Operation op : workflow.getOperations()) {
-                System.out.println(Runtime.getRuntime().freeMemory());
-                logger.atInfo().log("Operation: {}", op.getName());
+                op.getParameters().put("selectedPolarisations",sentinel1.getPolarizationMode().replace(" ",","));
+                if (snapProduct != null)
+                    op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
+                showMemory();
+                logger.atInfo().log("Operation: {}", op);
                 if (op.getName() == Operator.READ) {
                     snapProduct = readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + productDTO.getTitle() + ".zip");
                 } else if (op.getName() == Operator.WRITE) {
@@ -144,11 +151,23 @@ public class SentinelProcessor extends Processor {
             snapProduct.dispose();
             snapProduct.closeIO();
             logger.atInfo().log("Empty done...");
+            showMemory();
             closeProducts(subsets);
             Runtime.getRuntime().gc();
         }
 
         return colorIndexedImage;
+    }
+
+    public static String getBandNames(String[] bandNames) {
+        return String.join(",", bandNames);
+    }
+
+    private void showMemory() {
+        long using = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        logger.atWarn().log("==================MEMORY==================");
+        logger.atWarn().log("Memory: {}/{}",using,Runtime.getRuntime().totalMemory());
+        logger.atWarn().log("==================MEMORY==================");
     }
 
     private void createBufferedImage(Product product) throws IOException {
@@ -192,10 +211,14 @@ public class SentinelProcessor extends Processor {
     private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
         for (Product j : subsets) {
-            saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getTitle() + "_" + x, String.valueOf(op.getParameters().get("formatName")));
+            saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + x, String.valueOf(op.getParameters().get("formatName")));
+
             x++;
         }
         closeProducts(subsets);
+        for (int i = 0; i<subsets.size();i++)
+            new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + i+".tif")
+                    .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getTitle() + "_" + i+".tif"));
     }
 
     private void closeProducts(List<Product> subsets) {

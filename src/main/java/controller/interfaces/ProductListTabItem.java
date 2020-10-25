@@ -25,4 +25,6 @@ public abstract class ProductListTabItem implements TabItem{
     public abstract ObservableList<ProductDTO> getSelectedProducts();
     public abstract void setSelectedProducts(ObservableList<ProductDTO> products);
     public abstract void refreshProducts();
+    public abstract void undo();
+    public abstract void redo();
 }

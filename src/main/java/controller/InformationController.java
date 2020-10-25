@@ -51,14 +51,4 @@ public class InformationController implements TabItem {
     public String getItemId() {
         return "InformationID";
     }
-
-    @Override
-    public void undo() {
-
-    }
-
-    @Override
-    public void redo() {
-
-    }
 }

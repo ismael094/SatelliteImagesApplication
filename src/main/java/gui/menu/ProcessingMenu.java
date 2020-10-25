@@ -1,6 +1,7 @@
 package gui.menu;
 
 import controller.MainController;
+import gui.events.ProcessListEvent;
 import gui.events.ShowPreviewViewEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -16,7 +17,7 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
     }
 
     private void init() {
-        MenuItem listProcessing = new MenuItem("Process list");
+        MenuItem listProcessing = new MenuItem("Process current list");
         MenuItem myWorkflows = new MenuItem("My Workflows");
         MenuItem preview = new MenuItem("Preview");
         preview.setOnAction(new ShowPreviewViewEvent(mainController));
@@ -35,7 +36,7 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem{
         sentinel.getItems().addAll(sentinel1,sentinel2);
 
         myWorkflows.setOnAction(e-> WorkflowUtil.loadMyWorkflowView(mainController,mainController.getUser().getWorkflows()));
-        listProcessing.setOnAction(e->mainController.process());
+        listProcessing.setOnAction(new ProcessListEvent(mainController));
         getItems().addAll(myWorkflows,listProcessing,preview,sentinel);
     }
 

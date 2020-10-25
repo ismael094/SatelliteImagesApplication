@@ -21,6 +21,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     private Map<String, ToolbarButton> buttonListMap;
     private Map<String, ToolbarButton> buttonProductListMap;
     private Map<String, ToolbarButton> buttonDownloadMap;
+    private Map<String, ToolbarButton> buttonProcessingMap;
     private List<Map<String, ToolbarButton>> buttonList;
     //private final List<ComponentChangeListener> toolBarListener;
     private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
@@ -34,14 +35,15 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     private void initButtonMap() {
-
         this.buttonListMap = new LinkedHashMap<>();
         this.buttonProductListMap = new LinkedHashMap<>();
         this.buttonDownloadMap = new LinkedHashMap<>();
+        this.buttonProcessingMap = new LinkedHashMap<>();
         buttonList = new LinkedList<>();
         buttonList.add(buttonListMap);
         buttonList.add(buttonProductListMap);
         buttonList.add(buttonDownloadMap);
+        buttonList.add(buttonProcessingMap);
 
         buttonListMap.put("createList", new CreateListToolbarButton(this));
         buttonListMap.put("deleteList", new DeleteListToolbarButton(this));
@@ -52,6 +54,7 @@ public class ToolBarComponent extends ToolBar implements Component{
         buttonProductListMap.put("addGroundToList",new AddReferenceImageToListToolbarButton(this));
         buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
         buttonDownloadMap.put("downloadSingle",new DownloadSelectedProductToolbarButton(this));
+        buttonProcessingMap.put("processList",new ProcessListToolbarButton(this));
     }
 
     @Override

@@ -115,16 +115,6 @@ public class CopernicusProductDetailsController_ implements TabItem {
         return product.getId();
     }
 
-    @Override
-    public void undo() {
-
-    }
-
-    @Override
-    public void redo() {
-
-    }
-
     public void initViewData() throws NotAuthenticatedException, IOException, AuthenticationException, ParseException {
         if (product!=null)
             setProductDetails();

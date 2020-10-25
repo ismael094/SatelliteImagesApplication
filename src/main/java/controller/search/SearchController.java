@@ -14,4 +14,6 @@ public abstract class SearchController<T> implements TabItem {
     public abstract Map<String, String> getParametersOfAllResponses();
     public abstract ObservableList<T> getSelectedProducts();
     public abstract ObservableList<T> getProducts();
+    public abstract void undo();
+    public abstract void redo();
 }

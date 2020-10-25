@@ -286,29 +286,9 @@ public class MainController implements Initializable {
     }
 
     public void process() {
-        Tab active = tabPaneComponent.getActive();
-        TabItem controllerOf = tabPaneComponent.getControllerOf(active);
-        if (controllerOf instanceof ProductListTabItem) {
-            ProductListDTO productList = ((ProductListTabItem) controllerOf).getProductList();
-            Task<Boolean> task = new Task<Boolean>() {
-                @Override
-                protected Boolean call() throws Exception {
-                    /*for (ProductDTO p : productList.getProducts()) {
-                        processor.getProcessor(p)
-                                .process(p,productList.areasOfWorkOfProduct(p.getFootprint()),
-                                        productList.getWorkflow(WorkflowType.valueOf(p.getProductType())),
-                                        productList.getName(),false);
-                    }*/
-                    processor.process(productList);
-                    return true;
-                }
-            };
 
-            task.setOnFailed(e-> AlertFactory.showErrorDialog("Error","ERROR","Error while processing products"));
 
-            new Thread(task).start();
 
-        }
 
     }
 

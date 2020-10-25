@@ -1,6 +1,7 @@
 package gui.menu;
 
 import controller.MainController;
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -22,14 +23,20 @@ public class EditMenu extends Menu implements SatInfMenuItem{
         MenuItem undo = new MenuItem("Undo");
         undo.setOnAction(e->{
             Tab active = mainController.getTabController().getActive();
-            TabItem controllerOf = mainController.getTabController().getControllerOf(active);
-            controllerOf.undo();
+            if (mainController.getTabController().getControllerOf(active) instanceof ProductListTabItem) {
+                ProductListTabItem controllerOf = (ProductListTabItem) mainController.getTabController().getControllerOf(active);
+                controllerOf.undo();
+            }
+
         });
         undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         MenuItem redo = new MenuItem("Redo");
         redo.setOnAction(e->{
             Tab active = mainController.getTabController().getActive();
-            mainController.getTabController().getControllerOf(active).redo();
+            if (mainController.getTabController().getControllerOf(active) instanceof ProductListTabItem) {
+                ProductListTabItem controllerOf = (ProductListTabItem) mainController.getTabController().getControllerOf(active);
+                controllerOf.redo();
+            }
         });
         redo.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         getItems().addAll(undo,redo);
