@@ -10,6 +10,7 @@ public enum Operator {
     WRITE("Write"),
     READ("Read"),
     SUBSET("Subset"),
+    RESAMPLE("Resample"),
     CREATE_BUFFERED_IMAGE("CreateBufferedImage");
 
     private final String name;

@@ -1,5 +1,6 @@
 package controller.cell;
 
+import controller.processing.workflow.MyWorkflowController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -30,8 +31,10 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
     @FXML
     private TextField nameField;
     private WorkflowDTO workflow;
+    private MyWorkflowController myWorkflowController;
 
-    public WorkflowListViewCellController() {
+    public WorkflowListViewCellController(MyWorkflowController myWorkflowController) {
+        this.myWorkflowController = myWorkflowController;
         startEdit = new SimpleBooleanProperty(false);
     }
 
@@ -68,7 +71,6 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
             setGraphic(root);
 
             setOnMouseClicked(event -> {
-                System.out.println("Hoe");
                 if (event.getClickCount() > 1)
                     startEdit();
             });
@@ -90,7 +92,9 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
         } else if (event.getCode() == KeyCode.ENTER) {
             workflow.setName(nameField.getText());
             workflow.setType(typeBox.getValue());
-
+            if (workflow.getOperations() != null)
+                workflow.getOperations().clear();
+            myWorkflowController.loadWorkflow(workflow);
             cancelEdit();
         }
     }

@@ -64,7 +64,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
 
     @Override
     public synchronized void download(ProductListDTO productList) {
-        productList.getProducts().forEach(p->add(new DownloadItem(p)));
+        productList.getValidProducts().forEach(p->add(new DownloadItem(p)));
         productList.getGroundTruthProducts().forEach(p->add(new DownloadItem(p)));
     }
 

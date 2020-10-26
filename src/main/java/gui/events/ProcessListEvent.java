@@ -29,11 +29,18 @@ public class ProcessListEvent extends Event {
                 }
             };
 
-            task.setOnFailed(e -> AlertFactory.showErrorDialog("Error", "ERROR", "Error while processing products"));
+            task.setOnFailed(e -> {
+                AlertFactory.showErrorDialog("Error", "ERROR", "Error while processing products " + e.getSource().getException().getLocalizedMessage());
+                e.getSource().getException().printStackTrace();
+            });
+
+            task.setOnSucceeded(e->{
+                mainController.getTabController().load(new ProductListProcessingResultsController(productList));
+            });
 
             new Thread(task).start();
 
-            mainController.getTabController().load(new ProductListProcessingResultsController(productList));
+
 
         } else
             AlertFactory.showErrorDialog("Error", "Not in a list!", "Open a lists to process it!");

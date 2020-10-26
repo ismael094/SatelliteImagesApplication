@@ -1,10 +1,13 @@
 package controller.processing.workflow;
 
 import controller.processing.workflow.operation.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.processing.workflow.operation.Operation;
@@ -15,6 +18,12 @@ import java.net.URL;
 import java.util.*;
 
 public class Sentinel1GRDWorkflowController implements Initializable, WorkflowController {
+    @FXML
+    private TitledPane flatteningPane;
+    @FXML
+    private MenuItem terrainFlatteningButton;
+    @FXML
+    private MenuItem removeTerrainFlatteningButton;
     @FXML
     private Accordion accordion;
     @FXML
@@ -38,6 +47,10 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @FXML
     private WriteAndReadOperationController writeAndReadOperationController;
     @FXML
+    private AnchorPane terrainFlatteningOperation;
+    @FXML
+    private TerrainFlatteningOperationController terrainFlatteningOperationController;
+    @FXML
     private AnchorPane terrainCorrectionOperation;
     @FXML
     private TerrainCorrectionOperationController terrainCorrectionOperationController;
@@ -60,6 +73,13 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @Override
     public void setWorkflow(WorkflowDTO workflow) {
         this.workflow = workflow;
+        if (workflow.getOperations().isEmpty()) {
+            addGRDOperations(workflow);
+        }
+        loadOperationsIntroControllers(workflow);
+    }
+
+    private void loadOperationsIntroControllers(WorkflowDTO workflow) {
         List<Operation> operations = workflow.getOperations();
         for (int i = 0; i < operations.size(); i++) {
             if (operationsMap.containsKey(operations.get(i).getName())) {
@@ -68,8 +88,21 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
                 if (i < operations.size()-1) {
                     op.setNextOperationController(operationsMap.get(operations.get(i+1).getName()));
                 }
+                if (operations.get(i).getName() == Operator.TERRAIN_FLATTENING && !accordion.getPanes().contains(flatteningPane))
+                    accordion.getPanes().add(5,flatteningPane);
             }
         }
+    }
+
+    private void addGRDOperations(WorkflowDTO workflow) {
+        workflow.addOperation(new Operation(Operator.READ, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.TERRAIN_CORRECTION, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.SUBSET, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.WRITE, new HashMap<>()));
     }
 
     @Override
@@ -95,6 +128,37 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
         operationsMap.put(Operator.TERRAIN_CORRECTION,terrainCorrectionOperationController);
         operationsMap.put(Operator.SUBSET,subsetOperationController);
         operationsMap.put(Operator.WRITE,writeOperationController);
+        operationsMap.put(Operator.TERRAIN_FLATTENING,terrainFlatteningOperationController);
+        accordion.getPanes().remove(flatteningPane);
+
+        terrainFlatteningButton.setOnAction(e->{
+            if (accordion.getPanes().contains(flatteningPane))
+                return;
+            accordion.getPanes().add(5,flatteningPane);
+            WorkflowDTO workflow = getWorkflow();
+            Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
+            LinkedList<Operation> operations1 = new LinkedList<>(workflow.getOperations());
+            operations1.add(5,operation);
+            workflow.setOperations(new LinkedList<>(operations1));
+            calibrationOperationController.fixOutputBeta(true);
+            loadOperationsIntroControllers(workflow);
+        });
+
+        removeTerrainFlatteningButton.setOnAction(e->{
+            operationsMap.remove(Operator.TERRAIN_FLATTENING);
+            WorkflowDTO workflow = getWorkflow();
+            calibrationOperationController.fixOutputBeta(false);
+            Platform.runLater(()->{
+                workflow.getOperations().remove(5);
+                loadOperationsIntroControllers(workflow);
+                accordion.getPanes().remove(flatteningPane);
+            });
+        });
+    }
+
+    private void toggleFlatteningPane(boolean b) {
+        flatteningPane.setVisible(b);
+        flatteningPane.setManaged(b);
     }
 
     public Map<Operator, OperationController> getOperationsMap() {

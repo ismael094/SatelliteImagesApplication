@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class GeneralWorkflowDTO implements WorkflowDTO {
     private List<Operation> operations;
@@ -109,5 +110,18 @@ public class GeneralWorkflowDTO implements WorkflowDTO {
                 ", name=" + name +
                 ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GeneralWorkflowDTO)) return false;
+        GeneralWorkflowDTO that = (GeneralWorkflowDTO) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

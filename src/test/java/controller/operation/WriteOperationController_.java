@@ -49,7 +49,9 @@ public class WriteOperationController_  extends ApplicationTest {
     @Test
     public void set_write_format() {
         //Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
-        controller.setOperation(new Operation(Operator.WRITE,new HashMap<>()));
+        interact(() -> {
+            controller.setOperation(new Operation(Operator.WRITE, new HashMap<>()));
+        });
         assertThat(controller.getOperation().getParameters().get("formatName")).isEqualTo("GeoTIFF");
         clickOn("#writeFormat");
         type(KeyCode.DOWN);

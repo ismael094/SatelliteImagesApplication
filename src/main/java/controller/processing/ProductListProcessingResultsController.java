@@ -85,7 +85,6 @@ public class ProductListProcessingResultsController implements TabItem {
         //logger.atInfo().log("Init map refresh thread");
         ScheduledService<Boolean> svc = new ScheduledService<Boolean>() {
             protected Task<Boolean> createTask() {
-                System.out.println("Searching");
                 return new Task<Boolean>() {
                     protected Boolean call() {
                         Platform.runLater(ProductListProcessingResultsController.this::searchFiles);
@@ -100,8 +99,6 @@ public class ProductListProcessingResultsController implements TabItem {
 
     private void searchFiles() {
         File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName()+"\\");
-        System.out.println(file.getAbsolutePath());
-        System.out.println(file.exists());
         Arrays.stream(file.listFiles())
                 .filter(f->!f.getName().contains(".json")&&!f.getName().contains("tmp"))
                 .forEach(this::loadThumbnail);

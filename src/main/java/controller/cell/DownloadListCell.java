@@ -47,14 +47,15 @@ public class DownloadListCell extends ListCell<DownloadItem> {
                 }
             }
 
+            setDisable(false);
             prefWidthProperty().bind(getListView().prefWidthProperty().subtract(2));
             setMaxWidth(Control.USE_PREF_SIZE);
 
             GlyphsDude.setIcon(cancelDownload,FontAwesomeIcon.REMOVE,"0.6em");
 
             cancelDownload.setOnAction(e-> {
-                downloader.remove(item.getProductDTO());
                 setDisable(true);
+                downloader.remove(item.getProductDTO());
             });
 
             title.setText(item.getProductDTO().getTitle());

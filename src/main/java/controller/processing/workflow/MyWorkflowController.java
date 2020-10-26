@@ -51,19 +51,12 @@ public class MyWorkflowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMap();
-        workflowList.setCellFactory(e->new WorkflowListViewCellController());
+        workflowList.setCellFactory(e->new WorkflowListViewCellController(this));
         //workflowList.getItems().add(new Sentinel1GRDDefaultWorkflow());
         //setWorkflow(new Sentinel1GRDDefaultWorkflow());
         addWorkflow.setOnAction(e-> {
             GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
-            aDefault.addOperation(new Operation(Operator.READ, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.TERRAIN_CORRECTION, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.SUBSET, new HashMap<>()));
-            aDefault.addOperation(new Operation(Operator.WRITE, new HashMap<>()));
+
             workflowList.getItems().add(aDefault);
         });
 
@@ -104,6 +97,8 @@ public class MyWorkflowController implements Initializable {
     private void initMap() {
         workflowControllerMap = new HashMap<>();
         workflowControllerMap.put(WorkflowType.GRD, "/fxml/Sentinel1GRDWorkflowView.fxml");
+        workflowControllerMap.put(WorkflowType.S2MSI1C, "/fxml/Sentinel2MSILWorkflowView.fxml");
+        workflowControllerMap.put(WorkflowType.S2MSI2A, "/fxml/Sentinel2MSILWorkflowView.fxml");
     }
 
     public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
@@ -113,7 +108,8 @@ public class MyWorkflowController implements Initializable {
         }
     }
 
-    private void loadWorkflow(WorkflowDTO workflow) {
+    public void loadWorkflow(WorkflowDTO workflow) {
+        accordion.getChildren().clear();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(workflowControllerMap.get(workflow.getType())));
         Parent parent = null;
         try {

@@ -49,8 +49,13 @@ public class Workflow_ {
     public void add_and_remove_operation() {
         WorkflowDTO wf = new Sentinel1GRDDefaultWorkflowDTO();
         Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
-        wf.getOperations().add(4,operation);
+        wf.getOperations().add(5,operation);
+        assertThat(wf.getOperations().get(4).getName()).isEqualTo(Operator.WRITE_AND_READ);
+        assertThat(wf.getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
+        assertThat(wf.getOperations().get(6).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
+        wf.getOperations().remove(5);
+        assertThat(wf.getOperations().get(4).getName()).isEqualTo(Operator.WRITE_AND_READ);
         assertThat(wf.getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
-        assertThat(wf.getOperations().get(4).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
     }
+
 }

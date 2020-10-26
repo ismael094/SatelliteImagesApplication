@@ -162,4 +162,92 @@ public class Sentinel1GRDWorkflowController_ extends ApplicationTest {
         assertThat(((CalibrationOperationController)operationController).getOutputBeta().get()).isFalse();
         assertThat(operationController.getOutputBands()).isEqualTo(writeAndRead.getOutputBands());
     }
+
+    @Test
+    public void add_flat_operation() {
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
+        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        assertThat(operationController).isNotNull();
+        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(8);
+        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
+
+        clickOn("#add");
+        clickOn("#terrainFlatteningButton");
+
+        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(9);
+        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
+    }
+
+    @Test
+    public void remove_flat_operation() {
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
+        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        clickOn("#add");
+        clickOn("#terrainFlatteningButton");
+
+        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(9);
+        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
+
+
+        clickOn("#remove");
+        clickOn("#removeTerrainFlatteningButton");
+
+        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(8);
+        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
+    }
+
+    @Test
+    public void flat_operation_beta_activated() {
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
+        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        clickOn("#add");
+        clickOn("#terrainFlatteningButton");
+
+        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(9);
+        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
+
+
+        clickOn("#calibrationPane");
+        clickOn("#outputBeta");
+
+        OperationController operationController1 = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        assertThat(operationController1.getOperation().getParameters().get("outputBetaBand")).isEqualTo(true);
+
+        clickOn("#outputBeta");
+        assertThat(operationController1.getOperation().getParameters().get("outputBetaBand")).isEqualTo(true);
+
+
+    }
+
+    @Test
+    public void flat_operation_beta_deactivated() {
+        interact(() -> controller.setWorkflow(new Sentinel1GRDDefaultWorkflowDTO()));
+        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        clickOn("#add");
+        clickOn("#terrainFlatteningButton");
+
+        clickOn("#calibrationPane");
+        clickOn("#outputBeta");
+
+        clickOn("#outputBeta");
+
+        clickOn("#remove");
+        clickOn("#removeTerrainFlatteningButton");
+
+        OperationController operationController1 = controller.getOperationsMap().get(Operator.CALIBRATION);
+
+        assertThat(operationController1.getOperation().getParameters().get("outputBetaBand")).isEqualTo(true);
+
+        clickOn("#outputBeta");
+
+        assertThat(operationController1.getOperation().getParameters().get("outputBetaBand")).isEqualTo(false);
+
+
+    }
+
 }

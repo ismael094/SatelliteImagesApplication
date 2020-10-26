@@ -16,12 +16,12 @@
               <menus>
                 <Menu fx:id="add" mnemonicParsing="false" text="Add">
                   <items>
-                    <MenuItem fx:id="terrainFlatenningButton" mnemonicParsing="false" text="Terrain Flatennign" />
+                    <MenuItem fx:id="terrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatennign" />
                   </items>
                 </Menu>
                   <Menu fx:id="remove" mnemonicParsing="false" text="Remove">
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Terrain Flatenning" />
+                      <MenuItem fx:id="removeTerrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatenning" />
                     </items>
                   </Menu>
               </menus>
@@ -53,6 +53,11 @@
                         <fx:include fx:id="writeAndReadOperation" source="WriteAndReadOperationController.fxml" />
                      </content>
                   </TitledPane>
+                   <TitledPane fx:id="flatteningPane" animated="false" text="Terrain Flattening">
+                       <content>
+                           <fx:include fx:id="terrainFlatteningOperation" source="TerrainFlatteningOperationView.fxml" />
+                       </content>
+                   </TitledPane>
                   <TitledPane fx:id="correctionPane" animated="false" text="Terrain Correction">
                      <content>
                         <fx:include fx:id="terrainCorrectionOperation" source="TerrainCorrectionView.fxml" />

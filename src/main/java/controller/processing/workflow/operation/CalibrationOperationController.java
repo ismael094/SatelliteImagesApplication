@@ -238,4 +238,9 @@ public class CalibrationOperationController implements Initializable, OperationC
         selectOutputSigmaControl((Boolean)(operation.getParameters().getOrDefault("outputSigmaBand",false)));
         selectOutputInDbControl((Boolean)(operation.getParameters().getOrDefault("outputImageScaleInDb",false)));
     }
+
+    public void fixOutputBeta(boolean b) {
+        outputBeta.setSelected(b);
+        outputBeta.setDisable(b);
+    }
 }

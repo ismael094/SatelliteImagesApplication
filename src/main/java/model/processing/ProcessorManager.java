@@ -3,6 +3,7 @@ package model.processing;
 import controller.processing.SimpleProcessingMonitorController;
 import model.list.ProductListDTO;
 import model.processing.monitor.FXProgressMonitor;
+import model.processing.workflow.Sentinel2MSILDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
@@ -25,12 +26,13 @@ public class ProcessorManager {
     private final FXProgressMonitor operationMonitor;
     private final FXProgressMonitor productMonitor;
     private final FXProgressMonitor listMonitor;
+    private boolean isProcessing;
 
     public ProcessorManager(SimpleProcessingMonitorController monitorController) {
         this.operationMonitor = new FXProgressMonitor();
         this.productMonitor = new FXProgressMonitor();
         this.listMonitor = new FXProgressMonitor();
-
+        this.isProcessing = false;
         this.monitorController = monitorController;
         this.typeProcessMap = ProcessingConfiguration.getProcessor();
 
@@ -45,12 +47,18 @@ public class ProcessorManager {
     }
 
     public void process(ProductListDTO productListDTO) throws Exception {
+        if (isProcessing)
+            throw new Exception("There is a processing open");
+
+        isProcessing = true;
+
         logger.atInfo().log("====== Processing start =========");
         logger.atInfo().log("Starting to process list {}",productListDTO.getName());
         Map<ProductDTO, List<String>> productsAreasOfWorks = productListDTO.getProductsAreasOfWorks();
 
         logger.atInfo().log("====== Processing products =========");
-        listMonitor.beginTask("Processing list "+productListDTO.getName(),productsAreasOfWorks.size());
+        listMonitor.beginTask("Processing list "+productListDTO.getName(),productsAreasOfWorks.size()+productListDTO.getGroundTruthProducts().size());
+
         for (Map.Entry<ProductDTO, List<String>> entry : productsAreasOfWorks.entrySet()) {
             process(entry.getKey(),entry.getValue(),
                     productListDTO.getWorkflow(WorkflowType.valueOf(entry.getKey().getProductType())),
@@ -58,11 +66,23 @@ public class ProcessorManager {
                     false);
             listMonitor.internalWorked(1);
         }
-        listMonitor.done();
+
+
         logger.atInfo().log("====== Processing reference images =========");
+        for (ProductDTO p : productListDTO.getGroundTruthProducts()) {
+            process(p,productListDTO.areasOfWorkOfProduct(p.getFootprint()),
+                    new Sentinel2MSILDefaultWorkflowDTO(),
+                    productListDTO.getName()+"\\reference_images",
+                    false);
+            listMonitor.internalWorked(1);
+        }
+
+
+        listMonitor.done();
 
 
         logger.atInfo().log("====== List Processed =========");
+        isProcessing = false;
     }
 
     public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
