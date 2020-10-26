@@ -27,17 +27,9 @@ public class DeleteSelectedFromListEvent extends Event {
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
             list = listController.getProductList();
-
-        } else {
-            List<ProductListDTO> productList = showAndGetList(SelectionMode.SINGLE,"Select list to edit");
-            if (productList.size() == 0)
-                return;
-            else
-                list = productList.get(0);
+            list.getProducts().removeAll(listController.getSelectedProducts());
+            mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
         }
 
-        FileUtils.saveObjectToJson(list);
-
-        mainController.getDownload().download(list);
     }
 }

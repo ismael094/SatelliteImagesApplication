@@ -2,24 +2,35 @@ package model.processing.workflow;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.workflow.operation.Operator;
 import model.processing.workflow.operation.Operation;
+import model.processing.workflow.operation.Operator;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
+public class Sentinel1SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
-    public Sentinel1GRDDefaultWorkflowDTO() {
-        super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.GRD));
+    public Sentinel1SLCDefaultWorkflowDTO() {
+        super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.SLC));
         getRead();
-        getThermalNoiseRemoval();
+        getTopSarSplit();
         getOrbit();
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");
+        getTopSarDeburst();
+        getMultilook();
         getTerrainCorrection();
         getSubset();
         getWrite("GeoTIFF");
+    }
+
+    private void getTopSarSplit() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("subswath", "IW1");
+        parameters.put("selectedPolarisations", "VV,VH");
+        parameters.put("firstBurstIndex", "1");
+        parameters.put("lastBurstIndex", "9");
+        addOperation(new Operation(Operator.TOPSAR_SPLIT,parameters));
     }
 
     private void getWriteAndRead(String s) {
@@ -35,19 +46,32 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         addOperation(new Operation(Operator.APPLY_ORBIT_FILE,parameters));
     }
 
-    private void getThermalNoiseRemoval() {
-        Map<String, Object> parameters = new HashMap<>();
-        addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL,parameters));
-    }
-
     private void getCalibration() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("outputBetaBand", false);
-        parameters.put("outputSigmaBand", true);
-        parameters.put("selectedPolarisations", "VV,VH");
+        parameters.put("auxFile", "Latest Auxiliary File");
+        parameters.put("outputImageInComplex", true);
         parameters.put("outputImageScaleInDb", false);
-        parameters.put("sourceBands", "Intensity_VV,Intensity_VH");
+        parameters.put("createGammaBand", false);
+        parameters.put("createBetaBand", false);
+        parameters.put("outputSigmaBand", true);
+        parameters.put("outputGammaBand", true);
+        parameters.put("outputBetaBand", false);
         addOperation(new Operation(Operator.CALIBRATION,parameters));
+    }
+
+    private void getTopSarDeburst() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("selectedPolarisations", "VV,VH");
+        addOperation(new Operation(Operator.TOPSAR_DEBURST,parameters));
+    }
+
+    private void getMultilook() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("nRgLooks", 4);
+        parameters.put("nAzLooks", 1);
+        parameters.put("outputIntensity", false);
+        parameters.put("grSquarePixel", true);
+        addOperation(new Operation(Operator.MULTILOOK,parameters));
     }
 
     private void getTerrainCorrection() {
@@ -58,7 +82,6 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         parameters.put("demName", "SRTM 3Sec");
         parameters.put("pixelSpacingInMeter", 10.0);
         parameters.put("nodataValueAtSea", false);
-        parameters.put("sourceBands", "Sigma0_VH,Sigma0_VH");
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 
@@ -76,13 +99,12 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
     private void getSubset() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("copyMetadata", true);
-        parameters.put("sourceBands", "Sigma0_VH");
         parameters.put("outputImageScaleInDb", true);
         addOperation(new Operation(Operator.SUBSET,parameters));
     }
 
     @Override
     public String toString() {
-        return "Sentinel1GRDDefaultWorkflow{}";
+        return "Sentinel1SLCDefaultWorkflow{}";
     }
 }

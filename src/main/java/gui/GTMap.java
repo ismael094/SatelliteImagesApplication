@@ -411,7 +411,7 @@ public class GTMap extends Canvas {
 
         removeLayer(layerName);
 
-        addFeatureToMapContent(featureBuilder,Color.RED,null,0.5f, layerName);
+        addFeatureToMapContent(featureBuilder,Color.RED,Color.RED,0.5f, layerName);
         refresh();
     }
 

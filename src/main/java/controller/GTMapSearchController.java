@@ -76,7 +76,7 @@ public class GTMapSearchController {
             getDeleteSearchAreaButton();
             getResetMapButton();
         }
-        System.out.println(mapContainer.getWidth());
+
         mapContainer.getChildren().add(geotoolsMap);
         AnchorPane.setTopAnchor(geotoolsMap,0.0);
         AnchorPane.setBottomAnchor(geotoolsMap,0.0);

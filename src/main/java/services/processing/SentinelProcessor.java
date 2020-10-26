@@ -2,11 +2,8 @@ package services.processing;
 
 
 import com.bc.ceres.core.ProgressMonitor;
-import model.processing.workflow.Sentinel2MSILDefaultWorkflowDTO;
+import model.processing.workflow.*;
 import model.processing.workflow.operation.Operation;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
@@ -30,6 +27,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class SentinelProcessor extends Processor {
@@ -45,6 +44,7 @@ public class SentinelProcessor extends Processor {
         this.workflowType.put(WorkflowType.GRD, new Sentinel1GRDDefaultWorkflowDTO());
         this.workflowType.put(WorkflowType.S2MSI1C, new Sentinel2MSILDefaultWorkflowDTO());
         this.workflowType.put(WorkflowType.S2MSI2A, new Sentinel2MSILDefaultWorkflowDTO());
+        this.workflowType.put(WorkflowType.SLC, new Sentinel1SLCDefaultWorkflowDTO());
         colorIndexedImage = null;
     }
 
@@ -60,32 +60,6 @@ public class SentinelProcessor extends Processor {
     protected Product createProduct(Product product, Operation operation) {
         return GPF.createProduct(operation.getName().getName(),operation.getParameters(),product);
     }
-
-    /*@Override
-    public void process(ProductListDTO productList) throws Exception {
-        logger.atInfo().log("====== Processing start =========");
-        logger.atInfo().log("Starting to process list {}",productList.getName());
-
-        Map<ProductDTO, List<String>> productsAreasOfWorks = productList.getProductsAreasOfWorks();
-
-        startProductListMonitor("Product list starting", productsAreasOfWorks.size());
-        updateProductListMonitor("0 of "+ productList.getProducts().size(),0);
-        productsAreasOfWorks.forEach((p,footprints)-> {
-            try {
-                process(p, footprints, productList.getWorkflow(WorkflowType.valueOf(p.getProductType())), productList.getName(),false);
-                updateProductListMonitor(
-                        (productList.getProducts().indexOf(p)+1.0)+" of "+ productList.getProducts().size(),
-                        1);
-            } catch (Exception e) {
-                Platform.runLater(()-> AlertFactory.showErrorDialog("Error","Error", "Error while processing"));
-            }
-        });
-
-        listMonitor.done();
-
-        logger.atInfo().log("====== List Processed =========");
-
-    }*/
 
     @Override
     public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception {
@@ -128,8 +102,8 @@ public class SentinelProcessor extends Processor {
             System.out.println(workflow.getOperations().size());
             for (Operation op : workflow.getOperations()) {
                 op.getParameters().put("selectedPolarisations",polarisations);
-                if (snapProduct != null)
-                    op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
+                //if (snapProduct != null)
+                    //op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
                 showMemory();
                 logger.atInfo().log("Operation: {}", op);
                 if (op.getName() == Operator.READ) {
@@ -138,8 +112,9 @@ public class SentinelProcessor extends Processor {
                 } else if (op.getName() == Operator.WRITE) {
                     if (generateBoolean) {
                         createBufferedImage(subsets.get(0));
+                    } else {
+                        writeOperation(productDTO, subsets, op, path);
                     }
-                    writeOperation(productDTO, subsets, op, path);
                 } else if (op.getName() == Operator.WRITE_AND_READ) {
                     snapProduct = writeAndReadOperation(snapProduct, productDTO, op);
                     products.add(snapProduct);
@@ -250,16 +225,20 @@ public class SentinelProcessor extends Processor {
     private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
         for (Product j : subsets) {
-            saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + x, String.valueOf(op.getParameters().get("formatName")));
+
             if ((boolean)op.getParameters().getOrDefault("generatePNG",false)) {
-                generateRGBImage(j,op,path+"\\" + productDTO.getId() + "_tmp_" + x);
+                generateRGBImage(j,op,path+"\\" + productDTO.getTitle() + "_" + x);
+            } else {
+                saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + x, String.valueOf(op.getParameters().get("formatName")));
             }
             x++;
         }
         closeProducts(subsets);
-        for (int i = 0; i<subsets.size();i++)
-            new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + i+".tif")
-                    .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getTitle() + "_" + i+".tif"));
+        for (int i = 0; i<subsets.size();i++) {
+            Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
+            new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getId() + "_tmp_" + i + ".tif")
+                    .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
+        }
     }
 
     private void closeProducts(List<Product> subsets) {

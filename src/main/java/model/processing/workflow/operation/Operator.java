@@ -11,6 +11,9 @@ public enum Operator {
     READ("Read"),
     SUBSET("Subset"),
     RESAMPLE("Resample"),
+    TOPSAR_SPLIT("TOPSAR-Split"),
+    TOPSAR_DEBURST("TOPSAR-Deburst"),
+    MULTILOOK("Multilook"),
     CREATE_BUFFERED_IMAGE("CreateBufferedImage");
 
     private final String name;

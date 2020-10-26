@@ -13,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 import services.entities.Product;
 import services.processing.Processor;
 import services.processing.SentinelProcessor;
+import utils.DownloadConfiguration;
 import utils.ProcessingConfiguration;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +71,9 @@ public class ProcessorManager {
 
 
         logger.atInfo().log("====== Processing reference images =========");
+        File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName() + "\\reference_images");
+        if (!file.exists())
+            file.mkdirs();
         for (ProductDTO p : productListDTO.getGroundTruthProducts()) {
             process(p,productListDTO.areasOfWorkOfProduct(p.getFootprint()),
                     new Sentinel2MSILDefaultWorkflowDTO(),

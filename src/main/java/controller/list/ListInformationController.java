@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXListView;
 import controller.GTMapSearchController;
 import controller.cell.ProductListCell;
 import controller.interfaces.ProductListTabItem;
+import controller.processing.PreviewAreaSelectionController;
 import controller.processing.PreviewImageController;
 import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -258,7 +259,7 @@ public class ListInformationController extends ProductListTabItem {
 
         addAreaOfProduct.toFront();
         selectReferenceImage.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        makePreview.setOnAction(e->this.processImage());
+        makePreview.setOnAction(e->this.selectPreviewArea());
     }
 
     private void onDeleteFeatureActionRemoveFeature() {
@@ -448,14 +449,14 @@ public class ListInformationController extends ProductListTabItem {
             tabPaneComponent.getMainController().hideWaitSpinner();
     }
 
-    private void processImage() {
+    private void processImage(String area) {
         try {
             ProductDTO selectedItem = productListView.getSelectionModel().getSelectedItem();
             if (!selectReferenceImage.isSelected() && selectedItem != null) {
                 List<String> strings = productListDTO.areasOfWorkOfProduct(selectedItem.getFootprint());
 
                 if (mapController.getSelectedFeatureId() != null && strings.contains(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())))) {
-                    process(selectedItem, Lists.newArrayList(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId()))));
+                    process(selectedItem, Lists.newArrayList(area));
                 } else {
                     AlertFactory.showErrorDialog("","","Error");
                 }
@@ -466,6 +467,8 @@ public class ListInformationController extends ProductListTabItem {
             e.printStackTrace();
         }
     }
+
+
 
     private void process(ProductDTO productDTO, List<String> areas) {
         Task<WritableImage> task = new Task<WritableImage>() {
@@ -480,7 +483,7 @@ public class ListInformationController extends ProductListTabItem {
         });
         task.setOnSucceeded(e-> {
             try {
-                loadView(task.get());
+                showPreviewImage(task.get());
             } catch (InterruptedException | ExecutionException interruptedException) {
                 interruptedException.printStackTrace();
             }
@@ -488,7 +491,7 @@ public class ListInformationController extends ProductListTabItem {
         new Thread(task).start();
     }
 
-    private void loadView(WritableImage image) {
+    private void showPreviewImage(WritableImage image) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewImageView.fxml"));
         Scene scene = null;
         try {
@@ -508,5 +511,39 @@ public class ListInformationController extends ProductListTabItem {
         stage.setScene(scene);
         jMetro.setScene(scene);
         stage.show();
+    }
+
+    private void selectPreviewArea() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewAreaSelectionView.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        JMetro jMetro = ThemeConfiguration.getJMetroStyled();
+
+        PreviewAreaSelectionController controller = fxmlLoader.getController();
+        try {
+            controller.setAreaOfWork(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage();
+        stage.initOwner(tabPaneComponent.getMainController().getRoot().getScene().getWindow());
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        jMetro.setScene(scene);
+        stage.showAndWait();
+        try {
+            String area = controller.getArea();
+            System.out.println(area);
+            processImage(area);
+            AlertFactory.showSuccessDialog("Generating Preview","Generating preview","Generating preview...");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
