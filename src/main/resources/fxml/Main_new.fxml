@@ -54,7 +54,9 @@
                 </AnchorPane>
 
                 <AnchorPane fx:id="console" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-                <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" />
+                <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" >
+                    <fx:include fx:id="download" source="DownloadView.fxml" />
+                </AnchorPane>
             </items>
           </SplitPane>
         </children>

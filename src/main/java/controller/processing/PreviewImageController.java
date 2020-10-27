@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +29,13 @@ public class PreviewImageController implements Initializable {
         this.image.setFitWidth(725);
         this.image.setFitHeight(725);
         this.image.setViewport(new Rectangle2D(0,0,725,725));
+    }
+
+    public void setImage(Image image) {
+        this.image.setImage(image);
+        this.image.setFitWidth(725);
+        this.image.setFitHeight(725);
+        this.image.setViewport(new Rectangle2D(0,0,0,0));
     }
 
     public void onScrollInImageViewZoomImage() {

@@ -1,16 +1,12 @@
 package controller.processing;
 
-import controller.processing.workflow.Sentinel1GRDWorkflowController;
-import controller.processing.workflow.operation.OperationController;
-import javafx.collections.FXCollections;
+import controller.results.ProductListProcessingResultItemController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
-import model.processing.workflow.operation.Operator;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;

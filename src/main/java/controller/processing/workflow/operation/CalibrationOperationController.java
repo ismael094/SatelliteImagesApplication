@@ -240,7 +240,9 @@ public class CalibrationOperationController implements Initializable, OperationC
     }
 
     public void fixOutputBeta(boolean b) {
-        outputBeta.setSelected(b);
-        outputBeta.setDisable(b);
+        outputBeta.setDisable(false);
+        selectOutputBetaControl(true);
+        selectOutputBetaControl(true);
+        //outputBeta.setDisable(b);
     }
 }

@@ -108,20 +108,15 @@ public class ProcessingPreviewController implements TabItem {
     private void onSelectionInProductListViewStartPreviewProcessing() {
         productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                Task<Void> task = new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        showSpinner();
-                        BufferedImage preview = processor.getProcessor(newValue).process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
-                        WritableImage writableImage = SwingFXUtils.toFXImage(preview, null);
-                        image.setImage(writableImage);
-                        image.setFitWidth(812.0);
-                        image.setFitHeight(512.0);
-                        image.setViewport(new Rectangle2D(0,0,812,512));
-                        return null;
-                    }
-                };
+                showSpinner();
+                Task<BufferedImage> task = tabPaneComponent.getMainController().getProcessor().process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
+
                 task.setOnSucceeded(e-> {
+                    WritableImage writableImage = SwingFXUtils.toFXImage(task.getValue(), null);
+                    image.setImage(writableImage);
+                    image.setFitWidth(812.0);
+                    image.setFitHeight(512.0);
+                    image.setViewport(new Rectangle2D(0,0,812,512));
                     hideSpinner();
                 });
                 new Thread(task).start();

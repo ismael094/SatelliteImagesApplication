@@ -150,7 +150,9 @@ public class ProductListCell extends ListCell<ProductDTO> {
     }
 
     private void onActionInRemoveButtonDeleteSelectedAreaOfWork(ProductDTO product) {
-        remove.setOnAction(e-> productListDTO.remove(product));
+        remove.setOnAction(e-> {
+            productListDTO.remove(product);
+        });
     }
 
     private void setButtonIcon() {

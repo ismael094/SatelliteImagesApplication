@@ -30,6 +30,7 @@ public class MenuComponent extends MenuBar implements Component{
         this.menus.add(new ListMenu(mainController));
         this.menus.add(new DownloadMenu(mainController));
         this.menus.add(new ProcessingMenu(mainController));
+        this.menus.add(new ResultsMenu(mainController));
     }
 
     @Override

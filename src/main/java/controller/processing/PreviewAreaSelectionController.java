@@ -26,10 +26,11 @@ public class PreviewAreaSelectionController implements Initializable {
     private Point2D initPoint = new Point2D(0,0);
     private Point2D endPoint = new Point2D(200,200);
     private Point2D clickPoint;
+    private String wkt = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gtMap = new GTMap(822, 616, false);
+        gtMap = new GTMap(822, 616, true);
         map.getChildren().add(gtMap);
         AnchorPane.setRightAnchor(gtMap.getParent(),0.0);
         AnchorPane.setLeftAnchor(gtMap.getParent(),0.0);
@@ -40,6 +41,13 @@ public class PreviewAreaSelectionController implements Initializable {
         gtMap.addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressedOnMap);
         gtMap.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleasedOnMap);
         generatePreview.setOnAction(e->{
+            init = gtMap.transformSceneToWorldCoordinate(initPoint.getX(), initPoint.getY());
+            end = gtMap.transformSceneToWorldCoordinate(endPoint.getX(), endPoint.getY());
+            try {
+                wkt = gtMap.getWKTFromCoordinates(new Point2D(init[0],init[1]),new Point2D(end[0],end[1]));
+            } catch (ParseException parseException) {
+                parseException.printStackTrace();
+            }
             Stage window = (Stage)gtMap.getScene().getWindow();
             window.hide();
         });
@@ -118,8 +126,6 @@ public class PreviewAreaSelectionController implements Initializable {
     }
 
     public String getArea() throws ParseException {
-        init = gtMap.transformSceneToWorldCoordinate(initPoint.getX(), initPoint.getY());
-        end = gtMap.transformSceneToWorldCoordinate(endPoint.getX(), endPoint.getY());
-        return gtMap.getWKTFromCoordinates(new Point2D(init[0],init[1]),new Point2D(end[0],end[1]));
+        return wkt;
     }
 }

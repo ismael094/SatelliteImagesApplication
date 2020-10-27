@@ -37,6 +37,7 @@ public class SentinelProcessor extends Processor {
 
     protected final Map<WorkflowType, WorkflowDTO> workflowType;
     private BufferedImage colorIndexedImage;
+    private Product snapProduct;
 
     public SentinelProcessor() {
         //super(processingController);
@@ -92,7 +93,7 @@ public class SentinelProcessor extends Processor {
     private BufferedImage startProcess(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBoolean) throws IOException, ParseException {
         List<Product> subsets = new LinkedList<>();
         List<Product> products = new LinkedList<>();
-        Product snapProduct = null;
+        snapProduct = null;
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size()+areasOfWork.size()-1);
         String polarisations = "";
         if (productDTO instanceof Sentinel1ProductDTO) {
@@ -235,6 +236,7 @@ public class SentinelProcessor extends Processor {
         }
         closeProducts(subsets);
         for (int i = 0; i<subsets.size();i++) {
+            Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i));
             Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
             new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getId() + "_tmp_" + i + ".tif")
                     .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
@@ -256,5 +258,16 @@ public class SentinelProcessor extends Processor {
 
     private void closeProduct(Product product) {
         product.dispose();
+    }
+
+    @Override
+    public void stop() {
+        if (snapProduct!= null) {
+            try {
+                snapProduct.closeIO();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

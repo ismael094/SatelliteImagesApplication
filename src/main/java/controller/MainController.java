@@ -66,6 +66,10 @@ public class MainController implements Initializable {
     private AnchorPane console;
     @FXML
     private JFXSpinner wait;
+    @FXML
+    private GridPane download;
+    @FXML
+    private DownloadController downloadController;
 
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private UserDTO user;
@@ -94,7 +98,12 @@ public class MainController implements Initializable {
     }
 
     private void initProcessors() {
-        processor = new ProcessorManager(processingController);
+        processor = new ProcessorManager();
+        processingController.setProcessorManager(processor);
+        AnchorPane.setRightAnchor(processing,0.0);
+        AnchorPane.setLeftAnchor(processing,0.0);
+        AnchorPane.setTopAnchor(processing,0.0);
+        AnchorPane.setBottomAnchor(processing,0.0);
     }
 
     private void initDownloadManager() {
@@ -104,7 +113,7 @@ public class MainController implements Initializable {
                 //consoleDebug.appendText("Download completed!\n");
         });
         new Thread(copernicusDownloader).start();
-        URL location = getClass().getResource("/fxml/DownloadView.fxml");
+        /*URL location = getClass().getResource("/fxml/DownloadView.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent parent = null;
         try {
@@ -112,20 +121,13 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        downloadPane.getChildren().add(parent);
-        AnchorPane.setRightAnchor(parent,0.0);
-        AnchorPane.setLeftAnchor(parent,0.0);
-        AnchorPane.setTopAnchor(parent,0.0);
-        AnchorPane.setBottomAnchor(parent,0.0);
-        DownloadController controller = fxmlLoader.getController();
-        controller.setDownload(copernicusDownloader);
-
-
-
-        AnchorPane.setRightAnchor(processing,0.0);
-        AnchorPane.setLeftAnchor(processing,0.0);
-        AnchorPane.setTopAnchor(processing,0.0);
-        AnchorPane.setBottomAnchor(processing,0.0);
+        downloadPane.getChildren().add(parent);*/
+        AnchorPane.setRightAnchor(download,0.0);
+        AnchorPane.setLeftAnchor(download,0.0);
+        AnchorPane.setTopAnchor(download,0.0);
+        AnchorPane.setBottomAnchor(download,0.0);
+        //DownloadController controller = fxmlLoader.getController();
+        downloadController.setDownload(copernicusDownloader);
 
     }
 

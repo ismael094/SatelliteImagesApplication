@@ -78,7 +78,7 @@ public class SubsetOperationController implements OperationController, Initializ
     private void getParameters() {
         operation.getParameters().put("copyMetadata", metadata.isSelected());
         operation.getParameters().put("outputImageScaleInDb", outputInDb.isSelected());
-        operation.getParameters().put("sourceBands", Strings.join(",",subsetSourceBands.getSelectionModel().getSelectedItems()));
+        //operation.getParameters().put("sourceBands", Strings.join(",",subsetSourceBands.getSelectionModel().getSelectedItems()));
     }
 
     private void setParameters() {

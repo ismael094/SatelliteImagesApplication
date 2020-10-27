@@ -120,7 +120,7 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         operation.getParameters().put("demName", demName.getValue());
         operation.getParameters().put("pixelSpacingInMeter", Double.parseDouble(pixelSpacingInMeter.getText()));
         operation.getParameters().put("nodataValueAtSea", noDataValueAtSea.isSelected());
-        operation.getParameters().put("sourceBands", Strings.join(",",correctionSourceBands.getSelectionModel().getSelectedItems()));
+        //operation.getParameters().put("sourceBands", Strings.join(",",correctionSourceBands.getSelectionModel().getSelectedItems()));
     }
 
     @Override

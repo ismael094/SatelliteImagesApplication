@@ -470,20 +470,17 @@ public class ListInformationController extends ProductListTabItem {
 
 
 
-    private void process(ProductDTO productDTO, List<String> areas) {
-        Task<WritableImage> task = new Task<WritableImage>() {
-            @Override
-            protected WritableImage call() throws Exception {
-                BufferedImage preview = tabPaneComponent.getMainController().getProcessorFor(productDTO).process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
-                return SwingFXUtils.toFXImage(preview, null);
-            }
-        };
+    private void process(ProductDTO productDTO, List<String> areas) throws Exception {
+        Task<BufferedImage> task = tabPaneComponent.getMainController().getProcessor().process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
+
         task.setOnFailed(e->{
             AlertFactory.showErrorDialog("Error","","Error while setting preview image");
+            logger.atError().log("Error processing preview {}",e.getSource().getException().getLocalizedMessage());
         });
+
         task.setOnSucceeded(e-> {
             try {
-                showPreviewImage(task.get());
+                showPreviewImage(SwingFXUtils.toFXImage(task.get(),null));
             } catch (InterruptedException | ExecutionException interruptedException) {
                 interruptedException.printStackTrace();
             }
@@ -540,8 +537,10 @@ public class ListInformationController extends ProductListTabItem {
         try {
             String area = controller.getArea();
             System.out.println(area);
-            processImage(area);
-            AlertFactory.showSuccessDialog("Generating Preview","Generating preview","Generating preview...");
+            if (area!=null) {
+                processImage(area);
+                AlertFactory.showSuccessDialog("Generating Preview","Generating preview","Generating preview...");
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -143,6 +143,13 @@
             <version>4.5.11</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.olingo</groupId>
@@ -390,18 +397,21 @@
             <version>8.0.0</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.esa.s1tbx</groupId>
             <artifactId>s1tbx-commons</artifactId>
             <version>8.0.0</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.esa.s1tbx</groupId>
             <artifactId>s1tbx-rcp</artifactId>
             <version>8.0.0</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.esa.s1tbx</groupId>
             <artifactId>s1tbx-op-calibration</artifactId>
@@ -453,6 +463,102 @@
             <artifactId>rstb-op-polarimetric-tools</artifactId>
             <version>8.0.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system</artifactId>
+            <version>8.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-ikonos-reader</artifactId>
+            <version>8.0.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.gdal/gdal -->
+        <dependency>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
+            <version>3.0.0</version>
+            <type>pom</type>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-grm</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-commons</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-s2msi-reader</artifactId>
+            <version>8.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-jp2-writer</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-jp2-reader</artifactId>
+            <version>7.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-gdal-reader</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-gdal-writer</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-kit</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>s2tbx-s2msi-resampler</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-jp2-reader</artifactId>
+            <version>8.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.s2tbx</groupId>
+            <artifactId>lib-gdal</artifactId>
+            <version>8.0.0</version>
         </dependency>
 
     </dependencies>

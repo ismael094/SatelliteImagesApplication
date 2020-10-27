@@ -1,12 +1,11 @@
 package services.processing;
 
-import controller.processing.SimpleProcessingMonitorController;
-import javafx.application.Platform;
-import model.list.ProductListDTO;
 import model.processing.monitor.FXProgressMonitor;
 import model.processing.monitor.ProcessingMonitor;
 import model.processing.workflow.WorkflowDTO;
 import model.products.ProductDTO;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -49,4 +48,10 @@ public abstract class Processor {
     public void setProductMonitor(FXProgressMonitor productMonitor) {
         this.productMonitor = productMonitor;
     }
+
+    protected Mat fromTifToMat(String path) {
+        return null;
+    }
+
+    public abstract void stop();
 }
