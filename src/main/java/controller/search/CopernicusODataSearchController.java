@@ -90,12 +90,12 @@ public class CopernicusODataSearchController extends SearchController<ProductDTO
     }
 
     @Override
-    public void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses) {
+    public void setSearchParameters(Map<String, String> parametersOfAllResponses) {
 
     }
 
     @Override
-    public Map<String, String> getParametersOfAllResponses() {
+    public Map<String, String> getSearchParameters() {
         return null;
     }
 

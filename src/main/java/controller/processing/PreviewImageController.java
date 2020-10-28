@@ -19,12 +19,13 @@ public class PreviewImageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        onDragInImageViewMoveImage();
-        onDragMoveDragImage();
-        onScrollInImageViewZoomImage();
+
     }
 
     public void setImage(WritableImage image) {
+        onDragInImageViewMoveImage();
+        onDragMoveDragImage();
+        onScrollInImageViewZoomImage();
         this.image.setImage(image);
         this.image.setFitWidth(725);
         this.image.setFitHeight(725);
@@ -58,6 +59,7 @@ public class PreviewImageController implements Initializable {
             double difX = event.getSceneX() - dragInitialCoordinate.getX();
             double difY = event.getSceneY() - dragInitialCoordinate.getY();
             image.setViewport(new Rectangle2D(viewport.getMinX()-difX*2.0, viewport.getMinY()-difY*2.0,viewport.getWidth(),viewport.getHeight()));
+            System.out.println(image.getViewport().toString());
             setBaseDraggedPosition(event);
         });
     }

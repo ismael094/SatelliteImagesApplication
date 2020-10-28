@@ -1,7 +1,6 @@
 package services;
 
 import gui.dialog.ScihubCredentialsDialog;
-import javafx.concurrent.Service;
 import javafx.util.Pair;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
@@ -25,7 +24,7 @@ import static utils.http.HTTPReadUtil.readFromURL;
  * Be careful, login() must be called inside in JavaFX Thread
  * JavaFX Thread
  */
-public class CopernicusService {
+public class CopernicusService implements Service {
 
     static final Logger logger = LogManager.getLogger(CopernicusService.class.getName());
     private static CopernicusService instance;
@@ -56,6 +55,7 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException if credentials are not setted
      */
+    @Override
     public synchronized void login() throws AuthenticationException, NotAuthenticatedException {
         if (pair == null) {
             instance = null;
@@ -73,7 +73,7 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
-
+    @Override
     public InputStream getContentFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
@@ -88,6 +88,7 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
+    @Override
     public HttpURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
@@ -102,6 +103,7 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
+    @Override
     public boolean isProductOnline(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
@@ -119,6 +121,7 @@ public class CopernicusService {
      * @throws AuthenticationException if credentials are wrong
      * @throws NotAuthenticatedException no credentials setted
      */
+    @Override
     public String getMD5CheckSum(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");

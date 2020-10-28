@@ -1,7 +1,7 @@
 package model.processing;
 
-import controller.processing.SimpleProcessingMonitorController;
 import javafx.concurrent.Task;
+import model.exception.NoWorkflowFoundException;
 import model.list.ProductListDTO;
 import model.processing.monitor.FXProgressMonitor;
 import model.processing.workflow.Sentinel2MSILDefaultWorkflowDTO;
@@ -11,9 +11,7 @@ import model.products.ProductDTO;
 import model.products.ProductType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.entities.Product;
 import services.processing.Processor;
-import services.processing.SentinelProcessor;
 import utils.AlertFactory;
 import utils.DownloadConfiguration;
 import utils.ProcessingConfiguration;
@@ -67,16 +65,13 @@ public class ProcessorManager {
                 Map<ProductDTO, List<String>> productsAreasOfWorks = productListDTO.getProductsAreasOfWorks();
 
                 logger.atInfo().log("====== Processing products =========");
-                listMonitor.beginTask("Processing list " + productListDTO.getName(), productsAreasOfWorks.size() + productListDTO.getGroundTruthProducts().size());
+                listMonitor.beginTask("Processing list " + productListDTO.getName(), productsAreasOfWorks.size() + productListDTO.getReferenceProducts().size());
 
                 for (Map.Entry<ProductDTO, List<String>> entry : productsAreasOfWorks.entrySet()) {
-                    if (isCancelled())
-                        return false;
-                    processProduct(entry.getKey(), entry.getValue(),
+                    if (executeProcessIfIsNotCancelled(entry.getKey(), entry.getValue(),
                             productListDTO.getWorkflow(WorkflowType.valueOf(entry.getKey().getProductType())),
                             productListDTO.getName(),
-                            false);
-                    listMonitor.internalWorked(1);
+                            false)) return false;
                 }
 
 
@@ -84,22 +79,32 @@ public class ProcessorManager {
                 File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName() + "\\reference_images");
                 if (!file.exists())
                     file.mkdirs();
-                for (ProductDTO p : productListDTO.getGroundTruthProducts()) {
-                    if (isCancelled())
-                        return false;
-                    processProduct(p, productListDTO.areasOfWorkOfProduct(p.getFootprint()),
+                for (ProductDTO p : productListDTO.getReferenceProducts()) {
+                    if (executeProcessIfIsNotCancelled(p, productListDTO.areasOfWorkOfProduct(p.getFootprint()),
                             new Sentinel2MSILDefaultWorkflowDTO(),
                             productListDTO.getName() + "\\reference_images",
-                            false);
-                    listMonitor.internalWorked(1);
+                            false)) return false;
                 }
+
 
                 listMonitor.done();
 
+                resetMonitors();
 
                 logger.atInfo().log("====== List Processed =========");
                 isProcessing = false;
                 return true;
+            }
+
+            private boolean executeProcessIfIsNotCancelled(ProductDTO p, List<String> areas, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
+                if (isCancelled()) return true;
+                try {
+                    processProduct(p, areas,workflow,path,bufferedImage);
+                } catch (NoWorkflowFoundException e) {
+                    logger.atError().log("No workflow found for");
+                }
+                listMonitor.internalWorked(1);
+                return false;
             }
         };
 
@@ -113,6 +118,12 @@ public class ProcessorManager {
 
         return task;
 
+    }
+
+    private void resetMonitors() {
+        listMonitor.getProgress().set(0);
+        operationMonitor.getProgress().set(0);
+        productMonitor.getProgress().set(0);
     }
 
     public void cancel() {

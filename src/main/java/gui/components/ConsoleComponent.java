@@ -9,17 +9,20 @@ import javafx.scene.Parent;
 
 import java.util.ArrayList;
 import java.util.List;
+import utils.gui.Observer;
 
 public class ConsoleComponent extends TextArea implements Component {
 
     public static final String LINE = "\n";
     private final MainController mainController;
     private final List<ComponentChangeListener> listTreeViewListener;
+    private List<Observer> observers;
 
     public ConsoleComponent(MainController mainController) {
         super();
         this.mainController = mainController;
         this.listTreeViewListener = new ArrayList<>();
+        observers = new ArrayList<>();
     }
 
     @Override
@@ -45,6 +48,11 @@ public class ConsoleComponent extends TextArea implements Component {
     @Override
     public void fireEvent(ToolbarComponentEvent event) {
         listTreeViewListener.forEach(l->l.onComponentChange(event));
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
     public void println(String message) {

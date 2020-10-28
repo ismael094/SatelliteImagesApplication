@@ -1,7 +1,6 @@
 package controller.search;
 
 import com.jfoenix.controls.*;
-import controller.interfaces.TabItem;
 import controller.cell.ProductResultListCell;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -17,9 +16,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,7 +24,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -60,7 +56,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     public static final String SENTINEL_2 = "Sentinel-2";
     private final ObservableList<OpenSearchResponse> allResponses;
     private final ObservableList<Map<String,String>> parametersOfAllResponses;
-    private int cursor;
+    private int index;
     private final String id;
     private final FXMLLoader loader;
     private OpenSearcher searcher;
@@ -141,7 +137,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
         allResponses = FXCollections.observableArrayList();
         parametersOfAllResponses = FXCollections.observableArrayList();
-        cursor = 0;
+        index = 0;
 
         showResults.visibleProperty().bind(Bindings.isEmpty(allResponses).not());
         showResults.setOnAction(e->undo());
@@ -210,10 +206,11 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         setSpinnerVisible(false);
         setPaginationVisible(false);
         productsPerPage();
-        satellites();
-        sentinel1Data();
-        productsListView();
-        resultsPane();
+        initSatelliteValues();
+        onSatelliteChangesModifyParameters();
+        setSentinel1ParametersAsDefault();
+        initProductListView();
+        setProductsResponseView();
         onActionInPaginationFireSearchEvent();
         onActionInSearchButtonFireSearchEvent();
         onCloudCoverageChangeAllowOnlyNumbers();
@@ -342,7 +339,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
             });
     }
 
-    private void sentinel1Data() {
+    private void setSentinel1ParametersAsDefault() {
         setSentinel1Instruments();
         setSentinel1SensorMode();
         setSentinel1Polarisation();
@@ -363,7 +360,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
             sensorMode.setValue("All");
     }
 
-    private void productsListView() {
+    private void initProductListView() {
         resultProductsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         resultProductsList.setOnMouseClicked(highlightInMapSelectedProductInListView());
     }
@@ -380,18 +377,20 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         };
     }
 
-    private void satellites() {
+    private void initSatelliteValues() {
         platformList.setItems(FXCollections.observableArrayList(
                 SENTINEL_1, SENTINEL_2));
+    }
 
+    private void onSatelliteChangesModifyParameters() {
         platformList.getSelectionModel()
-                .selectedIndexProperty()
+                .selectedItemProperty()
                 .addListener((observableValue, oldValue, newValue) -> {
-                        if (platformList.getItems().get(newValue.intValue()).equals(SENTINEL_1)) {
+                        if (newValue.equals(SENTINEL_1)) {
                             setSentinel1Instruments();
                             setCloudCoverageDisabled();
                             setSentinel1ParametersEnabled();
-                        } else if (platformList.getItems().get(newValue.intValue()).equals(SENTINEL_2)) {
+                        } else if (newValue.equals(SENTINEL_2)) {
                             setSentinel2Instruments();
                             setSentinel1ParametersDisabled();
                             setCloudCoverageEnabled();
@@ -444,11 +443,11 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
             productTypeList.setValue("All");
     }
 
-    private void resultsPane() {
+    private void setProductsResponseView() {
         resultsPane.setVisible(false);
-        Button iconButton = GlyphsDude.createIconButton(FontAwesomeIcon.ARROW_LEFT,"");
-        iconButton.setAccessibleText("Close results");
-        iconButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+        Button closeProductResultsButton = GlyphsDude.createIconButton(FontAwesomeIcon.ARROW_LEFT,"");
+
+        closeProductResultsButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             resultsPane.setVisible(false);
             searchParameters.setVisible(true);
             if (resultProductsList.getItems().size() > 0)
@@ -456,12 +455,10 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
             else
                 hideShowResultsButton();
         });
-        resultPaneHeader.getChildren().add(iconButton);
+
+        resultPaneHeader.getChildren().add(closeProductResultsButton);
         hideShowResultsButton();
-        /*showResults.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> {
-            resultsPane.setVisible(true);
-            searchParameters.setVisible(false);
-        });*/
+
         show.setVisible(false);
         show.setText("");
         GlyphsDude.setIcon(show,FontAwesomeIcon.ARROW_RIGHT);
@@ -480,8 +477,6 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void toggleShowResultsButton(boolean b) {
-        //showResults.setVisible(b);
-        //showResults.setManaged(b);
         show.setVisible(b);
         show.setManaged(b);
     }
@@ -494,7 +489,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
         setSpinnerVisible(true);
         Task<OpenSearchResponse> response = getSearchTask();
-        response.setOnSucceeded(event -> getOnSucceedSearchEvent(response));
+        response.setOnSucceeded(event -> onSucceedSearch(response));
         response.setOnFailed(this::onFailedSearch);
         new Thread(response).start();
         Platform.runLater(()->{
@@ -503,7 +498,10 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     @Override
-    public void setParametersOfAllResponses(Map<String, String> parametersOfAllResponses) {
+    public void setSearchParameters(Map<String, String> parametersOfAllResponses) {
+        //init binds also
+        onSatelliteChangesModifyParameters();
+
         parametersOfAllResponses.forEach((key, value)->{
             Control control = this.control.get(key);
             if (control instanceof ChoiceBox)
@@ -525,12 +523,8 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         });
     }
 
-    private void saveSearch() {
-        searcher.getSearchParameters();
-    }
-
     @Override
-    public HashMap<String, String> getParametersOfAllResponses() {
+    public HashMap<String, String> getSearchParameters() {
         HashMap<String,String> res = new HashMap<>();
         res.put(SentinelProductParameters.PLATFORM_NAME.getParameterName(), platformList.getValue());
         res.put(SentinelProductParameters.PRODUCT_TYPE.getParameterName(), productTypeList.getValue());
@@ -557,10 +551,10 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         setSpinnerVisible(false);
     }
 
-    private void getOnSucceedSearchEvent(Task<OpenSearchResponse> response) {
+    private void onSucceedSearch(Task<OpenSearchResponse> response) {
         try {
-            setProductResults(response.get());
-            saveSearchData(response);
+            setResponse(response.get());
+            saveSearch(response);
         } catch (ExecutionException | InterruptedException e) {
             logger.atLevel(Level.ERROR).log("Error while retrieving search results: {0}",e);
             e.printStackTrace();
@@ -569,11 +563,11 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     @Override
     public void redo() {
-        if (cursor < 0 || cursor >= allResponses.size())
+        if (index < 0 || index >= allResponses.size())
             return;
-        setProductResults(allResponses.get(cursor));
-        setParametersOfAllResponses(parametersOfAllResponses.get(cursor));
-        cursor++;
+        setResponse(allResponses.get(index));
+        setSearchParameters(parametersOfAllResponses.get(index));
+        index++;
         redoOrUndoOperation(true);
     }
 
@@ -583,21 +577,21 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     @Override
     public void undo() {
-        if (cursor <= 1)
+        if (index <= 1)
             return;
-        setProductResults(allResponses.get(cursor-2));
-        setParametersOfAllResponses(parametersOfAllResponses.get(cursor-2));
-        cursor--;
+        setResponse(allResponses.get(index -2));
+        setSearchParameters(parametersOfAllResponses.get(index -2));
+        index--;
         redoOrUndoOperation(true);
     }
 
-    private void saveSearchData(Task<OpenSearchResponse> response) throws InterruptedException, ExecutionException {
-        allResponses.add(cursor,response.get());
-        parametersOfAllResponses.add(cursor, getParametersOfAllResponses());
-        cursor++;
+    private void saveSearch(Task<OpenSearchResponse> response) throws InterruptedException, ExecutionException {
+        allResponses.add(index,response.get());
+        parametersOfAllResponses.add(index, getSearchParameters());
+        index++;
     }
 
-    private void setProductResults(OpenSearchResponse response) {
+    private void setResponse(OpenSearchResponse response) {
         ObservableList<ProductDTO> tObservableArray =
                 FXCollections.observableArrayList(response.getProducts());
 

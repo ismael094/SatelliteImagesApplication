@@ -15,7 +15,6 @@ import model.listeners.DownloadListener;
 import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
-import services.Service;
 import utils.AlertFactory;
 import utils.FileUtils;
 
@@ -65,7 +64,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
     @Override
     public synchronized void download(ProductListDTO productList) {
         productList.getValidProducts().forEach(p->add(new DownloadItem(p)));
-        productList.getGroundTruthProducts().forEach(p->add(new DownloadItem(p)));
+        productList.getReferenceProducts().forEach(p->add(new DownloadItem(p)));
     }
 
     @Override

@@ -88,7 +88,7 @@ public class ProductResultListCell extends ListCell<ProductDTO> {
                 TabItem copernicusOpenSearch = tabPaneComponent.getControllerOf("Copernicus Open Search");
                 CopernicusOpenSearchController controller = (CopernicusOpenSearchController)copernicusOpenSearch;
                 Map<String, String> parameters = getParameters();
-                controller.setParametersOfAllResponses(parameters);
+                controller.setSearchParameters(parameters);
                 controller.search();
             });
 

@@ -33,4 +33,9 @@ public class PlatformRestriction implements Restriction {
     public List<String> getValues() {
         return acceptedValues;
     }
+
+    @Override
+    public String getName() {
+        return "platform";
+    }
 }

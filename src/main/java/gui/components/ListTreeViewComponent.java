@@ -21,6 +21,7 @@ import javafx.scene.control.TreeView;
 import javafx.util.Pair;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
+import utils.gui.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +30,13 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
 
     private final MainController mainController;
     private final List<ComponentChangeListener> listTreeViewListener;
+    private List<Observer> observers;
 
     public ListTreeViewComponent(MainController mainController) {
         super();
         this.mainController = mainController;
         this.listTreeViewListener = new ArrayList<>();
+        observers = new ArrayList<>();
     }
 
     @Override
@@ -101,6 +104,11 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
     @Override
     public void fireEvent(ToolbarComponentEvent event) {
         this.listTreeViewListener.forEach(l-> l.onComponentChange(event));
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
     public void reload() {

@@ -100,3 +100,8 @@
 .downloadPaused .progressBar {
     -fx-accent: red;
 }
+
+.processingResult:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #D3D3D3;
+}

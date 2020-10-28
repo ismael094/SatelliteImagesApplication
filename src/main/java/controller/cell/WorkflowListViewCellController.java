@@ -73,6 +73,8 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
             setOnMouseClicked(event -> {
                 if (event.getClickCount() > 1)
                     startEdit();
+                event.consume();
+
             });
 
             nameField.addEventHandler(KeyEvent.KEY_RELEASED, this::handleEvent);
@@ -92,9 +94,9 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
         } else if (event.getCode() == KeyCode.ENTER) {
             workflow.setName(nameField.getText());
             workflow.setType(typeBox.getValue());
-            if (workflow.getOperations() != null)
+            /*if (workflow.getOperations() != null)
                 workflow.getOperations().clear();
-            myWorkflowController.loadWorkflow(workflow);
+            myWorkflowController.loadWorkflow(workflow);*/
             cancelEdit();
         }
     }

@@ -2,6 +2,7 @@ package services.processing;
 
 
 import com.bc.ceres.core.ProgressMonitor;
+import model.exception.NoWorkflowFoundException;
 import model.processing.workflow.*;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
@@ -18,6 +19,7 @@ import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import services.entities.Workflow;
 import utils.DownloadConfiguration;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
@@ -29,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class SentinelProcessor extends Processor {
@@ -75,6 +79,9 @@ public class SentinelProcessor extends Processor {
         }
 
         if (workflow == null) {
+            if (this.workflowType.getOrDefault(WorkflowType.valueOf(product.getProductType()),null) == null)
+                throw new NoWorkflowFoundException("No workflow found for product type "+product.getProductType());
+
             logger.atInfo().log("Loaded default Workflow for {} products",product.getProductType());
             workflow = this.workflowType.get(WorkflowType.valueOf(product.getProductType()));
         }
@@ -156,6 +163,12 @@ public class SentinelProcessor extends Processor {
         return colorIndexedImage;
     }
 
+    private String getDate() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now);
+    }
+
     private void generateRGBImage(Product product,Operation operation,String path) {
         File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path);
         if (!file.exists())
@@ -191,16 +204,6 @@ public class SentinelProcessor extends Processor {
         colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
     }
 
-    /*@Override
-    public BufferedImage preview(ProductDTO productList, List<String> areasOfWork, WorkflowDTO workflow) throws Exception {
-        Operation operation = workflow.getOperation(Operator.WRITE);
-        operation.setOperator(Operator.CREATE_BUFFERED_IMAGE);
-        List<String> one = new ArrayList<>();
-        one.add(areasOfWork.get(0));
-        process(productList,one,workflow,"Tmp");
-        return colorIndexedImage;
-    }*/
-
     private List<Product> subsetOperation(Product product, List<String> areasOfWork, Operation op) throws ParseException {
         List<Product> tmp = new LinkedList<>();
         if (areasOfWork.size()>0) {
@@ -221,26 +224,25 @@ public class SentinelProcessor extends Processor {
         return readProduct(ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId() + ".dim");
     }
 
-
-
     private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
         for (Product j : subsets) {
 
             if ((boolean)op.getParameters().getOrDefault("generatePNG",false)) {
-                generateRGBImage(j,op,path+"\\" + productDTO.getTitle() + "_" + x);
+                generateRGBImage(j,op,path+"\\" + productDTO.getProductType() + "_" +getDate() + "_" + x);
             } else {
                 saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + x, String.valueOf(op.getParameters().get("formatName")));
             }
             x++;
         }
-        closeProducts(subsets);
+
         for (int i = 0; i<subsets.size();i++) {
             Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i));
-            Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
             new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getId() + "_tmp_" + i + ".tif")
-                    .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i + ".tif"));
+                    .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getProductType()+"_" +getBandNames(subsets.get(i).getBandNames()) + "_"+ getDate() + "_"+  + i + ".tif"));
         }
+
+        closeProducts(subsets);
     }
 
     private void closeProducts(List<Product> subsets) {

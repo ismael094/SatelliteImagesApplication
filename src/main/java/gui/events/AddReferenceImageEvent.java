@@ -38,7 +38,7 @@ public class AddReferenceImageEvent extends Event {
                     AlertFactory.showErrorDialog("Error","Error","Product not valid as a ground truth. Must be a Sentinel-2 image and contain an area of work");
                 }
             });
-            productListDTO.addGroundTruthProduct(validProducts);
+            productListDTO.addReferenceProduct(validProducts);
         } else {
             AlertFactory.showErrorDialog("Error","Error","ERROR");
         }

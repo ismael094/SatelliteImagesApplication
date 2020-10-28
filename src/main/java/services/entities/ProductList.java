@@ -1,10 +1,8 @@
 package services.entities;
 
-import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Reference;
-import model.products.ProductDTO;
 import model.restriction.Restriction;
 import org.bson.types.ObjectId;
 
@@ -21,7 +19,7 @@ public class ProductList {
     private List<Restriction> restrictions;
     private List<String> areasOfWork;
     @Reference(idOnly = true, ignoreMissing=true)
-    private List<Product> groundTruthProducts;
+    private List<Product> referenceImages;
     @Reference(idOnly = true, ignoreMissing=true)
     private List<Workflow> workflows;
 
@@ -29,7 +27,7 @@ public class ProductList {
         products = new ArrayList<>();
         restrictions = new ArrayList<>();
         areasOfWork = new ArrayList<>();
-        groundTruthProducts = new ArrayList<>();
+        referenceImages = new ArrayList<>();
         workflows = new ArrayList<>();
     }
 
@@ -81,12 +79,12 @@ public class ProductList {
         this.areasOfWork = areasOfWork;
     }
 
-    public void setGroundTruthProducts(List<Product> groundTruthProducts) {
-        this.groundTruthProducts = groundTruthProducts;
+    public void setReferenceImages(List<Product> referenceImages) {
+        this.referenceImages = referenceImages;
     }
 
-    public List<Product> getGroundTruthProducts() {
-        return groundTruthProducts;
+    public List<Product> getReferenceImages() {
+        return referenceImages;
     }
 
     public List<Workflow> getWorkflows() {

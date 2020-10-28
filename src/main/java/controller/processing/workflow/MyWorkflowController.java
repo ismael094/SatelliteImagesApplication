@@ -2,6 +2,9 @@ package controller.processing.workflow;
 
 import controller.MainController;
 import controller.cell.WorkflowListViewCellController;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -54,26 +57,47 @@ public class MyWorkflowController implements Initializable {
         workflowList.setCellFactory(e->new WorkflowListViewCellController(this));
         //workflowList.getItems().add(new Sentinel1GRDDefaultWorkflow());
         //setWorkflow(new Sentinel1GRDDefaultWorkflow());
-        addWorkflow.setOnAction(e-> {
-            GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+        addWorkflow.setText("");
+        removeWorkflow.setText("");
+        GlyphsDude.setIcon(addWorkflow, MaterialDesignIcon.PLUS);
+        GlyphsDude.setIcon(removeWorkflow, MaterialDesignIcon.MINUS);
 
-            workflowList.getItems().add(aDefault);
+        onAddWorkflowCreateNewWorkflow();
+
+        onSaveWorkflowSaveParameters();
+
+        onActionInAssignToListAddSelectedWorkflowsToSelectedLists();
+
+        onRemoveWorkflowDeleteWorkflow();
+
+        onSelectInWorkflowListViewLoadWorkflowParameters();
+    }
+
+    private void onSelectInWorkflowListViewLoadWorkflowParameters() {
+        workflowList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
+            if (!oldValue.equals(newValue) && workflowList.getSelectionModel().getSelectedItem() != null)
+                loadWorkflow(workflowList.getSelectionModel().getSelectedItem());
         });
+    }
 
+    private void onRemoveWorkflowDeleteWorkflow() {
+        removeWorkflow.setOnAction(e->{
+            workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
+        });
+    }
+
+    private void onSaveWorkflowSaveParameters() {
         saveWorkflow.setOnAction(e->{
             activeWorkflowController.getWorkflow();
             mainController.updateUserWorkflows(workflowList.getItems());
             AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
+    }
 
-        onActionInAssignToListAddSelectedWorkflowsToSelectedLists();
-
-        removeWorkflow.setOnAction(e->{
-            workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
-        });
-
-        workflowList.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            loadWorkflow(workflowList.getSelectionModel().getSelectedItem());
+    private void onAddWorkflowCreateNewWorkflow() {
+        addWorkflow.setOnAction(e-> {
+            GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+            workflowList.getItems().add(aDefault);
         });
     }
 
@@ -85,12 +109,14 @@ public class MyWorkflowController implements Initializable {
                 return;
             }
             List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(mainController.getUserProductList(), mainController.getRoot().getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
-            if (workflows.isEmpty()) {
+            if (productListDTOS.isEmpty() || productListDTOS.get(0) == null) {
                 AlertFactory.showErrorDialog("Workflow","No lists selected!","Select one or more lists to add workflows");
                 return;
             }
+
             productListDTOS.forEach(p->p.addWorkflow(workflows));
             AlertFactory.showSuccessDialog("Workflows added","Workflows added", "All workflows added to selected lists!");
+
         });
     }
 
@@ -105,6 +131,7 @@ public class MyWorkflowController implements Initializable {
         workflowList.setItems(workflows);
         if (workflows.size()>0) {
             loadWorkflow(workflows.get(0));
+            workflowList.getSelectionModel().select(workflows.get(0));
         }
     }
 
@@ -129,5 +156,9 @@ public class MyWorkflowController implements Initializable {
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setVisibleAssignToList(boolean b) {
+        assignToList.setVisible(b);
     }
 }

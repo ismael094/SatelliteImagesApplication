@@ -15,6 +15,7 @@ public class DownloadListCell extends ListCell<DownloadItem> {
     private final Downloader downloader;
     private FXMLLoader loader;
 
+
     @FXML
     private AnchorPane root;
     @FXML

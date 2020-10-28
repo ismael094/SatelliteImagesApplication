@@ -3,6 +3,7 @@ package gui.components;
 import controller.interfaces.TabItem;
 import controller.MainController;
 import controller.search.SearchController;
+import javafx.beans.value.ObservableValue;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
@@ -17,6 +18,8 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.gui.Observer;
+
 
 import java.util.*;
 
@@ -27,6 +30,7 @@ public class TabPaneComponent extends TabPane implements Component {
     private final MainController mainController;
     private final Map<String,TabItem> loadedControllers;
     private final BooleanProperty isSearchControllerOpen;
+    private List<Observer> observers;
 
     public TabPaneComponent(MainController mainController) {
         super();
@@ -35,6 +39,14 @@ public class TabPaneComponent extends TabPane implements Component {
         this.mainController = mainController;
         this.loadedControllers = new HashMap<>();
         isSearchControllerOpen = new SimpleBooleanProperty(false);
+        observers = new ArrayList<>();
+        onTabChangeUpdateObservers();
+    }
+
+    private void onTabChangeUpdateObservers() {
+        getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateObservers();
+        });
     }
 
     @Override
@@ -65,10 +77,20 @@ public class TabPaneComponent extends TabPane implements Component {
 
     }
 
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    private void updateObservers() {
+        observers.forEach(Observer::update);
+    }
+
     public void add(Tab t) {
         t.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         getTabs().add(t);
         getSelectionModel().select(t);
+        updateObservers();
     }
 
     public void create(String name, String id, Parent node) {
@@ -108,6 +130,7 @@ public class TabPaneComponent extends TabPane implements Component {
 
     public void select(Tab tab) {
         getSelectionModel().select(tab);
+        updateObservers();
     }
 
     public TabItem getControllerOf(Tab tab) {

@@ -1,5 +1,6 @@
 package services.database;
 
+import dev.morphia.Key;
 import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
@@ -7,6 +8,7 @@ import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.user.UserDTO;
+import org.bson.types.ObjectId;
 import services.database.mappers.WorkflowMapper;
 import services.entities.User;
 import utils.Encryptor;
@@ -74,7 +76,8 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void save(UserDTO dao) {
         dao.getProductListsDTO().forEach(productListDBDAO::save);
         dao.getWorkflows().forEach(workflowDBDAO::save);
-        database.getDatastore().save(toEntity(dao));
+        Key<User> save = database.getDatastore().save(toEntity(dao));
+        dao.setId((ObjectId)save.getId());
     }
 
     @Override
@@ -87,6 +90,18 @@ public class UserDBDAO implements DAO<UserDTO> {
     @Override
     public void delete(List<UserDTO> dao) {
         dao.forEach(this::delete);
+    }
+
+    public void updatePassword(UserDTO dao) {
+        //save(user);
+        Query<User> email = database.getDatastore().find(User.class)
+                .field("_id")
+                .equal(dao.getId());
+        UpdateOperations<User> ops = database.getDatastore()
+                .createUpdateOperations(User.class)
+                .set("password", toEntity(dao).getPassword());
+
+        UpdateResults update = database.getDatastore().update(email, ops);
     }
 
     public List<UserDTO> toDAO(List<User> toList) {
@@ -114,9 +129,9 @@ public class UserDBDAO implements DAO<UserDTO> {
 
     public User toEntity(UserDTO userDTO) {
         String hashedPass = userDTO.getPassword();
-        if (!userDTO.getPassword().startsWith("$2a$10"))
-            hashedPass = Encryptor.hashString(userDTO.getPassword());
-
+        if (!hashedPass.startsWith("$2a$10")) {
+            hashedPass = Encryptor.hashString(hashedPass);
+        }
         User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
         user.setWorkflows(new WorkflowMapper().toEntity(userDTO.getWorkflows()));
         if (userDTO.getProductListsDTO().size()>0) {

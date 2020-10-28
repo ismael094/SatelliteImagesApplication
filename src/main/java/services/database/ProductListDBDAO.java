@@ -7,7 +7,6 @@ import model.list.ProductListDTO;
 import org.bson.types.ObjectId;
 import services.database.mappers.WorkflowMapper;
 import services.entities.ProductList;
-import services.entities.Workflow;
 import utils.database.MongoDBManager;
 
 import java.text.DateFormat;
@@ -97,7 +96,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         productListDTO.setProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getProducts())));
         productListDTO.setRestrictions(product.getRestrictions());
         productListDTO.setAreasOfWork(FXCollections.observableList(product.getAreasOfWork()));
-        productListDTO.setGroundTruthProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getGroundTruthProducts())));
+        productListDTO.setReferenceProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getReferenceImages())));
         productListDTO.setId(product.getId());
         productListDTO.setWorkflows(workflowMapper.toDAO(product.getWorkflows()));
         return productListDTO;
@@ -118,13 +117,13 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         productList.setName(productListDTO.getName());
         productList.setDescription(productListDTO.getDescription());
         productList.setProducts(productDBDAO.getMapper().toEntity(productListDTO.getProducts()));
-        productList.setGroundTruthProducts(productDBDAO.getMapper().toEntity(productListDTO.getGroundTruthProducts()));
+        productList.setReferenceImages(productDBDAO.getMapper().toEntity(productListDTO.getReferenceProducts()));
         productList.setRestrictions(productListDTO.getRestrictions());
         productList.setAreasOfWork(productListDTO.getAreasOfWork());
         productList.setWorkflows(workflowMapper.toEntity(productListDTO.getWorkflows()));
-        if (productListDTO.getProducts().size()>0 || productListDTO.getGroundTruthProducts().size()>0) {
+        if (productListDTO.getProducts().size()>0 || productListDTO.getReferenceProducts().size()>0) {
             productListDTO.getProducts().forEach(productDBDAO::save);
-            productListDTO.getGroundTruthProducts().forEach(productDBDAO::save);
+            productListDTO.getReferenceProducts().forEach(productDBDAO::save);
         }
         if (productListDTO.getId() == null) {
             ObjectId objectId = new ObjectId();

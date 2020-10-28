@@ -3,6 +3,7 @@ package controller.results;
 import controller.interfaces.TabItem;
 import gui.components.TabPaneComponent;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +22,9 @@ import utils.ThemeConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -36,6 +40,7 @@ public class ProductListProcessingResultsController implements TabItem {
     private Parent parent;
     private TabPaneComponent tabPaneComponent;
     private ProductListDTO productListDTO;
+    private ObservableList<File> files;
 
     public ProductListProcessingResultsController(ProductListDTO productListDTO) {
         this.productListDTO = productListDTO;
@@ -65,6 +70,7 @@ public class ProductListProcessingResultsController implements TabItem {
             @Override
             protected Parent call() throws Exception {
                 initSearch();
+                System.out.println("BYE BYE");
                 return parent;
             }
         };
@@ -128,15 +134,19 @@ public class ProductListProcessingResultsController implements TabItem {
 
             for (WatchEvent<?> event: key.pollEvents()) {
                 WatchEvent.Kind<?> kind = event.kind();
-                System.out.println(kind);
 
                 WatchEvent<Path> ev = (WatchEvent<Path>)event;
                 Path filename = ev.context();
-                System.out.println(filename);
                 Path child = dir.resolve(filename);
-                File file = child.getFileName().toFile();
+                File file = child.toFile();
+                System.out.println(kind + " - " + file.getName());
+
                 if (kind == ENTRY_DELETE) {
-                    removeFile(file);
+                    if (file.isDirectory()) {
+                        delete(file.listFiles());
+                    } else {
+                        removeFile(file);
+                    }
                 } else if (kind == ENTRY_CREATE) {
                     if (file.isDirectory()) {
                         for (File listFile : file.listFiles()) {
@@ -145,12 +155,13 @@ public class ProductListProcessingResultsController implements TabItem {
                     }
                     loadFile(file);
                 } else if (kind == ENTRY_MODIFY) {
-                    removeFile(file);
-                    loadFile(file);
+                    if (file.isDirectory()) {
+                        delete(file.listFiles());
+                    } else {
+                        if (!isLoadedInFlowPane(file.getName()))
+                            loadFile(file);
+                    }
                 }
-
-
-
 
             }
 
@@ -162,7 +173,36 @@ public class ProductListProcessingResultsController implements TabItem {
         }
     }
 
-    private void removeFile(File file) {
+    private void delete(File[] listFiles) {
+        List<File> files = Arrays.asList(listFiles);
+        Platform.runLater(()->{
+            List<Node> nodes = new ArrayList<>();
+            resultsPane.getChildren().forEach(c->{
+                if (!isContain(files,c.getId()))
+                    nodes.add(c);
+            });
+            resultsPane.getChildren().removeAll(nodes);
+            add(listFiles);
+        });
+    }
+
+    private void add(File[] listFiles) {
+        List<Node> nodes = new ArrayList<>();
+        Arrays.asList(listFiles).forEach(f->{
+            if (!isLoadedInFlowPane(f.getName()))
+                nodes.add(loadResultItemView(f));
+        });
+        resultsPane.getChildren().addAll(nodes);
+    }
+
+    private boolean isContain(List<File> list, String filename) {
+        return list.stream()
+                .filter(f->f.getName().equals(filename))
+                .findAny()
+                .orElse(null) != null;
+    }
+
+    private synchronized void removeFile(File file) {
         if (isLoadedInFlowPane(file.getName())) {
             Node node = getChildren(file.getName());
             if (node != null)
@@ -171,8 +211,15 @@ public class ProductListProcessingResultsController implements TabItem {
     }
 
     private synchronized void loadFile(File file) {
-        if (file.isFile() && (!file.getName().contains("data") || !file.getName().contains("json")) && !isLoadedInFlowPane(file.getName())) {
-            loadResultItemView(file);
+        if (file.isDirectory())
+            return;
+        String[] a = file.getName().split("\\.");
+        if (a.length == 1)
+            return;
+        String extension = a[1];
+        if (!file.getName().contains("tmp") && (extension.equals("tif") || extension.equals("PNG")) && !isLoadedInFlowPane(file.getName())) {
+            System.out.println("LOADED");
+            Platform.runLater(()->resultsPane.getChildren().add(loadResultItemView(file)));
         }
     }
 
@@ -180,34 +227,33 @@ public class ProductListProcessingResultsController implements TabItem {
         return getChildren(name) != null;
     }
 
-    private Node getChildren(String name) {
+    private synchronized Node getChildren(String name) {
         return resultsPane.getChildren().stream()
                 .filter(c->c.getId().equals(name))
                 .findAny()
                 .orElse(null);
     }
 
-    private void loadResultItemView(File file) {
+    private synchronized Parent loadResultItemView(File file) {
         System.out.println(file.getName());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProductListProcessingResultItemView.fxml"));
         Parent parent = null;
         try {
             parent = loader.load();
+            parent.setId(file.getName());
         } catch (IOException e) {
             parent = null;
             e.printStackTrace();
         }
 
-        parent.setId(file.getName());
-
         JMetro jMetro = ThemeConfiguration.getJMetroStyled();
         jMetro.setScene(new Scene(parent));
 
-        ProductListProcessingResultItemController controller = loader.getController();
+        parent.setId(file.getName());
 
-        Parent p = parent;
+        ProductListProcessingResultItemController controller = loader.getController();
         controller.setFile(file);
-        Platform.runLater(()-> resultsPane.getChildren().add(p));
+        return parent;
 
     }
 }

@@ -9,6 +9,7 @@ import model.events.ToolbarComponentEvent;
 import javafx.scene.Parent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.gui.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,12 @@ public class MenuComponent extends MenuBar implements Component{
     private final MainController mainController;
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private final List<SatInfMenuItem> menus;
+    private List<Observer> observers;
 
     public MenuComponent(MainController mainController) {
         super();
         this.mainController = mainController;
+        observers = new ArrayList<>();
         this.menus = new ArrayList<>();
         this.menus.add(new FileMenu(mainController));
         this.menus.add(new EditMenu(mainController));
@@ -31,6 +34,12 @@ public class MenuComponent extends MenuBar implements Component{
         this.menus.add(new DownloadMenu(mainController));
         this.menus.add(new ProcessingMenu(mainController));
         this.menus.add(new ResultsMenu(mainController));
+
+        mainController.getTabController().addObserver((Observer) menus.get(1));
+        mainController.getTabController().addObserver((Observer) menus.get(3));
+        mainController.getTabController().addObserver((Observer) menus.get(4));
+        mainController.getTabController().addObserver((Observer) menus.get(5));
+        mainController.getTabController().addObserver((Observer) menus.get(6));
     }
 
     @Override
@@ -61,6 +70,11 @@ public class MenuComponent extends MenuBar implements Component{
     @Override
     public void fireEvent(ToolbarComponentEvent event) {
 
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
     public void initSearchView(String id) {

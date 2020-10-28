@@ -25,7 +25,7 @@ public class ProductListDTO {
     private final IntegerProperty count;
     private List<Restriction> restrictions;
     private ObservableList<String> areasOfWork;
-    private ObservableList<ProductDTO> groundTruthProducts;
+    private ObservableList<ProductDTO> referenceProducts;
     private ObservableList<WorkflowDTO> workflows;
 
     public ProductListDTO(StringProperty name, StringProperty description) {
@@ -37,7 +37,7 @@ public class ProductListDTO {
         this.count  = new SimpleIntegerProperty();
         this.restrictions = new ArrayList<>();
         this.areasOfWork = FXCollections.observableArrayList();
-        this.groundTruthProducts = FXCollections.observableArrayList();
+        this.referenceProducts = FXCollections.observableArrayList();
         this.workflows = FXCollections.observableArrayList();
     }
 
@@ -67,7 +67,7 @@ public class ProductListDTO {
         this.count  = new SimpleIntegerProperty();
         this.restrictions = new ArrayList<>();
         this.areasOfWork = FXCollections.observableArrayList();
-        this.groundTruthProducts = FXCollections.observableArrayList();
+        this.referenceProducts = FXCollections.observableArrayList();
     }
 
     public ObjectId getId() {
@@ -276,33 +276,45 @@ public class ProductListDTO {
         return restrictions;
     }
 
-    public ObservableList<ProductDTO> getGroundTruthProducts() {
-        return groundTruthProducts;
+    public ObservableList<ProductDTO> getReferenceProducts() {
+        return referenceProducts;
     }
 
-    public void setGroundTruthProducts(ObservableList<ProductDTO> groundTruthProducts) {
-        this.groundTruthProducts = groundTruthProducts;
+    public void setReferenceProducts(ObservableList<ProductDTO> referenceProducts) {
+        this.referenceProducts = referenceProducts;
     }
 
-    public void addGroundTruthProduct(List<ProductDTO> openSearcher) {
+    public void addReferenceProduct(List<ProductDTO> openSearcher) {
         if (openSearcher.size() > 0) {
-            this.groundTruthProducts.addAll(openSearcher);
+            this.referenceProducts.addAll(openSearcher);
             save();
         }
     }
 
-    public void removeGroundTruth(ProductDTO productDTO) {
-        this.groundTruthProducts.remove(productDTO);
+    public void removeReferenceProduct(ProductDTO productDTO) {
+        this.referenceProducts.remove(productDTO);
         save();
     }
 
     public void addWorkflow(WorkflowDTO workflow) {
-        this.workflows.add(workflow);
+        boolean existsWorkflowForType = workflows.stream()
+                .filter(w->w.getType()==workflow.getType())
+                .findAny()
+                .orElse(null) != null;
+
+        /*boolean productTypeIsAllowed = restrictions.stream()
+                .filter(r->r.getName().equals("productType") && r.getValues().contains(workflow.getType().name()))
+                .findAny()
+                .orElse(null) == null;*/
+
+
+        if (!existsWorkflowForType)
+            this.workflows.add(workflow);
         save();
     }
 
     public void addWorkflow(List<WorkflowDTO> workflow) {
-        this.workflows.addAll(workflow);
+        workflow.forEach(this::addWorkflow);
         save();
     }
 

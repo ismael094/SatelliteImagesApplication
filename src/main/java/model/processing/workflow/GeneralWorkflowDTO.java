@@ -94,6 +94,14 @@ public class GeneralWorkflowDTO implements WorkflowDTO {
     }
 
     @Override
+    public boolean containsOperation(Operator operator) {
+        return operations.stream()
+                .filter(o->o.getName()==operator)
+                .findAny()
+                .orElse(null) != null;
+    }
+
+    @Override
     public ObjectId getId() {
         return id;
     }

@@ -10,4 +10,5 @@ public interface Restriction {
     void remove(String restriction);
     boolean validate(ProductDTO product);
     List<String> getValues();
+    String getName();
 }

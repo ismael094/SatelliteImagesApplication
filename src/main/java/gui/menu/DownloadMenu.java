@@ -2,14 +2,20 @@ package gui.menu;
 
 import controller.MainController;
 import controller.download.DownloadPreferencesController;
+import controller.interfaces.TabItem;
+import controller.search.SearchController;
 import gui.events.DownloadProductListEvent;
 import gui.events.DownloadSelectedProductEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import jfxtras.styles.jmetro.JMetro;
+import model.list.ProductListDTO;
+import utils.gui.Observer;
+import utils.gui.ProductListDTOUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,8 +23,11 @@ import java.util.Optional;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
 
-public class DownloadMenu extends Menu implements SatInfMenuItem {
+public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
     private final MainController mainController;
+    private MenuItem downloadList;
+    private MenuItem downloadProducts;
+    private MenuItem preferences;
 
     public DownloadMenu(MainController mainController) {
         super("Downloads");
@@ -27,13 +36,13 @@ public class DownloadMenu extends Menu implements SatInfMenuItem {
     }
 
     private void init() {
-        MenuItem downloadList = new MenuItem("Download current list");
+        downloadList = new MenuItem("Download current list");
         downloadList.setOnAction(new DownloadProductListEvent(mainController));
 
-        MenuItem downloadProducts = new MenuItem("Download selected products");
+        downloadProducts = new MenuItem("Download selected products");
         downloadProducts.setOnAction(new DownloadSelectedProductEvent(mainController));
 
-        MenuItem preferences = new MenuItem("Preferences");
+        preferences = new MenuItem("Preferences");
         preferences.setOnAction(e->openDownloadPreferences());
 
         getItems().addAll(downloadList,downloadProducts,preferences);
@@ -67,7 +76,14 @@ public class DownloadMenu extends Menu implements SatInfMenuItem {
         });
         Optional<ButtonType> buttonType = dialog.showAndWait();
         buttonType.filter(DownloadPreferencesController.APPLY::equals).ifPresent(e-> controller.applyChanges());
+    }
 
-
+    @Override
+    public void update() {
+        Platform.runLater(()->{
+            ProductListDTO currentList = ProductListDTOUtil.getCurrentList(mainController.getTabController());
+            downloadList.setDisable(currentList == null);
+            downloadProducts.setDisable(currentList == null);
+        });
     }
 }

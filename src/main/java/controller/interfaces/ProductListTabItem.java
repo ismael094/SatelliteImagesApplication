@@ -9,7 +9,7 @@ import services.download.Downloader;
 
 import java.util.prefs.Preferences;
 
-public abstract class ProductListTabItem implements TabItem{
+public abstract class ProductListTabItem implements TabItem,ModifiableTabItem{
     private final Downloader downloader;
 
     public ProductListTabItem(Downloader downloader) {
@@ -25,6 +25,4 @@ public abstract class ProductListTabItem implements TabItem{
     public abstract ObservableList<ProductDTO> getSelectedProducts();
     public abstract void setSelectedProducts(ObservableList<ProductDTO> products);
     public abstract void refreshProducts();
-    public abstract void undo();
-    public abstract void redo();
 }

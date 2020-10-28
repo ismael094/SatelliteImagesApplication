@@ -211,6 +211,32 @@ public class UserDBDAO_ {
     }
 
     @Test
+    public void update_user() {
+        long start = currentTimeMillis();
+        userDTO.setEmail("email@mail.com");
+        userDTO.setPassword("password");
+        userDTO.setFirstName("firstName");
+        userDTO.setLastName("lastName");
+        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name5"), new SimpleStringProperty("Description"));
+        productListDTO.addProduct(SentinelData.getProduct());
+        //userDTO.addProductList(productListDTO);
+        userDAO.save(userDTO);
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNotNull();
+        assertThat(Encryptor.matchString(userDTO.getPassword(),dbUserDTO.getPassword())).isTrue();
+
+        userDTO.setPassword("new_password");
+        userDAO.save(userDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNotNull();
+        assertThat(Encryptor.matchString(userDTO.getPassword(),dbUserDTO.getPassword())).isTrue();
+        userDAO.delete(dbUserDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
+        assertThat(currentTimeMillis()-start).isLessThan(4000);
+    }
+
+    @Test
     public void userDTO_to_entity() {
         UserDTO userDTO = new UserDTO("email@mail.is","pass","firstName","lastName");
         User user = userDAO.toEntity(userDTO);

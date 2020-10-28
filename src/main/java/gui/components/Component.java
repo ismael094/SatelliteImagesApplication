@@ -5,6 +5,7 @@ import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import model.events.ToolbarComponentEvent;
 import javafx.scene.Parent;
+import utils.gui.Observer;
 
 public interface Component {
     void init();
@@ -12,4 +13,5 @@ public interface Component {
     MainController getMainController();
     void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener);
     void fireEvent(ToolbarComponentEvent event);
+    void addObserver(Observer observer);
 }

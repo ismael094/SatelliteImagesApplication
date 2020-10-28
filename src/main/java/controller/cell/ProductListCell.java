@@ -30,6 +30,7 @@ import java.util.List;
 public class ProductListCell extends ListCell<ProductDTO> {
     private final ProductListDTO productListDTO;
     private final GTMapSearchController mapController;
+    private final boolean showContextMenu;
     private FXMLLoader loader;
 
     @FXML
@@ -65,9 +66,10 @@ public class ProductListCell extends ListCell<ProductDTO> {
     @FXML
     private ImageView downloaded;
 
-    public ProductListCell(ProductListDTO productListDTO, GTMapSearchController controller) {
+    public ProductListCell(ProductListDTO productListDTO, GTMapSearchController controller, boolean showContextMenu) {
         this.productListDTO = productListDTO;
         this.mapController = controller;
+        this.showContextMenu = showContextMenu;
     }
 
     @Override
@@ -89,6 +91,8 @@ public class ProductListCell extends ListCell<ProductDTO> {
                     e.printStackTrace();
                 }
             }
+
+            contextButton.setVisible(showContextMenu);
 
             prefWidthProperty().bind(getListView().prefWidthProperty().subtract(2));
             setMaxWidth(Control.USE_PREF_SIZE);

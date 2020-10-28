@@ -4,7 +4,6 @@ import model.products.ProductDTO;
 
 public class ServiceFactory {
 
-
     public static Service getService(ProductDTO productDTO) {
         return null;
     }

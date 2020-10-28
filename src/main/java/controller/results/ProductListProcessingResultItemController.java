@@ -1,6 +1,7 @@
 package controller.results;
 
 import controller.processing.PreviewImageController;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
@@ -29,6 +31,8 @@ import java.util.ResourceBundle;
 public class ProductListProcessingResultItemController implements Initializable {
     static final Logger logger = LogManager.getLogger(ProductListProcessingResultItemController.class.getName());
     @FXML
+    private AnchorPane root;
+    @FXML
     private ImageView image;
     @FXML
     private Label name;
@@ -39,7 +43,7 @@ public class ProductListProcessingResultItemController implements Initializable 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //name.setText("Name");
+        root.getStyleClass().add("processingResult");
         image.setOnMouseClicked(e->{
             try {
                 loadImage();
@@ -72,9 +76,11 @@ public class ProductListProcessingResultItemController implements Initializable 
         JMetro jMetro = ThemeConfiguration.getJMetroStyled();
 
         PreviewImageController controller = fxmlLoader.getController();
-        BufferedImage read = ImageIO.read(file);
-        controller.setImage(SwingFXUtils.toFXImage(read,null));
-
+        //BufferedImage read = ImageIO.read(file);
+        //controller.setImage(SwingFXUtils.toFXImage(read,null));
+        System.out.println(file.toURI().toString());
+        Image img = new Image(file.toURI().toString());
+        controller.setImage(img);
         Stage stage = new Stage();
         stage.initOwner(image.getScene().getWindow());
         stage.setResizable(false);

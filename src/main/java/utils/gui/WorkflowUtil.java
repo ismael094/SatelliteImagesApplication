@@ -20,7 +20,7 @@ import java.io.IOException;
 public class WorkflowUtil {
 
     public static void loadMyWorkflowView(MainController mainController, ProductListDTO productListDTO) {
-        loadMyWorkflowView(mainController,productListDTO.getWorkflows());
+        loadMyWorkflowView(mainController,productListDTO.getWorkflows(),true);
         productListDTO.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
             while (c.next()) {
                 if (c.wasAdded())
@@ -30,7 +30,7 @@ public class WorkflowUtil {
         });
     }
 
-    public static void loadMyWorkflowView(MainController mainController, ObservableList<WorkflowDTO> workflows) {
+    public static void loadMyWorkflowView(MainController mainController, ObservableList<WorkflowDTO> workflows, boolean isList) {
         FXMLLoader fxmlLoader = new FXMLLoader(WorkflowUtil.class.getResource("/fxml/MyWorkflowsView.fxml"));
         Scene scene = null;
         try {
@@ -45,6 +45,7 @@ public class WorkflowUtil {
             jMetro = new JMetro(Style.DARK);
 
         MyWorkflowController controller = fxmlLoader.getController();
+        controller.setVisibleAssignToList(!isList);
         controller.setMainController(mainController);
         controller.setWorkflows(workflows);
         Stage stage = new Stage();

@@ -18,9 +18,11 @@ public class DeleteListEvent extends Event {
     @Override
     public void handle(ActionEvent event) {
         List<ProductListDTO> productList = showAndGetList(SelectionMode.MULTIPLE,"Delete list");
-        ProductListDBDAO.getInstance().delete(productList);
-        mainController.getUserProductList().removeAll(productList);
-        mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_DELETED,"Lists successfully deleted!"));
+        if (!productList.isEmpty()) {
+            ProductListDBDAO.getInstance().delete(productList);
+            mainController.getUserProductList().removeAll(productList);
+            mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_DELETED,"Lists successfully deleted!"));
+        }
 
     }
 }

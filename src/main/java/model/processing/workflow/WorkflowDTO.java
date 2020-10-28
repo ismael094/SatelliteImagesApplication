@@ -36,4 +36,6 @@ public interface WorkflowDTO {
     ObjectId getId();
 
     void setId(ObjectId id);
+
+    boolean containsOperation(Operator operator);
 }

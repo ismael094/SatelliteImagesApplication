@@ -12,6 +12,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.gui.Observer;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     private Map<String, ToolbarButton> buttonDownloadMap;
     private Map<String, ToolbarButton> buttonProcessingMap;
     private List<Map<String, ToolbarButton>> buttonList;
-    //private final List<ComponentChangeListener> toolBarListener;
+    private final List<Observer> observers;
     private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
     static final Logger logger = LogManager.getLogger(ToolBarComponent.class.getName());
 
@@ -32,6 +33,7 @@ public class ToolBarComponent extends ToolBar implements Component{
         this.mainController = mainController;
         this.toolBarListener = new LinkedHashMap<>();
         initButtonMap();
+        observers = new ArrayList<>();
     }
 
     private void initButtonMap() {
@@ -109,5 +111,10 @@ public class ToolBarComponent extends ToolBar implements Component{
         ComponentChangeListener orDefault = this.toolBarListener.getOrDefault(event.getToolbarEvent(), null);
         if (orDefault != null)
             orDefault.onComponentChange(event);
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 }

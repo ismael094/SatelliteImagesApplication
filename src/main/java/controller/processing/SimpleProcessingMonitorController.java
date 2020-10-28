@@ -1,17 +1,22 @@
 package controller.processing;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
 import model.processing.ProcessorManager;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SimpleProcessingMonitorController implements Initializable {
+    @FXML
+    private AnchorPane root;
     @FXML
     private ProgressBar numProductProgress;
     @FXML
@@ -24,14 +29,17 @@ public class SimpleProcessingMonitorController implements Initializable {
     private Label productOperation;
     @FXML
     private Label operation;
-    @FXML
+    //@FXML
     private Button cancel;
+    @FXML
+    public Button expand;
 
     private ProcessorManager processManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cancel.setOnAction(e->processManager.cancel());
+        //cancel.setOnAction(e->processManager.cancel());
+        GlyphsDude.setIcon(expand, FontAwesomeIcon.EXTERNAL_LINK);
     }
 
     public void setProductListProgressBar(DoubleProperty doubleProperty) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
@@ -36,10 +37,32 @@
                   <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="493.0" prefWidth="18.0" GridPane.columnIndex="1" />
                   <BorderPane prefHeight="498.0" prefWidth="383.0">
                      <center>
-                        <JFXListView fx:id="productListView" minWidth="333.0" prefHeight="436.0" prefWidth="338.0" styleClass="productResultsList" BorderPane.alignment="CENTER" />
+                        <AnchorPane BorderPane.alignment="CENTER">
+                           <children>
+                              <JFXListView fx:id="productListView" minWidth="333.0" prefHeight="436.0" prefWidth="338.0" styleClass="productResultsList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <JFXListView fx:id="referenceImgsList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
                      </center>
                      <top>
-                        <Label contentDisplay="CENTER" prefHeight="45.0" prefWidth="133.0" styleClass="h1" stylesheets="@../css/main.css" text="Products" textOverrun="CLIP" BorderPane.alignment="CENTER" />
+                        <GridPane BorderPane.alignment="CENTER">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="70.0" prefWidth="133.0" styleClass="h1" stylesheets="@../css/main.css" text="Products" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <Button fx:id="showRI" mnemonicParsing="false" text="Ref. Imgs">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin>
+                              </Button>
+                           </children>
+                        </GridPane>
                      </top>
                      <bottom>
                         <GridPane prefHeight="24.0" prefWidth="388.0" BorderPane.alignment="CENTER">
@@ -117,7 +140,7 @@
                                              <children>
                                                 <Button fx:id="addAreaOfProduct" layoutX="208.0" layoutY="5.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" AnchorPane.rightAnchor="270.0" AnchorPane.topAnchor="7.0" />
                                                 <Button fx:id="deleteFeature" layoutX="244.0" layoutY="5.0" mnemonicParsing="false" AnchorPane.rightAnchor="230.0" AnchorPane.topAnchor="7.0" />
-                                                <ToggleSwitch fx:id="selectReferenceImage" layoutX="297.0" layoutY="9.0" prefHeight="18.0" prefWidth="143.0" text="Image reference Layer" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="9.0">
+                                                <ToggleSwitch fx:id="selectReferenceImage" alignment="TOP_LEFT" layoutX="297.0" layoutY="9.0" prefHeight="18.0" prefWidth="143.0" text="Image reference Layer" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="9.0">
                                                    <padding>
                                                       <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                                                    </padding>
@@ -134,6 +157,11 @@
                                                       <Rectangle2D />
                                                    </viewport>
                                                 </ImageView>
+                                                <AnchorPane layoutX="110.0" layoutY="99.0" prefHeight="62.0" prefWidth="60.0">
+                                                   <children>
+                                                      <JFXSpinner fx:id="imageSpinner" layoutX="5.0" layoutY="6.0" visible="false" />
+                                                   </children>
+                                                </AnchorPane>
                                              </children>
                                              <GridPane.margin>
                                                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
