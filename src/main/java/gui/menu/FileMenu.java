@@ -1,14 +1,11 @@
 package gui.menu;
 
-import controller.MainController;
-import controller.identification.ConfirmDeleteAccountController;
 import controller.identification.UserDataEditController;
+import gui.components.MenuComponent;
 import gui.events.AppCloseEvent;
-import javafx.application.Platform;
+import gui.events.OpenFileChooserDialogEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -22,45 +19,46 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
 import static utils.ThemeConfiguration.setThemeMode;
 
 public class FileMenu extends Menu implements SatInfMenuItem{
-    private final MainController mainController;
+    private final MenuComponent menuComponent;
     static final Logger logger = LogManager.getLogger(FileMenu.class.getName());
 
-    public FileMenu(MainController mainController) {
+    public FileMenu(MenuComponent menuComponent) {
         super("File");
-        this.mainController = mainController;
+        this.menuComponent = menuComponent;
         init();
     }
 
     private void init() {
         MenuItem loadAlgorithm = new MenuItem("Load algorithm");
+        loadAlgorithm.setOnAction(new OpenFileChooserDialogEvent(menuComponent.getMainController()));
         MenuItem close = new MenuItem("Exit");
         Menu theme = new Menu("Themes");
         MenuItem dark = new MenuItem("Dark mode");
         dark.setOnAction(event -> {
             setThemeMode("dark");
             JMetro jMetro = new JMetro(Style.DARK);
-            jMetro.setScene(mainController.getRoot().getScene());
+            jMetro.setScene(menuComponent.getMainController().getRoot().getScene());
         });
         MenuItem light = new MenuItem("Light mode");
         light.setOnAction(event -> {
             setThemeMode("light");
             JMetro jMetro = new JMetro(Style.LIGHT);
-            jMetro.setScene(mainController.getRoot().getScene());
+            jMetro.setScene(menuComponent.getMainController().getRoot().getScene());
         });
         theme.getItems().addAll(dark,light);
         MenuItem userData = new MenuItem("Edit user data");
         userData.setOnAction(event -> {
             loadUserDataEdit();
         });
-        close.setOnAction(new AppCloseEvent(mainController));
+        close.setOnAction(new AppCloseEvent(menuComponent.getMainController()));
 
         close.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
+
         getItems().addAll(loadAlgorithm,theme,userData,close);
     }
 
@@ -81,10 +79,10 @@ public class FileMenu extends Menu implements SatInfMenuItem{
             stage.hide();
         });
         UserDataEditController controller = fxmlLoader.getController();
-        controller.setUser(mainController.getUser());
+        controller.setUser(menuComponent.getMainController().getUserManager().getUser());
         stage.showAndWait();
         if (controller.isUserDeleted()) {
-            new AppCloseEvent(mainController).handle(null);
+            new AppCloseEvent(menuComponent.getMainController()).handle(null);
         }
     }
 

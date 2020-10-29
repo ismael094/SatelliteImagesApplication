@@ -1,11 +1,11 @@
 package utils.sentinel.bands;
 
-import java.util.Arrays;
+import model.processing.workflow.WorkflowDTO;
+import model.products.ProductDTO;
+
 import java.util.List;
 
-public class S2MSI1CBands implements Bands{
-    @Override
-    public List<String> getBands() {
-        return Arrays.asList("B1","Intensity");
-    }
+public class S2MSI1CBands {
+
+
 }

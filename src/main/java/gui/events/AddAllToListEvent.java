@@ -3,11 +3,11 @@ package gui.events;
 import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
+import gui.ExecutedEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
 import model.events.EventType;
-import model.events.ToolbarComponentEvent;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import utils.DownloadConfiguration;
@@ -30,15 +30,16 @@ public class AddAllToListEvent extends Event{
         List<ProductListDTO> productListDTO = getProductLists();
         if (!productListDTO.isEmpty()){
             productListDTO.forEach(pL-> pL.addProduct(openSearcher));
-            mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to lists"));
+            mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Products added to lists"));
+            //menuComponent.fireEvent(new ComponentEvent(this, "Products added to lists"));
             if (DownloadConfiguration.getAutodownload())
-                openSearcher.forEach(p-> mainController.getDownload().download(p));
+                openSearcher.forEach(p-> mainController.getDownloader().download(p));
         }
     }
 
     private ObservableList<ProductDTO> getAllProducts() {
-        Tab tab = mainController.getTabController().getSelectionModel().getSelectedItem();
-        TabItem controller = mainController.getTabController().getControllerOf(tab);
+        Tab tab = mainController.getTabComponent().getSelectionModel().getSelectedItem();
+        TabItem controller = mainController.getTabComponent().getControllerOf(tab);
         if (controller instanceof SearchController)
             return ((SearchController) controller).getProducts();
         return null;

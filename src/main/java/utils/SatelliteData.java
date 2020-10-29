@@ -1,6 +1,19 @@
 package utils;
 
 public class SatelliteData {
+    public static boolean isRadar(String platform) {
+        try{
+            RadarSatellite[] values = RadarSatellite.values();
+            for (RadarSatellite value : values) {
+                if (value.getName().equals(platform))
+                    return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public enum RadarSatellite {
         SENTINEL_1("Sentinel-1");
 
@@ -28,5 +41,7 @@ public class SatelliteData {
             return name;
         }
     }
+
+
 
 }

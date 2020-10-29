@@ -1,9 +1,7 @@
 package gui.menu;
 
-import controller.MainController;
 import controller.download.DownloadPreferencesController;
-import controller.interfaces.TabItem;
-import controller.search.SearchController;
+import gui.components.MenuComponent;
 import gui.events.DownloadProductListEvent;
 import gui.events.DownloadSelectedProductEvent;
 import javafx.application.Platform;
@@ -24,27 +22,28 @@ import java.util.Optional;
 import static utils.ThemeConfiguration.getJMetroStyled;
 
 public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
-    private final MainController mainController;
+    private final MenuComponent menuComponent;
     private MenuItem downloadList;
     private MenuItem downloadProducts;
     private MenuItem preferences;
 
-    public DownloadMenu(MainController mainController) {
+    public DownloadMenu(MenuComponent menuComponent) {
         super("Downloads");
-        this.mainController = mainController;
+        this.menuComponent = menuComponent;
         init();
     }
 
     private void init() {
         downloadList = new MenuItem("Download current list");
-        downloadList.setOnAction(new DownloadProductListEvent(mainController));
+        downloadList.setOnAction(new DownloadProductListEvent(menuComponent.getMainController()));
 
         downloadProducts = new MenuItem("Download selected products");
-        downloadProducts.setOnAction(new DownloadSelectedProductEvent(mainController));
+        downloadProducts.setOnAction(new DownloadSelectedProductEvent(menuComponent.getMainController()));
 
         preferences = new MenuItem("Preferences");
         preferences.setOnAction(e->openDownloadPreferences());
 
+        menuComponent.getMainController().getTabComponent().addObserver(this);
         getItems().addAll(downloadList,downloadProducts,preferences);
     }
 
@@ -81,7 +80,7 @@ public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
     @Override
     public void update() {
         Platform.runLater(()->{
-            ProductListDTO currentList = ProductListDTOUtil.getCurrentList(mainController.getTabController());
+            ProductListDTO currentList = ProductListDTOUtil.getCurrentList(menuComponent.getMainController().getTabComponent());
             downloadList.setDisable(currentList == null);
             downloadProducts.setDisable(currentList == null);
         });

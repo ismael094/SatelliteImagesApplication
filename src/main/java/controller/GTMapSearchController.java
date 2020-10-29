@@ -270,6 +270,7 @@ public class GTMapSearchController {
 
     public void clearMap(String layer) {
         geotoolsMap.clearFeatures(layer);
+        geotoolsMap.removeLayer(layer);
     }
 
     public void focusOnLayer(String layer) {

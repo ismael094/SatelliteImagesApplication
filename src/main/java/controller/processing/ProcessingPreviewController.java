@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.jfoenix.controls.JFXSpinner;
 import controller.cell.ProcessingProductCell;
 import controller.interfaces.TabItem;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -45,7 +45,7 @@ public class ProcessingPreviewController implements TabItem {
     private ProductListDTO productListDTO;
     private ProcessorManager processor;
     private Point2D dragInitialCoordinate;
-    private TabPaneComponent tabPaneComponent;
+    private SatInfTabPaneComponent tabPaneComponent;
     private Parent parent;
 
     public ProcessingPreviewController(ProductListDTO productListDTO, ProcessorManager processor) {
@@ -62,7 +62,7 @@ public class ProcessingPreviewController implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -109,7 +109,7 @@ public class ProcessingPreviewController implements TabItem {
         productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 showSpinner();
-                Task<BufferedImage> task = tabPaneComponent.getMainController().getProcessor().process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
+                Task<BufferedImage> task = tabPaneComponent.getMainController().getProductProcessor().process(newValue, Lists.newArrayList(productListDTO.getProductsAreasOfWorks().get(newValue).get(0)), productListDTO.getWorkflow(WorkflowType.valueOf(newValue.getProductType())),productListDTO.getName(), true);
 
                 task.setOnSucceeded(e-> {
                     WritableImage writableImage = SwingFXUtils.toFXImage(task.getValue(), null);

@@ -1,34 +1,19 @@
 package model.events;
 
-public class EventType {
-    public enum ComponentEventType {
-        LIST_UPDATED("listUpdated"),
-        LIST_CREATED("listCreated"),
-        LIST_DELETED("listDeleted");
-        private final String name;
+public enum EventType {
+    LIST("list"),
+    DOWNLOAD("download"),
+    PROCESSING("processing");
 
-        ComponentEventType(String name) {
-            this.name = name;
-        }
 
-        public String getParameterName() {
-            return name;
-        }
+    private final String name;
+
+    EventType(String name) {
+        this.name = name;
     }
 
-    public enum DownloadEventType {
-        COMPLETED("completed"),
-        STARTED("started"),
-        ERROR("error");
-        private final String name;
-
-        DownloadEventType(String name) {
-            this.name = name;
-        }
-
-        public String getParameterName() {
-            return name;
-        }
+    public String getParameterName() {
+        return name;
     }
 }
 

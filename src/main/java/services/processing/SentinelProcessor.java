@@ -17,6 +17,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
+import org.jetbrains.annotations.NotNull;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import services.entities.Workflow;
@@ -107,13 +108,16 @@ public class SentinelProcessor extends Processor {
             polarisations = ((Sentinel1ProductDTO)productDTO).getPolarizationMode().replace(" ",",");
         }
         try {
-            System.out.println(workflow.getOperations().size());
+
             for (Operation op : workflow.getOperations()) {
                 op.getParameters().put("selectedPolarisations",polarisations);
-                //if (snapProduct != null)
+                //if (snapProduct != null && productDTO.getProductType().equals("GRD"))
+                    //op.getParameters().put(op)
                     //op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
+
                 showMemory();
                 logger.atInfo().log("Operation: {}", op);
+
                 if (op.getName() == Operator.READ) {
                     snapProduct = readProduct(DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + productDTO.getTitle() + ".zip");
                     products.add(snapProduct);
@@ -136,7 +140,7 @@ public class SentinelProcessor extends Processor {
                             snapProduct = createProduct(snapProduct, op);
                     }
                 }
-
+                System.out.println(getBandNames(snapProduct.getBandNames()));
                 updateProductMonitor(1);
                 operationMonitor.done();
 
@@ -201,7 +205,7 @@ public class SentinelProcessor extends Processor {
     private void createBufferedImage(Product product) throws IOException {
         Band bandAt = product.getBandAt(0);
         logger.atInfo().log("Generating preview image with band {}",bandAt);
-        colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
+        colorIndexedImage = bandAt.createRgbImage(operationMonitor);
     }
 
     private List<Product> subsetOperation(Product product, List<String> areasOfWork, Operation op) throws ParseException {
@@ -226,23 +230,37 @@ public class SentinelProcessor extends Processor {
 
     private void writeOperation(ProductDTO productDTO, List<Product> subsets, Operation op, String path) throws IOException {
         int x = 0;
+        String tmpName = getTemporalName(productDTO, op, path);
         for (Product j : subsets) {
 
             if ((boolean)op.getParameters().getOrDefault("generatePNG",false)) {
                 generateRGBImage(j,op,path+"\\" + productDTO.getProductType() + "_" +getDate() + "_" + x);
             } else {
-                saveProduct(j, DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"\\" + productDTO.getId() + "_tmp_" + x, String.valueOf(op.getParameters().get("formatName")));
+                saveProduct(j, tmpName + x, String.valueOf(op.getParameters().get("formatName")));
             }
             x++;
         }
 
-        for (int i = 0; i<subsets.size();i++) {
+        if (!op.getParameters().get("formatName").equals("PolSARPro"))
+            deleteTemporalFiles(productDTO, subsets, path);
+
+        closeProducts(subsets);
+    }
+
+    private void deleteTemporalFiles(ProductDTO productDTO, List<Product> subsets, String path) throws IOException {
+        for (int i = 0; i< subsets.size(); i++) {
             Files.deleteIfExists(Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getTitle() + "_" + i));
             new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getId() + "_tmp_" + i + ".tif")
                     .renameTo(new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getProductType()+"_" +getBandNames(subsets.get(i).getBandNames()) + "_"+ getDate() + "_"+  + i + ".tif"));
         }
+    }
 
-        closeProducts(subsets);
+    @NotNull
+    private String getTemporalName(ProductDTO productDTO, Operation op, String path) {
+        String tmpName = DownloadConfiguration.getListDownloadFolderLocation() + "\\"+ path +"\\" + productDTO.getId() + "_tmp_";
+        if (op.getParameters().get("formatName").equals("PolSARPro"))
+            tmpName = DownloadConfiguration.getListDownloadFolderLocation() + "\\"+ path +"\\" + productDTO.getTitle() + "_";
+        return tmpName;
     }
 
     private void closeProducts(List<Product> subsets) {

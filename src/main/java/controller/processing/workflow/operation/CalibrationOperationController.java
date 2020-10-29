@@ -144,15 +144,15 @@ public class CalibrationOperationController implements Initializable, OperationC
         operation.getParameters().put("outputGammaBand",outputGamma.isSelected());
         operation.getParameters().put("outputSigmaBand",outputSigma.isSelected());
         operation.getParameters().put("outputImageScaleInDb",outputInDb.isSelected());
-        if (polarisations.getSelectionModel().getSelectedItems().isEmpty())
+       /* if (polarisations.getSelectionModel().getSelectedItems().isEmpty())
             setPolarisationParameter(polarisations.getItems());
         else
             setPolarisationParameter(polarisations.getSelectionModel().getSelectedItems());
 
-        if (calibrationSourceBands.getSelectionModel().getSelectedItems().isEmpty())
+        /*if (calibrationSourceBands.getSelectionModel().getSelectedItems().isEmpty())
             setSourceBandsParameter(calibrationSourceBands.getItems());
         else
-            setSourceBandsParameter(calibrationSourceBands.getSelectionModel().getSelectedItems());
+            setSourceBandsParameter(calibrationSourceBands.getSelectionModel().getSelectedItems());*/
     }
 
     private void setPolarisationParameter(ObservableList<String> polarisations) {

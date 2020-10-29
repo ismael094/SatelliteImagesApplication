@@ -62,7 +62,6 @@ public class Workflow_ {
     public void contains_operation() {
         WorkflowDTO wf = new Sentinel1GRDDefaultWorkflowDTO();
         Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
-        ;
         assertThat(wf.containsOperation(Operator.TERRAIN_FLATTENING)).isFalse();
     }
 

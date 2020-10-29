@@ -46,7 +46,7 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         parameters.put("outputSigmaBand", true);
         parameters.put("selectedPolarisations", "VV,VH");
         parameters.put("outputImageScaleInDb", false);
-        parameters.put("sourceBands", "Intensity_VV,Intensity_VH");
+        parameters.put("sourceBands", "Intensity_X,Intensity_Y");
         addOperation(new Operation(Operator.CALIBRATION,parameters));
     }
 
@@ -58,7 +58,6 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         parameters.put("demName", "SRTM 3Sec");
         parameters.put("pixelSpacingInMeter", 10.0);
         parameters.put("nodataValueAtSea", false);
-        parameters.put("sourceBands", "Sigma0_VH,Sigma0_VH");
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 
@@ -76,7 +75,6 @@ public class Sentinel1GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
     private void getSubset() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("copyMetadata", true);
-        parameters.put("sourceBands", "Sigma0_VH");
         parameters.put("outputImageScaleInDb", true);
         addOperation(new Operation(Operator.SUBSET,parameters));
     }

@@ -1,11 +1,11 @@
 package gui.components;
 
 import controller.MainController;
+import gui.components.listener.ComponentEvent;
 import gui.menu.*;
 import javafx.scene.control.*;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
-import model.events.ToolbarComponentEvent;
 import javafx.scene.Parent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,26 +20,22 @@ public class MenuComponent extends MenuBar implements Component{
     private final MainController mainController;
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
     private final List<SatInfMenuItem> menus;
+    private final List<ComponentChangeListener> listeners;
     private List<Observer> observers;
 
     public MenuComponent(MainController mainController) {
         super();
+        this.listeners = new ArrayList<>();
         this.mainController = mainController;
         observers = new ArrayList<>();
         this.menus = new ArrayList<>();
-        this.menus.add(new FileMenu(mainController));
-        this.menus.add(new EditMenu(mainController));
-        this.menus.add(new SearcherMenu(mainController));
-        this.menus.add(new ListMenu(mainController));
-        this.menus.add(new DownloadMenu(mainController));
-        this.menus.add(new ProcessingMenu(mainController));
-        this.menus.add(new ResultsMenu(mainController));
-
-        mainController.getTabController().addObserver((Observer) menus.get(1));
-        mainController.getTabController().addObserver((Observer) menus.get(3));
-        mainController.getTabController().addObserver((Observer) menus.get(4));
-        mainController.getTabController().addObserver((Observer) menus.get(5));
-        mainController.getTabController().addObserver((Observer) menus.get(6));
+        this.menus.add(new FileMenu(this));
+        this.menus.add(new EditMenu(this));
+        this.menus.add(new SearcherMenu(this));
+        this.menus.add(new ListMenu(this));
+        this.menus.add(new DownloadMenu(this));
+        this.menus.add(new ProcessingMenu(this));
+        this.menus.add(new ResultsMenu(this));
     }
 
     @Override
@@ -63,13 +59,13 @@ public class MenuComponent extends MenuBar implements Component{
     }
 
     @Override
-    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
-
+    public void addComponentListener(ComponentChangeListener listener) {
+        listeners.add(listener);
     }
 
     @Override
-    public void fireEvent(ToolbarComponentEvent event) {
-
+    public void fireEvent(ComponentEvent event) {
+        listeners.forEach(l->l.onComponentChange(event));
     }
 
     @Override

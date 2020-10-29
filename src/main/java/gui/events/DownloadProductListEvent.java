@@ -3,9 +3,11 @@ package gui.events;
 import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
+import gui.ExecutedEvent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
+import model.events.EventType;
 import model.list.ProductListDTO;
 import utils.FileUtils;
 
@@ -19,8 +21,8 @@ public class DownloadProductListEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
-        Tab active = mainController.getTabController().getActive();
-        TabItem controllerOf = mainController.getTabController().getControllerOf(active);
+        Tab active = mainController.getTabComponent().getActive();
+        TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         ProductListDTO list;
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
@@ -36,6 +38,8 @@ public class DownloadProductListEvent extends Event {
 
         FileUtils.saveObjectToJson(list);
 
-        mainController.getDownload().download(list);
+        mainController.fireEvent(new ExecutedEvent(this, EventType.DOWNLOAD,"Downloading list "+list.getName()));
+
+        mainController.getDownloader().download(list);
     }
 }

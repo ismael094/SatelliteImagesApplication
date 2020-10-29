@@ -3,9 +3,11 @@ package gui.events;
 import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
+import gui.ExecutedEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
+import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import utils.AlertFactory;
@@ -32,7 +34,8 @@ public class AddReferenceImageEvent extends Event {
             openSearcher.forEach(p->{
                 if (p.getPlatformName().equals("Sentinel-2") && productListDTO.areasOfWorkOfProduct(p.getFootprint()).size() > 0) {
                     validProducts.add(p);
-                    AlertFactory.showSuccessDialog("Ground Truth","Ground truth product succesfully added","Product " + p.getTitle()+
+                    mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Reference image added"));
+                    AlertFactory.showSuccessDialog("Ground Truth","Ground truth product successfully added","Product " + p.getTitle()+
                             " successfully added as ground truth in list named " + productListDTO.getName());
                 } else {
                     AlertFactory.showErrorDialog("Error","Error","Product not valid as a ground truth. Must be a Sentinel-2 image and contain an area of work");
@@ -46,8 +49,8 @@ public class AddReferenceImageEvent extends Event {
 
 
     private ObservableList<ProductDTO> getSelectedProducts() {
-        Tab tab = mainController.getTabController().getSelectionModel().getSelectedItem();
-        TabItem controller = mainController.getTabController().getControllerOf(tab);
+        Tab tab = mainController.getTabComponent().getSelectionModel().getSelectedItem();
+        TabItem controller = mainController.getTabComponent().getControllerOf(tab);
         if (controller instanceof SearchController)
             return ((SearchController) controller).getSelectedProducts();
         return null;

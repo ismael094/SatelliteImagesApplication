@@ -18,7 +18,7 @@ public class Sentinel1SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");
         getTopSarDeburst();
-        getMultilook();
+        //getMultilook();
         getTerrainCorrection();
         getSubset();
         getWrite("GeoTIFF");
@@ -49,13 +49,10 @@ public class Sentinel1SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
     private void getCalibration() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("auxFile", "Latest Auxiliary File");
+        parameters.put("createBetaBand", true);
         parameters.put("outputImageInComplex", true);
         parameters.put("outputImageScaleInDb", false);
-        parameters.put("createGammaBand", false);
-        parameters.put("createBetaBand", false);
-        parameters.put("outputSigmaBand", true);
-        parameters.put("outputGammaBand", true);
-        parameters.put("outputBetaBand", false);
+        //parameters.put("sourceBands","i_IW1_VH,q_IW1_VH,i_IW1_VV,q_IW1_VV");
         addOperation(new Operation(Operator.CALIBRATION,parameters));
     }
 
@@ -67,7 +64,7 @@ public class Sentinel1SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
     private void getMultilook() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("nRgLooks", 4);
+        parameters.put("nRgLooks", 2);
         parameters.put("nAzLooks", 1);
         parameters.put("outputIntensity", false);
         parameters.put("grSquarePixel", true);
@@ -82,6 +79,8 @@ public class Sentinel1SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
         parameters.put("demName", "SRTM 3Sec");
         parameters.put("pixelSpacingInMeter", 10.0);
         parameters.put("nodataValueAtSea", false);
+        parameters.put("outputComplex", true);
+        //parameters.put("sourceBands","i_IW1_VH,q_IW1_VH,i_IW1_VV,q_IW1_VV");
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 

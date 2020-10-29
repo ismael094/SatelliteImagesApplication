@@ -1,10 +1,10 @@
 package gui.events;
 
 import controller.MainController;
+import gui.ExecutedEvent;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import model.events.EventType;
-import model.events.ToolbarComponentEvent;
 import model.list.ProductListDTO;
 import services.database.ProductListDBDAO;
 
@@ -20,8 +20,8 @@ public class DeleteListEvent extends Event {
         List<ProductListDTO> productList = showAndGetList(SelectionMode.MULTIPLE,"Delete list");
         if (!productList.isEmpty()) {
             ProductListDBDAO.getInstance().delete(productList);
-            mainController.getUserProductList().removeAll(productList);
-            mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_DELETED,"Lists successfully deleted!"));
+            mainController.getUserManager().getUser().getProductListsDTO().removeAll(productList);
+            mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Lists successfully deleted!"));
         }
 
     }

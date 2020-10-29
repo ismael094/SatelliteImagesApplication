@@ -5,6 +5,9 @@ import model.list.ProductListDTO;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import static utils.DownloadConfiguration.getListDownloadFolderLocation;
 import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
@@ -12,6 +15,7 @@ import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
 public class FileUtils {
     public static String DEFAULT_DOWNLOAD_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Products";
     public static String DEFAULT_LIST_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Lists";
+    public static String DEFAULT_ALGORITHM_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Algorithm";
 
     public static void createFolderIfNotExists(String path) {
         File file = new File(path);
@@ -43,5 +47,14 @@ public class FileUtils {
             file = new File(getListDownloadFolderLocation()+"\\"+name+ " ("+(i++)+")");
         file.mkdirs();
         return file.getAbsolutePath();
+    }
+
+    public static boolean copyAlgorithm(File file) {
+        try {
+            Files.copy(file.toPath(), Paths.get(DEFAULT_ALGORITHM_FOLDER+"\\"+file.getName()), StandardCopyOption.REPLACE_EXISTING);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

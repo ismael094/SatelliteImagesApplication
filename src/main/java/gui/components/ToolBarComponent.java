@@ -1,10 +1,9 @@
 package gui.components;
 
 import controller.MainController;
-import gui.menu.FileMenu;
+import gui.components.listener.ComponentEvent;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
-import model.events.ToolbarComponentEvent;
 import gui.toolbarButton.*;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -25,13 +24,14 @@ public class ToolBarComponent extends ToolBar implements Component{
     private Map<String, ToolbarButton> buttonProcessingMap;
     private List<Map<String, ToolbarButton>> buttonList;
     private final List<Observer> observers;
-    private final Map<EventType.ComponentEventType, ComponentChangeListener> toolBarListener;
+    private final List<ComponentChangeListener> listeners;
+
     static final Logger logger = LogManager.getLogger(ToolBarComponent.class.getName());
 
     public ToolBarComponent(MainController mainController) {
         super();
         this.mainController = mainController;
-        this.toolBarListener = new LinkedHashMap<>();
+        this.listeners = new ArrayList<>();
         initButtonMap();
         observers = new ArrayList<>();
     }
@@ -47,16 +47,32 @@ public class ToolBarComponent extends ToolBar implements Component{
         buttonList.add(buttonDownloadMap);
         buttonList.add(buttonProcessingMap);
 
-        buttonListMap.put("createList", new CreateListToolbarButton(this));
-        buttonListMap.put("deleteList", new DeleteListToolbarButton(this));
-        buttonListMap.put("editList", new EditListToolbarButton(this));
+        loadListButtons();
+        loadProductListButton();
+        loadDownloadButtons();
+        loadProcessingButtons();
+    }
+
+    private void loadProcessingButtons() {
+        buttonProcessingMap.put("processList",new ProcessListToolbarButton(this));
+    }
+
+    private void loadDownloadButtons() {
+        buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
+        buttonDownloadMap.put("downloadSingle",new DownloadSelectedProductToolbarButton(this));
+    }
+
+    private void loadProductListButton() {
         buttonProductListMap.put("selectAll",new AddAllToListToolbarButton(this));
         buttonProductListMap.put("addToList", new AddSelectedToListToolbarButton(this));
         buttonProductListMap.put("deleteSelected",new DeleteSelectedFromListToolbarButton(this));
         buttonProductListMap.put("addGroundToList",new AddReferenceImageToListToolbarButton(this));
-        buttonDownloadMap.put("downloadAll",new DownloadProductListToolbarButton(this));
-        buttonDownloadMap.put("downloadSingle",new DownloadSelectedProductToolbarButton(this));
-        buttonProcessingMap.put("processList",new ProcessListToolbarButton(this));
+    }
+
+    private void loadListButtons() {
+        buttonListMap.put("createList", new CreateListToolbarButton(this));
+        buttonListMap.put("deleteList", new DeleteListToolbarButton(this));
+        buttonListMap.put("editList", new EditListToolbarButton(this));
     }
 
     @Override
@@ -68,12 +84,6 @@ public class ToolBarComponent extends ToolBar implements Component{
             });
             getItems().add(new Separator());
         });
-        //createButton("createList","");
-        //createButton("addToList","");
-        //createButton("selectAll","");
-        //createButton("downloadSingle","");
-        //createButton("downloadAll","");
-
     }
 
     private void createButton(String id, String text) {
@@ -102,15 +112,13 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     @Override
-    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
-        this.toolBarListener.put(type,listener);
+    public void addComponentListener(ComponentChangeListener listener) {
+        this.listeners.add(listener);
     }
 
     @Override
-    public void fireEvent(ToolbarComponentEvent event) {
-        ComponentChangeListener orDefault = this.toolBarListener.getOrDefault(event.getToolbarEvent(), null);
-        if (orDefault != null)
-            orDefault.onComponentChange(event);
+    public void fireEvent(ComponentEvent event) {
+        listeners.forEach(l->l.onComponentChange(event));
     }
 
     @Override

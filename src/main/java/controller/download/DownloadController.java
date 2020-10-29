@@ -114,15 +114,19 @@ public class DownloadController implements Initializable {
         copernicusDownloader.resume();
         root.getStyleClass().remove("downloadPaused");
         root.applyCss();
+        downloadingList.setDisable(false);
     }
 
     private void pauseDownload(CopernicusDownloader copernicusDownloader) {
         copernicusDownloader.pause();
+        downloadingList.setDisable(true);
+        pause.setDisable(true);
         root.getStyleClass().add("downloadPaused");
         root.applyCss();
     }
 
     private void cancelDownload(CopernicusDownloader copernicusDownloader) {
         copernicusDownloader.cancel();
+        downloadingList.setDisable(false);
     }
 }

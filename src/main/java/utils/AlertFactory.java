@@ -9,6 +9,11 @@ public class AlertFactory {
         alert.showAndWait();
     }
 
+    public static void showInfoDialog(String title, String headerText, String contentText) {
+        Alert alert = createDialog(Alert.AlertType.INFORMATION, title, headerText, contentText);
+        alert.showAndWait();
+    }
+
     public static void showSuccessDialog(String title, String headerText, String contentText) {
         Alert alert = createDialog(Alert.AlertType.CONFIRMATION, title, headerText, contentText);
         alert.showAndWait();

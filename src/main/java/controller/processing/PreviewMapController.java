@@ -27,7 +27,6 @@ public class PreviewMapController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("sfdsf");
         gtMap = new GTMap(631, 548, false);
         container.getChildren().add(gtMap);
         AnchorPane.setRightAnchor(gtMap,0.0);
@@ -48,9 +47,7 @@ public class PreviewMapController implements Initializable {
     }
 
     public void onMouseClickedOnMap(MouseEvent e) {
-        System.out.println("mouse");
         Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), endPoint.getX(), endPoint.getY());
-        System.out.println(e.getX() + " - " + e.getY());
         if (rectangle2D.contains(new Point2D(e.getX(),e.getY())) && clickPoint == null)
             clickPoint = new Point2D(e.getSceneX(),e.getSceneY());
 
@@ -89,10 +86,6 @@ public class PreviewMapController implements Initializable {
 
     public void onMouseDraggedOnMap(MouseEvent e) {
         Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), 200, 200);
-        System.out.println(rectangle2D.toString());
-        System.out.println(new Point2D(e.getX(),e.getY()).toString());
-        System.out.println(rectangle2D.contains(new Point2D(e.getX(),e.getY())));
-        System.out.println(clickPoint!=null);
         if (rectangle2D.contains(new Point2D(e.getX(),e.getY())))
             if (clickPoint!=null) {
                 calculatePoints(e);

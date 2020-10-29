@@ -2,16 +2,13 @@ package controller;
 
 import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
-import controller.interfaces.ProductListTabItem;
-import controller.interfaces.TabItem;
 import controller.processing.SimpleProcessingMonitorController;
+import gui.EventExecuteListener;
+import gui.ExecutedEvent;
 import gui.components.*;
-import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
+import gui.components.listener.ComponentEvent;
+import gui.components.tabcomponent.TabPaneComponent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -21,29 +18,20 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.events.EventType;
-import model.list.ProductListDTO;
 import model.processing.ProcessorManager;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
-import model.products.ProductDTO;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.database.UserDBDAO;
-import services.database.WorkflowDBDAO;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
-import services.processing.Processor;
-import utils.AlertFactory;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class MainController implements Initializable {
     private TabPaneComponent tabPaneComponent;
-    private MenuComponent menuController;
+    private MenuComponent menuComponent;
     private ListTreeViewComponent listTreeViewComponent;
     private ToolBarComponent toolBarComponent;
     private ConsoleComponent consoleComponent;
@@ -72,20 +60,29 @@ public class MainController implements Initializable {
     private DownloadController downloadController;
 
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
-    private UserDTO user;
     private CopernicusDownloader copernicusDownloader;
     private ProcessorManager processor;
+    private UserManager userManager;
+    private List<EventExecuteListener> listeners;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         rootPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         logger.atLevel(Level.INFO).log("Starting Satellite App...");
         wait.setVisible(false);
-        initComponents();
-
+        listeners = new ArrayList<>();
     }
 
-    private void initComponents() {
+    public void fireEvent(ExecutedEvent e) {
+        listeners.forEach(l->l.onEventExecute(e));
+        consoleComponent.println((String) e.getValue());
+    }
+
+    public void addListener(EventExecuteListener l) {
+        listeners.add(l);
+    }
+
+    public void initComponents() {
         initTabPaneComponent();
         initListTreeViewComponent();
         initMenuComponent();
@@ -93,8 +90,11 @@ public class MainController implements Initializable {
         initConsoleComponent();
         initDownloadManager();
         initProcessors();
-
         initListeners();
+    }
+
+    public void setUser(UserDTO user) {
+        this.userManager = new UserManager(user);
     }
 
     private void initProcessors() {
@@ -108,41 +108,36 @@ public class MainController implements Initializable {
 
     private void initDownloadManager() {
         this.copernicusDownloader = new CopernicusDownloader(2);
-        copernicusDownloader.addListener(EventType.DownloadEventType.COMPLETED, event -> {
+        /*copernicusDownloader.addListener(EventType.ComponentEventType.DOWNLOAD_COMPLETED, event -> {
             //if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
                 //consoleDebug.appendText("Download completed!\n");
-        });
+        });*/
         new Thread(copernicusDownloader).start();
-        /*URL location = getClass().getResource("/fxml/DownloadView.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Parent parent = null;
-        try {
-            parent = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        downloadPane.getChildren().add(parent);*/
         AnchorPane.setRightAnchor(download,0.0);
         AnchorPane.setLeftAnchor(download,0.0);
         AnchorPane.setTopAnchor(download,0.0);
         AnchorPane.setBottomAnchor(download,0.0);
-        //DownloadController controller = fxmlLoader.getController();
         downloadController.setDownload(copernicusDownloader);
 
     }
 
     private void initListeners() {
-        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_CREATED, event -> {
+        toolBarComponent.addComponentListener(event -> {
             listTreeViewComponent.reload();
             consoleComponent.println((String) event.getValue());
         });
-        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_DELETED,event -> {
-            listTreeViewComponent.reload();
-            consoleComponent.println((String) event.getValue());
+
+        tabPaneComponent.addComponentListener(e->{
+            //listTreeViewComponent.reload();
+            consoleComponent.println((String) e.getValue());
         });
-        toolBarComponent.addComponentListener(EventType.ComponentEventType.LIST_UPDATED,event -> {
-            listTreeViewComponent.reload();
-            consoleComponent.println((String) event.getValue());
+
+        listTreeViewComponent.addComponentListener(e->{
+            consoleComponent.println((String) e.getValue());
+        });
+
+        copernicusDownloader.addListener(e->{
+            consoleComponent.println((String) e.getValue());
         });
     }
 
@@ -156,7 +151,7 @@ public class MainController implements Initializable {
 
     private void initTabPaneComponent() {
         logger.atInfo().log("Init TabPaneComponent...");
-        tabPaneComponent = new TabPaneComponent(this);
+        tabPaneComponent = new SatInfTabPaneComponent(this);
         tabPaneComponent.init();
         gridPane.add(tabPaneComponent,2,0);
         logger.atInfo().log("TabPaneComponent loaded");
@@ -173,9 +168,9 @@ public class MainController implements Initializable {
 
     private void initMenuComponent() {
         logger.atInfo().log("Init MenuComponent...");
-        menuController = new MenuComponent(this);
-        menuController.init();
-        menu.getChildren().add(0,menuController.getView());
+        menuComponent = new MenuComponent(this);
+        menuComponent.init();
+        menu.getChildren().add(0, menuComponent.getView());
         logger.atInfo().log("MenuComponent loaded");
     }
 
@@ -191,7 +186,7 @@ public class MainController implements Initializable {
         logger.atInfo().log("ConsoleComponent loaded");
     }
 
-    public TabPaneComponent getTabController() {
+    public TabPaneComponent getTabComponent() {
         return tabPaneComponent;
     }
 
@@ -199,19 +194,19 @@ public class MainController implements Initializable {
         return toolBarComponent;
     }
 
-    public ListTreeViewComponent getListTreeViewController() {
+    public ListTreeViewComponent getListTreeViewComponent() {
         return listTreeViewComponent;
     }
 
-    public ObservableList<ProductListDTO> getUserProductList() {
-        return user.getProductListsDTO();
+    //public ObservableList<ProductListDTO> getUserProductList() {
+        /*return user.getProductListsDTO();
+    }*/
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 
-    public UserDTO getUser() {
-        return user;
-    }
-
-    public Downloader getDownload() {
+    public Downloader getDownloader() {
         return copernicusDownloader;
     }
 
@@ -233,68 +228,13 @@ public class MainController implements Initializable {
         spinnerWait.setVisible(b);
         spinnerWait.setManaged(b);}
 
-    public void setUser(UserDTO userDTO) {
-        this.user = userDTO;
 
-        user.getProductListsDTO().addListener((ListChangeListener<ProductListDTO>) c -> {
-            while (c.next())
-                if (c.wasAdded()) {
-                    UserDBDAO instance = UserDBDAO.getInstance();
-                    System.out.println(c.getAddedSubList().size());
-                    c.getAddedSubList().forEach(p-> instance.addProductList(user,p));
-                } else {
-                    UserDBDAO instance = UserDBDAO.getInstance();
-                    c.getRemoved().forEach(p->{
-                        instance.removeProductList(user,p);
-                    });
 
-                }
-            System.out.println("update user");
-        });
-
-        user.getSearchParameters().addListener((MapChangeListener<String, Map<String, String>>) change -> {
-            UserDBDAO instance = UserDBDAO.getInstance();
-            instance.save(user);
-        });
-
-        user.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
-            while (c.next())
-                if (c.wasAdded()) {
-                    UserDBDAO instance = UserDBDAO.getInstance();
-                    c.getAddedSubList().forEach(p-> instance.addNewWorkflow(user,p));
-                } else {
-                    UserDBDAO instance = UserDBDAO.getInstance();
-                    c.getRemoved().forEach(p->{
-                        instance.removeWorkflow(user,p);
-                    });
-
-            }
-        });
-
-        listTreeViewComponent.reload();
-    }
-
-    public void updateUserWorkflows(ObservableList<WorkflowDTO> workflowsDTO) {
-        WorkflowDBDAO instance = WorkflowDBDAO.getInstance();
-        workflowsDTO.forEach(instance::save);
-    }
-
-    public ProcessorManager getProcessor() {
+    public ProcessorManager getProductProcessor() {
         return processor;
     }
 
-    public Processor getProcessorFor(ProductDTO productDTO) {
-        return processor.getProcessor(productDTO);
-    }
-
-    public void process() {
-
-
-
-
-    }
-
-    public AnchorPane getProcessing() {
+    public AnchorPane getProcessingView() {
         return processing;
     }
 }

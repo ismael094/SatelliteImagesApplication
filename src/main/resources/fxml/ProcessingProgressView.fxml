@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="root" prefHeight="223.0" prefWidth="303.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.SimpleProcessingMonitorController">
    <children>
@@ -32,7 +33,12 @@
                <children>
                   <AnchorPane prefHeight="55.0" prefWidth="436.0">
                      <children>
-                        <ProgressBar fx:id="numProductProgress" nodeOrientation="LEFT_TO_RIGHT" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox layoutX="10.0" layoutY="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="Product list Progress" />
+                              <ProgressBar fx:id="numProductProgress" nodeOrientation="LEFT_TO_RIGHT" prefHeight="23.0" prefWidth="474.0" progress="0.0" />
+                           </children>
+                        </VBox>
                      </children>
                      <padding>
                         <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
@@ -50,12 +56,16 @@
                <children>
                   <AnchorPane prefHeight="55.0" prefWidth="451.0">
                      <children>
-                        <ProgressBar fx:id="productProcess" prefHeight="23.0" prefWidth="474.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <padding>
-                              <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
-                           </padding>
-                        </ProgressBar>
+                        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="Product Workflow Progress" />
+                              <ProgressBar fx:id="productProcess" prefHeight="28.0" prefWidth="303.0" progress="0.0" />
+                           </children>
+                        </VBox>
                      </children>
+                     <padding>
+                        <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+                     </padding>
                   </AnchorPane>
                </children>
             </GridPane>
@@ -69,19 +79,26 @@
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ProgressBar fx:id="operationProgress" layoutX="80.0" layoutY="16.0" prefWidth="200.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <padding>
-                              <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
-                           </padding>
-                        </ProgressBar>
+                        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="Workflow Operation Progress" />
+                              <ProgressBar fx:id="operationProgress" prefHeight="83.0" prefWidth="514.0" progress="0.0" />
+                           </children>
+                        </VBox>
                      </children>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <padding>
+                        <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+                     </padding>
                   </AnchorPane>
                </children>
             </GridPane>
             <AnchorPane prefHeight="45.0" prefWidth="94.0">
                <children>
                   <Label layoutX="87.0" layoutY="12.0" text="Processing Monitor" AnchorPane.leftAnchor="87.0" />
-                  <Button fx:id="expand" alignment="BOTTOM_RIGHT" contentDisplay="GRAPHIC_ONLY" layoutX="264.0" layoutY="7.0" mnemonicParsing="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0" />
+                  <Button fx:id="expand" alignment="BOTTOM_RIGHT" contentDisplay="GRAPHIC_ONLY" layoutX="264.0" layoutY="7.0" mnemonicParsing="false" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0" />
                </children>
             </AnchorPane>
          </children>

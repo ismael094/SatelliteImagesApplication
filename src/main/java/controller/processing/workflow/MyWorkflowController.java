@@ -3,7 +3,6 @@ package controller.processing.workflow;
 import controller.MainController;
 import controller.cell.WorkflowListViewCellController;
 import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,15 +12,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import model.list.ProductListDTO;
 import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.operation.Operation;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
-import model.processing.workflow.operation.Operator;
 import utils.AlertFactory;
 import utils.gui.ProductListDTOUtil;
 
@@ -75,7 +71,7 @@ public class MyWorkflowController implements Initializable {
 
     private void onSelectInWorkflowListViewLoadWorkflowParameters() {
         workflowList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            if (!oldValue.equals(newValue) && workflowList.getSelectionModel().getSelectedItem() != null)
+            if (oldValue != null && !oldValue.equals(newValue) && workflowList.getSelectionModel().getSelectedItem() != null)
                 loadWorkflow(workflowList.getSelectionModel().getSelectedItem());
         });
     }
@@ -89,7 +85,7 @@ public class MyWorkflowController implements Initializable {
     private void onSaveWorkflowSaveParameters() {
         saveWorkflow.setOnAction(e->{
             activeWorkflowController.getWorkflow();
-            mainController.updateUserWorkflows(workflowList.getItems());
+            mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
             AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
     }
@@ -108,7 +104,7 @@ public class MyWorkflowController implements Initializable {
                 AlertFactory.showErrorDialog("Workflow","No workflows selected!","Select one or more workflows to add to list");
                 return;
             }
-            List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(mainController.getUserProductList(), mainController.getRoot().getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
+            List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(mainController.getUserManager().getUser().getProductListsDTO(), mainController.getRoot().getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
             if (productListDTOS.isEmpty() || productListDTOS.get(0) == null) {
                 AlertFactory.showErrorDialog("Workflow","No lists selected!","Select one or more lists to add workflows");
                 return;

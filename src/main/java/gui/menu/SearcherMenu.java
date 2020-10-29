@@ -2,21 +2,22 @@ package gui.menu;
 
 import controller.MainController;
 import controller.search.CopernicusOpenSearchController;
+import gui.components.MenuComponent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
 public class SearcherMenu extends Menu implements SatInfMenuItem{
-    private final MainController mainController;
+    private final MenuComponent menuComponent;
 
-    public SearcherMenu(MainController mainController) {
+    public SearcherMenu(MenuComponent menuComponent) {
         super("Searchers");
-        this.mainController = mainController;
+        this.menuComponent = menuComponent;
         init();
     }
 
     private void init() {
         MenuItem searcher = new MenuItem("Copernicus Open Search");
-        searcher.setOnAction(e -> mainController.getTabController().load(new CopernicusOpenSearchController("id")));
+        searcher.setOnAction(e -> menuComponent.getMainController().getTabComponent().load(new CopernicusOpenSearchController("id")));
         getItems().addAll(searcher);
     }
 

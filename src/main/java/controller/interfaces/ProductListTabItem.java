@@ -9,12 +9,14 @@ import services.download.Downloader;
 
 import java.util.prefs.Preferences;
 
-public abstract class ProductListTabItem implements TabItem,ModifiableTabItem{
+public abstract class ProductListTabItem implements TabItem, ModifiableTabItem {
     private final Downloader downloader;
 
     public ProductListTabItem(Downloader downloader) {
         this.downloader = downloader;
-        downloader.addListener(EventType.DownloadEventType.COMPLETED, event -> {
+
+
+        downloader.addListener(l->{
             refreshProducts();
             System.out.println("REFRESHING");
         });

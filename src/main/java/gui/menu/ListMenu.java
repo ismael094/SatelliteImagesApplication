@@ -3,21 +3,21 @@ package gui.menu;
 import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
-import gui.components.TabPaneComponent;
+import gui.components.MenuComponent;
+import gui.components.SatInfTabPaneComponent;
+import gui.components.tabcomponent.TabPaneComponent;
 import gui.events.*;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.Tab;
 import model.list.ProductListDTO;
 import utils.gui.Observer;
 import utils.gui.ProductListDTOUtil;
-import utils.gui.WorkflowUtil;
 
 public class ListMenu extends Menu implements SatInfMenuItem, Observer {
 
-    private final MainController mainController;
+    private final MenuComponent menuComponent;
     private MenuItem create;
     private MenuItem editList;
     private MenuItem delete;
@@ -27,38 +27,39 @@ public class ListMenu extends Menu implements SatInfMenuItem, Observer {
     private MenuItem preferenceImg;
     private MenuItem workflows;
 
-    public ListMenu(MainController mainController) {
+    public ListMenu(MenuComponent menuComponent) {
         super("Lists");
-        this.mainController = mainController;
+        this.menuComponent = menuComponent;
         init();
     }
 
     private void init() {
         create = new MenuItem("Create new list");
-        create.setOnAction(new CreateListEvent(mainController));
+        create.setOnAction(new CreateListEvent(menuComponent.getMainController()));
 
         editList = new MenuItem("Edit list");
-        editList.setOnAction(new EditListEvent(mainController));
+        editList.setOnAction(new EditListEvent(menuComponent.getMainController()));
 
         delete = new MenuItem("Delete list");
-        delete.setOnAction(new DeleteListEvent(mainController));
+        delete.setOnAction(new DeleteListEvent(menuComponent.getMainController()));
 
         addSel = new MenuItem("Add selected products to list");
-        addSel.setOnAction(new AddSelectedToListEvent(mainController));
+        addSel.setOnAction(new AddSelectedToListEvent(menuComponent.getMainController()));
 
         addAll = new MenuItem("Add all product to list");
-        addAll.setOnAction(new AddAllToListEvent(mainController));
+        addAll.setOnAction(new AddAllToListEvent(menuComponent.getMainController()));
 
         deselect = new MenuItem("Delete selected products from list");
-        deselect.setOnAction(new DeleteSelectedFromListEvent(mainController));
+        deselect.setOnAction(new DeleteSelectedFromListEvent(menuComponent.getMainController()));
 
         preferenceImg = new MenuItem("Add image as reference image");
-        preferenceImg.setOnAction(new AddReferenceImageEvent(mainController));
+        preferenceImg.setOnAction(new AddReferenceImageEvent(menuComponent.getMainController()));
 
 
         workflows = new MenuItem("Workflows");
-        workflows.setOnAction(new ShowWorkflowsOfListEvent(mainController));
+        workflows.setOnAction(new ShowWorkflowsOfListEvent(menuComponent.getMainController()));
 
+        menuComponent.getMainController().getTabComponent().addObserver(this);
         getItems().addAll(create,editList, delete,addSel,addAll,deselect,new SeparatorMenuItem(),preferenceImg,new SeparatorMenuItem(),workflows);
     }
 
@@ -74,7 +75,7 @@ public class ListMenu extends Menu implements SatInfMenuItem, Observer {
 
     @Override
     public void update() {
-        TabPaneComponent tabController = mainController.getTabController();
+        TabPaneComponent tabController = menuComponent.getMainController().getTabComponent();
         Platform.runLater(()->{
             ProductListDTO currentList = ProductListDTOUtil.getCurrentList(tabController);
             deselect.setDisable(currentList == null);

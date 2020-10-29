@@ -1,7 +1,7 @@
 package model.listeners;
 
-import model.events.ToolbarComponentEvent;
+import gui.components.listener.ComponentEvent;
 
 public interface ComponentChangeListener {
-    void onComponentChange(ToolbarComponentEvent event);
+    void onComponentChange(ComponentEvent event);
 }

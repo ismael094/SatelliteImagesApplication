@@ -1,9 +1,9 @@
 package controller.results;
 
+import controller.interfaces.ProcessingResultsTabItem;
 import controller.interfaces.TabItem;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +14,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
+import model.postprocessing.ProcessingResults;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.DownloadConfiguration;
@@ -22,13 +23,11 @@ import utils.ThemeConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public class ProductListProcessingResultsController implements TabItem {
+public class ProductListProcessingResultsController implements TabItem, ProcessingResultsTabItem {
     static final Logger logger = LogManager.getLogger(ProductListProcessingResultsController.class.getName());
 
     @FXML
@@ -38,11 +37,14 @@ public class ProductListProcessingResultsController implements TabItem {
 
     private final FXMLLoader loader;
     private Parent parent;
-    private TabPaneComponent tabPaneComponent;
+    private SatInfTabPaneComponent tabPaneComponent;
     private ProductListDTO productListDTO;
-    private ObservableList<File> files;
+    private ProcessingResults processingResults;
+    private Map<String,File> files;
 
     public ProductListProcessingResultsController(ProductListDTO productListDTO) {
+        processingResults = new ProcessingResults();
+        files = new HashMap<>();
         this.productListDTO = productListDTO;
         loader = new FXMLLoader(getClass().getResource("/fxml/ProductListProcessingResultsView.fxml"));
         loader.setController(this);
@@ -55,7 +57,7 @@ public class ProductListProcessingResultsController implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -70,7 +72,6 @@ public class ProductListProcessingResultsController implements TabItem {
             @Override
             protected Parent call() throws Exception {
                 initSearch();
-                System.out.println("BYE BYE");
                 return parent;
             }
         };
@@ -92,17 +93,10 @@ public class ProductListProcessingResultsController implements TabItem {
             protected Void call() throws Exception {
                 System.out.println(productListDTO.getName());
                 File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
-                System.out.println(file.listFiles().length);
 
                 try {
                     for (File f : file.listFiles()) {
-                        if (f.isDirectory()) {
-                            for (File listFile : f.listFiles()) {
-                                loadFile(listFile);
-                            }
-                        }
-                        System.out.println(f.getName());
-                        loadFile(f);
+                        entryCreated(f);
                     }
 
                     WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -120,7 +114,13 @@ public class ProductListProcessingResultsController implements TabItem {
         };
 
         new Thread(task).start();
+    }
 
+    public boolean haveBeenProcessed() {
+        if (productListDTO == null)
+            return false;
+        File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
+        return file.listFiles().length > 2;
     }
 
     private void searchFiles(WatchService watcher, Path dir) {
@@ -134,37 +134,20 @@ public class ProductListProcessingResultsController implements TabItem {
 
             for (WatchEvent<?> event: key.pollEvents()) {
                 WatchEvent.Kind<?> kind = event.kind();
-
                 WatchEvent<Path> ev = (WatchEvent<Path>)event;
-                Path filename = ev.context();
-                Path child = dir.resolve(filename);
-                File file = child.toFile();
-                System.out.println(kind + " - " + file.getName());
+
+                File file = dir.resolve(ev.context()).toFile();
 
                 if (kind == ENTRY_DELETE) {
-                    if (file.isDirectory()) {
-                        delete(file.listFiles());
-                    } else {
-                        removeFile(file);
-                    }
+                    entryDelete(file);
                 } else if (kind == ENTRY_CREATE) {
-                    if (file.isDirectory()) {
-                        for (File listFile : file.listFiles()) {
-                            loadFile(listFile);
-                        }
-                    }
-                    loadFile(file);
+                    entryCreated(file);
                 } else if (kind == ENTRY_MODIFY) {
-                    if (file.isDirectory()) {
-                        delete(file.listFiles());
-                    } else {
-                        if (!isLoadedInFlowPane(file.getName()))
-                            loadFile(file);
-                    }
+                    entryModified(file);
                 }
 
+                System.out.println(processingResults.toString());
             }
-
 
             boolean valid = key.reset();
             if (!valid) {
@@ -173,13 +156,42 @@ public class ProductListProcessingResultsController implements TabItem {
         }
     }
 
-    private void delete(File[] listFiles) {
+    private void entryModified(File file) {
+        if (file.isDirectory()) {
+            reload(file.listFiles());
+        } else {
+            if (!isLoadedInFlowPane(file.getName()))
+                loadFile(file);
+        }
+    }
+
+    private void entryCreated(File file) {
+        if (file.isDirectory()) {
+            for (File listFile : file.listFiles()) {
+                loadFile(listFile);
+            }
+        }
+        loadFile(file);
+    }
+
+    private void entryDelete(File file) {
+        if (file.isDirectory()) {
+            reload(file.listFiles());
+        } else {
+            removeFile(file);
+        }
+    }
+
+    private void reload(File[] listFiles) {
         List<File> files = Arrays.asList(listFiles);
         Platform.runLater(()->{
             List<Node> nodes = new ArrayList<>();
             resultsPane.getChildren().forEach(c->{
-                if (!isContain(files,c.getId()))
+                if (files.contains(this.files.get(c.getId()))) {
                     nodes.add(c);
+                    processingResults.removeFile(this.files.get(c.getId()));
+                    this.files.remove(c.getId());
+                }
             });
             resultsPane.getChildren().removeAll(nodes);
             add(listFiles);
@@ -189,36 +201,40 @@ public class ProductListProcessingResultsController implements TabItem {
     private void add(File[] listFiles) {
         List<Node> nodes = new ArrayList<>();
         Arrays.asList(listFiles).forEach(f->{
-            if (!isLoadedInFlowPane(f.getName()))
+            if (validFile(f)) {
+                this.files.put(f.getName(),f);
                 nodes.add(loadResultItemView(f));
+                processingResults.addFile(f);
+            }
         });
         resultsPane.getChildren().addAll(nodes);
     }
 
-    private boolean isContain(List<File> list, String filename) {
-        return list.stream()
-                .filter(f->f.getName().equals(filename))
-                .findAny()
-                .orElse(null) != null;
+    private boolean validFile(File file) {
+        if (file.isDirectory())
+            return false;
+        String[] a = file.getName().split("\\.");
+        if (a.length == 1)
+            return false;
+        String extension = a[1];
+        return !file.getName().contains("tmp") && (extension.equals("tif") || extension.equals("PNG")) && !isLoadedInFlowPane(file.getName());
+
     }
 
     private synchronized void removeFile(File file) {
         if (isLoadedInFlowPane(file.getName())) {
             Node node = getChildren(file.getName());
+            this.files.remove(file.getName());
+            processingResults.removeFile(file);
             if (node != null)
                 Platform.runLater(()->resultsPane.getChildren().remove(node));
         }
     }
 
     private synchronized void loadFile(File file) {
-        if (file.isDirectory())
-            return;
-        String[] a = file.getName().split("\\.");
-        if (a.length == 1)
-            return;
-        String extension = a[1];
-        if (!file.getName().contains("tmp") && (extension.equals("tif") || extension.equals("PNG")) && !isLoadedInFlowPane(file.getName())) {
-            System.out.println("LOADED");
+        if (validFile(file)) {
+            this.files.put(file.getName(),file);
+            processingResults.addFile(file);
             Platform.runLater(()->resultsPane.getChildren().add(loadResultItemView(file)));
         }
     }
@@ -235,7 +251,6 @@ public class ProductListProcessingResultsController implements TabItem {
     }
 
     private synchronized Parent loadResultItemView(File file) {
-        System.out.println(file.getName());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProductListProcessingResultItemView.fxml"));
         Parent parent = null;
         try {
@@ -255,5 +270,10 @@ public class ProductListProcessingResultsController implements TabItem {
         controller.setFile(file);
         return parent;
 
+    }
+
+    @Override
+    public ProcessingResults getProcessingResults() {
+        return processingResults;
     }
 }

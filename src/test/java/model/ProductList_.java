@@ -241,7 +241,22 @@ public class ProductList_ {
         productListDTO.addProduct(SentinelData.getSentinel1Product());
         productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
         assertThat(productListDTO.getWorkflow(WorkflowType.GRD).getType()).isEqualTo(WorkflowType.GRD);
+    }
 
+    @Test
+    public void add_repeated_workflow_should_not_be_saved_list() {
+        productListDTO = new ProductListDTO(
+                new SimpleStringProperty("List1"),
+                new SimpleStringProperty("description"));
+        ProductTypeRestriction productTypeRestriction = new ProductTypeRestriction();
+        productTypeRestriction.add("GRD");
+        productListDTO.addRestriction(productTypeRestriction);
+
+        productListDTO.addProduct(SentinelData.getSentinel1Product());
+        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        assertThat(productListDTO.getWorkflows().size()).isEqualTo(1);
+        assertThat(productListDTO.getWorkflow(WorkflowType.GRD).getType()).isEqualTo(WorkflowType.GRD);
     }
 
     @Test

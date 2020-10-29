@@ -14,6 +14,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.stage.Modality;
 import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
+import model.user.UserDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,21 +24,23 @@ import static utils.ThemeConfiguration.getJMetroStyled;
 public abstract class Event implements EventHandler<ActionEvent> {
 
     protected final MainController mainController;
+    protected UserDTO user;
 
     public Event(MainController controller) {
         this.mainController = controller;
+        user = mainController.getUserManager().getUser();
     }
 
     protected List<ProductListDTO> getProductLists() {
         List<ProductListDTO> productListDTO = new ArrayList<>();
-        if (mainController.getUserProductList().size() == 0) {
+        if (mainController.getUserManager().getUser().getProductListsDTO().size() == 0) {
             ProductListDTO productListDTO1 = new ProductListDTO(new SimpleStringProperty("Default"),
                     new SimpleStringProperty("Default list"));
-            mainController.getUserProductList().add(productListDTO1);
+            user.getProductListsDTO().add(productListDTO1);
             productListDTO.add(productListDTO1);
 
-        } else if (mainController.getUserProductList().size() == 1) {
-            productListDTO.add(mainController.getUserProductList().get(0));
+        } else if (user.getProductListsDTO().size() == 1) {
+            productListDTO.add(user.getProductListsDTO().get(0));
         } else {
             productListDTO = showAndGetList(SelectionMode.MULTIPLE,"Choose one or more list to add");
         }
@@ -45,9 +48,9 @@ public abstract class Event implements EventHandler<ActionEvent> {
     }
 
     protected ProductListDTO getSingleProductList() {
-        if (mainController.getUserProductList().size() > 0) {
-            if (mainController.getListTreeViewController().getSelected() != null)
-                return mainController.getListTreeViewController().getSelected();
+        if (user.getProductListsDTO().size() > 0) {
+            if (mainController.getListTreeViewComponent().getSelected() != null)
+                return mainController.getListTreeViewComponent().getSelected();
             else {
                 ObservableList<ProductListDTO> productListDTOS = showAndGetList(SelectionMode.SINGLE, "Choose one or more list to add");
                 return productListDTOS.size() > 0 ? productListDTOS.get(0) : null;
@@ -57,7 +60,7 @@ public abstract class Event implements EventHandler<ActionEvent> {
     }
 
     protected ObservableList<ProductListDTO> showAndGetList(SelectionMode selectionMode,String title) {
-        ListView<ProductListDTO> productListListView = new ListView<>(mainController.getUserProductList());
+        ListView<ProductListDTO> productListListView = new ListView<>(user.getProductListsDTO());
         productListListView.getSelectionModel().setSelectionMode(selectionMode);
         JFXAlert alert = new JFXAlert(mainController.getRoot().getScene().getWindow());
 

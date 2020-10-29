@@ -7,11 +7,11 @@ import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import gui.components.listener.ComponentEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
-import model.events.ToolbarComponentEvent;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
@@ -28,41 +28,29 @@ import java.util.List;
 
 public class ListTreeViewComponent extends TreeView<Pair<String,Object>> implements Component  {
 
-    private final MainController mainController;
-    private final List<ComponentChangeListener> listTreeViewListener;
-    private List<Observer> observers;
+    protected final MainController mainController;
+    protected final List<ComponentChangeListener> listeners;
+    protected List<Observer> observers;
 
     public ListTreeViewComponent(MainController mainController) {
         super();
         this.mainController = mainController;
-        this.listTreeViewListener = new ArrayList<>();
+        this.listeners = new ArrayList<>();
         observers = new ArrayList<>();
     }
 
     @Override
     public void init() {
-
+        mainController.addListener(l->{
+            if (l.getType() == EventType.LIST)
+                reload();
+        });
         TreeItem<Pair<String,Object>> pL = new TreeItem<>(new Pair<>("My list",null));
         setRoot(pL);
         setCellFactory(e -> new ListTreeViewCell());
         OnMouseClickedOpenListController();
         getChildren().addListener((ListChangeListener<Node>) c -> System.out.println("CHANGE?"));
-    }
-
-    private void setOnMouseEntered() {
-        setOnMouseEntered(event -> {
-            TreeItem<Pair<String,Object>> selectedItem = getFocusModel().getFocusedItem();
-            ProductListDTO productListDTO = null;
-            try {
-                productListDTO = mainController.getUserProductList().stream()
-                        .filter(p -> selectedItem.getValue().getValue() instanceof ProductListDTO)
-                        .findAny()
-                        .orElse(null);
-            } finally {
-                ;
-            }
-
-        });
+        reload();
     }
 
     private void OnMouseClickedOpenListController() {
@@ -70,12 +58,12 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
             TreeItem<Pair<String, Object>> selectedItem = getSelectionModel().getSelectedItem();
             if (event.getClickCount() > 1 && selectedItem.getValue().getValue() instanceof ProductListDTO) {
                 ProductListDTO productListDTO = (ProductListDTO) selectedItem.getValue().getValue();
-                mainController.getTabController().load(new ListInformationController(productListDTO, mainController.getDownload()));
+                mainController.getTabComponent().load(new ListInformationController(productListDTO, mainController.getDownloader()));
             } else {
                 TreeItem<Pair<String, Object>> parent = selectedItem.getParent();
                 if (parent != null && parent.getValue().getValue() instanceof ProductListDTO) {
                     ProductListDTO productListDTO = (ProductListDTO) parent.getValue().getValue();
-                    TabItem controller = mainController.getTabController().getControllerOf(productListDTO.getId().toString());
+                    TabItem controller = mainController.getTabComponent().getControllerOf(productListDTO.getId().toString());
                     if (controller != null) {
                         ((ProductListTabItem) controller).setSelectedProducts(FXCollections.observableArrayList((ProductDTO) selectedItem.getValue().getValue()));
                     }
@@ -97,13 +85,13 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
     }
 
     @Override
-    public void addComponentListener(EventType.ComponentEventType type, ComponentChangeListener listener) {
-        this.listTreeViewListener.add(listener);
+    public void addComponentListener(ComponentChangeListener listener) {
+        this.listeners.add(listener);
     }
 
     @Override
-    public void fireEvent(ToolbarComponentEvent event) {
-        this.listTreeViewListener.forEach(l-> l.onComponentChange(event));
+    public void fireEvent(ComponentEvent event) {
+        this.listeners.forEach(l-> l.onComponentChange(event));
     }
 
     @Override
@@ -117,7 +105,7 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
 
     private void reloadTree() {
         getRoot().getChildren().clear();
-        for (ProductListDTO pL : mainController.getUserProductList()) {
+        for (ProductListDTO pL : mainController.getUserManager().getUser().getProductListsDTO()) {
             TreeItem<Pair<String,Object>> treeItem = new TreeItem<>(new Pair<>(pL.getName(),pL));
             GlyphsDude.setIcon(treeItem, FontAwesomeIcon.FOLDER);
             if (pL.getProducts().size() > 0) {
@@ -128,7 +116,6 @@ public class ListTreeViewComponent extends TreeView<Pair<String,Object>> impleme
                     treeItem.getChildren().add(item);
                     i++;
                 }
-
             }
             getRoot().getChildren().add(treeItem);
         }

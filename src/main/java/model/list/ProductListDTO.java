@@ -231,7 +231,7 @@ public class ProductListDTO {
         List<ProductDTO> res = new ArrayList<>();
         products.forEach(p->{
             List<String> strings = areasOfWorkOfProduct(p.getFootprint());
-            if (!strings.isEmpty())
+            if (strings != null && !strings.isEmpty())
                 res.add(p);
         });
         return res;
@@ -263,8 +263,10 @@ public class ProductListDTO {
     }
 
     public void addAreaOfWork(String area) {
-        this.areasOfWork.add(area);
-        save();
+        if (!areasOfWork.contains(area)){
+            this.areasOfWork.add(area);
+            save();
+        }
     }
 
     public void removeAreaOfWork(String area) {

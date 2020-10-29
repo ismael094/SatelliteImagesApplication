@@ -24,7 +24,7 @@ public class WorkflowUtil {
         productListDTO.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
             while (c.next()) {
                 if (c.wasAdded())
-                    c.getAddedSubList().forEach(l->mainController.getUser().addWorkflow(l));
+                    c.getAddedSubList().forEach(l->mainController.getUserManager().getUser().addWorkflow(l));
             }
             ProductListDBDAO.getInstance().save(productListDTO);
         });

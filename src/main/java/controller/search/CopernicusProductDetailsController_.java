@@ -2,7 +2,7 @@ package controller.search;
 
 import controller.interfaces.TabItem;
 import gui.GTMap;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.products.ProductDTO;
@@ -67,7 +66,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
 
 
     private final ProductDTO product;
-    private TabPaneComponent tabPaneComponent;
+    private SatInfTabPaneComponent tabPaneComponent;
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     static final Logger logger = LogManager.getLogger(CopernicusProductDetailsController_.class.getName());
@@ -85,7 +84,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 

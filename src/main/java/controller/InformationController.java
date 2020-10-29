@@ -1,7 +1,7 @@
 package controller;
 
 import controller.interfaces.TabItem;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class InformationController implements TabItem {
     private Parent parent;
-    private TabPaneComponent setTabPaneComponent;
+    private SatInfTabPaneComponent setTabPaneComponent;
 
     public InformationController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/InformationView.fxml"));
@@ -23,7 +23,7 @@ public class InformationController implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.setTabPaneComponent = component;
     }
 

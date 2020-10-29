@@ -1,7 +1,6 @@
 package gui.events;
 
 import controller.MainController;
-import gui.components.ToolBarComponent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,7 @@ public class AppCloseEvent extends Event {
     public void handle(ActionEvent event) {
         logger.atInfo().log("===Closing Satellite App===");
         Platform.exit();
-        mainController.getDownload().cancel();
+        mainController.getDownloader().cancel();
         System.exit(0);
     }
 }

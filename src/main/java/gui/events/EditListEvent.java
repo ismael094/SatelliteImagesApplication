@@ -4,12 +4,12 @@ import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.list.ListCreateAndEditController;
 import controller.list.ListInformationController;
+import gui.ExecutedEvent;
 import gui.dialog.ListDialog;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import model.events.EventType;
-import model.events.ToolbarComponentEvent;
 import model.list.ProductListDTO;
 
 import java.util.List;
@@ -22,8 +22,8 @@ public class EditListEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
-        Tab active = mainController.getTabController().getActive();
-        TabItem controllerOf = mainController.getTabController().getControllerOf(active);
+        Tab active = mainController.getTabComponent().getActive();
+        TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         ProductListDTO list;
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
@@ -41,6 +41,8 @@ public class EditListEvent extends Event {
         load.setProductList(list);
         edit_list.showAndWait();
         load.getProductList();
-        mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
+        mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List successfully edited " + list.getName()));
+
+        //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
     }
 }

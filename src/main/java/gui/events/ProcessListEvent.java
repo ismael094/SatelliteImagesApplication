@@ -4,13 +4,13 @@ import controller.MainController;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import controller.results.ProductListProcessingResultsController;
+import gui.ExecutedEvent;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
+import model.events.EventType;
 import model.list.ProductListDTO;
 import utils.AlertFactory;
-
-import java.awt.image.BufferedImage;
 
 public class ProcessListEvent extends Event {
     public ProcessListEvent(MainController controller) {
@@ -19,26 +19,35 @@ public class ProcessListEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
-        Tab active = mainController.getTabController().getActive();
-        TabItem tabItem = mainController.getTabController().getControllerOf(active);
+        Tab active = mainController.getTabComponent().getActive();
+        TabItem tabItem = mainController.getTabComponent().getControllerOf(active);
         if (tabItem instanceof ProductListTabItem) {
             ProductListDTO productList = ((ProductListTabItem) tabItem).getProductList();
             Task<Boolean> task = null;
             try {
-                task = mainController.getProcessor().process(productList);
+                AlertFactory.showInfoDialog("Processing", "Processing", "Processing has started! " +
+                        "This could last several minutes, even hour. You´ll receive a " +
+                        "message when all products had been processed! ");
+                task = mainController.getProductProcessor().process(productList);
                 task.setOnFailed(e -> {
                     AlertFactory.showErrorDialog("Error", "ERROR", "Error while processing products " + e.getSource().getException().getLocalizedMessage());
                     e.getSource().getException().printStackTrace();
                 });
 
+                task.setOnSucceeded(e -> {
+                    AlertFactory.showSuccessDialog("Processing", "Processing", "Processing completed!");
+                });
+
                 new Thread(task).start();
+                mainController.fireEvent(new ExecutedEvent(this, EventType.PROCESSING,"Processing list "+productList.getName()));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
 
-            mainController.getTabController().load(new ProductListProcessingResultsController(productList));
+            mainController.getTabComponent().load(new ProductListProcessingResultsController(productList));
 
 
         } else

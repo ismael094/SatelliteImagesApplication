@@ -55,7 +55,9 @@ public class SatelliteApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
 
         MainController controller = fxmlLoader.getController();
+        //LOAD HERE COMPONENTS
         controller.setUser(userDTO);
+        controller.initComponents();
         primaryStage.setMaximized(true);
 
         jMetro.setScene(scene);

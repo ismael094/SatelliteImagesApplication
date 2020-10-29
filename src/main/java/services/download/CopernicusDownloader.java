@@ -1,5 +1,6 @@
 package services.download;
 
+import gui.components.listener.ComponentEvent;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import model.events.DownloadEvent;
@@ -11,6 +12,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import model.exception.ProductNotAvailableException;
 import model.list.ProductListDTO;
+import model.listeners.ComponentChangeListener;
 import model.listeners.DownloadListener;
 import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
@@ -43,7 +45,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
 
     private volatile int filesDownloading;
     private volatile int downloadAttempts;
-    private final Map<EventType.DownloadEventType, List<DownloadListener>> listeners;
+    private final List<ComponentChangeListener> listeners;
     private final int maxFilesDownloading;
     private DoubleProperty timeLeft;
 
@@ -57,9 +59,8 @@ public class CopernicusDownloader implements Downloader, Runnable {
         downloadingObservable = FXCollections.observableArrayList();
         filesDownloading = 0;
         downloadAttempts = 5;
-        listeners = new HashMap<>();
+        listeners = new ArrayList<>();
     }
-
 
     @Override
     public synchronized void download(ProductListDTO productList) {
@@ -84,16 +85,12 @@ public class CopernicusDownloader implements Downloader, Runnable {
         historical.add(item);
     }
 
-    public void addListener(EventType.DownloadEventType type, DownloadListener listener) {
-        List<DownloadListener> orDefault = this.listeners.getOrDefault(type, new ArrayList<>());
-        orDefault.add(listener);
-        this.listeners.put(type,orDefault);
+    public void addListener(ComponentChangeListener l) {
+        this.listeners.add(l);
     }
 
-    private void fireEvent(DownloadEvent<EventType.DownloadEventType> event) {
-        List<DownloadListener> orDefault = this.listeners.getOrDefault(event.getEvent(), null);
-        if (orDefault != null)
-            orDefault.forEach(l->l.onComponentChange(event));
+    private void fireEvent(ComponentEvent e) {
+        listeners.forEach(l->l.onComponentChange(e));
     }
 
     private synchronized void addDownloadingFile() {
@@ -179,7 +176,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
         logger.atInfo().log("Download completed! {}.zip", thread.getDownloadItem().getProductDTO().getTitle());
 
         restoreAttempts();
-        fireEvent(new DownloadEvent<>(this, EventType.DownloadEventType.COMPLETED));
+        fireEvent(new ComponentEvent(this, thread.getDownloadItem().getProductDTO().getTitle() + " downloaded!"));
         removedDownloadItemFromQueues(thread.getDownloadItem());
         removeDownloadFile();
     }
@@ -192,7 +189,6 @@ public class CopernicusDownloader implements Downloader, Runnable {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        fireEvent(new DownloadEvent<>(this, EventType.DownloadEventType.ERROR));
 
         handleError(thread.getDownloadItem(), e);
         removedDownloadItemFromQueues(thread.getDownloadItem());
@@ -220,7 +216,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
             logger.atWarn().log("Product not available for download! Request made. Try to download it later! {}", poll.getProductDTO().getTitle());
             AlertFactory.showErrorDialog("Product not available", "Product not available","Product " +poll.getProductDTO().getTitle() + " not available. Request done! Try to download it in the next days!");
         }
-         else if (e.getSource().getException() instanceof FileAlreadyExistsException)
+        else if (e.getSource().getException() instanceof FileAlreadyExistsException)
             logger.atWarn().log("Product already exits {}", poll.getProductDTO().getTitle());
         else {
             logger.atError().log("Exception '{}' while downloading! {}.zip", e.getSource().getException().getLocalizedMessage(), poll.getProductDTO().getTitle());

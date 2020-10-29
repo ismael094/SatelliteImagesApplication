@@ -2,7 +2,6 @@ package gui.events;
 
 import controller.MainController;
 import controller.processing.ProcessingPreviewController;
-import controller.search.CopernicusOpenSearchController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,9 +24,9 @@ public class ShowPreviewViewEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
-        List<ProductListDTO> preview = ProductListDTOUtil.dialogToSelectList(mainController.getUserProductList(), mainController.getRoot().getScene().getWindow(), SelectionMode.SINGLE, "Preview");
+        List<ProductListDTO> preview = ProductListDTOUtil.dialogToSelectList(user.getProductListsDTO(), mainController.getRoot().getScene().getWindow(), SelectionMode.SINGLE, "Preview");
         if (!preview.isEmpty())
-            mainController.getTabController().load(new ProcessingPreviewController(preview.get(0),mainController.getProcessor()));
+            mainController.getTabComponent().load(new ProcessingPreviewController(preview.get(0),mainController.getProductProcessor()));
     }
 
     private void loadView(ProductListDTO productListDTO) {
@@ -42,7 +41,7 @@ public class ShowPreviewViewEvent extends Event {
 
         ProcessingPreviewController controller = fxmlLoader.getController();
         controller.setProductList(productListDTO);
-        controller.setProcessing(mainController.getProcessor());
+        controller.setProcessing(mainController.getProductProcessor());
 
         Stage stage = new Stage();
         stage.initOwner(mainController.getRoot().getScene().getWindow());

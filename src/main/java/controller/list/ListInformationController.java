@@ -11,7 +11,8 @@ import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
+import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
@@ -46,6 +47,7 @@ import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
 import services.download.Downloader;
 import utils.AlertFactory;
+import utils.FileUtils;
 import utils.ThemeConfiguration;
 
 import java.awt.*;
@@ -67,7 +69,7 @@ public class ListInformationController extends ProductListTabItem {
     private Parent parent;
     private final ProductListDTO productListDTO;
     private GTMapSearchController mapController;
-    private TabPaneComponent tabPaneComponent;
+    private SatInfTabPaneComponent tabPaneComponent;
 
     @FXML
     private ImageView image;
@@ -91,7 +93,6 @@ public class ListInformationController extends ProductListTabItem {
     private AnchorPane multimediaPane;
     @FXML
     private Button deleteFeature;
-
     @FXML
     private Button addAreaOfProduct;
     @FXML
@@ -126,7 +127,7 @@ public class ListInformationController extends ProductListTabItem {
      * @param component TabPaneComponent
      */
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -530,6 +531,10 @@ public class ListInformationController extends ProductListTabItem {
     private void generatePreview() {
         try {
             ProductDTO selectedItem = productListView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && !FileUtils.productExists(selectedItem.getTitle())){
+                AlertFactory.showErrorDialog("Product not downloaded","Product not downloaded","The selected product is not downloaded!");
+                return;
+            }
             String areaOfWork = getSelectedAreaOfWork();
             if (selectedItem != null && areaOfWork != null) {
                 List<String> strings = productListDTO.areasOfWorkOfProduct(selectedItem.getFootprint());
@@ -538,6 +543,7 @@ public class ListInformationController extends ProductListTabItem {
                     //String area = setGridInAreaOfWork();
                     //if (area!= null)
                         //process(selectedItem, Lists.newArrayList(area));
+                    tabPaneComponent.fireEvent(new ComponentEvent(this, "Opening preview for product "+selectedItem.getTitle()));
                     tabPaneComponent.load(new PreviewController(selectedItem,getSelectedAreaOfWork(),productListDTO.getWorkflow(WorkflowType.valueOf(selectedItem.getProductType())),productListDTO.getName()));
                 } else {
                     AlertFactory.showErrorDialog("Product error","Product error","Product does not contain the selected area of work");
@@ -552,7 +558,7 @@ public class ListInformationController extends ProductListTabItem {
     }
 
     private void process(ProductDTO productDTO, List<String> areas) throws Exception {
-        Task<BufferedImage> task = tabPaneComponent.getMainController().getProcessor().process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
+        Task<BufferedImage> task = tabPaneComponent.getMainController().getProductProcessor().process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
 
         task.setOnFailed(e->{
             AlertFactory.showErrorDialog("Error","","Error while setting preview image");
@@ -599,35 +605,7 @@ public class ListInformationController extends ProductListTabItem {
         }
     }
 
-    private String setGridInAreaOfWork() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewView.fxml"));
-        Scene scene = null;
-        try {
-            scene = new Scene(fxmlLoader.load());
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-        JMetro jMetro = ThemeConfiguration.getJMetroStyled();
-
-        PreviewController controller = fxmlLoader.getController();
-        /*try {
-            //controller.setAreaOfWork(getSelectedAreaOfWork());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-
-        Stage stage = new Stage();
-        stage.initOwner(tabPaneComponent.getMainController().getRoot().getScene().getWindow());
-        stage.setResizable(false);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        jMetro.setScene(scene);
-        stage.showAndWait();
-        /*try {
-            //return controller.getArea();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-        return null;
+    enum Historic {
+        ADD_PRODUCT,DELETE_PRODUCT,ADD_AREA_OF_WORK,DELETE_AREA_OF_WORK,ADD_REFERENCE_IMAGE,DELETE_REFERENCE_IMAGE
     }
 }

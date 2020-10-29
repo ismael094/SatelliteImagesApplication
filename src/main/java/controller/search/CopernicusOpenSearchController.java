@@ -5,7 +5,8 @@ import controller.cell.ProductResultListCell;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import controller.GTMapSearchController;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
+import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -119,7 +120,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
     private boolean isRedoOrUndo;
-    private TabPaneComponent tabPaneComponent;
+    private SatInfTabPaneComponent tabPaneComponent;
     private Map<String,Control> control;
 
     public CopernicusOpenSearchController(String id) {
@@ -170,7 +171,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -487,6 +488,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         addParameters();
         clearMap();
         logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
+        tabPaneComponent.fireEvent(new ComponentEvent(this,"Petition to OpenSearch with parameters " + searcher.getSearchParametersAsString()));
         setSpinnerVisible(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> onSucceedSearch(response));

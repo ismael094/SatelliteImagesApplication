@@ -3,29 +3,29 @@ package controller.processing;
 import controller.interfaces.TabItem;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import gui.components.TabPaneComponent;
+import gui.components.SatInfTabPaneComponent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
+import model.products.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 import utils.AlertFactory;
+import utils.ProductBandUtils;
+import utils.SatelliteData;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class PreviewController implements TabItem {
     private final String area;
     private WorkflowDTO workflowDTO;
     private String path;
-    private TabPaneComponent tabComponent;
+    private SatInfTabPaneComponent tabComponent;
     private Parent parent;
     private List<RadioButton> bandsCheckout;
 
@@ -71,6 +71,7 @@ public class PreviewController implements TabItem {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        bandsCheckout = new ArrayList<>();
         //JMetro jMetro = ThemeConfiguration.getJMetroStyled();
     }
 
@@ -93,22 +94,28 @@ public class PreviewController implements TabItem {
     }
 
     private void createBands() {
+        if (SatelliteData.isRadar(product.getPlatformName())) {
+            setRadarBands();
+        } else {
+            //setOpticalBands();
+        }
+    }
+
+    private void setRadarBands() {
         if (workflowDTO == null)
             workflowDTO = new Sentinel1GRDDefaultWorkflowDTO();
-        this.bandsCheckout = new ArrayList<>();
-        RadioButton sigma0_vv = new RadioButton("Sigma0_VV");
-        sigma0_vv.setOnAction(e->{
-            workflowDTO.getOperation(Operator.SUBSET).getParameters().put("sourceBands", sigma0_vv.getText());
-        });
-        RadioButton sigma0_vh = new RadioButton("Sigma0_VH");
-        sigma0_vh.setOnAction(e->{
-            workflowDTO.getOperation(Operator.SUBSET).getParameters().put("sourceBands", sigma0_vh.getText());
+
+        List<String> outputBands = ProductBandUtils.getOutputBands(product, workflowDTO);
+        outputBands.forEach(b->{
+            RadioButton radioButton = new RadioButton(b);
+            radioButton.setId(b);
+            radioButton.setOnAction(e->{
+                workflowDTO.getOperation(Operator.SUBSET).getParameters().put("sourceBands", b);
+            });
+            bandsCheckout.add(radioButton);
         });
 
-        bandsCheckout.add(sigma0_vh);
-        bandsCheckout.add(sigma0_vv);
         loadBands(bandsCheckout);
-
     }
 
     private void loadBands(List<RadioButton> checkboxes) {
@@ -119,7 +126,7 @@ public class PreviewController implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(TabPaneComponent component) {
+    public void setTabPaneComponent(SatInfTabPaneComponent component) {
         this.tabComponent = component;
     }
 
@@ -146,11 +153,11 @@ public class PreviewController implements TabItem {
 
     @Override
     public String getItemId() {
-        return "Preview";
+        return "Preview+"+product.getId();
     }
 
     private void process(String area) throws Exception {
-        Task<BufferedImage> task = tabComponent.getMainController().getProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
+        Task<BufferedImage> task = tabComponent.getMainController().getProductProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
 
         task.setOnFailed(e->{
             AlertFactory.showErrorDialog("Error","","Error while setting preview image");
@@ -160,10 +167,15 @@ public class PreviewController implements TabItem {
         task.setOnSucceeded(e-> {
             try {
                 imageController.setImage(SwingFXUtils.toFXImage(task.get(),null));
+                AlertFactory.showSuccessDialog("Preview","Preview","Preview completed!");
             } catch (InterruptedException | ExecutionException interruptedException) {
                 interruptedException.printStackTrace();
             }
         });
+
+        AlertFactory.showSuccessDialog("Preview","Preview","Preview has been made! Wait until" +
+                " the product is processed. This could last several minutes...");
+
         new Thread(task).start();
     }
 }
