@@ -1,4 +1,4 @@
-package gui.components.tabcomponent;
+package gui.components;
 
 import controller.MainController;
 import controller.interfaces.TabItem;
@@ -52,7 +52,8 @@ public abstract class TabPaneComponent extends TabPane implements Component {
         return mainController;
     }
 
-    protected void updateObservers() {
+    @Override
+    public void updateObservers() {
         observers.forEach(Observer::update);
     }
 

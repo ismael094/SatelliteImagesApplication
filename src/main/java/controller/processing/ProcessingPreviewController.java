@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import com.jfoenix.controls.JFXSpinner;
 import controller.cell.ProcessingProductCell;
 import controller.interfaces.TabItem;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -45,7 +46,7 @@ public class ProcessingPreviewController implements TabItem {
     private ProductListDTO productListDTO;
     private ProcessorManager processor;
     private Point2D dragInitialCoordinate;
-    private SatInfTabPaneComponent tabPaneComponent;
+    private TabPaneComponent tabPaneComponent;
     private Parent parent;
 
     public ProcessingPreviewController(ProductListDTO productListDTO, ProcessorManager processor) {
@@ -62,7 +63,7 @@ public class ProcessingPreviewController implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 

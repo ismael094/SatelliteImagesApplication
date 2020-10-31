@@ -11,6 +11,7 @@ import services.algorithms.AlgorithmsExecutor;
 import utils.AlertFactory;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 public class ExecuteAlgorithmEvent extends Event {
     private File algorithm;
@@ -30,7 +31,7 @@ public class ExecuteAlgorithmEvent extends Event {
                 @Override
                 protected String call() throws Exception {
                     Process start = execute.start();
-                    String output = IOUtils.toString(start.getInputStream(),"UTF_8");
+                    String output = IOUtils.toString(start.getInputStream(), StandardCharsets.UTF_8);
                     int i = start.waitFor();
                     if (i!=0)
                         throw new Exception("Error executing algorithm");

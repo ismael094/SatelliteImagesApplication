@@ -4,7 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controller.interfaces.TabItem;
 import controller.search.CopernicusOpenSearchController;
 import controller.search.CopernicusProductDetailsController_;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Control;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductResultListCell extends ListCell<ProductDTO> {
-    private final SatInfTabPaneComponent tabPaneComponent;
+    private final TabPaneComponent tabPaneComponent;
     private FXMLLoader loader;
 
     @FXML
@@ -43,7 +44,7 @@ public class ProductResultListCell extends ListCell<ProductDTO> {
     private JFXButton opposite;
     private ProductDTO product;
 
-    public ProductResultListCell(SatInfTabPaneComponent component) {
+    public ProductResultListCell(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 

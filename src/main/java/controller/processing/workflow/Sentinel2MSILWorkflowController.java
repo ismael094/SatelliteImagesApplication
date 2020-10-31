@@ -47,19 +47,17 @@ public class Sentinel2MSILWorkflowController implements Initializable, WorkflowC
     @Override
     public void setWorkflow(WorkflowDTO workflow) {
         this.workflow = workflow;
+
         if (workflow.getOperations().isEmpty()) {
             addMSILOperations(workflow);
         }
-        List<Operation> operations = workflow.getOperations();
-        for (int i = 0; i < operations.size(); i++) {
-            if (operationsMap.containsKey(operations.get(i).getName())) {
-                OperationController op = operationsMap.get(operations.get(i).getName());
-                op.setOperation(operations.get(i));
-                if (i < operations.size()-1) {
-                    op.setNextOperationController(operationsMap.get(operations.get(i+1).getName()));
-                }
+
+        workflow.getOperations().forEach(operation -> {
+            if (operationsMap.containsKey(operation.getName())) {
+                OperationController op = operationsMap.get(operation.getName());
+                op.setParameters(operation.getParameters());
             }
-        }
+        });
     }
 
     private void addMSILOperations(WorkflowDTO workflow) {
@@ -71,13 +69,11 @@ public class Sentinel2MSILWorkflowController implements Initializable, WorkflowC
 
     @Override
     public WorkflowDTO getWorkflow() {
-        List<Operation> operations = workflow.getOperations();
-        for (Operation operation : operations) {
+        workflow.getOperations().forEach(operation -> {
             if (operationsMap.containsKey(operation.getName())) {
-                OperationController op = operationsMap.get(operation.getName());
-                op.getOperation();
+                operation.setParameters(operationsMap.get(operation.getName()).getParameters());
             }
-        }
+        });
         return workflow;
     }
 

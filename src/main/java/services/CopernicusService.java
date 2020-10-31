@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.entities.Product;
 import utils.http.CopernicusHTTPAuthManager;
+import utils.http.HTTPAuthManager;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -29,7 +30,7 @@ public class CopernicusService implements Service {
     static final Logger logger = LogManager.getLogger(CopernicusService.class.getName());
     private static CopernicusService instance;
 
-    private CopernicusHTTPAuthManager httpManager;
+    private HTTPAuthManager httpManager;
     private Pair<String, String> pair;
 
     private CopernicusService() {

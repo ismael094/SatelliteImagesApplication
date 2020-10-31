@@ -8,20 +8,20 @@ import javafx.scene.control.ChoiceBox;
 import model.processing.workflow.operation.Operation;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 public class WriteOperationController implements Initializable, OperationController {
     @FXML
     private ChoiceBox<String> writeFormat;
-    private Operation operation;
+
     private Map<String, Object> parameters;
-    private Operation previewOperation;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        previewOperation = null;
         initWriteFormat();
+        this.parameters = new HashMap<>();
     }
 
     private void initWriteFormat() {
@@ -31,53 +31,14 @@ public class WriteOperationController implements Initializable, OperationControl
     }
 
     @Override
-    public Operation getOperation() {
-        getParameters();
-        return operation;
-    }
-
-    private void getParameters() {
-        operation.getParameters().put("formatName",writeFormat.getValue());
+    public Map<String, Object> getParameters() {
+        parameters.put("formatName",writeFormat.getValue());
+        return parameters;
     }
 
     @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-        this.parameters = operation.getParameters();
-        setParameters(operation.getParameters());
-    }
-
-    @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-
-    }
-
-    @Override
-    public ObservableList<String> getInputBands() {
-        return FXCollections.observableArrayList();
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return null;
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-
-    }
-
-    @Override
-    public void updateInput() {
-
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return null;
-    }
-
-    private void setParameters(Map<String, Object> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
         writeFormat.setValue(String.valueOf(parameters.getOrDefault("formatName","GeoTIFF")));
     }
 }

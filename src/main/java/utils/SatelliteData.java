@@ -14,6 +14,8 @@ public class SatelliteData {
         }
     }
 
+
+
     public enum RadarSatellite {
         SENTINEL_1("Sentinel-1");
 

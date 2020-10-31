@@ -5,7 +5,8 @@ import controller.cell.ProductResultListCell;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import controller.GTMapSearchController;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -120,7 +121,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
     private boolean isRedoOrUndo;
-    private SatInfTabPaneComponent tabPaneComponent;
+    private TabPaneComponent tabPaneComponent;
     private Map<String,Control> control;
 
     public CopernicusOpenSearchController(String id) {
@@ -171,7 +172,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 

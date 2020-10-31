@@ -2,7 +2,8 @@ package controller.search;
 
 import controller.interfaces.TabItem;
 import gui.GTMap;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -66,7 +67,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
 
 
     private final ProductDTO product;
-    private SatInfTabPaneComponent tabPaneComponent;
+    private TabPaneComponent tabPaneComponent;
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     static final Logger logger = LogManager.getLogger(CopernicusProductDetailsController_.class.getName());
@@ -84,7 +85,7 @@ public class CopernicusProductDetailsController_ implements TabItem {
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 

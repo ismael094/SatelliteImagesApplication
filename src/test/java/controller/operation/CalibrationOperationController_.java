@@ -9,7 +9,7 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -41,138 +41,27 @@ public class CalibrationOperationController_ extends ApplicationTest {
     }
 
     @Test
-    public void test_beta_output() {
+    public void set_parameters() {
         clickOn("#outputBeta");
-        clickOn("#polarisations");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#calibrationSourceBands");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
 
-        assertThat(controller.getOutputBands().size()).isGreaterThan(0);
-        assertThat(controller.getOutputBands().get(0)).isEqualTo("Beta0_VV");
+        assertThat(controller.getParameters().size()).isGreaterThan(0);
     }
 
     @Test
-    public void test_output() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
+    public void get_parameters() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
 
         interact(() -> {
-            controller.setOperation(workflow.getOperation(Operator.CALIBRATION));
+            controller.setParameters(workflow.getOperation(Operator.CALIBRATION).getParameters());
         });
+
         clickOn("#outputBeta");
         clickOn("#outputSigma");
         clickOn("#outputGamma");
 
-
-        //clickOn("#calibrationSourceBands");
-
-        assertThat(controller.getOutputBands().size()).isEqualTo(4);
-        assertThat(controller.getOutputBands().toString()).contains("Gamma0_VV").contains("Gamma0_VH");
-        assertThat(controller.getOutputBands().toString()).contains("Sigma0_VV").contains("Sigma0_VH");
-        assertThat(controller.getOutputBands().toString()).doesNotContain("Beta0");
-    }
-
-    @Test
-    public void source_bands() {
-        clickOn("#polarisations");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-
-        assertThat(controller.getOutputBands().size()).isEqualTo(1);
-        assertThat(controller.getOutputBands().toString()).doesNotContain("VH");
-    }
-
-    @Test
-    public void polarisation() {
-        interact(() -> {
-            controller.getOutputGamma().set(true);
-        });
-        clickOn("#polarisations");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#calibrationSourceBands");
-        type(KeyCode.UP);
-        type(KeyCode.ENTER);
-        assertThat(controller.getPolarisations().size()).isEqualTo(1);
-        assertThat(controller.getPolarisations().contains("VV")).isTrue();
-        assertThat(controller.getOutputBands().size()).isGreaterThan(0);
-        assertThat(controller.getOutputBands().toString()).doesNotContain("VH");
-    }
-
-    @Test
-    public void output_parameters() {
-        clickOn("#calibrationSourceBands");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        controller.getOutputGamma().set(true);
-        controller.getOutputBeta().set(true);
-        clickOn("#outputInDb");
-        clickOn("#polarisations");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        Operation op = controller.getOperation();
-
-        assertThat(op.getName()).isEqualTo(Operator.CALIBRATION);
-        assertThat(op.getParameters().size()).isGreaterThan(0);
-        assertThat(op.getParameters().get("outputBetaBand")).isEqualTo(true);
-        assertThat(op.getParameters().get("outputSigmaBand")).isEqualTo(false);
-        assertThat(op.getParameters().get("outputImageScaleInDb")).isEqualTo(true);
-        assertThat(op.getParameters().get("sourceBands")).isEqualTo("Intensity_VH");
-        assertThat(op.getParameters().get("selectedPolarisations")).isEqualTo("VV");
-    }
-
-    @Test
-    public void with_output_empty_should_return_sigma_output() {
-        clickOn("#calibrationSourceBands");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#outputInDb");
-        clickOn("#polarisations");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        Operation op = controller.getOperation();
-
-        assertThat(op.getName()).isEqualTo(Operator.CALIBRATION);
-        System.out.println(controller.getOutputBands().toString());
-        assertThat(controller.getOutputBands().size()).isEqualTo(1);
-        assertThat(controller.getOutputBands().toString()).contains("Sigma").doesNotContain("Gamma").doesNotContain("Beta");
-    }
-
-    @Test
-    public void set_operation() {
-        interact(() -> {
-            controller.setOperation(new Sentinel1GRDDefaultWorkflowDTO().getOperation(Operator.CALIBRATION));
-        });
-
-        assertThat(controller.getOutputSigma().get()).isFalse();
-        assertThat(controller.getOutputBeta().get()).isTrue();
-
-        Operation op = controller.getOperation();
-
-        assertThat(op.getName()).isEqualTo(Operator.CALIBRATION);
-        assertThat(op.getParameters().size()).isGreaterThan(0);
-        assertThat(op.getParameters().get("outputBetaBand")).isEqualTo(true);
-        assertThat(op.getParameters().get("outputSigmaBand")).isEqualTo(false);
-        assertThat(op.getParameters().get("sourceBands")).isEqualTo("Intensity_VV,Intensity_VH");
-        assertThat(op.getParameters().get("selectedPolarisations")).isEqualTo("VV,VH");
-    }
-
-    @Test
-    public void empty_parameters() {
-        interact(() -> {
-            controller.setOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
-        });
-        assertThat(controller.getOutputSigma().get()).isFalse();
-        assertThat(controller.getOutputBeta().get()).isFalse();
-
-        Operation op = controller.getOperation();
-        assertThat(op.getName()).isEqualTo(Operator.CALIBRATION);
-
-        assertThat(op.getParameters().get("sourceBands")).isEqualTo("Intensity_VH,Intensity_VV");
-        assertThat(op.getParameters().get("selectedPolarisations")).isEqualTo("VH,VV");
-        assertThat(controller.getOutputBands().toString()).contains("Sigma").doesNotContain("Gamma").doesNotContain("Beta");
-
+        assertThat(controller.getParameters().size()).isEqualTo(5);
+        assertThat((boolean)controller.getParameters().get("outputBetaBand")).isTrue();
+        assertThat((boolean)controller.getParameters().get("outputGammaBand")).isTrue();
+        assertThat((boolean)controller.getParameters().get("outputSigmaBand")).isTrue();
     }
 }

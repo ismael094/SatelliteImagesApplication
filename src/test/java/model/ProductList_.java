@@ -2,7 +2,7 @@ package model;
 
 import javafx.beans.property.SimpleStringProperty;
 import model.list.ProductListDTO;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
@@ -239,7 +239,7 @@ public class ProductList_ {
         productListDTO.addRestriction(productTypeRestriction);
 
         productListDTO.addProduct(SentinelData.getSentinel1Product());
-        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        productListDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         assertThat(productListDTO.getWorkflow(WorkflowType.GRD).getType()).isEqualTo(WorkflowType.GRD);
     }
 
@@ -253,8 +253,8 @@ public class ProductList_ {
         productListDTO.addRestriction(productTypeRestriction);
 
         productListDTO.addProduct(SentinelData.getSentinel1Product());
-        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
-        productListDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        productListDTO.addWorkflow(new GRDDefaultWorkflowDTO());
+        productListDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         assertThat(productListDTO.getWorkflows().size()).isEqualTo(1);
         assertThat(productListDTO.getWorkflow(WorkflowType.GRD).getType()).isEqualTo(WorkflowType.GRD);
     }

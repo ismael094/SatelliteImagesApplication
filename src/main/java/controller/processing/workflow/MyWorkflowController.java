@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,11 +46,13 @@ public class MyWorkflowController implements Initializable {
     private Map<WorkflowType, String> workflowControllerMap;
     private WorkflowController activeWorkflowController;
     private MainController mainController;
+    private List<WorkflowController> openWorkflows;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMap();
+        openWorkflows = new ArrayList<>();
         workflowList.setCellFactory(e->new WorkflowListViewCellController(this));
         //workflowList.getItems().add(new Sentinel1GRDDefaultWorkflow());
         //setWorkflow(new Sentinel1GRDDefaultWorkflow());
@@ -84,8 +87,14 @@ public class MyWorkflowController implements Initializable {
 
     private void onSaveWorkflowSaveParameters() {
         saveWorkflow.setOnAction(e->{
-            activeWorkflowController.getWorkflow();
-            mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
+            ObservableList<WorkflowDTO> workflows = FXCollections.observableArrayList();
+
+            openWorkflows.forEach(w->{
+                workflows.add(w.getWorkflow());
+            });
+
+            mainController.getUserManager().updateUserWorkflows(workflows);
+            //mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
             AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
     }
@@ -119,6 +128,7 @@ public class MyWorkflowController implements Initializable {
     private void initMap() {
         workflowControllerMap = new HashMap<>();
         workflowControllerMap.put(WorkflowType.GRD, "/fxml/Sentinel1GRDWorkflowView.fxml");
+        workflowControllerMap.put(WorkflowType.SLC, "/fxml/Sentinel1SLCWorkflowView.fxml");
         workflowControllerMap.put(WorkflowType.S2MSI1C, "/fxml/Sentinel2MSILWorkflowView.fxml");
         workflowControllerMap.put(WorkflowType.S2MSI2A, "/fxml/Sentinel2MSILWorkflowView.fxml");
     }
@@ -147,6 +157,7 @@ public class MyWorkflowController implements Initializable {
         AnchorPane.setLeftAnchor(parent,0.0);
         AnchorPane.setRightAnchor(parent,0.0);
         activeWorkflowController.setWorkflow(workflow);
+        openWorkflows.add(activeWorkflowController);
     }
 
 

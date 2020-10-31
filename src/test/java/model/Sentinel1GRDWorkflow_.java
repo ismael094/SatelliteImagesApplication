@@ -2,7 +2,7 @@ package model;
 
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,11 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Sentinel1GRDWorkflow_ {
 
-    private Sentinel1GRDDefaultWorkflowDTO grdWorkflow;
+    private GRDDefaultWorkflowDTO grdWorkflow;
 
     @Before
     public void init() {
-        this.grdWorkflow = new Sentinel1GRDDefaultWorkflowDTO();
+        this.grdWorkflow = new GRDDefaultWorkflowDTO();
     }
 
     @Test

@@ -1,12 +1,10 @@
 package gui.menu;
 
-import controller.MainController;
 import controller.interfaces.ModifiableTabItem;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import gui.components.MenuComponent;
-import gui.components.SatInfTabPaneComponent;
-import gui.components.tabcomponent.TabPaneComponent;
+import gui.components.TabPaneComponent;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -30,7 +28,6 @@ public class EditMenu extends Menu implements SatInfMenuItem, Observer {
     private void init() {
         undo = new MenuItem("Undo");
         undo.setOnAction(e->{
-
             Tab active = menuComponent.getMainController().getTabComponent().getActive();
             if (menuComponent.getMainController().getTabComponent().getControllerOf(active) instanceof ProductListTabItem) {
                 ProductListTabItem controllerOf = (ProductListTabItem) menuComponent.getMainController().getTabComponent().getControllerOf(active);
@@ -66,9 +63,30 @@ public class EditMenu extends Menu implements SatInfMenuItem, Observer {
     public void update() {
         TabPaneComponent tabController = menuComponent.getMainController().getTabComponent();
         Platform.runLater(()->{
-            TabItem controllerOf = tabController.getControllerOf(tabController.getActive());
-            undo.setDisable(!(controllerOf instanceof ModifiableTabItem));
-            redo.setDisable(!(controllerOf instanceof ModifiableTabItem));
+            TabItem controller = tabController.getControllerOf(tabController.getActive());
+            if (!(controller instanceof ModifiableTabItem)) {
+                undo.setDisable(true);
+                redo.setDisable(true);
+            } else {
+                ModifiableTabItem modifiableTabItem = (ModifiableTabItem)controller;
+                if (modifiableTabItem.getRedo()!=null) {
+                    setMenuItem(redo, "Redo " + modifiableTabItem.getRedo(), false);
+                } else {
+                    setMenuItem(redo, "Redo", true);
+                }
+
+                if (modifiableTabItem.getUndo()!=null) {
+                    setMenuItem(undo, "Undo " + modifiableTabItem.getUndo(), false);
+                } else {
+                    setMenuItem(undo, "Undo", true);
+                }
+            }
+
         });
+    }
+
+    private void setMenuItem(MenuItem item, String text, boolean disabled) {
+        item.setText(text);
+        item.setDisable(disabled);
     }
 }

@@ -73,6 +73,11 @@ public class MenuComponent extends MenuBar implements Component{
         observers.add(observer);
     }
 
+    @Override
+    public void updateObservers() {
+        observers.forEach(Observer::update);
+    }
+
     public void initSearchView(String id) {
         ;
     }

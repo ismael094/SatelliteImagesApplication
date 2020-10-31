@@ -9,6 +9,8 @@ import model.processing.workflow.operation.Operation;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class ResampleOperationController implements Initializable,OperationController {
@@ -22,65 +24,26 @@ public class ResampleOperationController implements Initializable,OperationContr
     private ChoiceBox<String> flagDownsampling;
     @FXML
     private ToggleSwitch resampleOnPyramidLevels;
-    private Operation operation;
-    private ObservableList<String> inputBands;
-    private OperationController next;
+
+    private Map<String,Object> parameters;
 
     @Override
-    public Operation getOperation() {
-        getParameters();
-        return operation;
-    }
-
-    @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-        setParameters();
-    }
-
-    private void setParameters() {
-        targetedBand.setValue(String.valueOf(operation.getParameters().getOrDefault("referenceBand","B2")));
-        upsampling.setValue(String.valueOf(operation.getParameters().getOrDefault("upsampling","Nearest")));
-        downsampling.setValue(String.valueOf(operation.getParameters().getOrDefault("downsampling","First")));
-        flagDownsampling.setValue(String.valueOf(operation.getParameters().getOrDefault("flagDownsampling","First")));
-    }
-
-    private void getParameters() {
-        operation.getParameters().put("referenceBand",targetedBand.getValue());
-        operation.getParameters().put("upsampling",upsampling.getValue());
-        operation.getParameters().put("downsampling",downsampling.getValue());
-        operation.getParameters().put("flagDownsampling",flagDownsampling.getValue());
+    public void setParameters(Map<String,Object> parameters) {
+        this.parameters = parameters;
+        targetedBand.setValue(String.valueOf(parameters.getOrDefault("referenceBand","B2")));
+        upsampling.setValue(String.valueOf(parameters.getOrDefault("upsampling","Nearest")));
+        downsampling.setValue(String.valueOf(parameters.getOrDefault("downsampling","First")));
+        flagDownsampling.setValue(String.valueOf(parameters.getOrDefault("flagDownsampling","First")));
     }
 
     @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-        this.inputBands = inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getInputBands() {
-        return inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return FXCollections.observableArrayList("B2","B3","B4","B5","B6","B7","B8","B8A","B11","B12");
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-        this.next = operationController;
-    }
-
-    @Override
-    public void updateInput() {
-        if (this.next != null)
-            next.setInputBands(getOutputBands());
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return next;
+    public Map<String,Object> getParameters() {
+        parameters.put("referenceBand",targetedBand.getValue());
+        parameters.put("upsampling",upsampling.getValue());
+        parameters.put("downsampling",downsampling.getValue());
+        parameters.put("flagDownsampling",flagDownsampling.getValue());
+        parameters.put("sourceBands","B2,B3,B4,B5,B6,B7,B8,B8A,B11,B12");
+        return parameters;
     }
 
     @Override
@@ -93,5 +56,6 @@ public class ResampleOperationController implements Initializable,OperationContr
         downsampling.setValue("First");
         flagDownsampling.setItems(FXCollections.observableArrayList("First", "FlagAnd", "FlagOr", "FlagMedianAnd", "FlagMedianOr"));
         flagDownsampling.setValue("First");
+        this.parameters = new HashMap<>();
     }
 }

@@ -70,6 +70,7 @@ public class ProductListDTO {
         this.referenceProducts = FXCollections.observableArrayList();
     }
 
+
     public ObjectId getId() {
         return id;
     }
@@ -203,14 +204,12 @@ public class ProductListDTO {
 
     public void addRestriction(Restriction restriction) {
         restrictions.add(restriction);
-        System.out.println(products.size());
         List<ProductDTO> productDTOS = new ArrayList<>();
         products.forEach(e->{
             if (!validate(e))
                 productDTOS.add(e);
         });
         products.removeAll(productDTOS);
-        System.out.println(products.size());
         save();
     }
 
@@ -227,6 +226,10 @@ public class ProductListDTO {
         return areasOfWork;
     }
 
+    /**
+     * Get valid products of the list. A valid products has minimum one area of work assigned
+     * @return List of products with one or more areas of work assigned
+     */
     public List<ProductDTO> getValidProducts() {
         List<ProductDTO> res = new ArrayList<>();
         products.forEach(p->{
@@ -237,6 +240,10 @@ public class ProductListDTO {
         return res;
     }
 
+    /**
+     * Get valid products and his areas of work
+     * @return Map with product as key
+     */
     public Map<ProductDTO,List<String>> getProductsAreasOfWorks() {
         Map<ProductDTO, List<String>> areas = new HashMap<>();
         products.forEach(p->{
@@ -247,6 +254,11 @@ public class ProductListDTO {
         return areas;
     }
 
+    /**
+     * Areas of work of a product
+     * @param footprint Footprint of product
+     * @return areas of work intersecting product footprint
+     */
     public List<String> areasOfWorkOfProduct(String footprint) {
         if (areasOfWork.size() == 0)
             return null;
@@ -298,6 +310,10 @@ public class ProductListDTO {
         save();
     }
 
+    /**
+     * Add new workflow to product list. Only a workflow per product type is allowed
+     * @param workflow Workflow to add
+     */
     public void addWorkflow(WorkflowDTO workflow) {
         boolean existsWorkflowForType = workflows.stream()
                 .filter(w->w.getType()==workflow.getType())

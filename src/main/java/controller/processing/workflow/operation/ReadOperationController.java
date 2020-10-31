@@ -1,53 +1,26 @@
 package controller.processing.workflow.operation;
 
-import javafx.collections.ObservableList;
-import model.processing.workflow.operation.Operation;
+import javafx.fxml.Initializable;
 
-public class ReadOperationController implements OperationController {
-    private Operation operation;
-    private ObservableList<String> inputBands;
-    private OperationController nextOperationController;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+public class ReadOperationController implements OperationController, Initializable {
 
     @Override
-    public Operation getOperation() {
-        return operation;
+    public Map<String, Object> getParameters() {
+        return new HashMap<>();
     }
 
     @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
+    public void setParameters(Map<String, Object> parameters) {
+
     }
 
     @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-        this.inputBands = inputBands;
-        updateInput();
-    }
+    public void initialize(URL location, ResourceBundle resources) {
 
-    @Override
-    public ObservableList<String> getInputBands() {
-        return this.inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return this.inputBands;
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-        this.nextOperationController = operationController;
-        updateInput();
-    }
-
-    @Override
-    public void updateInput() {
-        if (nextOperationController != null)
-            nextOperationController.setInputBands(inputBands);
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return nextOperationController;
     }
 }

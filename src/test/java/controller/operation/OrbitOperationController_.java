@@ -10,7 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -38,26 +38,26 @@ public class OrbitOperationController_ extends ApplicationTest {
     }
 
     @Test
-    public void set_operation() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
-        controller.setOperation(workflow.getOperation(Operator.APPLY_ORBIT_FILE));
-        controller.setInputBands(FXCollections.observableArrayList("Intensity_VH","Intensity_VV"));
-        assertThat(controller.getOutputBands().size()).isEqualTo(2);
-        assertThat(controller.getInputBands()).isEqualTo(controller.getOutputBands());
-        assertThat(controller.getOperation().getParameters().get("polyDegree")).isEqualTo(3);
+    public void set_parameters() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
+        controller.setParameters(workflow.getOperation(Operator.APPLY_ORBIT_FILE).getParameters());
+        assertThat(controller.getParameters().size()).isEqualTo(2);
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(3);
     }
 
     @Test
-    public void set_new_operation() {
+    public void get_parameters() {
         clickOn("#plyDegree");
         doubleClickOn("#plyDegree");
         write("5");
         type(KeyCode.ENTER);
-        assertThat(controller.getOperation().getParameters().get("polyDegree")).isEqualTo(5);
+
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
+
         clickOn("#plyDegree");
         doubleClickOn("#plyDegree");
         write("");
         type(KeyCode.ENTER);
-        assertThat(controller.getOperation().getParameters().get("polyDegree")).isEqualTo(5);
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
     }
 }

@@ -1,6 +1,8 @@
 package controller.results;
 
 import controller.processing.PreviewImageController;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -8,7 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -30,12 +35,19 @@ import java.util.ResourceBundle;
 
 public class ProductListProcessingResultItemController implements Initializable {
     static final Logger logger = LogManager.getLogger(ProductListProcessingResultItemController.class.getName());
+
+    @FXML
+    private Button options;
     @FXML
     private AnchorPane root;
     @FXML
     private ImageView image;
     @FXML
     private Label name;
+    @FXML
+    private MenuItem deleteFile;
+    @FXML
+    private MenuItem openFile;
 
     private File file;
     private Parent parent;
@@ -46,11 +58,25 @@ public class ProductListProcessingResultItemController implements Initializable 
         root.getStyleClass().add("processingResult");
         image.setOnMouseClicked(e->{
             try {
+                if (e.getClickCount() > 2 && e.isPrimaryButtonDown())
+                    loadImage();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
+        GlyphsDude.setIcon(options, FontAwesomeIcon.BARS);
+        deleteFile.setOnAction(event -> delete());
+        openFile.setOnAction(e-> {
+            try {
                 loadImage();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
         });
+    }
+
+    private void delete() {
+        boolean delete = file.delete();
     }
 
     public void setFile(File file) {
@@ -62,10 +88,11 @@ public class ProductListProcessingResultItemController implements Initializable 
         if (file.getName().contains("PNG")) {
             image.setImage(new Image("/img/image.jpg"));
         }
+        Tooltip tooltip = new Tooltip(file.getName());
+        Tooltip.install(name,tooltip);
     }
 
     private void loadImage() throws IOException {
-        System.out.println(file.toString());
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewImageView.fxml"));
         Scene scene = null;
         try {
@@ -81,7 +108,10 @@ public class ProductListProcessingResultItemController implements Initializable 
         System.out.println(file.toURI().toString());
         Image img = new Image(file.toURI().toString());
         controller.setImage(img);
+
         Stage stage = new Stage();
+        stage.setHeight(755);
+        stage.setWidth(755);
         stage.initOwner(image.getScene().getWindow());
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL);

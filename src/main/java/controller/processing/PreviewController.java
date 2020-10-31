@@ -3,27 +3,26 @@ package controller.processing;
 import controller.interfaces.TabItem;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
+import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
 import utils.AlertFactory;
+import utils.ProcessingConfiguration;
 import utils.ProductBandUtils;
 import utils.SatelliteData;
 
@@ -51,11 +50,12 @@ public class PreviewController implements TabItem {
     private final String area;
     private WorkflowDTO workflowDTO;
     private String path;
-    private SatInfTabPaneComponent tabComponent;
+    private TabPaneComponent tabComponent;
     private Parent parent;
     private List<RadioButton> bandsCheckout;
 
     static final Logger logger = LogManager.getLogger(PreviewController.class.getName());
+    private ToggleGroup toggleGroup;
 
     public PreviewController(ProductDTO product, String area, WorkflowDTO workflowDTO, String path) {
         this.product = product;
@@ -78,12 +78,22 @@ public class PreviewController implements TabItem {
     public void initData() throws ParseException {
         mapController.setAreaOfWork(area);
         GlyphsDude.setIcon(generatePreview, FontAwesomeIcon.ROCKET);
-        createBands();
 
+        getOutputBandsOfWorkflow();
+
+        onClickOnGenerateProcessPreview();
+    }
+
+    private void onClickOnGenerateProcessPreview() {
         generatePreview.setOnAction(e->{
-            String area = mapController.getArea();
+            //If there are bands, one must be selected to process preview
+            if (!toggleGroup.getToggles().isEmpty() && toggleGroup.getSelectedToggle() == null) {
+                AlertFactory.showErrorDialog("Error","Error","Select one band to process");
+                return;
+            }
             try {
-                process(area);
+                //Create task and set success and fail events
+                process(mapController.getArea());
             } catch (Exception exception) {
                 Platform.runLater(()->{
                     logger.atError().log("Error while generating the preview of product {}",product.getTitle());
@@ -93,18 +103,33 @@ public class PreviewController implements TabItem {
         });
     }
 
-    private void createBands() {
+    private void getOutputBandsOfWorkflow() {
+        if (workflowDTO == null)
+            workflowDTO = ProcessingConfiguration.getDefaultWorkflow(product.getProductType());
+
         if (SatelliteData.isRadar(product.getPlatformName())) {
             setRadarBands();
         } else {
-            //setOpticalBands();
+            setOpticalBands();
         }
     }
 
-    private void setRadarBands() {
-        if (workflowDTO == null)
-            workflowDTO = new Sentinel1GRDDefaultWorkflowDTO();
+    private void setOpticalBands() {
+        Operation op = workflowDTO.getOperation(Operator.WRITE);
+        bands.getChildren().clear();
+        if ((Boolean)op.getParameters().getOrDefault("generatePNG",false)) {
+            String red = getValue(op.getParameters(),"red");
+            String blue = getValue(op.getParameters(),"blue");
+            String green = getValue(op.getParameters(),"green");
+            bands.getChildren().addAll(new Label("Red: "+red+" - Blue: "+ blue+" - Green: "+green));
+        }
+    }
 
+    private String getValue(Map<String,Object> parameters, String key) {
+        return String.valueOf(parameters.get(key));
+    }
+
+    private void setRadarBands() {
         List<String> outputBands = ProductBandUtils.getOutputBands(product, workflowDTO);
         outputBands.forEach(b->{
             RadioButton radioButton = new RadioButton(b);
@@ -119,14 +144,14 @@ public class PreviewController implements TabItem {
     }
 
     private void loadBands(List<RadioButton> checkboxes) {
-        ToggleGroup toggleGroup = new ToggleGroup();
+        toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(checkboxes);
         bands.getChildren().clear();
         bands.getChildren().addAll(checkboxes);
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabComponent = component;
     }
 

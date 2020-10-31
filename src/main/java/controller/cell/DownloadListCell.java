@@ -15,7 +15,6 @@ public class DownloadListCell extends ListCell<DownloadItem> {
     private final Downloader downloader;
     private FXMLLoader loader;
 
-
     @FXML
     private AnchorPane root;
     @FXML
@@ -54,6 +53,7 @@ public class DownloadListCell extends ListCell<DownloadItem> {
 
             GlyphsDude.setIcon(cancelDownload,FontAwesomeIcon.REMOVE,"0.6em");
 
+            //Cancel current download item
             cancelDownload.setOnAction(e-> {
                 setDisable(true);
                 downloader.remove(item.getProductDTO());
@@ -61,6 +61,7 @@ public class DownloadListCell extends ListCell<DownloadItem> {
 
             title.setText(item.getProductDTO().getTitle());
 
+            //Bind progress property
             if (item.getProgressProperty() != null) {
                 bar.progressProperty().bind(item.getProgressProperty());
             }

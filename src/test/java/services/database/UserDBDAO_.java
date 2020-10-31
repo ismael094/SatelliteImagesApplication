@@ -6,7 +6,7 @@ import model.SentinelData;
 import model.list.ProductListDTO;
 import model.processing.workflow.GeneralWorkflowDTO;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.user.UserDTO;
 import org.junit.Before;
@@ -97,7 +97,7 @@ public class UserDBDAO_ {
         userDTO.setPassword("password");
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
-        Sentinel1GRDDefaultWorkflowDTO workflowDTO = new Sentinel1GRDDefaultWorkflowDTO();
+        GRDDefaultWorkflowDTO workflowDTO = new GRDDefaultWorkflowDTO();
         userDTO.addWorkflow(workflowDTO);
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
@@ -128,7 +128,7 @@ public class UserDBDAO_ {
         userDTO.setPassword("password");
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
-        userDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
 
@@ -161,7 +161,7 @@ public class UserDBDAO_ {
         userDTO.setPassword("password");
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
-        userDTO.addWorkflow(new Sentinel1GRDDefaultWorkflowDTO());
+        userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
         userDTO.addProductList(productListDTO);

@@ -10,7 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -40,22 +40,22 @@ public class WriteOperationController_  extends ApplicationTest {
     }
 
     @Test
-    public void set_operation() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
-        controller.setOperation(workflow.getOperation(Operator.WRITE));
-        assertThat(controller.getOperation().getName()).isEqualTo(Operator.WRITE);
+    public void set_parameters() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
+        controller.setParameters(workflow.getOperation(Operator.WRITE).getParameters());
+        assertThat(controller.getParameters().get("formatName")).isEqualTo("GeoTIFF");
     }
 
     @Test
-    public void set_write_format() {
+    public void get_parameters() {
         //Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
         interact(() -> {
-            controller.setOperation(new Operation(Operator.WRITE, new HashMap<>()));
+            controller.setParameters(new HashMap<>());
         });
-        assertThat(controller.getOperation().getParameters().get("formatName")).isEqualTo("GeoTIFF");
+        assertThat(controller.getParameters().get("formatName")).isEqualTo("GeoTIFF");
         clickOn("#writeFormat");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
-        assertThat(controller.getOperation().getParameters().get("formatName")).isEqualTo("PolSARPro");
+        assertThat(controller.getParameters().get("formatName")).isEqualTo("PolSARPro");
     }
 }

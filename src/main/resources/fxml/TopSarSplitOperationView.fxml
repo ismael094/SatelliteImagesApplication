@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.TOPSARSplitOperationController">
+   <content>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="423.0" prefWidth="534.0">
+         <children>
+            <GridPane layoutX="38.0" layoutY="85.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="208.0" minWidth="10.0" prefWidth="147.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="334.0" minWidth="10.0" prefWidth="279.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="108.0" minHeight="25.0" prefHeight="108.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="185.0" minHeight="27.0" prefHeight="111.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="218.0" minHeight="29.0" prefHeight="138.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="149.0" minHeight="0.0" prefHeight="24.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="Select Subswath" />
+                  <Label text="First Burst Index" GridPane.rowIndex="1" />
+                  <Label text="Last Burst Index" GridPane.rowIndex="2" />
+                  <ChoiceBox fx:id="subswath" prefHeight="31.0" prefWidth="205.0" GridPane.columnIndex="1" />
+                  <ChoiceBox fx:id="firstBurstIndex" prefHeight="31.0" prefWidth="205.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ChoiceBox fx:id="lastBurstIndex" prefHeight="31.0" prefWidth="204.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+               </children>
+            </GridPane>
+         </children>
+      </AnchorPane>
+   </content>
+</ScrollPane>

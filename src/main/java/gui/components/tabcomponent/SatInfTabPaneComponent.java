@@ -1,11 +1,10 @@
-package gui.components;
+package gui.components.tabcomponent;
 
 import controller.interfaces.TabItem;
 import controller.MainController;
 import controller.search.SearchController;
+import gui.components.TabPaneComponent;
 import gui.components.listener.ComponentEvent;
-import gui.components.tabcomponent.TabPaneComponent;
-import model.listeners.ComponentChangeListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -17,7 +16,6 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utils.gui.Observer;
 
 
 import java.util.*;

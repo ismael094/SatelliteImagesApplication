@@ -57,17 +57,6 @@ public abstract class Deserializer {
         product.setProductType((String)getPropertyByName(PRODUCT_TYPE,stringProperties));
         product.setPlatformName((String)getPropertyByName(PLATFORM_NAME,stringProperties));
         product.setIngestionDate((String)getPropertyByName(INGESTION_DATE,getDateProperties(node)));
-        /*try {
-            String productOnline = CopernicusService.getInstance().isProductOnline(node.get(ID).asText());
-
-            if (productOnline != null)
-                if (productOnline.equals("true"))
-                    product.setStatus("Online");
-                else
-                    product.setStatus("Offline");
-        } catch (IOException | AuthenticationException | NotAuthenticatedException e) {
-            product.setStatus("Offline");
-        }*/
     }
 
     public abstract ProductDTO deserialize(JsonNode product);

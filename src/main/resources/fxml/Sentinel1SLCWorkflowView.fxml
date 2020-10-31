@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="572.0" prefWidth="673.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.Sentinel1SLCWorkflowController">
+   <children>
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <MenuBar>
+               <menus>
+                  <Menu fx:id="add" mnemonicParsing="false" text="Add">
+                     <items>
+                        <MenuItem fx:id="terrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatennign" />
+                     </items>
+                  </Menu>
+                  <Menu fx:id="remove" mnemonicParsing="false" text="Remove">
+                     <items>
+                        <MenuItem fx:id="removeTerrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatenning" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+            <Accordion fx:id="accordion">
+               <panes>
+                  <TitledPane animated="false" prefHeight="464.0" prefWidth="673.0" text="Read">
+                     <content>
+                        <fx:include fx:id="readOperation" source="ReadOperationView.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane fx:id="topSarSplitPane" animated="false" text="TOPSAR-Split">
+                    <content>
+                       <fx:include fx:id="topSarSplitOperation" source="TopSarSplitOperationView.fxml" />
+                    </content>
+                  </TitledPane>
+                  <TitledPane animated="false" prefHeight="227.0" prefWidth="452.0" text="Orbit">
+                     <content>
+                        <fx:include fx:id="orbitOperation" source="OrbitOperationView.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane fx:id="calibrationPane" animated="false" prefHeight="361.0" prefWidth="673.0" text="Calibration">
+                     <content>
+                        <fx:include fx:id="calibrationOperation" source="CalibrationOperationView.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane fx:id="saveDimPane" animated="false" text="Save and Read BEAM DIM">
+                     <content>
+                        <fx:include fx:id="writeAndReadOperation" source="WriteAndReadOperationController.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane fx:id="topSarDeburstPane"  animated="false" text="TOPSAR-Deburst">
+                    <content>
+                       <fx:include fx:id="topSarDeburstOperation" source="TopSarDeburstOperationView.fxml" />
+                    </content>
+                  </TitledPane>
+                  <TitledPane fx:id="correctionPane" animated="false" text="Terrain Correction">
+                     <content>
+                        <fx:include fx:id="terrainCorrectionOperation" source="TerrainCorrectionView.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane fx:id="subsetPane" animated="false" prefHeight="411.0" prefWidth="673.0" text="Subset">
+                     <content>
+                        <fx:include fx:id="subsetOperation" source="SubsetOperationView.fxml" />
+                     </content>
+                  </TitledPane>
+                  <TitledPane animated="false" prefHeight="251.0" prefWidth="600.0" text="Write">
+                     <content>
+                        <fx:include fx:id="writeOperation" source="WriteOperationView.fxml" />
+                     </content>
+                  </TitledPane>
+               </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

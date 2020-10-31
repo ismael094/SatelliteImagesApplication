@@ -11,13 +11,12 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,49 +41,28 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
     }
 
     @Test
-    public void set_operation() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
+    public void set_parameters() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
         interact(() -> {
-            controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));
-        });
-        assertThat(controller.getOperation().getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
-        assertThat(controller.getOutputBands().toString()).isEqualTo(controller.getInputBands().toString());
-    }
-
-    @Test
-    public void select_source_bands() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
-
-        interact(() -> {
-            controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));
-            controller.setInputBands(FXCollections.observableArrayList("Beta0_VV","Beta0_VH"));
+            controller.setParameters(workflow.getOperation(Operator.TERRAIN_CORRECTION).getParameters());
         });
 
-        clickOn("#correctionSourceBands");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-
-        Operation operation = controller.getOperation();
-        assertThat(operation.getParameters().get("sourceBands")).isEqualTo("Beta0_VH");
-
-        assertThat(controller.getOutputBands().size()).isGreaterThan(0);
-        assertThat(controller.getOutputBands().get(0)).isEqualTo("Beta0_VH");
+        assertThat(controller.getParameters().get("demName")).isEqualTo("SRTM 3Sec");
     }
 
     @Test
     public void get_parameters() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
 
         interact(() -> {
-            controller.setOperation(workflow.getOperation(Operator.TERRAIN_CORRECTION));
-            controller.setInputBands(FXCollections.observableArrayList("Beta0_VV","Beta0_VH"));
-            clickOn("#correctionSourceBands");
-            clickOn("#demName");
-            type(KeyCode.DOWN);
-            type(KeyCode.ENTER);
+            controller.setParameters(workflow.getOperation(Operator.TERRAIN_CORRECTION).getParameters());
         });
 
-        Map<String, Object> parameters = controller.getOperation().getParameters();
+        clickOn("#demName");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+
+        Map<String, Object> parameters = controller.getParameters();
         assertThat(parameters.get("demName")).isEqualTo("SRTM 1Sec HGT");
         assertThat(parameters.get("demResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");
         assertThat(parameters.get("imgResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");

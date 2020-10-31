@@ -74,22 +74,19 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     public void setWorkflow(WorkflowDTO workflow) {
         this.workflow = workflow;
         if (workflow.getOperations().isEmpty()) {
-            addGRDOperations(workflow);
+            addGRDOperations(this.workflow);
         }
-        loadOperationsIntroControllers(workflow);
+        loadOperationsIntroControllers(this.workflow);
     }
 
     private void loadOperationsIntroControllers(WorkflowDTO workflow) {
         List<Operation> operations = workflow.getOperations();
-        for (int i = 0; i < operations.size(); i++) {
-            if (operationsMap.containsKey(operations.get(i).getName())) {
-                OperationController op = operationsMap.get(operations.get(i).getName());
-                op.setOperation(operations.get(i));
-                if (i < operations.size()-1) {
-                    op.setNextOperationController(operationsMap.get(operations.get(i+1).getName()));
-                }
-                if (operations.get(i).getName() == Operator.TERRAIN_FLATTENING && !accordion.getPanes().contains(flatteningPane))
-                    accordion.getPanes().add(5,flatteningPane);
+        for (Operation operation : operations) {
+            if (operationsMap.containsKey(operation.getName())) {
+                OperationController op = operationsMap.get(operation.getName());
+                op.setParameters(operation.getParameters());
+                if (operation.getName() == Operator.TERRAIN_FLATTENING && !accordion.getPanes().contains(flatteningPane))
+                    accordion.getPanes().add(5, flatteningPane);
             }
         }
     }
@@ -108,12 +105,11 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
     @Override
     public WorkflowDTO getWorkflow() {
         List<Operation> operations = workflow.getOperations();
-        for (Operation operation : operations) {
-            if (operationsMap.containsKey(operation.getName())) {
-                OperationController op = operationsMap.get(operation.getName());
-                op.getOperation();
+        operations.forEach(op->{
+            if (operationsMap.containsKey(op.getName())) {
+                op.setParameters(operationsMap.get(op.getName()).getParameters());
             }
-        }
+        });
         return workflow;
     }
 

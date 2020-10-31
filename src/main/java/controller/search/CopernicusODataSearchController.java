@@ -1,7 +1,8 @@
 package controller.search;
 
 import controller.GTMapSearchController;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
@@ -100,7 +101,7 @@ public class CopernicusODataSearchController extends SearchController<ProductDTO
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
 
     }
 

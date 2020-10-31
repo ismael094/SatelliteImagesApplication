@@ -5,6 +5,7 @@ import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import model.products.Sentinel1ProductDTO;
+import utils.sentinel.Sentinel1Bands;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,7 @@ public class GRDSentinel1Bands extends Sentinel1Bands {
 
         band((Boolean) operation.getParameters().getOrDefault("outputGammaBand",false), res, bandsBuilder,  "Gamma0");
 
-        band((Boolean) operation.getParameters().getOrDefault("outputSigmaBand",false), res, bandsBuilder,  "Sigma0");
+        band((Boolean) operation.getParameters().getOrDefault("outputSigmaBand",true), res, bandsBuilder,  "Sigma0");
 
         if (res.length() == 0)
             band(true, res, bandsBuilder,  "Sigma0");

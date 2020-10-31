@@ -1,6 +1,5 @@
 package controller.processing;
 
-import controller.results.ProductListProcessingResultItemController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,7 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.SentinelData;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.operation.Operator;
 import org.junit.After;
 import org.junit.Test;
@@ -23,12 +22,12 @@ import static org.testfx.matcher.control.TextMatchers.hasText;
 public class PreviewController_ extends ApplicationTest {
     PreviewController controller;
     private Parent mainNode;
-    private Sentinel1GRDDefaultWorkflowDTO workflow;
+    private GRDDefaultWorkflowDTO workflow;
 
     @Override
     public void start (Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(PreviewController.class.getResource("/fxml/PreviewView.fxml"));
-        workflow = new Sentinel1GRDDefaultWorkflowDTO();
+        workflow = new GRDDefaultWorkflowDTO();
         controller = new PreviewController(SentinelData.getSentinel1Product(), SentinelData.FOOTPRINT,workflow,"test");
         fxmlLoader.setController(controller);
         mainNode = fxmlLoader.load();

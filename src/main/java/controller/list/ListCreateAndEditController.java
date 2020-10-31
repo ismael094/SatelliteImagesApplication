@@ -118,8 +118,8 @@ public class ListCreateAndEditController implements Initializable {
 
     public void setProductList(ProductListDTO productList) {
         productListDTO = productList;
-        name.textProperty().bindBidirectional(productListDTO.nameProperty());
-        description.textProperty().bindBidirectional(productListDTO.descriptionProperty());
+        name.setText(productListDTO.getName());
+        description.setText(productListDTO.getDescription());
 
         if (productListDTO.getRestrictions().size() > 0) {
             restrictionSwitch.setSelected(true);
@@ -186,6 +186,9 @@ public class ListCreateAndEditController implements Initializable {
 
     public ProductListDTO getProductList() {
         if (!listWasCreated) return null;
+
+        productListDTO.setName(name.getText());
+        productListDTO.setDescription(description.getText());
 
         if (restrictionSwitch.isSelected()) {
             createRestrictions();

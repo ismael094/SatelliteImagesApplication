@@ -9,7 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.operation.Operator;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
@@ -38,9 +38,8 @@ public class WriteAndReadOperationController_ extends ApplicationTest {
 
     @Test
     public void set_operation() {
-        Sentinel1GRDDefaultWorkflowDTO workflow = new Sentinel1GRDDefaultWorkflowDTO();
-        controller.setOperation(workflow.getOperation(Operator.WRITE_AND_READ));
-        assertThat(controller.getOperation().getName()).isEqualTo(Operator.WRITE_AND_READ);
-        assertThat(controller.getOutputBands()).isEqualTo(controller.getInputBands());
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
+        controller.setParameters(workflow.getOperation(Operator.WRITE_AND_READ).getParameters());
+        assertThat(controller.getParameters().get("formatName")).isEqualTo("BEAM-DIMAP");
     }
 }

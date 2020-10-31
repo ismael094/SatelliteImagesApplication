@@ -4,7 +4,7 @@ import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
-import gui.components.tabcomponent.TabPaneComponent;
+import gui.components.TabPaneComponent;
 import gui.events.AddSelectedToListEvent;
 import javafx.application.Platform;
 import utils.gui.Observer;

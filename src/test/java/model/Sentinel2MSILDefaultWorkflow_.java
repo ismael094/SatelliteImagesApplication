@@ -1,7 +1,6 @@
 package model;
 
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
-import model.processing.workflow.Sentinel2MSILDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import org.junit.Before;
@@ -12,11 +11,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Sentinel2MSILDefaultWorkflow_ {
-    private Sentinel2MSILDefaultWorkflowDTO msilDefaultWorkflowDTO;
+    private S2MSI1CDefaultWorkflowDTO msilDefaultWorkflowDTO;
 
     @Before
     public void init() {
-        this.msilDefaultWorkflowDTO = new Sentinel2MSILDefaultWorkflowDTO();
+        this.msilDefaultWorkflowDTO = new S2MSI1CDefaultWorkflowDTO();
     }
 
     @Test

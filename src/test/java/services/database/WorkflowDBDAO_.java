@@ -3,7 +3,7 @@ package services.database;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import org.junit.Before;
@@ -27,7 +27,7 @@ public class WorkflowDBDAO_ {
             mongodb.setCredentialsAndDatabase(MongoDB_.USER,MongoDB_.PASSWORD,MongoDB_.DATABASE);
             mongodb.connect();
         }
-        workflowDTO = new Sentinel1GRDDefaultWorkflowDTO();
+        workflowDTO = new GRDDefaultWorkflowDTO();
         workflowDBDAO = WorkflowDBDAO.getInstance();
     }
 

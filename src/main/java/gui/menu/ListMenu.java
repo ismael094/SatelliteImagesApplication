@@ -1,11 +1,9 @@
 package gui.menu;
 
-import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import gui.components.MenuComponent;
-import gui.components.SatInfTabPaneComponent;
-import gui.components.tabcomponent.TabPaneComponent;
+import gui.components.TabPaneComponent;
 import gui.events.*;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;

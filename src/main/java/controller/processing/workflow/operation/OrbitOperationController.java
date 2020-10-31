@@ -17,16 +17,12 @@ public class OrbitOperationController implements Initializable, OperationControl
     private ChoiceBox<String> orbitType;
     @FXML
     private TextField plyDegree;
-    private Operation operation;
-    private Operation previewOperation;
-    private OperationController nextOperationController;
-    private ObservableList<String> inputBands;
+    private Map<String, Object> parameters;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        previewOperation = null;
-        operation = new Operation(Operator.APPLY_ORBIT_FILE,new HashMap<>());
         initControls();
+        this.parameters = new HashMap<>();
     }
 
     private void initControls() {
@@ -50,55 +46,16 @@ public class OrbitOperationController implements Initializable, OperationControl
     }
 
     @Override
-    public Operation getOperation() {
-        getParameters();
-        return operation;
-    }
-
-    private void getParameters() {
-        operation.getParameters().put("polyDegree",Integer.parseInt(plyDegree.getText()));
-        operation.getParameters().put("orbitType",orbitType.getValue());
+    public Map<String,Object> getParameters() {
+        parameters.put("polyDegree",Integer.parseInt(plyDegree.getText()));
+        parameters.put("orbitType",orbitType.getValue());
+        return parameters;
     }
 
     @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-        setParameters();
-    }
-
-    @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-        this.inputBands = inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getInputBands() {
-        return inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return inputBands;
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-        this.nextOperationController = operationController;
-        updateInput();
-    }
-
-    @Override
-    public void updateInput() {
-        nextOperationController.setInputBands(getOutputBands());
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return nextOperationController;
-    }
-
-    private void setParameters() {
-        plyDegree.setText(String.valueOf(operation.getParameters().getOrDefault("polyDegree",3)));
-        orbitType.setValue(String.valueOf(operation.getParameters().getOrDefault("orbitType",orbitType.getItems().get(0))));
+    public void setParameters(Map<String,Object> parameters) {
+        this.parameters = parameters;
+        plyDegree.setText(String.valueOf(parameters.getOrDefault("polyDegree",3)));
+        orbitType.setValue(String.valueOf(parameters.getOrDefault("orbitType",orbitType.getItems().get(0))));
     }
 }

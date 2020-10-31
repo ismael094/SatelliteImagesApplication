@@ -2,7 +2,8 @@ package controller.results;
 
 import controller.interfaces.ProcessingResultsTabItem;
 import controller.interfaces.TabItem;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -37,7 +38,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
 
     private final FXMLLoader loader;
     private Parent parent;
-    private SatInfTabPaneComponent tabPaneComponent;
+    private TabPaneComponent tabPaneComponent;
     private ProductListDTO productListDTO;
     private ProcessingResults processingResults;
     private Map<String,File> files;
@@ -57,7 +58,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     }
 
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -120,7 +121,8 @@ public class ProductListProcessingResultsController implements TabItem, Processi
         if (productListDTO == null)
             return false;
         File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
-        return file.listFiles().length > 2;
+
+        return file.exists() && file.listFiles() != null && file.listFiles().length > 2;
     }
 
     private void searchFiles(WatchService watcher, Path dir) {
@@ -269,7 +271,6 @@ public class ProductListProcessingResultsController implements TabItem, Processi
         ProductListProcessingResultItemController controller = loader.getController();
         controller.setFile(file);
         return parent;
-
     }
 
     @Override

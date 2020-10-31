@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXCheckBox?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-
 
 <ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.CalibrationOperationController">
    <content>
@@ -24,31 +21,20 @@
                   <RowConstraints maxHeight="94.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="185.0" minHeight="27.0" prefHeight="27.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="163.0" minHeight="29.0" prefHeight="29.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="115.0" minHeight="22.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="204.0" minHeight="40.0" prefHeight="151.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="149.0" minHeight="0.0" prefHeight="149.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="115.0" minHeight="22.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="204.0" minHeight="40.0" prefHeight="25.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
                   <Label text="Output Sigma" />
                   <Label text="Output Beta" GridPane.rowIndex="1" />
                   <Label text="Output Gamma" GridPane.rowIndex="2" />
-                  <Label text="Source Bands" GridPane.rowIndex="5" GridPane.valignment="TOP">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </Label>
-                  <Label text="Selected Polarisations" GridPane.rowIndex="4" GridPane.valignment="TOP">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </Label>
                   <Label prefHeight="21.0" prefWidth="114.0" text="Output in Db" GridPane.rowIndex="3" />
                   <JFXCheckBox fx:id="outputSigma" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" />
                   <JFXCheckBox fx:id="outputBeta" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <JFXCheckBox fx:id="outputGamma" contentDisplay="GRAPHIC_ONLY" text="CheckBx" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <JFXCheckBox fx:id="outputInDb" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <ListView fx:id="calibrationSourceBands" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <ListView fx:id="polarisations" prefHeight="178.0" prefWidth="333.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label text="Output in Complex" GridPane.rowIndex="4" />
+                  <JFXCheckBox fx:id="outputComplex" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
             </GridPane>
          </children>

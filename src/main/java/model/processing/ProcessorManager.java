@@ -1,10 +1,11 @@
 package model.processing;
 
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import model.exception.NoWorkflowFoundException;
 import model.list.ProductListDTO;
 import model.processing.monitor.FXProgressMonitor;
-import model.processing.workflow.Sentinel2MSILDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
@@ -62,29 +63,17 @@ public class ProcessorManager {
 
                 logger.atInfo().log("====== Processing start =========");
                 logger.atInfo().log("Starting to process list {}", productListDTO.getName());
+
                 Map<ProductDTO, List<String>> productsAreasOfWorks = productListDTO.getProductsAreasOfWorks();
 
-                logger.atInfo().log("====== Processing products =========");
                 listMonitor.beginTask("Processing list " + productListDTO.getName(), productsAreasOfWorks.size() + productListDTO.getReferenceProducts().size());
 
-                for (Map.Entry<ProductDTO, List<String>> entry : productsAreasOfWorks.entrySet()) {
-                    if (executeProcessIfIsNotCancelled(entry.getKey(), entry.getValue(),
-                            productListDTO.getWorkflow(WorkflowType.valueOf(entry.getKey().getProductType())),
-                            productListDTO.getName(),
-                            false)) return false;
-                }
+                //If process was cancel, return false
+                if (processProducts(productsAreasOfWorks)) return false;
 
 
                 logger.atInfo().log("====== Processing reference images =========");
-                File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName() + "\\reference_images");
-                if (!file.exists())
-                    file.mkdirs();
-                for (ProductDTO p : productListDTO.getReferenceProducts()) {
-                    if (executeProcessIfIsNotCancelled(p, productListDTO.areasOfWorkOfProduct(p.getFootprint()),
-                            new Sentinel2MSILDefaultWorkflowDTO(),
-                            productListDTO.getName() + "\\reference_images",
-                            false)) return false;
-                }
+                if (processReferenceImages()) return false;
 
 
                 listMonitor.done();
@@ -94,6 +83,35 @@ public class ProcessorManager {
                 logger.atInfo().log("====== List Processed =========");
                 isProcessing = false;
                 return true;
+            }
+
+
+            /**
+             * process references images
+             * @return true if the process was cancel
+             * @throws Exception
+             */
+            private boolean processReferenceImages() throws Exception {
+                File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName() + "\\reference_images");
+                if (!file.exists())
+                    file.mkdirs();
+                for (ProductDTO p : productListDTO.getReferenceProducts()) {
+                    if (executeProcessIfIsNotCancelled(p, productListDTO.areasOfWorkOfProduct(p.getFootprint()),
+                            new S2MSI1CDefaultWorkflowDTO(),
+                            productListDTO.getName() + "\\reference_images",
+                            false)) return true;
+                }
+                return false;
+            }
+
+            private boolean processProducts(Map<ProductDTO, List<String>> productsAreasOfWorks) throws Exception {
+                for (Map.Entry<ProductDTO, List<String>> entry : productsAreasOfWorks.entrySet()) {
+                    if (executeProcessIfIsNotCancelled(entry.getKey(), entry.getValue(),
+                            productListDTO.getWorkflow(WorkflowType.valueOf(entry.getKey().getProductType())),
+                            productListDTO.getName(),
+                            false)) return true;
+                }
+                return false;
             }
 
             private boolean executeProcessIfIsNotCancelled(ProductDTO p, List<String> areas, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
@@ -147,12 +165,8 @@ public class ProcessorManager {
     }
 
     private BufferedImage processProduct(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
-        System.out.println("LOL");
-        System.out.println(Runtime.getRuntime().freeMemory());
         Runtime.getRuntime().gc();
-        BufferedImage process = getProcessor(product).process(product, areasOfWork, workflow, path, bufferedImage);
-        System.out.println(Runtime.getRuntime().freeMemory());
-        return process;
+        return getProcessor(product).process(product, areasOfWork, workflow, path, bufferedImage);
     }
 
     public Processor getProcessor(ProductDTO productDTO) {

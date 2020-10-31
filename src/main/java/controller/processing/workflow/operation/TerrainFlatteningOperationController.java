@@ -15,6 +15,7 @@ import model.processing.workflow.operation.Operator;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TerrainFlatteningOperationController implements Initializable, OperationController {
@@ -33,19 +34,16 @@ public class TerrainFlatteningOperationController implements Initializable, Oper
     @FXML
     private ChoiceBox<String> demName;
     @FXML
-    private ListView<String> correctionSourceBands;
-    @FXML
     private CheckBox noDataValueAtSea;
-    private Operation operation;
-    private OperationController nextOperationController;
+    private Map<String,Object> parameters;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        operation = new Operation(Operator.TERRAIN_FLATTENING,new HashMap<>());
         initDemResamplingControl();
         initDemName();
         initOversamplingMultiple();
         initAdditionalOverlap();
+        this.parameters = new HashMap<>();
     }
 
     private void initAdditionalOverlap() {
@@ -86,61 +84,16 @@ public class TerrainFlatteningOperationController implements Initializable, Oper
     }
 
     @Override
-    public Operation getOperation() {
-        getParameters();
-        return operation;
-    }
-
-    private void getParameters() {
-        operation.getParameters().put("demResamplingMethod", demResampling.getValue());
-        operation.getParameters().put("demName", demName.getValue());
+    public Map<String,Object> getParameters() {
+        parameters.put("demResamplingMethod", demResampling.getValue());
+        parameters.put("demName", demName.getValue());
+        return parameters;
      }
 
     @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-        setParameters();
-    }
-
-    @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-        correctionSourceBands.getItems().clear();
-        correctionSourceBands.getItems().addAll(inputBands);
-        inputBands.forEach(b->{
-            correctionSourceBands.getSelectionModel().select(b);
-        });
-        updateInput();
-    }
-
-    @Override
-    public ObservableList<String> getInputBands() {
-        return correctionSourceBands.getItems();
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return correctionSourceBands.getSelectionModel().getSelectedItems();
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-        this.nextOperationController = operationController;
-        updateInput();
-    }
-
-    @Override
-    public void updateInput() {
-        if (nextOperationController!=null)
-            nextOperationController.setInputBands(getOutputBands());
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return nextOperationController;
-    }
-
-    private void setParameters() {
-        demResampling.setValue(String.valueOf(operation.getParameters().getOrDefault("demResamplingMethod",demResampling.getItems().get(0))));
-        demName.setValue(String.valueOf(operation.getParameters().getOrDefault("demName",demName.getItems().get(0))));
+    public void setParameters(Map<String,Object> parameters) {
+        this.parameters = parameters;
+        demResampling.setValue(String.valueOf(parameters.getOrDefault("demResamplingMethod",demResampling.getItems().get(0))));
+        demName.setValue(String.valueOf(parameters.getOrDefault("demName",demName.getItems().get(0))));
     }
 }

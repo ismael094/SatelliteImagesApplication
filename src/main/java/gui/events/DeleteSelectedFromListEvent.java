@@ -22,8 +22,11 @@ public class DeleteSelectedFromListEvent extends Event {
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
             list = listController.getProductList();
-            list.remove(listController.getSelectedProducts());
-            mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List successfully edited " + list.getName()));
+            if (!listController.getSelectedProducts().isEmpty()) {
+                list.remove(listController.getSelectedProducts());
+                mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Selected products deleted from list " + list.getName()));
+
+            }
             //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
         }
 

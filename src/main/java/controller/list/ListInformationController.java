@@ -6,34 +6,30 @@ import controller.GTMapSearchController;
 import controller.cell.ProductListCell;
 import controller.interfaces.ProductListTabItem;
 import controller.processing.PreviewController;
-import controller.processing.PreviewImageController;
 import controller.search.CopernicusOpenSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import gui.components.SatInfTabPaneComponent;
+import gui.components.TabPaneComponent;
+import gui.components.tabcomponent.SatInfTabPaneComponent;
 import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
+import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.list.ProductListDTO;
 import model.exception.AuthenticationException;
@@ -48,16 +44,13 @@ import services.CopernicusService;
 import services.download.Downloader;
 import utils.AlertFactory;
 import utils.FileUtils;
-import utils.ThemeConfiguration;
+import utils.ProcessingConfiguration;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class ListInformationController extends ProductListTabItem {
     public static final String REFERENCE_IMAGES = "groundTruth";
@@ -69,7 +62,10 @@ public class ListInformationController extends ProductListTabItem {
     private Parent parent;
     private final ProductListDTO productListDTO;
     private GTMapSearchController mapController;
-    private SatInfTabPaneComponent tabPaneComponent;
+    private TabPaneComponent tabPaneComponent;
+    private List<Pair<ListAction,ObservableList<?>>> actions;
+    private int actionIndex = 0;
+    private boolean actionActive;
 
     @FXML
     private ImageView image;
@@ -113,6 +109,7 @@ public class ListInformationController extends ProductListTabItem {
         super(download);
         idSelected = "";
         this.productListDTO = productList;
+        this.actions = new ArrayList<>();
         this.loader = new FXMLLoader(getClass().getResource("/fxml/ListView.fxml"));
         this.loader.setController(this);
         try {
@@ -127,7 +124,7 @@ public class ListInformationController extends ProductListTabItem {
      * @param component TabPaneComponent
      */
     @Override
-    public void setTabPaneComponent(SatInfTabPaneComponent component) {
+    public void setTabPaneComponent(TabPaneComponent component) {
         this.tabPaneComponent = component;
     }
 
@@ -230,7 +227,28 @@ public class ListInformationController extends ProductListTabItem {
      */
     @Override
     public void undo() {
+        --actionIndex;
+        actionActive(true);
+        Pair<ListAction, ObservableList<?>> pair = actions.get(actionIndex);
+        if (pair.getKey() == ListAction.ADD_AREA_OF_WORK) {
+            deleteAreaOfWork(pair);
+        } else if (pair.getKey() == ListAction.DELETE_AREA_OF_WORK) {
+            addAreaOfWork(pair);
+        } else if (pair.getKey() == ListAction.ADD_REFERENCE_IMAGE) {
+            deleteReferenceImage(pair);
+        }else if (pair.getKey() == ListAction.DELETE_REFERENCE_IMAGE) {
+            addReferenceImage(pair);
+        }else if (pair.getKey() == ListAction.ADD_PRODUCT) {
+            productListDTO.remove((ObservableList<ProductDTO>) pair.getValue());
+        }else if (pair.getKey() == ListAction.DELETE_PRODUCT) {
+            productListDTO.addProduct((ObservableList<ProductDTO>) pair.getValue());
+        }
+        actionActive(false);
+        tabPaneComponent.updateObservers();
+    }
 
+    private void actionActive(boolean b) {
+        actionActive = b;
     }
 
     /**
@@ -238,7 +256,72 @@ public class ListInformationController extends ProductListTabItem {
      */
     @Override
     public void redo() {
+        actionActive(true);
+        Pair<ListAction, ObservableList<?>> pair = actions.get(actionIndex++);
+        if (pair.getKey() == ListAction.ADD_AREA_OF_WORK) {
+            addAreaOfWork(pair);
+        } else if (pair.getKey() == ListAction.DELETE_AREA_OF_WORK) {
+            deleteAreaOfWork(pair);
+        } else if (pair.getKey() == ListAction.ADD_REFERENCE_IMAGE) {
+            addReferenceImage(pair);
+        }else if (pair.getKey() == ListAction.DELETE_REFERENCE_IMAGE) {
+            deleteReferenceImage(pair);
+        }else if (pair.getKey() == ListAction.ADD_PRODUCT) {
+            productListDTO.addProduct((ObservableList<ProductDTO>) pair.getValue());
+        }else if (pair.getKey() == ListAction.DELETE_PRODUCT) {
+            productListDTO.remove((ObservableList<ProductDTO>) pair.getValue());
+        }
 
+        actionActive(false);
+        tabPaneComponent.updateObservers();
+    }
+
+
+
+    @Override
+    public String getRedo() {
+        try {
+            return actions.get(actionIndex).getKey().name();
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public String getUndo() {
+        try {
+            return actions.get(actionIndex-1).getKey().toString();
+        }catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    private void deleteReferenceImage(Pair<ListAction, ObservableList<?>> pair) {
+        productListDTO.removeReferenceProduct((ProductDTO) pair.getValue().get(0));
+        refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9");
+    }
+
+    private void addReferenceImage(Pair<ListAction, ObservableList<?>> pair) {
+        productListDTO.addReferenceProduct(Collections.singletonList((ProductDTO) pair.getValue().get(0)));
+        refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9");
+    }
+
+    private void deleteAreaOfWork(Pair<ListAction, ObservableList<?>> pair) {
+        productListDTO.removeAreaOfWork((String) pair.getValue().get(0));
+        drawInMapTheAreasOfWork();
+    }
+
+    private void addAreaOfWork(Pair<ListAction, ObservableList<?>> pair) {
+        productListDTO.addAreaOfWork((String) pair.getValue().get(0));
+        drawInMapTheAreasOfWork();
+    }
+
+    private void addAction(ListAction work, ObservableList<?> list) {
+        actions.add(actionIndex,new Pair<>(work,list));
+        actionIndex++;
+        for (int i = actionIndex;i<actions.size();i++)
+            actions.remove(i);
+        tabPaneComponent.updateObservers();
     }
 
 
@@ -272,6 +355,7 @@ public class ListInformationController extends ProductListTabItem {
 
         onDeleteFeatureActionRemoveFeature();
 
+        onActionInAddAreaOfWorkCreateAreaOfWork();
 
         onActionInPreviewGeneratePreview();
 
@@ -279,6 +363,46 @@ public class ListInformationController extends ProductListTabItem {
         selectReferenceImage.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         setReferenceListVisible(false);
         GlyphsDude.setIcon(showRI, FontAwesomeIcon.IMAGE);
+
+        //REDO AND UNDO
+        onProductListChangeSaveChange();
+        onReferenceImagesChangeSaveChange();
+    }
+
+    private void onActionInAddAreaOfWorkCreateAreaOfWork() {
+        addAreaOfProduct.setOnAction(event -> {
+            if (!mapController.getWKT().isEmpty()) {
+                productListDTO.addAreaOfWork(mapController.getWKT());
+                drawInMapTheAreasOfWork();
+                if (!actionActive)
+                    addAction(ListAction.ADD_AREA_OF_WORK,FXCollections.observableArrayList(mapController.getWKT()));
+
+            }
+        });
+    }
+
+    private void onReferenceImagesChangeSaveChange() {
+        referenceImgsList.getItems().addListener((ListChangeListener<ProductDTO>) c -> {
+            if (!actionActive)
+                while (c.next()) {
+                    if (c.wasRemoved())
+                        addAction(ListAction.DELETE_REFERENCE_IMAGE, FXCollections.observableArrayList(c.getRemoved()));
+                    if (c.wasAdded())
+                        addAction(ListAction.ADD_REFERENCE_IMAGE, FXCollections.observableArrayList(c.getAddedSubList()));
+                }
+        });
+    }
+
+    private void onProductListChangeSaveChange() {
+        productListView.getItems().addListener((ListChangeListener<ProductDTO>) c -> {
+            if (!actionActive)
+                while (c.next()) {
+                    if (c.wasRemoved())
+                        addAction(ListAction.DELETE_PRODUCT, FXCollections.observableArrayList(c.getRemoved()));
+                    if (c.wasAdded())
+                        addAction(ListAction.ADD_PRODUCT, FXCollections.observableArrayList(c.getAddedSubList()));
+                }
+        });
     }
 
     private void onActionInPreviewGeneratePreview() {
@@ -326,10 +450,17 @@ public class ListInformationController extends ProductListTabItem {
                         .findAny()
                         .orElse(null);
                 productListDTO.removeReferenceProduct(productDTO);
+                if (!actionActive)
+                    addAction(ListAction.DELETE_REFERENCE_IMAGE,FXCollections.observableArrayList(productDTO));
+
             } else {
+                if (!actionActive)
+                    addAction(ListAction.DELETE_AREA_OF_WORK,FXCollections.observableArrayList(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId()))));
+
                 productListDTO.removeAreaOfWork(
                         productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 drawInMapTheAreasOfWork();
+
             }
         });
     }
@@ -349,7 +480,11 @@ public class ListInformationController extends ProductListTabItem {
     }
 
     private void onReferenceImagesChangeRefreshMap() {
-        productListDTO.getReferenceProducts().addListener((ListChangeListener<ProductDTO>) c -> mapController.printProductsInLayer("groundTruth", productListDTO.getReferenceProducts(), Color.GREEN, Color.decode("#C3FFE9")));
+        productListDTO.getReferenceProducts().addListener((ListChangeListener<ProductDTO>) c -> refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9"));
+    }
+
+    private void refreshLayer(String groundTruth, Color green, String s) {
+        mapController.printProductsInLayer(groundTruth, productListDTO.getReferenceProducts(), green, Color.decode(s));
     }
 
     private void onActionOnSearchReferenceImageLoadOpenSearcher() {
@@ -386,17 +521,25 @@ public class ListInformationController extends ProductListTabItem {
 
     private void initMapController() {
         mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(),true);
+        //Set the layer that will be selected in mouse events
         mapController.addSelectedAreaEvent(AREA_OF_WORK_LAYER);
+
+        //Set styles of features
         mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
         mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
         mapPane.getChildren().add(mapController.getView());
+
         AnchorPane.setBottomAnchor(mapController.getView(),0.0);
         AnchorPane.setTopAnchor(mapController.getView(),0.0);
         AnchorPane.setLeftAnchor(mapController.getView(),0.0);
         AnchorPane.setRightAnchor(mapController.getView(),0.0);
+
+        //Draw products in map
         mapController.printProductsInMap(productListDTO.getProducts(),Color.BLACK, null);
+
+        //Draw reference images
         if (!productListDTO.getReferenceProducts().isEmpty())
-            mapController.printProductsInLayer(REFERENCE_IMAGES,productListDTO.getReferenceProducts(),Color.decode("#00976C"), Color.decode("#00976C"));
+            refreshLayer(REFERENCE_IMAGES, Color.decode("#00976C"), "#00976C");
 
         drawInMapTheAreasOfWork();
         selectReferenceImage.toFront();
@@ -414,12 +557,6 @@ public class ListInformationController extends ProductListTabItem {
     private void initAddAreaOfWorkButton() {
         Tooltip.install(addAreaOfProduct,new Tooltip("Add area of work"));
         GlyphsDude.setIcon(addAreaOfProduct, MaterialDesignIcon.BOOKMARK_PLUS);
-        addAreaOfProduct.setOnAction(event -> {
-            if (!mapController.getWKT().isEmpty()) {
-                productListDTO.addAreaOfWork(mapController.getWKT());
-                drawInMapTheAreasOfWork();
-            }
-        });
     }
 
     private void initProductDTOListView() {
@@ -530,21 +667,19 @@ public class ListInformationController extends ProductListTabItem {
 
     private void generatePreview() {
         try {
-            ProductDTO selectedItem = productListView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && !FileUtils.productExists(selectedItem.getTitle())){
-                AlertFactory.showErrorDialog("Product not downloaded","Product not downloaded","The selected product is not downloaded!");
+            ProductDTO product = productListView.getSelectionModel().getSelectedItem();
+            if (product == null)
                 return;
-            }
-            String areaOfWork = getSelectedAreaOfWork();
-            if (selectedItem != null && areaOfWork != null) {
-                List<String> strings = productListDTO.areasOfWorkOfProduct(selectedItem.getFootprint());
 
-                if (mapController.getSelectedFeatureId() != null && strings.contains(getSelectedAreaOfWork())) {
-                    //String area = setGridInAreaOfWork();
-                    //if (area!= null)
-                        //process(selectedItem, Lists.newArrayList(area));
-                    tabPaneComponent.fireEvent(new ComponentEvent(this, "Opening preview for product "+selectedItem.getTitle()));
-                    tabPaneComponent.load(new PreviewController(selectedItem,getSelectedAreaOfWork(),productListDTO.getWorkflow(WorkflowType.valueOf(selectedItem.getProductType())),productListDTO.getName()));
+            if (productNotDownloaded(product)) return;
+
+            if (getSelectedAreaOfWork() != null) {
+                List<String> areasOfWorkOfProduct = productListDTO.areasOfWorkOfProduct(product.getFootprint());
+
+                if (areasOfWorkOfProduct.contains(getSelectedAreaOfWork())) {
+                    if (noDefaultWorkflow(product)) return;
+                    tabPaneComponent.fireEvent(new ComponentEvent(this, "Opening preview for product "+product.getTitle()));
+                    tabPaneComponent.load(new PreviewController(product,getSelectedAreaOfWork(),productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())),productListDTO.getName()));
                 } else {
                     AlertFactory.showErrorDialog("Product error","Product error","Product does not contain the selected area of work");
                 }
@@ -557,44 +692,21 @@ public class ListInformationController extends ProductListTabItem {
         }
     }
 
-    private void process(ProductDTO productDTO, List<String> areas) throws Exception {
-        Task<BufferedImage> task = tabPaneComponent.getMainController().getProductProcessor().process(productDTO, areas, productListDTO.getWorkflow(WorkflowType.valueOf(productDTO.getProductType())),productListDTO.getName(), true);
-
-        task.setOnFailed(e->{
-            AlertFactory.showErrorDialog("Error","","Error while setting preview image");
-            logger.atError().log("Error processing preview {}",e.getSource().getException().getLocalizedMessage());
-        });
-
-        task.setOnSucceeded(e-> {
-            try {
-                showPreviewImage(SwingFXUtils.toFXImage(task.get(),null));
-            } catch (InterruptedException | ExecutionException interruptedException) {
-                interruptedException.printStackTrace();
-            }
-        });
-        new Thread(task).start();
+    private boolean noDefaultWorkflow(ProductDTO selectedItem) {
+        if (ProcessingConfiguration.getDefaultWorkflow(selectedItem.getProductType()) == null){
+            AlertFactory.showErrorDialog("Product not supported","Product not supported", "This product is not supported for the" +
+                    "application");
+            return true;
+        }
+        return false;
     }
 
-    private void showPreviewImage(WritableImage image) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewImageView.fxml"));
-        Scene scene = null;
-        try {
-            scene = new Scene(fxmlLoader.load());
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+    private boolean productNotDownloaded(ProductDTO selectedItem) {
+        if (!FileUtils.productExists(selectedItem.getTitle())){
+            AlertFactory.showErrorDialog("Product not downloaded","Product not downloaded","The selected product is not downloaded!");
+            return true;
         }
-        JMetro jMetro = ThemeConfiguration.getJMetroStyled();
-
-        PreviewImageController controller = fxmlLoader.getController();
-        controller.setImage(image);
-
-        Stage stage = new Stage();
-        stage.initOwner(tabPaneComponent.getMainController().getRoot().getScene().getWindow());
-        stage.setResizable(false);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.setScene(scene);
-        jMetro.setScene(scene);
-        stage.show();
+        return false;
     }
 
     private String getSelectedAreaOfWork() {
@@ -605,7 +717,7 @@ public class ListInformationController extends ProductListTabItem {
         }
     }
 
-    enum Historic {
+    enum ListAction {
         ADD_PRODUCT,DELETE_PRODUCT,ADD_AREA_OF_WORK,DELETE_AREA_OF_WORK,ADD_REFERENCE_IMAGE,DELETE_REFERENCE_IMAGE
     }
 }

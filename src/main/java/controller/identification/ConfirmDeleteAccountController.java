@@ -14,6 +14,4 @@ public class ConfirmDeleteAccountController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
     }
-
-
 }

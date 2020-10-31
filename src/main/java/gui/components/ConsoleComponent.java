@@ -61,6 +61,11 @@ public class ConsoleComponent extends ListView<String> implements Component {
         observers.add(observer);
     }
 
+    @Override
+    public void updateObservers() {
+        observers.forEach(Observer::update);
+    }
+
     public void println(String message) {
         this.getItems().add(getTime() + " > " + message);
     }

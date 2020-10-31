@@ -125,4 +125,9 @@ public class ToolBarComponent extends ToolBar implements Component{
     public void addObserver(Observer observer) {
         observers.add(observer);
     }
+
+    @Override
+    public void updateObservers() {
+        observers.forEach(Observer::update);
+    }
 }

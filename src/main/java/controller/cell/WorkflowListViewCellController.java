@@ -94,9 +94,9 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
         } else if (event.getCode() == KeyCode.ENTER) {
             workflow.setName(nameField.getText());
             workflow.setType(typeBox.getValue());
-            /*if (workflow.getOperations() != null)
+            if (workflow.getOperations() != null)
                 workflow.getOperations().clear();
-            myWorkflowController.loadWorkflow(workflow);*/
+            myWorkflowController.loadWorkflow(workflow);
             cancelEdit();
         }
     }

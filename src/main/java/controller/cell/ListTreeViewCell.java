@@ -2,6 +2,7 @@ package controller.cell;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import gui.components.treeViewComponent.TreeViewNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -13,7 +14,7 @@ import model.products.ProductDTO;
 
 import java.io.IOException;
 
-public class ListTreeViewCell extends TreeCell<Pair<String,Object>> {
+public class ListTreeViewCell extends TreeCell<TreeViewNode> {
     private FXMLLoader loader;
 
     @FXML
@@ -22,10 +23,10 @@ public class ListTreeViewCell extends TreeCell<Pair<String,Object>> {
     private Label title;
 
     @Override
-    protected void updateItem(Pair<String,Object> product, boolean empty) {
-        super.updateItem(product, empty);
+    protected void updateItem(TreeViewNode node, boolean empty) {
+        super.updateItem(node, empty);
 
-        if(empty || product == null) {
+        if(empty || node == null) {
 
             setText(null);
             setGraphic(null);
@@ -42,15 +43,10 @@ public class ListTreeViewCell extends TreeCell<Pair<String,Object>> {
             }
             prefWidthProperty().bind(getTreeView().prefWidthProperty().subtract(2));
             setMaxWidth(Control.USE_PREF_SIZE);
-
-            if (product.getValue() == null)
-                title.setText("My lists");
-            else if (product.getValue() instanceof ProductListDTO) {
-                ProductListDTO productDTO = (ProductListDTO)product.getValue();
-                title.setText(productDTO.getName());
+            title.setText(node.getName());
+            if (node.getNode() instanceof ProductListDTO) {
                 GlyphsDude.setIcon(title, FontAwesomeIcon.FOLDER);
-            } else if (product.getValue() instanceof ProductDTO) {
-                title.setText(product.getKey());
+            } else if (node.getNode() instanceof ProductDTO) {
                 GlyphsDude.setIcon(title, FontAwesomeIcon.IMAGE);
             }
             setText(null);

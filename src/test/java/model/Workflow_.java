@@ -2,7 +2,7 @@ package model;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.workflow.Sentinel1GRDDefaultWorkflowDTO;
+import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import model.processing.workflow.GeneralWorkflowDTO;
@@ -47,7 +47,7 @@ public class Workflow_ {
 
     @Test
     public void add_and_remove_operation() {
-        WorkflowDTO wf = new Sentinel1GRDDefaultWorkflowDTO();
+        WorkflowDTO wf = new GRDDefaultWorkflowDTO();
         Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
         wf.getOperations().add(5,operation);
         assertThat(wf.getOperations().get(4).getName()).isEqualTo(Operator.WRITE_AND_READ);
@@ -60,7 +60,7 @@ public class Workflow_ {
 
     @Test
     public void contains_operation() {
-        WorkflowDTO wf = new Sentinel1GRDDefaultWorkflowDTO();
+        WorkflowDTO wf = new GRDDefaultWorkflowDTO();
         Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
         assertThat(wf.containsOperation(Operator.TERRAIN_FLATTENING)).isFalse();
     }

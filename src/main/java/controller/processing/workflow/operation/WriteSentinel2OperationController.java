@@ -1,6 +1,5 @@
 package controller.processing.workflow.operation;
 
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -11,11 +10,9 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.processing.workflow.operation.Operation;
 import org.controlsfx.control.ToggleSwitch;
-import org.jetbrains.annotations.TestOnly;
 
-import javax.xml.stream.XMLStreamReader;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class WriteSentinel2OperationController implements OperationController, Initializable {
     @FXML
@@ -32,104 +29,82 @@ public class WriteSentinel2OperationController implements OperationController, I
     private ChoiceBox<String> profiles;
     @FXML
 
-    private Operation operation;
+    private Map<String, Object> parameters;
     private ObservableList<String> inputBands;
+    private Map<String, List<String>> mapProfiles;
 
     @Override
-    public Operation getOperation() {
-        getParameters();
-        return operation;
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+        writeFormat.setValue(String.valueOf(parameters.getOrDefault("formatName","GeoTIFF")));
+        generatePng.selectedProperty().set((boolean) parameters.getOrDefault("generatePNG", false));
+        profiles.setValue(String.valueOf(parameters.getOrDefault("profile","Some")));
+        red.setText(String.valueOf(parameters.getOrDefault("red","B4")));
+        green.setText(String.valueOf(parameters.getOrDefault("green","B3")));
+        blue.setText(String.valueOf(parameters.getOrDefault("blue","B2")));
+
     }
 
     @Override
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-        setParameters();
-    }
-
-    private void setParameters() {
-        writeFormat.setValue(String.valueOf(operation.getParameters().getOrDefault("formatName","GeoTIFF")));
-        boolean generatePNG = (boolean) operation.getParameters().getOrDefault("generatePNG", false);
-        generatePng.selectedProperty().set(generatePNG);
-
-        profiles.setValue(String.valueOf(operation.getParameters().getOrDefault("profile","Some")));
-        red.setText(String.valueOf(operation.getParameters().getOrDefault("red","B4")));
-        green.setText(String.valueOf(operation.getParameters().getOrDefault("green","B3")));
-        blue.setText(String.valueOf(operation.getParameters().getOrDefault("blue","B2")));
-
-    }
-
-    private void getParameters() {
-        operation.getParameters().clear();
-        operation.getParameters().put("formatName",writeFormat.getValue());
+    public Map<String, Object> getParameters() {
+        parameters.clear();
+        parameters.put("formatName",writeFormat.getValue());
         if (generatePng.isSelected()) {
-            operation.getParameters().put("generatePNG",true);
-            operation.getParameters().put("profile",profiles.getValue());
-            operation.getParameters().put("red",red.getText());
-            operation.getParameters().put("green",green.getText());
-            operation.getParameters().put("blue",blue.getText());
+            parameters.put("generatePNG",true);
+            parameters.put("profile",profiles.getValue());
+            parameters.put("red",red.getText());
+            parameters.put("green",green.getText());
+            parameters.put("blue",blue.getText());
         } else {
-            operation.getParameters().put("generatePNG",false);
+            parameters.put("generatePNG",false);
         }
-    }
-
-    @Override
-    public void setInputBands(ObservableList<String> inputBands) {
-        this.inputBands = inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getInputBands() {
-        return inputBands;
-    }
-
-    @Override
-    public ObservableList<String> getOutputBands() {
-        return inputBands;
-    }
-
-    @Override
-    public void setNextOperationController(OperationController operationController) {
-
-    }
-
-    @Override
-    public void updateInput() {
-
-    }
-
-    @Override
-    public OperationController getNextOperationController() {
-        return null;
+        return parameters;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.parameters = new HashMap<>();
+        mapProfiles = new HashMap<>();
+        loadMapProfiles();
+        setProfiles();
         bindProperties();
         red.setText("B4");
         green.setText("B3");
         blue.setText("B2");
-        profiles.setItems(FXCollections.observableArrayList("Some1","Some2","Some3","Some4"));
-        profiles.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.equals("Some1"))
-                setSome1();
-            else if (newValue.equals("Some2"))
-                setSome2();
-        });
+
         profiles.setValue("Some1");
         writeFormat.setItems(FXCollections.observableArrayList("GeoTIFF","PolSARPro"));
     }
 
-    private void setSome1() {
-        red.setText("B8");
-        green.setText("B7");
-        blue.setText("B6");
+    private void setProfiles() {
+        mapProfiles.forEach((k,v)->{
+            profiles.getItems().add(k);
+        });
+
+        profiles.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            setRGBValues(mapProfiles.getOrDefault(newValue,Arrays.asList("B4","B3","B2")));
+        });
+
+        profiles.setValue("Natural Colors");
     }
 
-    private void setSome2() {
-        red.setText("B9");
-        green.setText("B7");
-        blue.setText("B4");
+    private void setRGBValues(List<String> rgbValues) {
+        red.setText(rgbValues.get(0));
+        blue.setText(rgbValues.get(1));
+        green.setText(rgbValues.get(2));
+    }
+
+    private void loadMapProfiles() {
+        mapProfiles.put("Natural Colors", Arrays.asList("B4","B3","B2"));
+        mapProfiles.put("False Color Infrared", Arrays.asList("B8","B4","B3"));
+        mapProfiles.put("False Color Urban", Arrays.asList("B12","B11","B4"));
+        mapProfiles.put("Agriculture", Arrays.asList("B11","B8","B2"));
+        mapProfiles.put("Atmospheric Penetration", Arrays.asList("B12","B11","B8a"));
+        mapProfiles.put("Healthy Vegetation", Arrays.asList("B8","B11","B2"));
+        mapProfiles.put("Land/Water", Arrays.asList("B8","B11","B4"));
+        mapProfiles.put("Natural Colors with Atmospheric Removal", Arrays.asList("B12","B8","B3"));
+        mapProfiles.put("Shortwave Infrared", Arrays.asList("B12","B8","B4"));
+        mapProfiles.put("Vegetation Analysis", Arrays.asList("B11","B8","B4"));
     }
 
     public ToggleSwitch getGeneratePng() {
