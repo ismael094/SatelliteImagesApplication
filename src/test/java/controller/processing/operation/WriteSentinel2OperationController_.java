@@ -1,4 +1,4 @@
-package controller.operation;
+package controller.processing.operation;
 
 import controller.processing.workflow.operation.WriteSentinel2OperationController;
 import javafx.fxml.FXMLLoader;
@@ -7,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;

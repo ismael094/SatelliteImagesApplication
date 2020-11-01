@@ -100,10 +100,6 @@ public class GTMapSearchController {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
-
-
-
-
         hbox.setSpacing(10f);
         //hbox.getChildren().addAll(deleteSearchAreaButton,resetMap);
 

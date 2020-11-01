@@ -39,6 +39,7 @@ import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
 import services.search.OpenSearcher;
 import utils.AlertFactory;
+import utils.ServiceFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -123,7 +124,8 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private TabPaneComponent tabPaneComponent;
     private Map<String,Control> control;
 
-    public CopernicusOpenSearchController(String id) {
+    public CopernicusOpenSearchController(String id, OpenSearcher openSearcher) {
+        searcher = openSearcher;
         this.id = id;
         loader = new FXMLLoader(getClass().getResource("/fxml/CopernicusOpenSearchView.fxml"));
         loader.setController(this);
@@ -182,7 +184,6 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     @Override
     public Task<Parent> start() {
-        searcher = new OpenSearcher(CopernicusService.getInstance());
         return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
@@ -203,7 +204,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         return "Copernicus Open Search";
     }
 
-    private void initViewData() {
+    public void initViewData() {
         setSpinnerVisible(false);
         setPaginationVisible(false);
         productsPerPage();
@@ -646,13 +647,20 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private void setPagination(OpenSearchResponse response) {
         if (response.getNumOfProducts() > response.getProducts().size()) {
             setPaginationVisible(true);
-            double numPages = Math.ceil((response.getNumOfProducts()/(double)response.getRows())+0.5f);
+            double numPages = getNumberOfPages(response.getNumOfProducts(),(double)response.getRows());
+            System.out.println(numPages);
             pagination.setPageCount((int)numPages);
-            System.out.println(response.getStartIndex());
             //pagination.setCurrentPageIndex(response.getStartIndex());
         } else
             setPaginationVisible(false);
 
+    }
+
+    private double getNumberOfPages(int numOfProducts, double rows) {
+        if (numOfProducts%rows == 0)
+            return Math.ceil((numOfProducts/rows));
+        else
+            return Math.ceil((numOfProducts/rows)+0.5f);
     }
 
     private void writeProductsFootprintInMap(List<ProductDTO> products) {

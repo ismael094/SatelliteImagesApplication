@@ -1,7 +1,7 @@
 package gui.events;
 
 import controller.MainController;
-import controller.results.ProductListProcessingResultsController;
+import controller.postprocessing.ProductListProcessingResultsController;
 import javafx.event.ActionEvent;
 import model.list.ProductListDTO;
 import utils.AlertFactory;

@@ -1,8 +1,7 @@
-package controller.operation;
+package controller.processing.operation;
 
 import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import controller.processing.workflow.operation.OperationController;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,16 +9,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
-import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-
-import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -3,7 +3,7 @@ package gui.events;
 import controller.MainController;
 import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
-import controller.results.ProductListProcessingResultsController;
+import controller.postprocessing.ProductListProcessingResultsController;
 import gui.ExecutedEvent;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;

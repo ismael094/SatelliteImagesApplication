@@ -38,15 +38,23 @@ public class GTMap_ extends ApplicationTest {
     }
 
     @Test
-    public void test() throws ParseException, IOException {
+    public void create_layer() throws ParseException, IOException {
         map.createFeatureFromWKT(WKT,"id1","products");
         map.createAndDrawLayer("products", Color.BLACK, Color.CYAN);
         map.focusOnLayer("products");
         assertThat(map.getSelectedFeatureID()).isNotEqualTo("id1");
-        map.highlightFeatures(Lists.list("id1"),"products",Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK);
+    }
+
+
+    @Test
+    public void select_feature_in_map() throws ParseException, IOException {
+        map.createFeatureFromWKT(WKT,"id1","products");
+        map.createAndDrawLayer("products", Color.BLACK, Color.CYAN);
+        map.focusOnLayer("products");
+
         map.selectFeature(new Point2D(100,100), false,"products",Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK);
-        String selectedFeatureID = map.getSelectedFeatureID();
-        assertThat(selectedFeatureID).isEqualTo("id1");
+
+        assertThat(map.getSelectedFeatureID()).isEqualTo("id1");
     }
 
 

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.CopernicusService;
 import utils.ProductDeserializerFactory;
+import utils.ServiceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,8 +35,12 @@ public class OpenSearcher implements SearchService {
     private Map<SentinelProductParameters, String> searchParameters;
     static final Logger logger = LogManager.getLogger(OpenSearcher.class.getName());
 
-    public OpenSearcher(CopernicusService service) {
+    public OpenSearcher() {
         initData();
+    }
+
+    public OpenSearcher(CopernicusService service) {
+        this();
         this.service = service;
     }
 
@@ -45,6 +50,8 @@ public class OpenSearcher implements SearchService {
      * @throws NotAuthenticatedException Not credentials setted
      */
     public void login() throws AuthenticationException, NotAuthenticatedException {
+        if (service == null)
+            service = (CopernicusService) ServiceFactory.getService("Copernicus");
         service.login();
     }
 

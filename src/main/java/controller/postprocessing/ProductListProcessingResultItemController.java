@@ -1,4 +1,4 @@
-package controller.results;
+package controller.postprocessing;
 
 import controller.processing.preview.PreviewImageController;
 import de.jensd.fx.glyphs.GlyphsDude;

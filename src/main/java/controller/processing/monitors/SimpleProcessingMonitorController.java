@@ -54,14 +54,6 @@ public class SimpleProcessingMonitorController implements Initializable {
         operationProgress.progressProperty().bind(doubleProperty);
     }
 
-    public void setProductListText(String text) {
-        this.step.setText(text);
-    }
-
-    public void setProductOperation(String text) {
-        this.productOperation.setText(text);
-    }
-
     public void setOperation(String operation) {
         this.operation.setText(operation);
     }
@@ -75,5 +67,6 @@ public class SimpleProcessingMonitorController implements Initializable {
         setOperationProcessingProgressBar(processManager.getOperationMonitor().getProgress());
         setProductProgressBar(processManager.getProductMonitor().getProgress());
         setProductListProgressBar(processManager.getListMonitor().getProgress());
+        root.visibleProperty().bind(processManager.processingProperty());
     }
 }

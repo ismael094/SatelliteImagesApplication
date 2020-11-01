@@ -18,19 +18,19 @@ import utils.gui.ProductListDTOUtil;
 import java.io.File;
 import java.util.List;
 
-public class ResultsMenu extends Menu implements SatInfMenuItem, Observer {
+public class PostProcessingMenu extends Menu implements SatInfMenuItem, Observer {
     private final MenuComponent menuComponent;
     private MenuItem results;
     private Menu algorithm;
 
-    public ResultsMenu(MenuComponent menuComponent) {
-        super("Results");
+    public PostProcessingMenu(MenuComponent menuComponent) {
+        super("PostProcessing");
         this.menuComponent = menuComponent;
         init();
     }
 
     private void init() {
-        results = new MenuItem("Processing results");
+        results = new MenuItem("Load processing results");
 
         algorithm = new Menu("Algorithms");
 

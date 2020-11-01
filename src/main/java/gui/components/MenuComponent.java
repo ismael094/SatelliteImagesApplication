@@ -4,7 +4,6 @@ import controller.MainController;
 import gui.components.listener.ComponentEvent;
 import gui.menu.*;
 import javafx.scene.control.*;
-import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import javafx.scene.Parent;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +34,7 @@ public class MenuComponent extends MenuBar implements Component{
         this.menus.add(new ListMenu(this));
         this.menus.add(new DownloadMenu(this));
         this.menus.add(new ProcessingMenu(this));
-        this.menus.add(new ResultsMenu(this));
+        this.menus.add(new PostProcessingMenu(this));
     }
 
     @Override

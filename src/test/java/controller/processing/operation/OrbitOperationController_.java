@@ -1,4 +1,4 @@
-package controller.operation;
+package controller.processing.operation;
 
 import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import controller.processing.workflow.operation.OperationController;
@@ -17,11 +17,11 @@ import org.testfx.framework.junit.ApplicationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WriteAndReadOperationController_ extends ApplicationTest {
+public class OrbitOperationController_ extends ApplicationTest {
     OperationController controller;
     @Override
     public void start (Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(Sentinel1GRDWorkflowController.class.getResource("/fxml/WriteAndReadOperationController.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Sentinel1GRDWorkflowController.class.getResource("/fxml/OrbitOperationView.fxml"));
         Parent mainNode = fxmlLoader.load();
         controller = fxmlLoader.getController();
         stage.setScene(new Scene(mainNode));
@@ -37,9 +37,26 @@ public class WriteAndReadOperationController_ extends ApplicationTest {
     }
 
     @Test
-    public void set_operation() {
+    public void set_parameters() {
         GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
-        controller.setParameters(workflow.getOperation(Operator.WRITE_AND_READ).getParameters());
-        assertThat(controller.getParameters().get("formatName")).isEqualTo("BEAM-DIMAP");
+        controller.setParameters(workflow.getOperation(Operator.APPLY_ORBIT_FILE).getParameters());
+        assertThat(controller.getParameters().size()).isEqualTo(2);
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(3);
+    }
+
+    @Test
+    public void get_parameters() {
+        clickOn("#plyDegree");
+        doubleClickOn("#plyDegree");
+        write("5");
+        type(KeyCode.ENTER);
+
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
+
+        clickOn("#plyDegree");
+        doubleClickOn("#plyDegree");
+        write("");
+        type(KeyCode.ENTER);
+        assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
     }
 }

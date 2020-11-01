@@ -1,6 +1,8 @@
 package services;
 
 import gui.dialog.ScihubCredentialsDialog;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.util.Pair;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
@@ -15,6 +17,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static utils.http.HTTPReadUtil.readFromURL;
 
@@ -34,19 +37,18 @@ public class CopernicusService implements Service {
     private Pair<String, String> pair;
 
     private CopernicusService() {
-        ScihubCredentialsDialog dialog = new ScihubCredentialsDialog();
-        Optional<Pair<String, String>> stringStringPair = dialog.showAndWait();
-        stringStringPair.ifPresent(stringPair -> this.pair = stringPair);
-        logger.atInfo().log("New CopernicusService open");
+
     }
 
     /**
      * Get instance of Service. If not logged, show credentials dialog. MUST BE CALLED IN JAVAFX THREAD
      * @return CopernicusService
      */
-    public static CopernicusService getInstance() {
-        if (instance == null || instance.httpManager == null)
+    public static CopernicusService getInstance() throws NotAuthenticatedException, AuthenticationException {
+        if (instance == null || instance.httpManager == null) {
             instance = new CopernicusService();
+            instance.login();
+        }
         return instance;
     }
 
@@ -58,6 +60,23 @@ public class CopernicusService implements Service {
      */
     @Override
     public synchronized void login() throws AuthenticationException, NotAuthenticatedException {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ScihubCredentialsDialog dialog = new ScihubCredentialsDialog();
+                Optional<Pair<String, String>> stringStringPair = dialog.showAndWait();
+                stringStringPair.ifPresent(stringPair -> pair = stringPair);
+                return null;
+            }
+        };
+
+        Platform.runLater(task);
+        try {
+            task.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         if (pair == null) {
             instance = null;
             logger.atWarn().log("Incorrect credentials while login in Copernicus API");

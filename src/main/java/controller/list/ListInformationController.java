@@ -41,6 +41,7 @@ import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
 import services.download.Downloader;
+import services.search.OpenSearcher;
 import utils.AlertFactory;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
@@ -142,12 +143,9 @@ public class ListInformationController extends ProductListTabItem {
      */
     @Override
     public Task<Parent> start() {
-        CopernicusService service = CopernicusService.getInstance();
-
         return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
-                service.login();
                 initData();
                 try {
                     if (productListDTO.count() > 0) {
@@ -500,7 +498,7 @@ public class ListInformationController extends ProductListTabItem {
                 tabPaneComponent.select(COPERNICUS_OPEN_SEARCH_ID);
                 searchController = (CopernicusOpenSearchController) tabPaneComponent.getControllerOf(COPERNICUS_OPEN_SEARCH_ID);
             } else {
-                searchController = new CopernicusOpenSearchController("id");
+                searchController = new CopernicusOpenSearchController("id", new OpenSearcher());
                 tabPaneComponent.load(searchController);
             }
 

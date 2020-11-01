@@ -8,6 +8,7 @@ import gui.ExecutedEvent;
 import gui.components.*;
 import gui.components.tabcomponent.SatInfTabPaneComponent;
 import gui.components.TabPaneComponent;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -98,7 +99,7 @@ public class MainController implements Initializable {
     }
 
     private void initProcessors() {
-        processor = new ProcessorManager();
+        processor = new ProcessorManager(new SimpleBooleanProperty());
         processingController.setProcessorManager(processor);
         AnchorPane.setRightAnchor(processing,0.0);
         AnchorPane.setLeftAnchor(processing,0.0);

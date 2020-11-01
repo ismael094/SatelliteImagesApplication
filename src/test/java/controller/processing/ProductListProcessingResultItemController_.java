@@ -1,6 +1,6 @@
 package controller.processing;
 
-import controller.results.ProductListProcessingResultItemController;
+import controller.postprocessing.ProductListProcessingResultItemController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

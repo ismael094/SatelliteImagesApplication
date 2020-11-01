@@ -1,5 +1,7 @@
 package model.processing;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import model.exception.NoWorkflowFoundException;
@@ -28,11 +30,14 @@ public class ProcessorManager {
     private final FXProgressMonitor operationMonitor;
     private final FXProgressMonitor productMonitor;
     private final FXProgressMonitor listMonitor;
+    private final BooleanProperty processing;
     private boolean isProcessing;
     private boolean isCancel;
     private Task task;
 
-    public ProcessorManager() {
+    public ProcessorManager(BooleanProperty processing) {
+        this.processing = processing;
+        processing.set(false);
         this.operationMonitor = new FXProgressMonitor();
         this.productMonitor = new FXProgressMonitor();
         this.listMonitor = new FXProgressMonitor();
@@ -58,7 +63,7 @@ public class ProcessorManager {
                 if (isProcessing)
                     throw new Exception("There is a processing open");
 
-                isProcessing = true;
+                processingStart();
                 isCancel = false;
 
                 logger.atInfo().log("====== Processing start =========");
@@ -82,6 +87,7 @@ public class ProcessorManager {
 
                 logger.atInfo().log("====== List Processed =========");
                 isProcessing = false;
+
                 return true;
             }
 
@@ -97,7 +103,7 @@ public class ProcessorManager {
                     file.mkdirs();
                 for (ProductDTO p : productListDTO.getReferenceProducts()) {
                     if (executeProcessIfIsNotCancelled(p, productListDTO.areasOfWorkOfProduct(p.getFootprint()),
-                            new S2MSI1CDefaultWorkflowDTO(),
+                            productListDTO.getWorkflow(WorkflowType.valueOf(p.getProductType())),
                             productListDTO.getName() + "\\reference_images",
                             false)) return true;
                 }
@@ -125,17 +131,31 @@ public class ProcessorManager {
                 return false;
             }
         };
-
-        task.setOnSucceeded(e->{
-            task = null;
-        });
-
-        task.setOnFailed(e->{
-            AlertFactory.showErrorDialog("","","");
-        });
-
         return task;
 
+    }
+
+    public Task<BufferedImage> process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
+        if (this.task != null && this.task.isRunning())
+            throw new Exception("Processing still running");
+        this.task =  new Task<BufferedImage>() {
+            @Override
+            protected BufferedImage call() throws Exception {
+                processingStart();
+                BufferedImage bufferedImage1 = processProduct(product, areasOfWork, workflow, path, bufferedImage);
+                processingStop();
+                return bufferedImage1;
+            }
+        };
+        return task;
+    }
+
+    private void processingStart() {
+        processing.setValue(true);
+    }
+
+    private void processingStop() {
+        processing.setValue(false);
     }
 
     private void resetMonitors() {
@@ -150,18 +170,6 @@ public class ProcessorManager {
         });
         if (task != null)
             task.cancel(true);
-    }
-
-    public Task<BufferedImage> process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
-        if (this.task != null && this.task.isRunning())
-            throw new Exception("Processing still running");
-        this.task =  new Task<BufferedImage>() {
-            @Override
-            protected BufferedImage call() throws Exception {
-                return processProduct(product, areasOfWork, workflow, path, bufferedImage);
-            }
-        };
-        return task;
     }
 
     private BufferedImage processProduct(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
@@ -191,7 +199,13 @@ public class ProcessorManager {
         return listMonitor;
     }
 
+    public BooleanProperty processingProperty() {
+        return processing;
+    }
+
     public boolean isProcessing() {
         return isProcessing;
     }
+
+
 }

@@ -1,9 +1,8 @@
-package controller.results;
+package controller.postprocessing;
 
 import controller.interfaces.ProcessingResultsTabItem;
 import controller.interfaces.TabItem;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.prefs.*;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 

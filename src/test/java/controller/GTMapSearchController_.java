@@ -2,8 +2,11 @@ package controller;
 
 import controller.processing.workflow.Sentinel1GRDWorkflowController;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
@@ -12,6 +15,7 @@ import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.awt.*;
 
@@ -24,13 +28,12 @@ public class GTMapSearchController_   extends ApplicationTest {
 
     @Override
     public void start (Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(Sentinel1GRDWorkflowController.class.getResource("/fxml/GeotoolsMapView.fxml"));
-        controller = new GTMapSearchController(570,570,true);
-        fxmlLoader.setController(controller);
-        Parent mainNode = fxmlLoader.load();
+        //FXMLLoader fxmlLoader = new FXMLLoader(Sentinel1GRDWorkflowController.class.getResource("/fxml/GeotoolsMapView.fxml"));
+        controller = new GTMapSearchController(1200,570,true);
+        Parent mainNode = controller.getView();
         stage.setScene(new Scene(mainNode));
         stage.show();
-        stage.toFront();
+        //stage.toFront();
     }
 
     @After
@@ -47,12 +50,14 @@ public class GTMapSearchController_   extends ApplicationTest {
     }
 
     @Test
-    public void test() throws ParseException {
+    public void delete_search_area() throws ParseException {
         controller.setSearchArea(WKT);
-        controller.addProductWKT(WKT,"id1","products");
-        controller.drawFeaturesOfLayer("products", Color.BLACK, Color.CYAN);
-        controller.setLayerSelectedAreaEvent("products");
-        clickOn("#delete");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Button n = lookup("#delete").query();
+        assertThat(n.isVisible()).isTrue();
+        n.setVisible(true);
+        n.getOnAction().handle(null);
         assertThat(controller.getWKT()).isEqualTo(null);
     }
 }
