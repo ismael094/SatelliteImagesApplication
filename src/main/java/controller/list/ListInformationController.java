@@ -38,6 +38,7 @@ import model.processing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.control.ListActionView;
 import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
 import services.CopernicusService;
@@ -244,7 +245,7 @@ public class ListInformationController extends ProductListTabItem {
             productListDTO.addProduct((ObservableList<ProductDTO>) pair.getValue());
         }
         actionActive(false);
-        tabPaneComponent.updateObservers();
+        tabPaneComponent.updateObservers(this);
     }
 
     private void actionActive(boolean b) {
@@ -273,7 +274,7 @@ public class ListInformationController extends ProductListTabItem {
         }
 
         actionActive(false);
-        tabPaneComponent.updateObservers();
+        tabPaneComponent.updateObservers(this);
     }
 
 
@@ -281,7 +282,7 @@ public class ListInformationController extends ProductListTabItem {
     @Override
     public String getRedo() {
         try {
-            return actions.get(actionIndex).getKey().name();
+            return actions.get(actionIndex).getKey().getName();
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
@@ -290,7 +291,7 @@ public class ListInformationController extends ProductListTabItem {
     @Override
     public String getUndo() {
         try {
-            return actions.get(actionIndex-1).getKey().toString();
+            return actions.get(actionIndex-1).getKey().getName();
         }catch (IndexOutOfBoundsException e) {
             return null;
         }
@@ -321,7 +322,7 @@ public class ListInformationController extends ProductListTabItem {
         actionIndex++;
         for (int i = actionIndex;i<actions.size();i++)
             actions.remove(i);
-        tabPaneComponent.updateObservers();
+        tabPaneComponent.updateObservers(this);
     }
 
 
@@ -715,9 +716,5 @@ public class ListInformationController extends ProductListTabItem {
         } catch (Exception e){
             return null;
         }
-    }
-
-    enum ListAction {
-        ADD_PRODUCT,DELETE_PRODUCT,ADD_AREA_OF_WORK,DELETE_AREA_OF_WORK,ADD_REFERENCE_IMAGE,DELETE_REFERENCE_IMAGE
     }
 }

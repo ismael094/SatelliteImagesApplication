@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+
+<?import controller.identification.ConfirmDeleteAccountController?>
+<DialogPane contentText="Confirm exit" expanded="true" headerText="Confirm exit" prefHeight="179.0" prefWidth="447.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+
+    <buttonTypes>
+        <ConfirmDeleteAccountController fx:constant="YES" />
+        <ConfirmDeleteAccountController fx:constant="CANCEL_CLOSE" />
+    </buttonTypes>
+    <header>
+        <HBox alignment="CENTER" prefHeight="52.0" prefWidth="447.0">
+            <children>
+                <Label prefHeight="27.0" prefWidth="105.0" text="Delete Account" />
+            </children>
+        </HBox>
+    </header>
+    <content>
+        <AnchorPane prefHeight="63.0" prefWidth="447.0">
+            <children>
+                <Label layoutX="45.5" prefHeight="41.0" prefWidth="337.0" text="Do you really want to exit? There area downloads or/and processing active!" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="40.0">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </Label>
+            </children>
+        </AnchorPane>
+    </content>
+</DialogPane>

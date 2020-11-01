@@ -14,7 +14,6 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -103,13 +102,11 @@ public class DownloadItemThread extends Service<Boolean> {
                 int bytesRead;
                 int tries = 5;
                 startTime = currentTimeMillis();
+
                 while (true) {
 
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
-                        setStoppedStatus();
-                        close();
-                        Files.deleteIfExists(Paths.get(temporalFileLocation));
-                        Thread.sleep(2000);
+                        cancel(temporalFileLocation);
                         return false;
                     }
 
@@ -122,30 +119,30 @@ public class DownloadItemThread extends Service<Boolean> {
                             setDownloadingStatus();
 
                         bytesRead = in.read(buffer, 0, 1024);
-                        if (bytesRead == 0 && tries >0){
+                        if (noBytesRead(bytesRead) && tries > 0){
                             tries--;
-                            System.out.println("Bytes not readed");
+                            //Go to the the last 1024 bytes readed
                             in.mark(1024);
                             Thread.sleep(5000);
                             in.reset();
                             continue;
-                        } else if (tries == 0) {
-                            logger.atError().log("No connection");
+                        } else if (noBytesRead(tries)) {
+                            logger.atError().log("No connection with service! No bytes read from HTTP");
+                            //Cancel the download
+                            cancel(temporalFileLocation);
                             return false;
                         }
+
                         if (isDownloadFinish(bytesRead)) {
                             setFinishedStatus();
-                            close();
-                            boolean wasFileRename = new File(temporalFileLocation).renameTo(new File(finalFileLocation));
-                            if (wasFileRename)
-                                logger.atInfo().log("Download finished! {}GB downloaded in {} minutes", getContentLengthInGb(contentLength.get() / 1024.0, 1024.0, 1024.0), getContentLengthInGb(currentTimeMillis() - startTime, 1000.0, 60.0));
-                            else {
-                                Files.deleteIfExists(Paths.get(temporalFileLocation));
-                                logger.atError().log("Not able to rename file {}",temporalFileLocation);
+                            closeStreams();
+                            if (FileUtils.renameFile(temporalFileLocation, finalFileLocation)) {
+                                logger.atError().log("Error while renaming product {} to {}");
                                 return false;
                             }
-                            return checkMD5(md);
+                            return checkfileMD5(md);
                         }
+
                         addBytesRead(bytesRead);
                         fileOutputStream.write(buffer, 0, bytesRead);
                         md.update(buffer, 0, bytesRead);
@@ -154,7 +151,11 @@ public class DownloadItemThread extends Service<Boolean> {
                 }
             }
 
-            private boolean checkMD5(MessageDigest md) throws NotAuthenticatedException, IOException, AuthenticationException {
+            private boolean noBytesRead(int bytesRead) {
+                return bytesRead == 0;
+            }
+
+            private boolean checkfileMD5(MessageDigest md) throws NotAuthenticatedException, IOException, AuthenticationException {
                 String md5 = new BigInteger(1, md.digest()).toString(16);
                 while (md5.length() < 32)
                     md5=0+md5;
@@ -164,15 +165,20 @@ public class DownloadItemThread extends Service<Boolean> {
                 return md5.toUpperCase().equals(checksum);
             }
 
-
-
             private boolean isDownloadFinish(int bytesRead) {
                 return bytesRead == -1;
+            }
+
+            private void cancel(String temporalFileLocation) throws IOException, InterruptedException {
+                setStoppedStatus();
+                closeStreams();
+                Files.deleteIfExists(Paths.get(temporalFileLocation));
+                Thread.sleep(2000);
             }
         };
     }
 
-    public void close() throws IOException {
+    public void closeStreams() throws IOException {
         if (inputStream != null)
             inputStream.close();
 
@@ -187,7 +193,6 @@ public class DownloadItemThread extends Service<Boolean> {
                 connection.getInputStream().close();
             connection.disconnect();
         }
-
     }
 
     private double getContentLengthInGb(double v, double v2, double v3) {

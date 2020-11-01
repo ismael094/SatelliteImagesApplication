@@ -1,6 +1,7 @@
 package controller.processing.workflow;
 
 import controller.MainController;
+import controller.UserManager;
 import controller.cell.WorkflowListViewCellController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
@@ -45,13 +46,15 @@ public class MyWorkflowController implements Initializable {
     private WorkflowDTO workflow;
     private Map<WorkflowType, String> workflowControllerMap;
     private WorkflowController activeWorkflowController;
-    private MainController mainController;
     private List<WorkflowController> openWorkflows;
+    private ProductListDTO productList;
+    private UserManager userManager;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMap();
+        productList = null;
         openWorkflows = new ArrayList<>();
         workflowList.setCellFactory(e->new WorkflowListViewCellController(this));
         //workflowList.getItems().add(new Sentinel1GRDDefaultWorkflow());
@@ -81,21 +84,14 @@ public class MyWorkflowController implements Initializable {
 
     private void onRemoveWorkflowDeleteWorkflow() {
         removeWorkflow.setOnAction(e->{
-            workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
-        });
-    }
+            if (workflowList.getSelectionModel().getSelectedItem() != null) {
+                if (productList!=null)
+                    productList.removeWorkflow(workflowList.getSelectionModel().getSelectedItem());
+                else
+                    userManager.removeWorkflow(workflowList.getSelectionModel().getSelectedItem());
 
-    private void onSaveWorkflowSaveParameters() {
-        saveWorkflow.setOnAction(e->{
-            ObservableList<WorkflowDTO> workflows = FXCollections.observableArrayList();
-
-            openWorkflows.forEach(w->{
-                workflows.add(w.getWorkflow());
-            });
-
-            mainController.getUserManager().updateUserWorkflows(workflows);
-            //mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
-            AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
+                workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
+            }
         });
     }
 
@@ -103,6 +99,23 @@ public class MyWorkflowController implements Initializable {
         addWorkflow.setOnAction(e-> {
             GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
             workflowList.getItems().add(aDefault);
+            userManager.addNewWorkflow(aDefault);
+            if (productList!=null)
+                productList.addWorkflow(aDefault);
+        });
+    }
+
+    private void onSaveWorkflowSaveParameters() {
+        saveWorkflow.setOnAction(e->{
+            ObservableList<WorkflowDTO> workflows = FXCollections.observableArrayList();
+            openWorkflows.forEach(w->{
+                workflows.add(w.getWorkflow());
+                if (productList != null && !productList.getWorkflows().contains(w.getWorkflow()))
+                    productList.addWorkflow(w.getWorkflow());
+            });
+            userManager.updateUserWorkflows(workflows);
+            //mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
+            AlertFactory.showSuccessDialog("Workflows updated", "Workflows updated","Workflows updated successfully");
         });
     }
 
@@ -113,7 +126,7 @@ public class MyWorkflowController implements Initializable {
                 AlertFactory.showErrorDialog("Workflow","No workflows selected!","Select one or more workflows to add to list");
                 return;
             }
-            List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(mainController.getUserManager().getUser().getProductListsDTO(), mainController.getRoot().getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
+            List<ProductListDTO> productListDTOS = ProductListDTOUtil.dialogToSelectList(userManager.getUser().getProductListsDTO(), accordion.getScene().getWindow(), SelectionMode.MULTIPLE, "Select the list to add Workflows");
             if (productListDTOS.isEmpty() || productListDTOS.get(0) == null) {
                 AlertFactory.showErrorDialog("Workflow","No lists selected!","Select one or more lists to add workflows");
                 return;
@@ -131,14 +144,6 @@ public class MyWorkflowController implements Initializable {
         workflowControllerMap.put(WorkflowType.SLC, "/fxml/Sentinel1SLCWorkflowView.fxml");
         workflowControllerMap.put(WorkflowType.S2MSI1C, "/fxml/Sentinel2MSILWorkflowView.fxml");
         workflowControllerMap.put(WorkflowType.S2MSI2A, "/fxml/Sentinel2MSILWorkflowView.fxml");
-    }
-
-    public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
-        workflowList.setItems(workflows);
-        if (workflows.size()>0) {
-            loadWorkflow(workflows.get(0));
-            workflowList.getSelectionModel().select(workflows.get(0));
-        }
     }
 
     public void loadWorkflow(WorkflowDTO workflow) {
@@ -160,12 +165,28 @@ public class MyWorkflowController implements Initializable {
         openWorkflows.add(activeWorkflowController);
     }
 
+    public void loadWorkflows() {
+        if (productList == null)
+            workflowList.setItems(FXCollections.observableArrayList(userManager.getUser().getWorkflows()));
+        else
+            workflowList.setItems(FXCollections.observableArrayList(productList.getWorkflows()));
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+        if (workflowList.getItems().size()>0) {
+            workflowList.getSelectionModel().select(workflowList.getItems().get(0));
+            loadWorkflow(workflowList.getItems().get(0));
+        }
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
     }
 
     public void setVisibleAssignToList(boolean b) {
         assignToList.setVisible(b);
+    }
+
+    public void setProductListDTO(ProductListDTO productListDTO) {
+        this.productList = productListDTO;
+        setVisibleAssignToList(productList==null);
     }
 }

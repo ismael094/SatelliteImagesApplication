@@ -99,8 +99,8 @@ public class ListTreeViewComponent extends TreeView<TreeViewNode> implements Com
     }
 
     @Override
-    public void updateObservers() {
-        observers.forEach(Observer::update);
+    public void updateObservers(Object args) {
+        observers.forEach(o->o.update(args));
     }
 
     public void reload() {

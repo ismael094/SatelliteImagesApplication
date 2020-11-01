@@ -1,13 +1,12 @@
 package gui.menu;
 
-import controller.MainController;
 import controller.search.CopernicusOpenSearchController;
 import gui.components.MenuComponent;
 import gui.events.LoadTabItemEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
-public class SearcherMenu extends Menu implements SatInfMenuItem{
+public class SearcherMenu extends Menu implements SatInfMenuItem {
     private final MenuComponent menuComponent;
 
     public SearcherMenu(MenuComponent menuComponent) {

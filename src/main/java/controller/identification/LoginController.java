@@ -1,8 +1,10 @@
 package controller.identification;
 
+import com.jfoenix.controls.JFXSpinner;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -30,6 +33,12 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
+    @FXML
+    private BorderPane loginPane;
+    @FXML
+    private AnchorPane spinnerPane;
+    @FXML
+    private JFXSpinner spinner;
     @FXML
     private AnchorPane root;
     @FXML
@@ -61,6 +70,15 @@ public class LoginController implements Initializable {
         signIn.setOnMouseClicked(this::login);
 
         signUp.setOnAction(this::showRegisterView);
+
+        setSpinnerVisible(false);
+    }
+
+    private void setSpinnerVisible(boolean b) {
+        spinnerPane.setVisible(b);
+        spinnerPane.setManaged(b);
+        spinner.setVisible(b);
+        spinner.setManaged(b);
     }
 
     private void showRegisterView(ActionEvent actionEvent) {
@@ -101,15 +119,45 @@ public class LoginController implements Initializable {
 
     private void login(MouseEvent e) {
         if (dataIsValid()) {
-            UserDTO dbUser = UserDBDAO.getInstance().findByEmail(userDTO);
-            if (dbUser!=null && Encryptor.matchString(userDTO.getPassword(),dbUser.getPassword())) {
-                userDTO = dbUser;
-                logger.atInfo().log("Login completed! User {} successfully logged",dbUser.getFirstName());
+            loginTask();
+        } else {
+            AlertFactory.showErrorDialog("Login","Incorrect data","Email must be like example@example.com");
+        }
+    }
+
+    private void loginTask() {
+        toggleSpinner(true);
+        Task<UserDTO> task = new Task<UserDTO>() {
+            @Override
+            protected UserDTO call() throws Exception {
+                UserDTO dbUser = UserDBDAO.getInstance().findByEmail(userDTO);
+                if (dbUser != null && Encryptor.matchString(userDTO.getPassword(), dbUser.getPassword())) {
+                    return dbUser;
+                }
+                return null;
+            }
+        };
+        task.setOnSucceeded(event->{
+            if (task.getValue() != null) {
+                userDTO = task.getValue();
+                logger.atInfo().log("Login completed! User {} successfully logged",userDTO.getFirstName());
                 closeWindow();
             } else {
                 AlertFactory.showErrorDialog("Login","Incorrect data","Email or password incorrect");
             }
-        }
+
+            toggleSpinner(false);
+        });
+        task.setOnFailed(event -> {
+            AlertFactory.showErrorDialog("Login","Incorrect data","Email or password incorrect");
+            toggleSpinner(false);
+        });
+        new Thread(task).start();
+    }
+
+    private void toggleSpinner(boolean b) {
+        setSpinnerVisible(b);
+        loginPane.setDisable(b);
     }
 
     private boolean dataIsValid() {

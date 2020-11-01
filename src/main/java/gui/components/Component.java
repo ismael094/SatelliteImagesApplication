@@ -14,5 +14,5 @@ public interface Component {
     void addComponentListener(ComponentChangeListener listener);
     void fireEvent(ComponentEvent event);
     void addObserver(Observer observer);
-    void updateObservers();
+    void updateObservers(Object args);
 }

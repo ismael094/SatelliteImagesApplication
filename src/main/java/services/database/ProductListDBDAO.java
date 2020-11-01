@@ -4,6 +4,7 @@ import dev.morphia.Key;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
+import model.processing.workflow.WorkflowDTO;
 import org.bson.types.ObjectId;
 import services.database.mappers.WorkflowMapper;
 import services.entities.ProductList;
@@ -54,6 +55,14 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
                 .find(ProductList.class)
                 .field("name")
                 .equal(dao.getName())
+                .first());
+    }
+
+    public ProductListDTO findByWorkflow(WorkflowDTO workflowDTO) {
+        return toDAO(database.getDatastore()
+                .find(ProductList.class)
+                .field("workflows")
+                .hasThisOne(workflowDTO.getId())
                 .first());
     }
 

@@ -40,7 +40,7 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
 
     private void onTabChangeUpdateObservers() {
         getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            updateObservers();
+            updateObservers(getControllerOf(newValue));
         });
     }
 
@@ -56,8 +56,8 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
     public void add(Tab t) {
         t.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         getTabs().add(t);
-        getSelectionModel().select(t);
-        updateObservers();
+        select(t);
+        updateObservers(getControllerOf(t));
     }
 
     @Override
@@ -66,6 +66,7 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
         Tab tab = new Tab(name, node);
         tab.setId(id);
         add(tab);
+
     }
 
     @Override
@@ -103,7 +104,7 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
     @Override
     public void select(Tab tab) {
         getSelectionModel().select(tab);
-        updateObservers();
+        updateObservers(getControllerOf(tab));
     }
 
     @Override
@@ -138,6 +139,7 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
             if (item instanceof SearchController)
                 isSearchControllerOpen.setValue(true);
             mainController.hideWaitSpinner();
+            updateObservers(item);
         });
         new Thread(task).start();
     }

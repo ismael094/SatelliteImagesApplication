@@ -3,8 +3,6 @@ package services.download;
 import gui.components.listener.ComponentEvent;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import model.events.DownloadEvent;
-import model.events.EventType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,11 +11,9 @@ import javafx.concurrent.WorkerStateEvent;
 import model.exception.ProductNotAvailableException;
 import model.list.ProductListDTO;
 import model.listeners.ComponentChangeListener;
-import model.listeners.DownloadListener;
 import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
-import utils.AlertFactory;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -25,9 +21,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 
@@ -78,6 +72,11 @@ public class CopernicusDownloader implements Downloader, Runnable {
         return timeLeft;
     }
 
+    @Override
+    public boolean isDownloading() {
+        return !downloadingObservable.isEmpty();
+    }
+
     private synchronized void add(DownloadItem item) {
         if (FileUtils.fileExists(item.getProductDTO().getTitle()) || queue.contains(item) || historical.contains(item) )
             return;
@@ -115,15 +114,9 @@ public class CopernicusDownloader implements Downloader, Runnable {
                 Platform.runLater(()->historical.clear());
                 restoreAttempts();
             }
-            double time = 0;
-            for (DownloadItemThread t : downloading) {
-                if (t.getTimeLeft() > time)
-                    time = t.getTimeLeft();
-            }
 
-            double finalTime = time;
             Platform.runLater(()->{
-                timeLeft.set(finalTime);
+                timeLeft.set(calculateMaxTimeLeft());
             });
 
             try {
@@ -135,6 +128,15 @@ public class CopernicusDownloader implements Downloader, Runnable {
         }
     }
 
+    private double calculateMaxTimeLeft() {
+        double time = 0;
+        for (DownloadItemThread t : downloading) {
+            if (t.getTimeLeft() > time)
+                time = t.getTimeLeft();
+        }
+        return time;
+    }
+
     private synchronized void processItem() {
         DownloadItem poll = queue.poll();
         poll.setLocation(getProductDownloadFolderLocation());
@@ -143,6 +145,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
         downloading.add(downloadItemThread);
 
         Task<Boolean> task = downloadItemThread.createTask();
+
         task.setOnSucceeded(e-> {
             try {
                 if (task.get()) {
@@ -164,6 +167,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
             poll.setProgressProperty(task.progressProperty());
             downloadingObservable.add(poll);
         });
+
     }
 
     private void initThread(DownloadItem poll, Task<Boolean> task) {
@@ -185,8 +189,9 @@ public class CopernicusDownloader implements Downloader, Runnable {
         thread.setCommand(DownloadEnum.DownloadCommand.STOP);
         thread.cancel();
         try {
-            thread.close();
+            thread.closeStreams();
         } catch (IOException ioException) {
+            logger.atError().log("Error while closing download item thread {}",e);
             ioException.printStackTrace();
         }
 
@@ -214,7 +219,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
 
         if (e.getSource().getException() instanceof ProductNotAvailableException) {
             logger.atWarn().log("Product not available for download! Request made. Try to download it later! {}", poll.getProductDTO().getTitle());
-            AlertFactory.showErrorDialog("Product not available", "Product not available","Product " +poll.getProductDTO().getTitle() + " not available. Request done! Try to download it in the next days!");
+            fireEvent(new ComponentEvent(this,"Product " + poll.getProductDTO().getTitle() + " not available to download!"));
         }
         else if (e.getSource().getException() instanceof FileAlreadyExistsException)
             logger.atWarn().log("Product already exits {}", poll.getProductDTO().getTitle());

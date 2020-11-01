@@ -8,11 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
 import model.events.EventType;
+import model.list.ProductListDTO;
 import model.products.ProductDTO;
+import utils.gui.Observer;
 
-public class DownloadSelectedProductEvent extends Event {
+public class SearchImageLikeSelectedEvent extends Event {
 
-    public DownloadSelectedProductEvent(MainController controller) {
+    public SearchImageLikeSelectedEvent(MainController controller) {
         super(controller);
     }
 
@@ -22,14 +24,10 @@ public class DownloadSelectedProductEvent extends Event {
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         if (controllerOf instanceof ProductListTabItem) {
             ObservableList<ProductDTO> selectedProducts = ((ProductListTabItem) controllerOf).getSelectedProducts();
-            if (!selectedProducts.isEmpty()) {
-                selectedProducts.forEach(p->{
-                    mainController.getDownloader().download(p);
-                });
-                mainController.fireEvent(new ExecutedEvent(this, EventType.DOWNLOAD,"Added selected products to Downloader Queue"));
-            }
+            selectedProducts.forEach(p->{
+                mainController.getDownloader().download(p);
+            });
+            mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Products deleted from list"));
         }
-
-        //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"Products deleted from list"));
     }
 }

@@ -18,6 +18,8 @@ public class CalibrationOperationController implements Initializable, OperationC
     public static final String GAMMA_0 = "Gamma0_";
     public static final String SIGMA_0 = "Sigma0_";
     @FXML
+    private JFXCheckBox outputComplex;
+    @FXML
     private JFXCheckBox outputSigma;
     @FXML
     private JFXCheckBox outputBeta;
@@ -58,6 +60,7 @@ public class CalibrationOperationController implements Initializable, OperationC
         parameters.put("outputGammaBand",outputGamma.isSelected());
         parameters.put("outputSigmaBand",outputSigma.isSelected());
         parameters.put("outputImageScaleInDb",outputInDb.isSelected());
+        parameters.put("outputImageInComplex",outputComplex.isSelected());
     }
 
     @Override
@@ -67,6 +70,7 @@ public class CalibrationOperationController implements Initializable, OperationC
         outputGamma.setSelected((Boolean)(parameters.getOrDefault("outputGammaBand",false)));
         outputSigma.setSelected((Boolean)(parameters.getOrDefault("outputSigmaBand",false)));
         outputInDb.setSelected((Boolean)(parameters.getOrDefault("outputImageScaleInDb",false)));
+        outputComplex.setSelected((Boolean)(parameters.getOrDefault("outputImageInComplex",false)));
     }
 
     public void fixOutputBeta(boolean b) {

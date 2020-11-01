@@ -4,6 +4,7 @@ import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
+import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.CopernicusService;
@@ -160,8 +161,6 @@ public class OpenSearcher implements SearchService {
         localDateTimeFinish.atZone(ZoneId.of("UTC"));
         return localDateTimeFinish.toString()+nano+"Z";
     }
-
-
 
     public void addJoinRangeParameter(SentinelProductParameters parameter, String from, String to) {
         addSearchParameter(parameter,"["+ from+ " TO " + to + "]");

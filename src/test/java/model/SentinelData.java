@@ -49,7 +49,7 @@ public class SentinelData {
     public static Sentinel2ProductDTO getSentinel2Product() {
         return new Sentinel2ProductDTO(
                 new SimpleStringProperty(SentinelData.ID),new SimpleStringProperty(SentinelData.TITLE),
-                new SimpleStringProperty(SentinelData.PLATFORM_NAME),new SimpleStringProperty(SentinelData.PRODUCT_TYPE),
+                new SimpleStringProperty("Sentinel-2"),new SimpleStringProperty(SentinelData.PRODUCT_TYPE),
                 new SimpleStringProperty(SentinelData.FOOTPRINT),new SimpleStringProperty(SentinelData.SIZE),
                 new SimpleStringProperty(SentinelData.STATUS),new SimpleObjectProperty<>(SentinelData.calendar),
                 new SimpleDoubleProperty(SentinelData.CLOUD_PERCENTAGE_COVERAGE),new SimpleDoubleProperty(SentinelData.VEGETATION_PERCENTAGE_COVERAGE),

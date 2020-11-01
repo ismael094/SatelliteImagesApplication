@@ -16,4 +16,5 @@ public interface Downloader {
     void pause();
     void resume();
     void remove(ProductDTO productDTO);
+    boolean isDownloading();
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @XmlRootElement(name = "feed")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpenSearchResponse {
+public class OpenSearchResponse{
 
     @JsonProperty("opensearch:totalResults")
     private int numOfProducts = 0;

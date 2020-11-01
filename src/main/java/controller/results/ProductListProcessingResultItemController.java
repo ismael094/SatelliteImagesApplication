@@ -4,10 +4,12 @@ import controller.processing.PreviewImageController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,6 +26,7 @@ import jfxtras.styles.jmetro.JMetro;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.imgscalr.Scalr;
+import utils.AlertFactory;
 import utils.ThemeConfiguration;
 
 import javax.imageio.ImageIO;
@@ -56,23 +59,40 @@ public class ProductListProcessingResultItemController implements Initializable 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         root.getStyleClass().add("processingResult");
-        image.setOnMouseClicked(e->{
-            try {
-                if (e.getClickCount() > 2 && e.isPrimaryButtonDown())
-                    loadImage();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        });
+
         GlyphsDude.setIcon(options, FontAwesomeIcon.BARS);
         deleteFile.setOnAction(event -> delete());
         openFile.setOnAction(e-> {
+            loadImageTask();
+
+            e.consume();
+        });
+    }
+
+    private void loadImageTask() {
+        Task<Image> task = new Task<Image>() {
+            @Override
+            protected Image call() throws Exception {
+                root.setCursor(Cursor.WAIT);
+                return new Image(file.toURI().toString());
+            }
+        };
+
+        task.setOnSucceeded(event->{
+            root.setCursor(Cursor.DEFAULT);
             try {
-                loadImage();
+                loadImage(task.getValue());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
         });
+
+        task.setOnFailed(event->{
+            root.setCursor(Cursor.DEFAULT);
+            AlertFactory.showErrorDialog("Error displaying image","Error displaying image","Error while trying to display image");
+        });
+
+        new Thread(task).start();
     }
 
     private void delete() {
@@ -92,7 +112,7 @@ public class ProductListProcessingResultItemController implements Initializable 
         Tooltip.install(name,tooltip);
     }
 
-    private void loadImage() throws IOException {
+    private void loadImage(Image img) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewImageView.fxml"));
         Scene scene = null;
         try {
@@ -105,8 +125,7 @@ public class ProductListProcessingResultItemController implements Initializable 
         PreviewImageController controller = fxmlLoader.getController();
         //BufferedImage read = ImageIO.read(file);
         //controller.setImage(SwingFXUtils.toFXImage(read,null));
-        System.out.println(file.toURI().toString());
-        Image img = new Image(file.toURI().toString());
+
         controller.setImage(img);
 
         Stage stage = new Stage();

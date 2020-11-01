@@ -5,10 +5,12 @@ import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
 import model.processing.workflow.GeneralWorkflowDTO;
+import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.operation.Operator;
 import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import model.processing.workflow.WorkflowType;
 import model.user.UserDTO;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import utils.database.MongoDB_;
@@ -23,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserDBDAO_ {
     private UserDBDAO userDAO;
+    private WorkflowDBDAO workflowDBDAO;
     private MongoDBManager mongodb;
     private UserDTO userDTO;
 
@@ -34,7 +37,13 @@ public class UserDBDAO_ {
             mongodb.connect();
         }
         userDAO = UserDBDAO.getInstance();
+        workflowDBDAO = WorkflowDBDAO.getInstance();
         userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+    }
+
+    @After
+    public void delete() {
+        userDAO.delete(userDTO);
     }
 
     @Test
@@ -50,6 +59,15 @@ public class UserDBDAO_ {
         UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getPassword()).isNotEmpty();
+
+    }
+
+    @Test
+    public void find_user_not_in_database_by_email() {
+        userDTO.setEmail("555@a.com");
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
 
     }
 
@@ -129,8 +147,56 @@ public class UserDBDAO_ {
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
         userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
+
+        userDAO.save(userDTO);
+        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+
+        assertThat(dbUserDTO).isNotNull();
+        assertThat(dbUserDTO.getWorkflows().size()).isNotNull();
+        assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
+        assertThat(dbUserDTO.getWorkflows().get(0).getId()).isEqualTo(userDTO.getWorkflows().get(0).getId());
+
+        GeneralWorkflowDTO prueba = new GeneralWorkflowDTO(new SimpleStringProperty("Prueba"), new SimpleObjectProperty<>(WorkflowType.SLC));
+
+        userDAO.addNewWorkflow(userDTO,prueba);
+        userDAO.addNewWorkflow(userDTO,prueba);
+
+        assertThat(workflowDBDAO.find(prueba)).isNotNull();
+
+        dbUserDTO = userDAO.findByEmail(userDTO);
+
+        assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);
+
+        assertThat(workflowDBDAO.find(dbUserDTO.getWorkflows().get(0))).isNotNull();
+        assertThat(workflowDBDAO.find(dbUserDTO.getWorkflows().get(1))).isNotNull();
+
+        userDAO.removeWorkflow(userDTO,prueba);
+
+        dbUserDTO = userDAO.findByEmail(userDTO);
+
+        assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
+
+        WorkflowDTO workflowDTOS = workflowDBDAO.findFirst(prueba);
+
+        assertThat(workflowDTOS).isNull();
+
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
+
+        userDAO.delete(dbUserDTO);
+        dbUserDTO = userDAO.findByEmail(userDTO);
+        assertThat(dbUserDTO).isNull();
+    }
+
+    @Test
+    public void add_and_remove_workflow_with_product_list() {
+        userDTO.setEmail("email@mail.com");
+        userDTO.setPassword("password");
+        userDTO.setFirstName("firstName");
+        userDTO.setLastName("lastName");
+        userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
-        productListDTO.addProduct(SentinelData.getProduct());
+        productListDTO.addProduct(SentinelData.getSentinel1Product());
 
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
@@ -141,12 +207,24 @@ public class UserDBDAO_ {
         assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
         assertThat(dbUserDTO.getWorkflows().get(0).getId()).isEqualTo(userDTO.getWorkflows().get(0).getId());
         GeneralWorkflowDTO prueba = new GeneralWorkflowDTO(new SimpleStringProperty("Prueba"), new SimpleObjectProperty<>(WorkflowType.SLC));
+        productListDTO.addWorkflow(prueba);
+        userDAO.updateProductList(userDTO);
 
         userDAO.addNewWorkflow(userDTO,prueba);
         userDAO.addNewWorkflow(userDTO,prueba);
+        assertThat(workflowDBDAO.find(prueba)).isNotNull();
+
         dbUserDTO = userDAO.findByEmail(userDTO);
+
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);
+        assertThat(workflowDBDAO.find(dbUserDTO.getWorkflows().get(0))).isNotNull();
+
         userDAO.removeWorkflow(userDTO,prueba);
+
+        WorkflowDTO workflowDTOS = workflowDBDAO.findFirst(prueba);
+
+
+        assertThat(workflowDTOS).isNull();
 
         dbUserDTO = userDAO.findByEmail(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
@@ -163,7 +241,7 @@ public class UserDBDAO_ {
         userDTO.setLastName("lastName");
         userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
-        productListDTO.addProduct(SentinelData.getProduct());
+        productListDTO.addProduct(SentinelData.getSentinel1Product());
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
 

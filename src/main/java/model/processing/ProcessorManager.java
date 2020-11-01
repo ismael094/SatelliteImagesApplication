@@ -190,4 +190,8 @@ public class ProcessorManager {
     public FXProgressMonitor getListMonitor() {
         return listMonitor;
     }
+
+    public boolean isProcessing() {
+        return isProcessing;
+    }
 }

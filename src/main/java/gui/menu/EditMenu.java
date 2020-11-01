@@ -60,22 +60,20 @@ public class EditMenu extends Menu implements SatInfMenuItem, Observer {
     }
 
     @Override
-    public void update() {
-        TabPaneComponent tabController = menuComponent.getMainController().getTabComponent();
+    public void update(Object args) {
         Platform.runLater(()->{
-            TabItem controller = tabController.getControllerOf(tabController.getActive());
-            if (!(controller instanceof ModifiableTabItem)) {
+            if (!(args instanceof ModifiableTabItem)) {
                 undo.setDisable(true);
                 redo.setDisable(true);
             } else {
-                ModifiableTabItem modifiableTabItem = (ModifiableTabItem)controller;
-                if (modifiableTabItem.getRedo()!=null) {
+                ModifiableTabItem modifiableTabItem = (ModifiableTabItem) args;
+                if (modifiableTabItem.getRedo() != null) {
                     setMenuItem(redo, "Redo " + modifiableTabItem.getRedo(), false);
                 } else {
                     setMenuItem(redo, "Redo", true);
                 }
 
-                if (modifiableTabItem.getUndo()!=null) {
+                if (modifiableTabItem.getUndo() != null) {
                     setMenuItem(undo, "Undo " + modifiableTabItem.getUndo(), false);
                 } else {
                     setMenuItem(undo, "Undo", true);

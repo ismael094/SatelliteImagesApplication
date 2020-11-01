@@ -1,7 +1,9 @@
 package gui.menu;
 
 import controller.download.DownloadPreferencesController;
+import controller.interfaces.ProductListTabItem;
 import gui.components.MenuComponent;
+import gui.components.TabPaneComponent;
 import gui.events.DownloadProductListEvent;
 import gui.events.DownloadSelectedProductEvent;
 import javafx.application.Platform;
@@ -78,11 +80,10 @@ public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
     }
 
     @Override
-    public void update() {
+    public void update(Object args) {
         Platform.runLater(()->{
-            ProductListDTO currentList = ProductListDTOUtil.getCurrentList(menuComponent.getMainController().getTabComponent());
-            downloadList.setDisable(currentList == null);
-            downloadProducts.setDisable(currentList == null);
+            downloadList.setDisable(!(args instanceof ProductListTabItem));
+            downloadProducts.setDisable(!(args instanceof ProductListTabItem));
         });
     }
 }

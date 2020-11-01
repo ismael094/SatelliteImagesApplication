@@ -125,6 +125,8 @@ public class GeneralWorkflowDTO implements WorkflowDTO {
         if (this == o) return true;
         if (!(o instanceof GeneralWorkflowDTO)) return false;
         GeneralWorkflowDTO that = (GeneralWorkflowDTO) o;
+        if ((id == null || that.id == null))
+            return false;
         return id.equals(that.id);
     }
 

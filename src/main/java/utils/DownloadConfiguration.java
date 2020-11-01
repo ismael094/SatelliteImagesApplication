@@ -8,6 +8,10 @@ public class DownloadConfiguration {
 
     private static final Preferences downloadPreferences = Preferences.userRoot().node("downloadPreferences");
 
+    public static Preferences getDownloadPreferences() {
+        return downloadPreferences;
+    }
+
     public static String getProductDownloadFolderLocation() {
         return downloadPreferences.get("productFolder", FileUtils.DEFAULT_DOWNLOAD_FOLDER);
     }

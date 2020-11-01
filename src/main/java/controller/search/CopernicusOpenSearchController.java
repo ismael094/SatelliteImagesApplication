@@ -6,7 +6,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -252,7 +251,6 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void onMouseClickInMapHighlightSelectedProductsEvent() {
-        AnchorPane view = (AnchorPane)mapController.getView();
         mapController.getMap().addEventHandler(MouseEvent.MOUSE_CLICKED, event-> {
             //If there are not selected products in map, deselect items in listview
             if (mapController.getSelectedFeatureId() == null) {

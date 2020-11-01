@@ -22,16 +22,18 @@ public class AddReferenceImageToListToolbarButton extends ToolbarButton implemen
         setOnAction(new AddReferenceImageEvent(toolBar.getMainController()));
         setIcon(MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
         setTooltip("Add selected products as ground truth");
-        toolBar.getMainController().getTabComponent().addObserver(this);
+        //toolBar.getMainController().getTabComponent().addObserver(this);
         //disableProperty().bind(toolBar.getMainController().getTabComponent().getIsSearchControllerOpenProperty().not());
     }
 
     @Override
-    public void update() {
-        TabPaneComponent tabComponent = toolBar.getMainController().getTabComponent();
+    public void update(Object args) {
         Platform.runLater(()->{
-            TabItem controllerOf = tabComponent.getControllerOf(tabComponent.getActive());
-            this.setDisable(!(controllerOf instanceof SearchController));
+            if (args instanceof TabPaneComponent) {
+                TabPaneComponent tabPaneComponent = (TabPaneComponent) args;
+                TabItem controllerOf = tabPaneComponent.getControllerOf(tabPaneComponent.getActive());
+                this.setDisable(!(controllerOf instanceof SearchController));
+            }
         });
     }
 }

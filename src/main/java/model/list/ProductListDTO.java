@@ -298,9 +298,12 @@ public class ProductListDTO {
         this.referenceProducts = referenceProducts;
     }
 
-    public void addReferenceProduct(List<ProductDTO> openSearcher) {
-        if (openSearcher.size() > 0) {
-            this.referenceProducts.addAll(openSearcher);
+    public void addReferenceProduct(List<ProductDTO> referenceImages) {
+        if (referenceImages.size() > 0) {
+            referenceImages.forEach(i->{
+                if (!this.referenceProducts.contains(i))
+                    this.referenceProducts.add(i);
+            });
             save();
         }
     }
@@ -320,20 +323,23 @@ public class ProductListDTO {
                 .findAny()
                 .orElse(null) != null;
 
+        System.out.println(existsWorkflowForType);
         /*boolean productTypeIsAllowed = restrictions.stream()
                 .filter(r->r.getName().equals("productType") && r.getValues().contains(workflow.getType().name()))
                 .findAny()
                 .orElse(null) == null;*/
 
 
-        if (!existsWorkflowForType)
+        if (!existsWorkflowForType) {
             this.workflows.add(workflow);
-        save();
+            save();
+        }
+
     }
 
     public void addWorkflow(List<WorkflowDTO> workflow) {
         workflow.forEach(this::addWorkflow);
-        save();
+        //save();
     }
 
     public WorkflowDTO getWorkflow(WorkflowType type) {
@@ -349,5 +355,10 @@ public class ProductListDTO {
 
     public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
         this.workflows = workflows;
+    }
+
+    public void removeWorkflow(WorkflowDTO workflowDTO) {
+        workflows.remove(workflowDTO);
+        save();
     }
 }

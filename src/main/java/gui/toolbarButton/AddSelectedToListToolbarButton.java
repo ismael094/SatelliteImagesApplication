@@ -22,16 +22,19 @@ public class AddSelectedToListToolbarButton extends ToolbarButton implements Obs
         setOnAction(new AddSelectedToListEvent(toolBar.getMainController()));
         setIcon(MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
         setTooltip("Add selected products to list");
-        toolBar.getMainController().getTabComponent().addObserver(this);
+        //toolBar.getMainController().getTabComponent().addObserver(this);
         //disableProperty().bind(toolBar.getMainController().getTabComponent().getIsSearchControllerOpenProperty().not());
     }
 
     @Override
-    public void update() {
+    public void update(Object args) {
         TabPaneComponent tabComponent = toolBar.getMainController().getTabComponent();
         Platform.runLater(()->{
-            TabItem controllerOf = tabComponent.getControllerOf(tabComponent.getActive());
-            this.setDisable(!(controllerOf instanceof SearchController));
+            if (args instanceof TabPaneComponent) {
+                TabPaneComponent tabPaneComponent = (TabPaneComponent) args;
+                TabItem controllerOf = tabPaneComponent.getControllerOf(tabPaneComponent.getActive());
+                this.setDisable(!(controllerOf instanceof SearchController));
+            }
         });
     }
 }

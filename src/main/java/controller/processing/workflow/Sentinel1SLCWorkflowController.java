@@ -92,8 +92,8 @@ public class Sentinel1SLCWorkflowController implements WorkflowController, Initi
     }
 
     private void addSLCOperations() {
-        workflow.addOperation(new Operation(Operator.TOPSAR_SPLIT, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.READ, new HashMap<>()));
+        workflow.addOperation(new Operation(Operator.TOPSAR_SPLIT, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.APPLY_ORBIT_FILE, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.CALIBRATION, new HashMap<>()));
         workflow.addOperation(new Operation(Operator.WRITE_AND_READ, new HashMap<>()));

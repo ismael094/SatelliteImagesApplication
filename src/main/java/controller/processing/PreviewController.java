@@ -4,7 +4,6 @@ import controller.interfaces.TabItem;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -24,7 +23,7 @@ import org.locationtech.jts.io.ParseException;
 import utils.AlertFactory;
 import utils.ProcessingConfiguration;
 import utils.ProductBandUtils;
-import utils.SatelliteData;
+import utils.SatelliteHelper;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -87,7 +86,7 @@ public class PreviewController implements TabItem {
     private void onClickOnGenerateProcessPreview() {
         generatePreview.setOnAction(e->{
             //If there are bands, one must be selected to process preview
-            if (!toggleGroup.getToggles().isEmpty() && toggleGroup.getSelectedToggle() == null) {
+            if (toggleGroup != null && !toggleGroup.getToggles().isEmpty() && toggleGroup.getSelectedToggle() == null) {
                 AlertFactory.showErrorDialog("Error","Error","Select one band to process");
                 return;
             }
@@ -107,7 +106,7 @@ public class PreviewController implements TabItem {
         if (workflowDTO == null)
             workflowDTO = ProcessingConfiguration.getDefaultWorkflow(product.getProductType());
 
-        if (SatelliteData.isRadar(product.getPlatformName())) {
+        if (SatelliteHelper.isRadar(product.getPlatformName())) {
             setRadarBands();
         } else {
             setOpticalBands();
@@ -185,7 +184,7 @@ public class PreviewController implements TabItem {
         Task<BufferedImage> task = tabComponent.getMainController().getProductProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
 
         task.setOnFailed(e->{
-            AlertFactory.showErrorDialog("Error","","Error while setting preview image");
+            AlertFactory.showErrorDialog("Error","","Error while setting preview image " + e.getSource().getException().getLocalizedMessage());
             logger.atError().log("Error processing preview {}",e.getSource().getException().getLocalizedMessage());
         });
 

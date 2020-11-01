@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
-@Entity("product_lists")
+@Entity(value = "product_lists")
 public class ProductList {
     @Id
     private ObjectId id;

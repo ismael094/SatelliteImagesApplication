@@ -1,25 +1,12 @@
 package services.database;
 
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
-import model.products.Sentinel2ProductDTO;
 import services.database.mappers.DAOMapper;
-import services.database.mappers.SentinelMapper;
+import services.database.mappers.ProductDAOMapper;
 import services.entities.Product;
-import services.entities.Sentinel1Product;
-import services.entities.Sentinel2Product;
 import utils.database.MongoDBManager;
 
-import javax.xml.bind.DatatypeConverter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 public class ProductDBDAO implements DAO<ProductDTO> {
 
@@ -29,7 +16,7 @@ public class ProductDBDAO implements DAO<ProductDTO> {
 
     private ProductDBDAO() {
         database = MongoDBManager.getMongoDBManager();
-        mapper = new SentinelMapper();
+        mapper = new ProductDAOMapper();
     }
 
     public static ProductDBDAO getInstance() {

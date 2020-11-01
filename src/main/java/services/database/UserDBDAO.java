@@ -113,6 +113,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     }
 
     public UserDTO toDAO(User user) {
+        System.out.println(user);
         if (user == null)
             return null;
         UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
@@ -129,7 +130,7 @@ public class UserDBDAO implements DAO<UserDTO> {
 
     public User toEntity(UserDTO userDTO) {
         String hashedPass = userDTO.getPassword();
-        if (!hashedPass.startsWith("$2a$10")) {
+        if (hashedPass != null && !hashedPass.startsWith("$2a$10")) {
             hashedPass = Encryptor.hashString(hashedPass);
         }
         User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
@@ -212,7 +213,6 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .addToSet("workflows", new WorkflowMapper().toEntity(workflowDTO));
 
         UpdateResults update = database.getDatastore().update(email, ops);
-        System.out.println(update.getUpdatedCount());
         ;
         /*database.getDatastore().find(User.class)
                 .filter(Filters.eq("email", user.getEmail()))

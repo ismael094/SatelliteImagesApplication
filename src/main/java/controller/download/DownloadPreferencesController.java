@@ -61,7 +61,9 @@ public class DownloadPreferencesController implements Initializable {
         autoDownload.setSelected(DownloadConfiguration.getAutodownload());
 
         openProductFileChooser.setOnAction(e->path.setText(getFileChooser("Product Folder",path.getText())));
-        openListFileChooser.setOnAction(e->path.setText(getFileChooser("List Folder",pathList.getText())));
+        openListFileChooser.setOnAction(e->pathList.setText(getFileChooser("List Folder",pathList.getText())));
+
+        delete.setOnAction(e->confirmDeleteProducts());
     }
 
     private String getFileChooser(String title, String defaultFolder) {

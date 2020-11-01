@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.download.CopernicusDownloader;
 import services.download.Downloader;
+import utils.AlertFactory;
 
 import java.net.URL;
 import java.util.*;
@@ -136,6 +137,7 @@ public class MainController implements Initializable {
         });
 
         copernicusDownloader.addListener(e->{
+            AlertFactory.showInfoDialog("Downloader","Downloader", String.valueOf(e.getValue()));
             consoleComponent.println((String) e.getValue());
         });
     }

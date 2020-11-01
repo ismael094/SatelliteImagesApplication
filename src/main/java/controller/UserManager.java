@@ -45,7 +45,7 @@ public class UserManager {
             instance.save(user);
         });
 
-        user.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
+        /*user.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {
             while (c.next())
                 if (c.wasAdded()) {
                     UserDBDAO instance = UserDBDAO.getInstance();
@@ -55,9 +55,8 @@ public class UserManager {
                     c.getRemoved().forEach(p->{
                         instance.removeWorkflow(user,p);
                     });
-
                 }
-        });
+        });*/
 
         //listTreeViewComponent.reload();
     }
@@ -69,6 +68,20 @@ public class UserManager {
     public void updateUserWorkflows(ObservableList<WorkflowDTO> workflowsDTO) {
         WorkflowDBDAO instance = WorkflowDBDAO.getInstance();
         workflowsDTO.forEach(instance::save);
+    }
+
+    public void addNewWorkflow(WorkflowDTO workflowsDTO) {
+        UserDBDAO instance = UserDBDAO.getInstance();
+        instance.addNewWorkflow(user,workflowsDTO);
+        user.addWorkflow(workflowsDTO);
+    }
+
+    public void removeWorkflow(WorkflowDTO workflowsDTO) {
+        UserDBDAO instance = UserDBDAO.getInstance();
+        instance.removeWorkflow(user,workflowsDTO);
+        user.removeWorkflow(workflowsDTO);
+        WorkflowDBDAO workflowDBDAO = WorkflowDBDAO.getInstance();
+        workflowDBDAO.delete(workflowsDTO);
     }
 
 

@@ -42,6 +42,8 @@ public class MenuComponent extends MenuBar implements Component{
     public void init() {
         this.menus.forEach(m->{
             logger.atInfo().log("Menu {} loaded", m.getName());
+            if (m instanceof Observer)
+                mainController.getTabComponent().addObserver((Observer) m);
             getMenus().add(m.getMenu());
         });
     }
@@ -74,8 +76,8 @@ public class MenuComponent extends MenuBar implements Component{
     }
 
     @Override
-    public void updateObservers() {
-        observers.forEach(Observer::update);
+    public void updateObservers(Object args) {
+        observers.forEach(o->o.update(args));
     }
 
     public void initSearchView(String id) {

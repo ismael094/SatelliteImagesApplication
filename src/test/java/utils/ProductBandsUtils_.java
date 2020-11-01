@@ -43,6 +43,22 @@ public class ProductBandsUtils_ {
     }
 
     @Test
+    public void with_no_bands_selected_output_should_return() {
+        ProductDTO productDTO = SentinelData.getSentinel1Product();
+        WorkflowDTO workflow = new SLCDefaultWorkflowDTO();
+
+        Operation op = workflow.getOperation(Operator.CALIBRATION);
+        op.getParameters().put("outputBetaBand",false);
+        op.getParameters().put("outputSigmaBand",false);
+        op.getParameters().put("outputGammaBand",false);
+
+        List<String> outputBands = ProductBandUtils.getOutputBands(productDTO, workflow);
+        assertThat(outputBands).isNotNull();
+        assertThat(outputBands.size()).isGreaterThan(0);
+        assertThat(outputBands).contains("Sigma0_VH","Sigma0_VV","Beta0_VV","Beta0_VH");
+    }
+
+    @Test
     public void with_beta_sigma_and_beta_output_should_return_all() {
         ProductDTO productDTO = SentinelData.getSentinel1Product();
         WorkflowDTO workflow = new GRDDefaultWorkflowDTO();

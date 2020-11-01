@@ -1,6 +1,7 @@
 package gui.menu;
 
 import controller.interfaces.ProcessingResultsTabItem;
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import gui.components.MenuComponent;
 import gui.components.TabPaneComponent;
@@ -58,13 +59,10 @@ public class ResultsMenu extends Menu implements SatInfMenuItem, Observer {
     }
 
     @Override
-    public void update() {
-        TabPaneComponent tabController = menuComponent.getMainController().getTabComponent();
+    public void update(Object args) {
         Platform.runLater(()->{
-            ProductListDTO currentList = ProductListDTOUtil.getCurrentList(menuComponent.getMainController().getTabComponent());
-            results.setDisable(currentList == null);
-            TabItem controllerOf = tabController.getControllerOf(tabController.getActive());
-            algorithm.setDisable(!(controllerOf instanceof ProcessingResultsTabItem));
+            results.setDisable(!(args instanceof ProductListTabItem));
+            algorithm.setDisable(!(args instanceof ProcessingResultsTabItem));
         });
     }
 }

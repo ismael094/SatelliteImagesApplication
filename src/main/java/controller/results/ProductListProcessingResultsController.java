@@ -19,12 +19,15 @@ import model.postprocessing.ProcessingResults;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.DownloadConfiguration;
+import utils.FileUtils;
 import utils.ThemeConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.prefs.*;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -42,6 +45,8 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     private ProductListDTO productListDTO;
     private ProcessingResults processingResults;
     private Map<String,File> files;
+    private WatchService watcher;
+    private Path dir;
 
     public ProductListProcessingResultsController(ProductListDTO productListDTO) {
         processingResults = new ProcessingResults();
@@ -72,10 +77,37 @@ public class ProductListProcessingResultsController implements TabItem, Processi
         return new Task<Parent>() {
             @Override
             protected Parent call() throws Exception {
+                onListFolderChangeReloadSearch();
                 initSearch();
                 return parent;
             }
         };
+    }
+
+    private void onListFolderChangeReloadSearch() {
+        DownloadConfiguration.getDownloadPreferences().addPreferenceChangeListener(preferenceChangeEvent -> {
+            try {
+                String key = preferenceChangeEvent.getKey();
+                System.out.println(preferenceChangeEvent.getKey().equals("listFolder"));
+                if (preferenceChangeEvent.getKey().equals("listFolder")) {
+                    watcher.close();
+                    Task<Void> task = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            resultsPane.getChildren().clear();
+                            return null;
+                        }
+                    };
+
+                    Platform.runLater(task);
+                    task.get();
+                    initSearch();
+                }
+
+            } catch (IOException | InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -92,16 +124,15 @@ public class ProductListProcessingResultsController implements TabItem, Processi
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                System.out.println(productListDTO.getName());
                 File file = new File(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
-
+                FileUtils.createFolderIfNotExists(file.getAbsolutePath());
                 try {
                     for (File f : file.listFiles()) {
                         entryCreated(f);
                     }
 
-                    WatchService watcher = FileSystems.getDefault().newWatchService();
-                    Path dir = Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
+                    watcher = FileSystems.getDefault().newWatchService();
+                    dir = Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
                     WatchKey key = dir.register(watcher,
                             ENTRY_CREATE,
                             ENTRY_DELETE,
