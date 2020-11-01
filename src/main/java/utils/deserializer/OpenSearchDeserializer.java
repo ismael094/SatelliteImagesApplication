@@ -14,7 +14,7 @@ import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 
-public abstract class Deserializer {
+public abstract class OpenSearchDeserializer {
     public static final String DOUBLE_ARRAY = "double";
     public static final String STR_ARRAY = "str";
     public static final String FOOTPRINT = "footprint";

@@ -4,11 +4,10 @@ import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.openSearcher.SentinelProductParameters;
 import model.openSearcher.OpenSearchResponse;
-import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.CopernicusService;
-import utils.ProductMapper;
+import utils.ProductDeserializerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,7 +128,7 @@ public class OpenSearcher implements SearchService {
         }
         long start = currentTimeMillis();
         InputStream contentFromURL = service.getContentFromURL(getURL());
-        OpenSearchResponse response = ProductMapper.getResponse(contentFromURL);
+        OpenSearchResponse response = (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(contentFromURL);
         contentFromURL.close();
         long finish = currentTimeMillis() - start;
         logger.atInfo().log("{} products loaded in {} seconds",response.getProducts().size(),finish/1000.0);

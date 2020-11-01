@@ -1,4 +1,4 @@
-package controller.processing;
+package controller.processing.preview;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

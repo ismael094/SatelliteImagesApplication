@@ -1,4 +1,4 @@
-package controller.processing;
+package controller.processing.preview;
 
 import gui.GTMap;
 import javafx.fxml.FXML;

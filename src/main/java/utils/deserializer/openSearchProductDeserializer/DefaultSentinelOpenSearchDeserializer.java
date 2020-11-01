@@ -1,15 +1,16 @@
-package utils.deserializer;
+package utils.deserializer.openSearchProductDeserializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
 import model.products.ProductProperties;
-import model.products.SentinelProductDTO;
+import model.products.sentinel.SentinelProductDTO;
+import utils.deserializer.OpenSearchDeserializer;
 
 import java.util.List;
 
-public class DefaultSentinelDeserializer extends Deserializer {
+public class DefaultSentinelOpenSearchDeserializer extends OpenSearchDeserializer {
 
     @Override
     public ProductDTO deserialize(JsonNode product) {

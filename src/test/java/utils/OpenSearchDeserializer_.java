@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import model.openSearcher.OpenSearchResponse;
 import model.products.ProductDTO;
 import model.products.ProductProperties;
-import model.products.Sentinel1ProductDTO;
-import model.products.Sentinel2ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import utils.deserializer.OpenSearchDeserializer;
+import utils.deserializer.openSearchProductDeserializer.Sentinel1OpenSearchDeserializer;
+import utils.deserializer.openSearchProductDeserializer.SentinelOpenSearchDeserializer;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
@@ -23,7 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProductMapper_ {
+public class OpenSearchDeserializer_ {
     private InputStream jsonContent,jsonContentOne;
     private JSONObject str;
     TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
@@ -48,6 +51,12 @@ public class ProductMapper_ {
         ObjectMapper mapper = new ObjectMapper();
         List<ProductProperties> asList = mapper.readValue(str.get("str").toString(), typeRef);
         assertThat(asList.size()).isGreaterThan(0);
+    }
+
+    @Test
+    public void given_sentinel1_data_should_return_sentinel1_deserializer() throws JSONException, IOException {
+        OpenSearchDeserializer s1 = SentinelOpenSearchDeserializer.getDeserializer("S1");
+        assertThat(s1).isInstanceOf(Sentinel1OpenSearchDeserializer.class);
     }
 
     @Test
@@ -80,7 +89,7 @@ public class ProductMapper_ {
 
     @Test
     public void given_a_json_data_with_one_entry_should_return_OpenDataResultPOJO() throws IOException {
-        OpenSearchResponse response = ProductMapper.getResponse(jsonContentOne);
+        OpenSearchResponse response = (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(jsonContentOne);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getRows()).isEqualTo(75);
         assertThat(response.getStartIndex()).isEqualTo(1);
@@ -91,7 +100,7 @@ public class ProductMapper_ {
 
     @Test
     public void given_a_json_data_should_return_OpenDataResultPOJO() throws IOException {
-        OpenSearchResponse response = ProductMapper.getResponse(jsonContent);
+        OpenSearchResponse response = (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(jsonContent);
         assertThat(response.getNumOfProducts()).isEqualTo(30432470);
         assertThat(response.getProducts().size()).isEqualTo(4);
         assertThat(response.getProducts().get(0)).isInstanceOf(Sentinel1ProductDTO.class);
@@ -103,7 +112,7 @@ public class ProductMapper_ {
     @Test
     public void given_a_json_data_with_no_entries_should_return_an_empty_OpenDataResultPOJO() throws JAXBException, IOException {
         InputStream jsonWithNoEntries = new FileInputStream(Paths.get("src/test/java/utils/empty.json").toFile());
-        OpenSearchResponse response = ProductMapper.getResponse(jsonWithNoEntries);
+        OpenSearchResponse response = (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(jsonWithNoEntries);
         assertThat(response.getNumOfProducts()).isEqualTo(0);
         assertThat(response.getProducts().size()).isEqualTo(0);
         jsonWithNoEntries.close();

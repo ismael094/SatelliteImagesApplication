@@ -3,14 +3,11 @@ package model;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
-import model.products.SentinelProductDTO;
-import org.apache.logging.log4j.core.appender.routing.Route;
+import model.products.sentinel.SentinelProductDTO;
 import org.junit.Before;
 import org.junit.Test;
-import services.entities.Product;
 
 import javax.xml.bind.DatatypeConverter;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;

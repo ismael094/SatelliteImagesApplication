@@ -1,6 +1,6 @@
 package model;
 
-import model.products.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
 import org.junit.Before;
 import org.junit.Test;
 

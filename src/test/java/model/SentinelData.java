@@ -4,10 +4,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
-import model.products.Sentinel2ProductDTO;
-import model.products.SentinelProductDTO;
-import services.entities.Product;
+import model.products.sentinel.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
+import model.products.sentinel.SentinelProductDTO;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.Calendar;

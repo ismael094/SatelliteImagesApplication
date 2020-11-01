@@ -1,4 +1,4 @@
-package controller.processing;
+package controller.processing.monitors;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

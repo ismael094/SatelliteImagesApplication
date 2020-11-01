@@ -135,6 +135,16 @@ public class CopernicusODataSearchController extends SearchController<ProductDTO
 
     }
 
+    @Override
+    public String getRedo() {
+        return null;
+    }
+
+    @Override
+    public String getUndo() {
+        return null;
+    }
+
     public String getId() {
         return null;
     }

@@ -1,6 +1,5 @@
 package controller.cell;
 
-import controller.GTMapSearchController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,21 +10,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
-import model.list.ProductListDTO;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
-import model.products.Sentinel2ProductDTO;
-import utils.FileUtils;
+import model.products.sentinel.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProcessingProductCell extends ListCell<ProductDTO> {
     private FXMLLoader loader;

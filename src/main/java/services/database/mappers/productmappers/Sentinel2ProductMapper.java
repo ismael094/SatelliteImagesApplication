@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
-import model.products.Sentinel2ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
 import services.database.mappers.ProductMapper;
 import services.entities.Product;
 import services.entities.Sentinel2Product;

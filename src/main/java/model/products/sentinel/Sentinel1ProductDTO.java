@@ -1,4 +1,4 @@
-package model.products;
+package model.products.sentinel;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;

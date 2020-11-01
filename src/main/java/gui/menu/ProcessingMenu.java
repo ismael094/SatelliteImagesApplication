@@ -2,17 +2,12 @@ package gui.menu;
 
 import controller.interfaces.ProductListTabItem;
 import gui.components.MenuComponent;
-import gui.components.TabPaneComponent;
 import gui.events.ProcessListEvent;
 import gui.events.ShowMyWorkflowsOfUserEvent;
-import gui.events.ShowPreviewViewEvent;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import model.list.ProductListDTO;
 import utils.gui.Observer;
-import utils.gui.ProductListDTOUtil;
-import utils.gui.WorkflowUtil;
 
 public class ProcessingMenu extends Menu implements SatInfMenuItem, Observer {
     private final MenuComponent menuComponent;
@@ -27,8 +22,6 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem, Observer {
     private void init() {
         listProcessing = new MenuItem("Process current list");
         MenuItem myWorkflows = new MenuItem("My Workflows");
-        MenuItem preview = new MenuItem("Preview");
-        preview.setOnAction(new ShowPreviewViewEvent(menuComponent.getMainController()));
         Menu sentinel = new Menu("Sentinel Workflows");
         Menu sentinel1 = new Menu("Sentinel 1");
         MenuItem grd = new MenuItem("GRD Default Workflow");
@@ -45,7 +38,7 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem, Observer {
 
         myWorkflows.setOnAction(new ShowMyWorkflowsOfUserEvent(menuComponent.getMainController()));
         listProcessing.setOnAction(new ProcessListEvent(menuComponent.getMainController()));
-        getItems().addAll(myWorkflows,listProcessing,preview,sentinel);
+        getItems().addAll(myWorkflows,listProcessing,sentinel);
         menuComponent.getMainController().getTabComponent().addObserver(this);
     }
 

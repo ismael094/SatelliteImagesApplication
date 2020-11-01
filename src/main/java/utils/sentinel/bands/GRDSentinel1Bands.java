@@ -4,7 +4,7 @@ import model.processing.workflow.WorkflowDTO;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
 import utils.sentinel.Sentinel1Bands;
 
 import java.util.Arrays;

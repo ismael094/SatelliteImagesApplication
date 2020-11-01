@@ -563,6 +563,23 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     @Override
+    public String getRedo() {
+        if (index < 0 || index >= allResponses.size())
+            return null;
+        return "Last search";
+    }
+
+    @Override
+    public String getUndo() {
+        try {
+            allResponses.get(index -2);
+            return "Preview search";
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    @Override
     public void redo() {
         if (index < 0 || index >= allResponses.size())
             return;
@@ -570,10 +587,6 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         setSearchParameters(parametersOfAllResponses.get(index));
         index++;
         redoOrUndoOperation(true);
-    }
-
-    private void redoOrUndoOperation(boolean b) {
-        isRedoOrUndo = b;
     }
 
     @Override
@@ -584,6 +597,10 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         setSearchParameters(parametersOfAllResponses.get(index -2));
         index--;
         redoOrUndoOperation(true);
+    }
+
+    private void redoOrUndoOperation(boolean b) {
+        isRedoOrUndo = b;
     }
 
     private void saveSearch(Task<OpenSearchResponse> response) throws InterruptedException, ExecutionException {

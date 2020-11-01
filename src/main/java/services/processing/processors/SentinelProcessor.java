@@ -1,7 +1,6 @@
 package services.processing.processors;
 
 
-import javafx.embed.swing.SwingFXUtils;
 import model.exception.NoWorkflowFoundException;
 import model.processing.workflow.*;
 import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
@@ -10,7 +9,7 @@ import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
 import model.processing.workflow.operation.Operation;
 import model.processing.workflow.operation.Operator;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esa.snap.core.dataio.ProductIO;

@@ -1,4 +1,4 @@
-package controller.processing;
+package controller.processing.preview;
 
 import controller.interfaces.TabItem;
 import de.jensd.fx.glyphs.GlyphsDude;

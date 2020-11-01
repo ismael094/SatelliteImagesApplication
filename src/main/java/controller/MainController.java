@@ -2,7 +2,7 @@ package controller;
 
 import com.jfoenix.controls.JFXSpinner;
 import controller.download.DownloadController;
-import controller.processing.SimpleProcessingMonitorController;
+import controller.processing.monitors.SimpleProcessingMonitorController;
 import gui.EventExecuteListener;
 import gui.ExecutedEvent;
 import gui.components.*;

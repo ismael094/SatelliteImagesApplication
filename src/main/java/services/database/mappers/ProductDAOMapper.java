@@ -3,7 +3,7 @@ package services.database.mappers;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
-import model.products.SentinelProductDTO;
+import model.products.sentinel.SentinelProductDTO;
 import services.entities.Product;
 import utils.SatelliteHelper;
 

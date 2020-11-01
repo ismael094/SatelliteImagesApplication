@@ -4,7 +4,7 @@ import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import model.SentinelData;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
 import org.junit.Before;
 import org.junit.Test;
 import services.entities.Product;

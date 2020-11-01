@@ -15,11 +15,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
-import model.products.Sentinel2ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
 import utils.FileUtils;
 
 import java.awt.*;

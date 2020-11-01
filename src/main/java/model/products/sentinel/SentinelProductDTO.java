@@ -1,7 +1,8 @@
-package model.products;
+package model.products.sentinel;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import model.products.ProductDTO;
 
 import java.net.MalformedURLException;
 import java.net.URL;

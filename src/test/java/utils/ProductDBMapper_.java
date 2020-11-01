@@ -2,7 +2,7 @@ package utils;
 
 import model.SentinelData;
 import model.products.ProductDTO;
-import model.products.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
 import org.junit.Test;
 import services.database.mappers.ProductDAOMapper;
 import services.database.mappers.ProductMapper;
