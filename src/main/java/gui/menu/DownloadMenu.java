@@ -6,6 +6,7 @@ import gui.components.MenuComponent;
 import gui.components.TabPaneComponent;
 import gui.events.DownloadProductListEvent;
 import gui.events.DownloadSelectedProductEvent;
+import gui.events.OpenDownloadPreferences;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
 
-public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
+public class DownloadMenu extends Menu implements SatInfMenuItem {
     private final MenuComponent menuComponent;
     private MenuItem downloadList;
     private MenuItem downloadProducts;
@@ -43,9 +44,8 @@ public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
         downloadProducts.setOnAction(new DownloadSelectedProductEvent(menuComponent.getMainController()));
 
         preferences = new MenuItem("Preferences");
-        preferences.setOnAction(e->openDownloadPreferences());
+        preferences.setOnAction(new OpenDownloadPreferences(menuComponent.getMainController()));
 
-        menuComponent.getMainController().getTabComponent().addObserver(this);
         getItems().addAll(downloadList,downloadProducts,preferences);
     }
 
@@ -57,26 +57,6 @@ public class DownloadMenu extends Menu implements SatInfMenuItem, Observer {
     @Override
     public String getName() {
         return this.getText();
-    }
-
-    private void openDownloadPreferences() {
-        URL location = getClass().getResource("/fxml/DownloadPreferences.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Dialog<ButtonType> dialog = new Dialog<>();
-        try {
-            dialog.setDialogPane(fxmlLoader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JMetro jMetro = getJMetroStyled();
-        jMetro.setScene(dialog.getDialogPane().getScene());
-        DownloadPreferencesController controller = fxmlLoader.getController();
-
-        dialog.setOnCloseRequest(e->{
-            dialog.hide();
-        });
-        Optional<ButtonType> buttonType = dialog.showAndWait();
-        buttonType.filter(DownloadPreferencesController.APPLY::equals).ifPresent(e-> controller.applyChanges());
     }
 
     @Override

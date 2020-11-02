@@ -95,4 +95,9 @@ public class FileMenu extends Menu implements SatInfMenuItem{
     public String getName() {
         return this.getText();
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

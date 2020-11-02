@@ -58,11 +58,6 @@ public class AppCloseEvent extends Event {
         Platform.exit();
         mainController.getDownloader().cancel();
         mainController.getProductProcessor().cancel();
-        try {
-            sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         System.exit(0);
     }
 }

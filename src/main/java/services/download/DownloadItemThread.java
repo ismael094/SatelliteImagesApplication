@@ -6,6 +6,7 @@ import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.exception.ProductNotAvailableException;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.NotNull;
 import services.CopernicusService;
 import utils.FileUtils;
 
@@ -79,32 +80,32 @@ public class DownloadItemThread extends Service<Boolean> {
             }
 
             private boolean initDownload() throws IOException, InterruptedException, NoSuchAlgorithmException, NotAuthenticatedException, AuthenticationException {
-                String temporalFileLocation = item.getLocation() +"\\"+ item.getProductDTO().getId() + ".zip";
-                String finalFileLocation = item.getLocation() +"\\"+ item.getProductDTO().getTitle() + ".zip";
+                String temporalFileLocation = getLocation(item.getProductDTO().getId());
+                String finalFileLocation = getLocation(item.getProductDTO().getTitle());
+                //getPath(id or title)
 
+                //sleep(400)M
                 Thread.sleep(400);
 
                 connection = CopernicusService.getInstance().getConnectionFromURL(item.getProductDTO().getDownloadURL());
 
                 //Init download bytes data
-                numOfBytesRead = new AtomicInteger(0);
-                contentLength = new AtomicLong(getContentLength(connection.getContentLength()));
+                initDownloadBytesData();
 
-                //Open streams and init buffer
-                inputStream = connection.getInputStream();
-                in = new BufferedInputStream(inputStream);
-                fileOutputStream = new FileOutputStream(temporalFileLocation);
+                //Open streams and init buffer -> method
+                openStreams(temporalFileLocation);
                 byte buffer[] = new byte[1024];
 
 
                 logger.atInfo().log("Downloading started!  {}", temporalFileLocation);
+
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 int bytesRead;
                 int tries = 5;
                 startTime = currentTimeMillis();
 
                 while (true) {
-
+                    //isCommand()
                     if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
                         cancel(temporalFileLocation);
                         return false;
@@ -126,7 +127,7 @@ public class DownloadItemThread extends Service<Boolean> {
                             Thread.sleep(5000);
                             in.reset();
                             continue;
-                        } else if (noBytesRead(tries)) {
+                        } else if (tries == 0) {
                             logger.atError().log("No connection with service! No bytes read from HTTP");
                             //Cancel the download
                             cancel(temporalFileLocation);
@@ -137,7 +138,7 @@ public class DownloadItemThread extends Service<Boolean> {
                             setFinishedStatus();
                             closeStreams();
                             if (FileUtils.renameFile(temporalFileLocation, finalFileLocation)) {
-                                logger.atError().log("Error while renaming product {} to {}");
+                                logger.atError().log("Error while renaming product {} to {}",temporalFileLocation, finalFileLocation);
                                 return false;
                             }
                             return checkfileMD5(md);
@@ -149,6 +150,21 @@ public class DownloadItemThread extends Service<Boolean> {
                         updateProgress(numOfBytesRead.get()/1024.0, contentLength.get());
                     }
                 }
+            }
+
+            private void openStreams(String temporalFileLocation) throws IOException {
+                inputStream = connection.getInputStream();
+                in = new BufferedInputStream(inputStream);
+                fileOutputStream = new FileOutputStream(temporalFileLocation);
+            }
+
+            private void initDownloadBytesData() {
+                numOfBytesRead = new AtomicInteger(0);
+                contentLength = new AtomicLong(getContentLength(connection.getContentLength()));
+            }
+
+            private String getLocation(String fileName) {
+                return item.getLocation() +"\\"+ fileName + ".zip";
             }
 
             private boolean noBytesRead(int bytesRead) {

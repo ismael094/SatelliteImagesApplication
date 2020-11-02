@@ -225,11 +225,11 @@ public class ProductListProcessingResultsController implements TabItem, Processi
                 }
             });
             resultsPane.getChildren().removeAll(nodes);
-            add(listFiles);
+            addFilesToFlownPane(listFiles);
         });
     }
 
-    private void add(File[] listFiles) {
+    private void addFilesToFlownPane(File[] listFiles) {
         List<Node> nodes = new ArrayList<>();
         Arrays.asList(listFiles).forEach(f->{
             if (validFile(f)) {

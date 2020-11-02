@@ -5,6 +5,8 @@ import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import gui.components.MenuComponent;
 import gui.components.TabPaneComponent;
+import gui.events.RedoEvent;
+import gui.events.UndoEvent;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -14,7 +16,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import utils.gui.Observer;
 
-public class EditMenu extends Menu implements SatInfMenuItem, Observer {
+public class EditMenu extends Menu implements SatInfMenuItem {
     private final MenuComponent menuComponent;
     private MenuItem redo;
     private MenuItem undo;
@@ -27,26 +29,12 @@ public class EditMenu extends Menu implements SatInfMenuItem, Observer {
 
     private void init() {
         undo = new MenuItem("Undo");
-        undo.setOnAction(e->{
-            Tab active = menuComponent.getMainController().getTabComponent().getActive();
-            if (menuComponent.getMainController().getTabComponent().getControllerOf(active) instanceof ProductListTabItem) {
-                ProductListTabItem controllerOf = (ProductListTabItem) menuComponent.getMainController().getTabComponent().getControllerOf(active);
-                controllerOf.undo();
-            }
-
-        });
+        undo.setOnAction(new UndoEvent(menuComponent.getMainController()));
         undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         redo = new MenuItem("Redo");
-        redo.setOnAction(e->{
-            Tab active = menuComponent.getMainController().getTabComponent().getActive();
-            if (menuComponent.getMainController().getTabComponent().getControllerOf(active) instanceof ProductListTabItem) {
-                ProductListTabItem controllerOf = (ProductListTabItem) menuComponent.getMainController().getTabComponent().getControllerOf(active);
-                controllerOf.redo();
-            }
-        });
+        redo.setOnAction(new RedoEvent(menuComponent.getMainController()));
         redo.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         getItems().addAll(undo,redo);
-        menuComponent.getMainController().getTabComponent().addObserver(this);
     }
 
     @Override

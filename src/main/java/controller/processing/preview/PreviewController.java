@@ -190,7 +190,12 @@ public class PreviewController implements TabItem {
 
         task.setOnSucceeded(e-> {
             try {
-                imageController.setImage(SwingFXUtils.toFXImage(task.get(),null));
+                BufferedImage bufferedImage = task.get();
+                if (bufferedImage == null) {
+                    AlertFactory.showErrorDialog("Error","","Error while processing preview image ");
+                    return;
+                }
+                imageController.setImage(SwingFXUtils.toFXImage(bufferedImage,null));
                 AlertFactory.showSuccessDialog("Preview","Preview","Preview completed!");
             } catch (InterruptedException | ExecutionException interruptedException) {
                 interruptedException.printStackTrace();

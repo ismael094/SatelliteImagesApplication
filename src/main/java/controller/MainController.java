@@ -90,15 +90,15 @@ public class MainController implements Initializable {
         initToolBarComponent();
         initConsoleComponent();
         initDownloadManager();
-        initProcessors();
-        initListeners();
+        initProcessorManager();
+        initComponentListeners();
     }
 
     public void setUser(UserDTO user) {
         this.userManager = new UserManager(user);
     }
 
-    private void initProcessors() {
+    private void initProcessorManager() {
         processor = new ProcessorManager(new SimpleBooleanProperty());
         processingController.setProcessorManager(processor);
         AnchorPane.setRightAnchor(processing,0.0);
@@ -122,7 +122,7 @@ public class MainController implements Initializable {
 
     }
 
-    private void initListeners() {
+    private void initComponentListeners() {
         toolBarComponent.addComponentListener(event -> {
             listTreeViewComponent.reload();
             consoleComponent.println((String) event.getValue());
@@ -200,10 +200,6 @@ public class MainController implements Initializable {
         return listTreeViewComponent;
     }
 
-    //public ObservableList<ProductListDTO> getUserProductList() {
-        /*return user.getProductListsDTO();
-    }*/
-
     public UserManager getUserManager() {
         return userManager;
     }
@@ -229,8 +225,6 @@ public class MainController implements Initializable {
         wait.setVisible(b);
         spinnerWait.setVisible(b);
         spinnerWait.setManaged(b);}
-
-
 
     public ProcessorManager getProductProcessor() {
         return processor;

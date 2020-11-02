@@ -18,7 +18,7 @@ import utils.gui.ProductListDTOUtil;
 import java.io.File;
 import java.util.List;
 
-public class PostProcessingMenu extends Menu implements SatInfMenuItem, Observer {
+public class PostProcessingMenu extends Menu implements SatInfMenuItem {
     private final MenuComponent menuComponent;
     private MenuItem results;
     private Menu algorithm;
@@ -44,7 +44,6 @@ public class PostProcessingMenu extends Menu implements SatInfMenuItem, Observer
 
         results.setOnAction(new OpenProcessingResultsOfCurrentProductListViewEvent(menuComponent.getMainController()));
 
-        menuComponent.getMainController().getTabComponent().addObserver(this);
         getItems().addAll(results,algorithm);
     }
 

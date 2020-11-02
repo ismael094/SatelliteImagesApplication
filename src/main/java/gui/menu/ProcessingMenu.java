@@ -9,7 +9,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import utils.gui.Observer;
 
-public class ProcessingMenu extends Menu implements SatInfMenuItem, Observer {
+public class ProcessingMenu extends Menu implements SatInfMenuItem {
     private final MenuComponent menuComponent;
     private MenuItem listProcessing;
 
@@ -39,7 +39,6 @@ public class ProcessingMenu extends Menu implements SatInfMenuItem, Observer {
         myWorkflows.setOnAction(new ShowMyWorkflowsOfUserEvent(menuComponent.getMainController()));
         listProcessing.setOnAction(new ProcessListEvent(menuComponent.getMainController()));
         getItems().addAll(myWorkflows,listProcessing,sentinel);
-        menuComponent.getMainController().getTabComponent().addObserver(this);
     }
 
     @Override

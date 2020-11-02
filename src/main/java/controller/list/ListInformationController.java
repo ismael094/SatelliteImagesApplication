@@ -154,7 +154,7 @@ public class ListInformationController extends ProductListTabItem {
                         loadImage(new Image(preview));
                     } else
                         loadImage(new Image(DEFAULT_IMAGE));
-                } catch (IOException | AuthenticationException e) {
+                } catch (IOException e) {
                     loadImage(new Image(DEFAULT_IMAGE));
                 }
                 return getView();

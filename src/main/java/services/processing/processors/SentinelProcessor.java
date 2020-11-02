@@ -100,14 +100,9 @@ public class SentinelProcessor extends Processor {
         }
 
         logger.atInfo().log("====== Processing product {}",product.getTitle());
-        try {
-            BufferedImage bufferedImage = startProcess(product, areasOfWork, workflow, path, generateBufferedImage);
-            logger.atInfo().log("====== Processing ended! =========");
-            return bufferedImage;
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
+        BufferedImage bufferedImage = startProcess(product, areasOfWork, workflow, path, generateBufferedImage);
+        logger.atInfo().log("====== Processing ended! =========");
+        return bufferedImage;
     }
 
     private boolean noDefaultWorkflow(ProductDTO product) {
@@ -144,6 +139,16 @@ public class SentinelProcessor extends Processor {
 
                 logger.atInfo().log("Operation: {}", operation);
 
+
+                /**
+                 * map<String, Object> parametros   ->
+                 * snapProduct -> Esa.Product
+                 * productDTO  -> MiProyecto.ProductDTO -> modelado
+                 * subsets -> Lista de Esa.Product ->
+                 * operation  -> Operation(Operator + Mapa de Parámetros)
+                 * path   -> String contiene nombre de carpeta destino ->> Documentos/listas/PATH/nombreProductDTO
+                 * areasOfWork   -> Lista de Strings con áreas de interés sobre el ProducDTO
+                 */
                 if (operation.getName() == Operator.READ) {
                     snapProduct = readProduct(getProductPath(productDTO.getTitle()));
                 } else if (operation.getName() == Operator.WRITE) {
@@ -153,15 +158,13 @@ public class SentinelProcessor extends Processor {
                         writeOperation(productDTO, subsets, operation.getParameters(), path);
                 } else if (operation.getName() == Operator.WRITE_AND_READ) {
                     snapProduct = writeAndReadOperation(snapProduct, productDTO, operation);
-                } else {
-                    if (operation.getName() == Operator.SUBSET) {
-                        subsets = subsetOperation(snapProduct, areasOfWork, operation);
-                        historical.addAll(subsets);
-                    } else {
-                        if (subsets.isEmpty())
-                            snapProduct = createProduct(snapProduct, operation);
-                    }
-                }
+                } else if (operation.getName() == Operator.SUBSET) {
+                    subsets = subsetOperation(snapProduct, areasOfWork, operation);
+                    historical.addAll(subsets);
+                } else if (subsets.isEmpty())
+                    snapProduct = createProduct(snapProduct, operation);
+
+
 
                 historical.add(snapProduct);
 
@@ -173,8 +176,10 @@ public class SentinelProcessor extends Processor {
             }
         } catch (java.lang.OutOfMemoryError error) {
             logger.atError().log("Error while processing. OutOfMemory Exception");
+            throw new IOException("Error while processing product");
         } catch (java.lang.IllegalStateException error) {
             logger.atError().log("Error while processing. Product error {0}", error);
+            throw new IOException("Error while processing product");
         } finally {
             clearResources(subsets, historical);
         }

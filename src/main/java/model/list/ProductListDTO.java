@@ -57,7 +57,6 @@ public class ProductListDTO {
             }
         };
         new Thread(task).start();
-
     }
 
 

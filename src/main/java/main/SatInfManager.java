@@ -1,3 +1,4 @@
+package main;
 
 import controller.identification.LoginController;
 import controller.MainController;
@@ -9,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,8 +24,8 @@ import java.util.prefs.Preferences;
 import static utils.ThemeConfiguration.getJMetroStyled;
 
 
-public class SatelliteApplication extends Application {
-    static final Logger logger = LogManager.getLogger(SatelliteApplication.class.getName());
+public class SatInfManager extends Application {
+    static final Logger logger = LogManager.getLogger(SatInfManager.class.getName());
 
     JMetro jMetro;
 
@@ -55,7 +55,7 @@ public class SatelliteApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
 
         MainController controller = fxmlLoader.getController();
-        //LOAD HERE COMPONENTS
+
         controller.setUser(userDTO);
         controller.initComponents();
         primaryStage.setMaximized(true);

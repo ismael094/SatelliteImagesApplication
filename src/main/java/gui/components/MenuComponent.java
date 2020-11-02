@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MenuComponent extends MenuBar implements Component{
+public class MenuComponent extends MenuBar implements Component, Observer{
 
     private final MainController mainController;
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
@@ -39,10 +39,9 @@ public class MenuComponent extends MenuBar implements Component{
 
     @Override
     public void init() {
+        mainController.getTabComponent().addObserver(this);
         this.menus.forEach(m->{
             logger.atInfo().log("Menu {} loaded", m.getName());
-            if (m instanceof Observer)
-                mainController.getTabComponent().addObserver((Observer) m);
             getMenus().add(m.getMenu());
         });
     }
@@ -81,5 +80,10 @@ public class MenuComponent extends MenuBar implements Component{
 
     public void initSearchView(String id) {
         ;
+    }
+
+    @Override
+    public void update(Object args) {
+        menus.forEach(m->m.update(args));
     }
 }
