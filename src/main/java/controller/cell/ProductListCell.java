@@ -1,8 +1,11 @@
 package controller.cell;
 
 import controller.GTMapSearchController;
+import controller.MainController;
+import controller.search.CopernicusProductDetailsController_;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import gui.events.LoadTabItemEvent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -23,10 +26,13 @@ import utils.FileUtils;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductListCell extends ListCell<ProductDTO> {
+    private MainController mainController;
     private final ProductListDTO productListDTO;
     private final GTMapSearchController mapController;
     private final boolean showContextMenu;
@@ -47,13 +53,15 @@ public class ProductListCell extends ListCell<ProductDTO> {
     @FXML
     private Label value;
     @FXML
+    private Label ingestionDate;
+    @FXML
     private MenuItem remove;
     @FXML
     private MenuItem downloadManager;
     @FXML
     private MenuItem add;
     @FXML
-    private MenuItem search;
+    private MenuItem details;
     @FXML
     private Button showFootprint;
     @FXML
@@ -65,7 +73,11 @@ public class ProductListCell extends ListCell<ProductDTO> {
     @FXML
     private ImageView downloaded;
 
-    public ProductListCell(ProductListDTO productListDTO, GTMapSearchController controller, boolean showContextMenu) {
+
+    private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    public ProductListCell(MainController mainController, ProductListDTO productListDTO, GTMapSearchController controller, boolean showContextMenu) {
+        this.mainController = mainController;
         this.productListDTO = productListDTO;
         this.mapController = controller;
         this.showContextMenu = showContextMenu;
@@ -130,7 +142,8 @@ public class ProductListCell extends ListCell<ProductDTO> {
         onActionShowFootprintButtonShowProductFootprintInMap(product);
 
         add.setVisible(false);
-        search.setVisible(false);
+        details.setOnAction(new LoadTabItemEvent(mainController,new CopernicusProductDetailsController_(product)));
+        downloadManager.setVisible(false);
 
         setAreaOfWorkStyle(product);
     }
@@ -163,7 +176,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
         GlyphsDude.setIcon(downloadManager, FontAwesomeIcon.DOWNLOAD);
         GlyphsDude.setIcon(add, FontAwesomeIcon.PLUS);
         GlyphsDude.setIcon(remove, FontAwesomeIcon.TRASH);
-        GlyphsDude.setIcon(search, FontAwesomeIcon.SEARCH);
+        GlyphsDude.setIcon(details, FontAwesomeIcon.EXTERNAL_LINK);
     }
 
     private void setAreaOfWorkStyle(ProductDTO product) {
@@ -189,6 +202,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
         set(platformName, product.platformNameProperty());
         set(instrumentName, product.productTypeProperty());
         set(size, product.sizeProperty());
+        set(ingestionDate, new SimpleStringProperty(sdf.format(product.getIngestionDate().getTime())));
         setVariableLabel(product);
     }
 

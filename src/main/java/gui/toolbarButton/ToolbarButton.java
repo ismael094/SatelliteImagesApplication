@@ -32,6 +32,8 @@ public abstract class ToolbarButton extends Button {
 
     public abstract void init();
 
+    public abstract void update(Object args);
+
     protected void setIcon(GlyphIcons icon, String size) {
         GlyphsDude.setIcon(this,icon,size);
     }

@@ -1,11 +1,10 @@
 package services.database;
 
-import controller.processing.workflow.Sentinel1SLCWorkflowController;
 import javafx.beans.property.SimpleStringProperty;
 import model.SentinelData;
 import model.list.ProductListDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
 import model.restriction.PlatformRestriction;
 import org.junit.After;
 import org.junit.Before;

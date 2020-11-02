@@ -1,11 +1,11 @@
-package model.processing.workflow.defaultWorkflow;
+package model.preprocessing.workflow.defaultWorkflow;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.WorkflowType;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.GeneralWorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 
 import java.util.HashMap;
 import java.util.Map;

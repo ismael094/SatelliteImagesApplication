@@ -18,4 +18,9 @@ public class CreateListToolbarButton extends ToolbarButton {
         setIcon(MaterialDesignIcon.FOLDER_PLUS,"1.5em");
         setTooltip("Create new list");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

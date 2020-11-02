@@ -41,7 +41,9 @@ public class EditListEvent extends Event {
         load.setProductList(list);
         edit_list.showAndWait();
         load.getProductList();
-        mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List successfully edited " + list.getName()));
+        if (load.isListWasCreated()) {
+            mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List successfully edited " + list.getName()));
+        }
 
         //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
     }

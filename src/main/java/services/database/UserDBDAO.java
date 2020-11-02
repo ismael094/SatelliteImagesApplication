@@ -6,7 +6,7 @@ import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 import javafx.collections.FXCollections;
 import model.list.ProductListDTO;
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import model.user.UserDTO;
 import org.bson.types.ObjectId;
 import services.database.mappers.WorkflowMapper;

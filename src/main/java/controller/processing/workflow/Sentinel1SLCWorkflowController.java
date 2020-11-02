@@ -1,18 +1,16 @@
 package controller.processing.workflow;
 
-import controller.processing.workflow.WorkflowController;
 import controller.processing.workflow.operation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.HashMap;

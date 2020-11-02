@@ -4,16 +4,14 @@ import controller.processing.workflow.operation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 

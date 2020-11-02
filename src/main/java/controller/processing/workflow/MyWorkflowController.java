@@ -1,6 +1,5 @@
 package controller.processing.workflow;
 
-import controller.MainController;
 import controller.UserManager;
 import controller.cell.WorkflowListViewCellController;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -17,9 +16,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import model.list.ProductListDTO;
-import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.GeneralWorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
 import utils.AlertFactory;
 import utils.gui.ProductListDTOUtil;
 

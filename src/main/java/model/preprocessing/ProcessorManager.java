@@ -1,21 +1,17 @@
-package model.processing;
+package model.preprocessing;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
-import javafx.event.Event;
 import model.exception.NoWorkflowFoundException;
 import model.list.ProductListDTO;
-import model.processing.monitor.FXProgressMonitor;
-import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.monitor.FXProgressMonitor;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import model.products.ProductType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.processing.Processor;
-import utils.AlertFactory;
 import utils.DownloadConfiguration;
 import utils.ProcessingConfiguration;
 

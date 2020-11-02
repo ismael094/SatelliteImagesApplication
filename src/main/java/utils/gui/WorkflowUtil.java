@@ -2,14 +2,12 @@ package utils.gui;
 
 import controller.UserManager;
 import controller.processing.workflow.MyWorkflowController;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
-import model.processing.workflow.WorkflowDTO;
 import utils.ThemeConfiguration;
 
 import java.io.IOException;

@@ -4,8 +4,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.GeneralWorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import org.bson.types.ObjectId;
 import services.entities.Workflow;
 

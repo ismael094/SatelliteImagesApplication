@@ -1,8 +1,8 @@
 package model;
 
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
+import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
 import org.junit.Before;
 import org.junit.Test;
 

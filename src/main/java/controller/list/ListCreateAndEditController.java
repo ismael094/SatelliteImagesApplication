@@ -116,6 +116,10 @@ public class ListCreateAndEditController implements Initializable {
         setCheckboxes();
     }
 
+    public boolean isListWasCreated() {
+        return listWasCreated;
+    }
+
     public void setProductList(ProductListDTO productList) {
         productListDTO = productList;
         name.setText(productListDTO.getName());

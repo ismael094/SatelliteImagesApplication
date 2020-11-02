@@ -1,12 +1,9 @@
 package controller.processing.workflow.operation;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.HashMap;

@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
-import model.processing.ProcessorManager;
+import model.preprocessing.ProcessorManager;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,17 +29,15 @@ public class SimpleProcessingMonitorController implements Initializable {
     private Label productOperation;
     @FXML
     private Label operation;
-    //@FXML
-    private Button cancel;
     @FXML
-    public Button expand;
+    public Button cancel;
 
     private ProcessorManager processManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //cancel.setOnAction(e->processManager.cancel());
-        GlyphsDude.setIcon(expand, FontAwesomeIcon.EXTERNAL_LINK);
+        cancel.setOnAction(e->processManager.cancel());
+        GlyphsDude.setIcon(cancel, FontAwesomeIcon.CLOSE);
     }
 
     public void setProductListProgressBar(DoubleProperty doubleProperty) {

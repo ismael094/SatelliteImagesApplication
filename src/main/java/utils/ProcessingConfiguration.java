@@ -1,10 +1,6 @@
 package utils;
 
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
-import model.processing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
-import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.WorkflowDTO;
 import model.products.ProductType;
 import services.processing.Processor;
 import services.processing.processors.SentinelProcessor;

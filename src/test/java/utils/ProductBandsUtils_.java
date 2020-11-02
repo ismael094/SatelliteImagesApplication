@@ -1,11 +1,11 @@
 package utils;
 
 import model.SentinelData;
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
-import model.processing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
+import model.preprocessing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import org.junit.Test;
 

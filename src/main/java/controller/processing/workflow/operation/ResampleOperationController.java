@@ -1,11 +1,9 @@
 package controller.processing.workflow.operation;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import model.processing.workflow.operation.Operation;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.net.URL;

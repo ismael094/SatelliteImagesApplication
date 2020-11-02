@@ -1,6 +1,6 @@
 package utils.sentinel;
 
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import model.products.ProductDTO;
 
 import java.util.List;

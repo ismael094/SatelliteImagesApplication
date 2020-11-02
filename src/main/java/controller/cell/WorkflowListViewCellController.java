@@ -10,8 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
 
 import java.io.IOException;
 import java.util.Arrays;

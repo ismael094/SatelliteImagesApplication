@@ -16,6 +16,12 @@ public class EditListToolbarButton extends ToolbarButton {
         setOnAction(new EditListEvent(toolBar.getMainController()));
         setIcon(MaterialDesignIcon.PENCIL_BOX,"1.5em");
         setTooltip("Edit selected list");
+    }
+
+    @Override
+    public void update(Object args) {
 
     }
+
+
 }

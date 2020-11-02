@@ -1,8 +1,8 @@
 package utils.sentinel.bands;
 
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import utils.sentinel.Sentinel1Bands;

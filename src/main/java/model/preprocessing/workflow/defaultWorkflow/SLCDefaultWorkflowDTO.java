@@ -1,27 +1,38 @@
-package model.processing.workflow.defaultWorkflow;
+package model.preprocessing.workflow.defaultWorkflow;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import model.processing.workflow.GeneralWorkflowDTO;
-import model.processing.workflow.WorkflowType;
-import model.processing.workflow.operation.Operator;
-import model.processing.workflow.operation.Operation;
+import model.preprocessing.workflow.GeneralWorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
+public class SLCDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
-    public GRDDefaultWorkflowDTO() {
-        super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.GRD));
+    public SLCDefaultWorkflowDTO() {
+        super(new SimpleStringProperty("Default GRD workflow"),new SimpleObjectProperty<>(WorkflowType.SLC));
         getRead();
-        getThermalNoiseRemoval();
+        getTopSarSplit();
         getOrbit();
         getCalibration();
         getWriteAndRead("BEAM-DIMAP");
+        getTopSarDeburst();
+        //getMultilook();
         getTerrainCorrection();
         getSubset();
         getWrite("GeoTIFF");
+    }
+
+    private void getTopSarSplit() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("subswath", "IW1");
+        parameters.put("selectedPolarisations", "VV,VH");
+        parameters.put("firstBurstIndex", "1");
+        parameters.put("lastBurstIndex", "9");
+        addOperation(new Operation(Operator.TOPSAR_SPLIT,parameters));
     }
 
     private void getWriteAndRead(String s) {
@@ -37,18 +48,29 @@ public class GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         addOperation(new Operation(Operator.APPLY_ORBIT_FILE,parameters));
     }
 
-    private void getThermalNoiseRemoval() {
-        Map<String, Object> parameters = new HashMap<>();
-        addOperation(new Operation(Operator.THERMAL_NOISE_REMOVAL,parameters));
-    }
-
     private void getCalibration() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("outputBetaBand", false);
-        parameters.put("outputSigmaBand", true);
-        parameters.put("selectedPolarisations", "VV,VH");
+        parameters.put("auxFile", "Latest Auxiliary File");
+        parameters.put("outputBetaBand", true);
+        parameters.put("outputImageInComplex", true);
         parameters.put("outputImageScaleInDb", false);
+        //parameters.put("sourceBands","i_IW1_VH,q_IW1_VH,i_IW1_VV,q_IW1_VV");
         addOperation(new Operation(Operator.CALIBRATION,parameters));
+    }
+
+    private void getTopSarDeburst() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("selectedPolarisations", "VV,VH");
+        addOperation(new Operation(Operator.TOPSAR_DEBURST,parameters));
+    }
+
+    private void getMultilook() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("nRgLooks", 2);
+        parameters.put("nAzLooks", 1);
+        parameters.put("outputIntensity", false);
+        parameters.put("grSquarePixel", true);
+        addOperation(new Operation(Operator.MULTILOOK,parameters));
     }
 
     private void getTerrainCorrection() {
@@ -59,6 +81,8 @@ public class GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
         parameters.put("demName", "SRTM 3Sec");
         parameters.put("pixelSpacingInMeter", 10.0);
         parameters.put("nodataValueAtSea", false);
+        parameters.put("outputComplex", true);
+        //parameters.put("sourceBands","i_IW1_VH,q_IW1_VH,i_IW1_VV,q_IW1_VV");
         addOperation(new Operation(Operator.TERRAIN_CORRECTION,parameters));
     }
 
@@ -82,6 +106,6 @@ public class GRDDefaultWorkflowDTO extends GeneralWorkflowDTO {
 
     @Override
     public String toString() {
-        return "Sentinel1GRDDefaultWorkflow{}";
+        return "Sentinel1SLCDefaultWorkflow{}";
     }
 }

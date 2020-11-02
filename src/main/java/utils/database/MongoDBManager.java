@@ -3,7 +3,7 @@ package utils.database;
 import com.mongodb.*;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import services.entities.Workflow;
 
 import java.util.concurrent.TimeUnit;

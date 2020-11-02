@@ -88,7 +88,7 @@ public class WriteSentinel2OperationController_  extends ApplicationTest {
         });
 
         assertThat(controller.getParameters().get("formatName")).isEqualTo("GeoTIFF");
-        assertThat(controller.getRed().getText()).isEqualTo("B4");
+        assertThat(controller.getRed().getValue()).isEqualTo("B4");
 
         clickOn("#generatePng");
         clickOn("#profiles");
@@ -97,9 +97,9 @@ public class WriteSentinel2OperationController_  extends ApplicationTest {
 
         assertThat(controller.getGeneratePng().isSelected()).isTrue();
         assertThat(controller.getProfile().getValue()).isEqualTo("Healthy Vegetation");
-        assertThat(controller.getRed().getText()).isEqualTo("B8");
-        assertThat(controller.getGreen().getText()).isEqualTo("B2");
-        assertThat(controller.getBlue().getText()).isEqualTo("B11");
+        assertThat(controller.getRed().getValue()).isEqualTo("B8");
+        assertThat(controller.getGreen().getValue()).isEqualTo("B2");
+        assertThat(controller.getBlue().getValue()).isEqualTo("B11");
     }
 
     @Test
@@ -109,7 +109,7 @@ public class WriteSentinel2OperationController_  extends ApplicationTest {
             controller.setParameters(new HashMap<>());
         });
 
-        assertThat(controller.getRed().getText()).isEqualTo("B4");
+        assertThat(controller.getRed().getValue()).isEqualTo("B4");
 
         clickOn("#generatePng");
         clickOn("#profiles");
@@ -130,7 +130,7 @@ public class WriteSentinel2OperationController_  extends ApplicationTest {
             controller.setParameters(new HashMap<>());
         });
 
-        assertThat(controller.getRed().getText()).isEqualTo("B4");
+        assertThat(controller.getRed().getValue()).isEqualTo("B4");
 
         Map<String, Object> parameters = controller.getParameters();
         assertThat(parameters.get("formatName")).isEqualTo("GeoTIFF");

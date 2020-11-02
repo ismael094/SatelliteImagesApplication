@@ -2,8 +2,8 @@ package model;
 
 import javafx.beans.property.SimpleStringProperty;
 import model.list.ProductListDTO;
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import model.products.sentinel.Sentinel2ProductDTO;

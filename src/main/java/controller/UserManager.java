@@ -5,7 +5,7 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import model.list.ProductListDTO;
 import model.listeners.ComponentChangeListener;
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import model.user.UserDTO;
 import services.database.UserDBDAO;
 import services.database.WorkflowDBDAO;

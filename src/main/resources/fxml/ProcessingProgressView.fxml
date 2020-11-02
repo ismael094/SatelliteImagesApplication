@@ -98,7 +98,7 @@
             <AnchorPane prefHeight="45.0" prefWidth="94.0">
                <children>
                   <Label layoutX="87.0" layoutY="12.0" text="Processing Monitor" AnchorPane.leftAnchor="87.0" />
-                  <Button fx:id="expand" alignment="BOTTOM_RIGHT" contentDisplay="GRAPHIC_ONLY" layoutX="264.0" layoutY="7.0" mnemonicParsing="false" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0" />
+                  <Button fx:id="cancel" alignment="BOTTOM_RIGHT" contentDisplay="GRAPHIC_ONLY" layoutX="264.0" layoutY="7.0" mnemonicParsing="false" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0" />
                </children>
             </AnchorPane>
          </children>

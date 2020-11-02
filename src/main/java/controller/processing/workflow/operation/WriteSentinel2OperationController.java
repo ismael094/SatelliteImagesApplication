@@ -1,14 +1,10 @@
 package controller.processing.workflow.operation;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import model.processing.workflow.operation.Operation;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.net.URL;
@@ -20,11 +16,11 @@ public class WriteSentinel2OperationController implements OperationController, I
     @FXML
     private ToggleSwitch generatePng;
     @FXML
-    private TextField red;
+    private ChoiceBox<String> red;
     @FXML
-    private TextField green;
+    private ChoiceBox<String> green;
     @FXML
-    private TextField blue;
+    private ChoiceBox<String> blue;
     @FXML
     private ChoiceBox<String> profiles;
     @FXML
@@ -39,9 +35,9 @@ public class WriteSentinel2OperationController implements OperationController, I
         writeFormat.setValue(String.valueOf(parameters.getOrDefault("formatName","GeoTIFF")));
         generatePng.selectedProperty().set((boolean) parameters.getOrDefault("generatePNG", false));
         profiles.setValue(String.valueOf(parameters.getOrDefault("profile","Some")));
-        red.setText(String.valueOf(parameters.getOrDefault("red","B4")));
-        green.setText(String.valueOf(parameters.getOrDefault("green","B3")));
-        blue.setText(String.valueOf(parameters.getOrDefault("blue","B2")));
+        red.setValue(String.valueOf(parameters.getOrDefault("red","B4")));
+        green.setValue(String.valueOf(parameters.getOrDefault("green","B3")));
+        blue.setValue(String.valueOf(parameters.getOrDefault("blue","B2")));
 
     }
 
@@ -52,9 +48,9 @@ public class WriteSentinel2OperationController implements OperationController, I
         if (generatePng.isSelected()) {
             parameters.put("generatePNG",true);
             parameters.put("profile",profiles.getValue());
-            parameters.put("red",red.getText());
-            parameters.put("green",green.getText());
-            parameters.put("blue",blue.getText());
+            parameters.put("red",red.getValue());
+            parameters.put("green",green.getValue());
+            parameters.put("blue",blue.getValue());
         } else {
             parameters.put("generatePNG",false);
         }
@@ -68,12 +64,19 @@ public class WriteSentinel2OperationController implements OperationController, I
         loadMapProfiles();
         setProfiles();
         bindProperties();
-        red.setText("B4");
-        green.setText("B3");
-        blue.setText("B2");
+
+        initColor(red);
+        initColor(green);
+        initColor(blue);
+
+        setRGBValues(Arrays.asList("B4","B3","B2"));
 
         profiles.setValue("Some1");
         writeFormat.setItems(FXCollections.observableArrayList("GeoTIFF","PolSARPro"));
+    }
+
+    private void initColor(ChoiceBox<String> color) {
+        color.setItems(FXCollections.observableArrayList("B2","B3","B4","B5","B6","B7","B8","B8A","B11","B12"));
     }
 
     private void setProfiles() {
@@ -89,9 +92,9 @@ public class WriteSentinel2OperationController implements OperationController, I
     }
 
     private void setRGBValues(List<String> rgbValues) {
-        red.setText(rgbValues.get(0));
-        blue.setText(rgbValues.get(1));
-        green.setText(rgbValues.get(2));
+        red.setValue(rgbValues.get(0));
+        blue.setValue(rgbValues.get(1));
+        green.setValue(rgbValues.get(2));
     }
 
     private void loadMapProfiles() {
@@ -111,15 +114,15 @@ public class WriteSentinel2OperationController implements OperationController, I
         return generatePng;
     }
 
-    public TextField getRed() {
+    public ChoiceBox<String> getRed() {
         return red;
     }
 
-    public TextField getGreen() {
+    public ChoiceBox<String> getGreen() {
         return green;
     }
 
-    public TextField getBlue() {
+    public ChoiceBox<String> getBlue() {
         return blue;
     }
 

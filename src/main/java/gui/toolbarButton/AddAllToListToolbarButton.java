@@ -18,4 +18,9 @@ public class AddAllToListToolbarButton extends ToolbarButton {
         setIcon(MaterialDesignIcon.IMAGE_MULTIPLE,"1.5em");
         setTooltip("Add all products to list");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

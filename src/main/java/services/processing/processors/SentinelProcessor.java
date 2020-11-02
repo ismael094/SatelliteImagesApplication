@@ -2,12 +2,12 @@ package services.processing.processors;
 
 
 import model.exception.NoWorkflowFoundException;
-import model.processing.workflow.*;
-import model.processing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
-import model.processing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
-import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.*;
+import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
+import model.preprocessing.workflow.defaultWorkflow.SLCDefaultWorkflowDTO;
+import model.preprocessing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;

@@ -18,7 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
-import model.processing.ProcessorManager;
+import model.preprocessing.ProcessorManager;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

@@ -1,4 +1,4 @@
-package model.processing.monitor;
+package model.preprocessing.monitor;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

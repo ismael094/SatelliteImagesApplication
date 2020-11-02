@@ -1,7 +1,7 @@
 package utils.sentinel;
 
-import model.processing.workflow.WorkflowDTO;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import utils.sentinel.bands.GRDSentinel1Bands;
 import utils.sentinel.bands.SLCSentinel1Bands;

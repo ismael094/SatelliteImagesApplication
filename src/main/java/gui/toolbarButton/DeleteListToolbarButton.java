@@ -17,4 +17,9 @@ public class DeleteListToolbarButton extends ToolbarButton {
         setIcon(MaterialDesignIcon.FOLDER_REMOVE,"1.5em");
         setTooltip("Delete list");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

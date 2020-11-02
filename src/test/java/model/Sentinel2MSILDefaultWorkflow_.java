@@ -1,8 +1,8 @@
 package model;
 
-import model.processing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
+import model.preprocessing.workflow.defaultWorkflow.S2MSI1CDefaultWorkflowDTO;
+import model.preprocessing.workflow.operation.Operation;
+import model.preprocessing.workflow.operation.Operator;
 import org.junit.Before;
 import org.junit.Test;
 

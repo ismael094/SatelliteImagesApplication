@@ -240,7 +240,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void geotoolsController() {
-        mapController = new GTMapSearchController(1000,630, true);
+        mapController = new GTMapSearchController(1000,500, true);
         mapController.addSelectedAreaEvent("products");
 
         onMouseClickInMapHighlightSelectedProductsEvent();

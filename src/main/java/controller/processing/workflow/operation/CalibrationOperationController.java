@@ -2,13 +2,8 @@ package controller.processing.workflow.operation;
 
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.beans.property.BooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import model.processing.workflow.operation.Operation;
-import model.processing.workflow.operation.Operator;
 
 import java.net.URL;
 import java.util.*;

@@ -1,6 +1,6 @@
 package services.database;
 
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import services.database.mappers.WorkflowMapper;
 import services.entities.Workflow;
 import utils.database.MongoDBManager;

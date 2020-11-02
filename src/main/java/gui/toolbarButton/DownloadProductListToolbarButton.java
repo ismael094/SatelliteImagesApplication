@@ -18,4 +18,9 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
         setIcon(MaterialDesignIcon.FOLDER_DOWNLOAD,"1.5em");
         setTooltip("Download all product in the current list");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

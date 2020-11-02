@@ -28,7 +28,6 @@ public class AddSelectedToListToolbarButton extends ToolbarButton implements Obs
 
     @Override
     public void update(Object args) {
-        TabPaneComponent tabComponent = toolBar.getMainController().getTabComponent();
         Platform.runLater(()->{
             if (args instanceof TabPaneComponent) {
                 TabPaneComponent tabPaneComponent = (TabPaneComponent) args;

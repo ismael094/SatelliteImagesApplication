@@ -52,7 +52,7 @@ public class OpenSearcher implements SearchService {
     public void login() throws AuthenticationException, NotAuthenticatedException {
         if (service == null)
             service = (CopernicusService) ServiceFactory.getService("Copernicus");
-        service.login();
+        //service.login();
     }
 
     /**

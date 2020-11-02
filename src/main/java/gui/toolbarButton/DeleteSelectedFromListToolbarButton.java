@@ -17,4 +17,9 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
         setIcon(MaterialDesignIcon.DELETE_VARIANT,"1.5em");
         setTooltip("Delete all products selected");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

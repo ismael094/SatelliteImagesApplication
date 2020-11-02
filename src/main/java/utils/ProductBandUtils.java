@@ -1,6 +1,6 @@
 package utils;
 
-import model.processing.workflow.WorkflowDTO;
+import model.preprocessing.workflow.WorkflowDTO;
 import model.products.ProductDTO;
 import utils.sentinel.Bands;
 import utils.sentinel.SentinelBands;

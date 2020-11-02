@@ -25,21 +25,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.list.ProductListDTO;
-import model.exception.AuthenticationException;
 import model.openSearcher.SentinelProductParameters;
-import model.processing.workflow.WorkflowType;
+import model.preprocessing.workflow.WorkflowType;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
-import services.CopernicusService;
 import services.download.Downloader;
 import services.search.OpenSearcher;
 import utils.AlertFactory;
@@ -48,7 +44,6 @@ import utils.ProcessingConfiguration;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -67,8 +62,6 @@ public class ListInformationController extends ProductListTabItem {
     private int actionIndex = 0;
     private boolean actionActive;
 
-    @FXML
-    private ImageView image;
     @FXML
     private Label title;
     @FXML
@@ -147,16 +140,16 @@ public class ListInformationController extends ProductListTabItem {
             @Override
             protected Parent call() throws Exception {
                 initData();
-                try {
+                /*try {*/
                     if (productListDTO.count() > 0) {
                         idSelected = productListDTO.getProducts().get(0).getId();
-                        InputStream preview = CopernicusService.getInstance().getContentFromURL(productListDTO.getProducts().get(0).getPreviewURL());
-                        loadImage(new Image(preview));
-                    } else
-                        loadImage(new Image(DEFAULT_IMAGE));
-                } catch (IOException e) {
-                    loadImage(new Image(DEFAULT_IMAGE));
-                }
+                        //InputStream preview = CopernicusService.getInstance().getContentFromURL(productListDTO.getProducts().get(0).getPreviewURL());
+                        //loadImage(new Image(preview));
+                    }// else
+                        //loadImage(new Image(DEFAULT_IMAGE));
+                /*} catch (IOException e) {
+                    //loadImage(new Image(DEFAULT_IMAGE));
+                }*/
                 return getView();
             }
         };
@@ -418,7 +411,7 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onReferenceListCellSelectLoadPreviewImage() {
         referenceImgsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            loadPreviewImage(newValue);
+            showProductInMap(newValue.getId());
         });
     }
 
@@ -470,8 +463,7 @@ public class ListInformationController extends ProductListTabItem {
                 mapController.setSelectedFeaturesBorderColor(Color.GREEN, Color.GREEN);
             } else {
                 mapController.setLayerSelectedAreaEvent(AREA_OF_WORK_LAYER);
-                mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
-                mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
+                changeColorOfSelectedFeaturesInMap(Color.MAGENTA, Color.ORANGE);
             }
         });
     }
@@ -522,8 +514,7 @@ public class ListInformationController extends ProductListTabItem {
         mapController.addSelectedAreaEvent(AREA_OF_WORK_LAYER);
 
         //Set styles of features
-        mapController.setSelectedFeaturesBorderColor(Color.MAGENTA, null);
-        mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE, null);
+        changeColorOfSelectedFeaturesInMap(Color.MAGENTA, Color.ORANGE);
         mapPane.getChildren().add(mapController.getView());
 
         AnchorPane.setBottomAnchor(mapController.getView(),0.0);
@@ -558,13 +549,13 @@ public class ListInformationController extends ProductListTabItem {
 
     private void initProductDTOListView() {
         productListView.setItems(productListDTO.getProducts());
-        productListView.setCellFactory(e -> new ProductListCell(productListDTO, mapController,true));
+        productListView.setCellFactory(e -> new ProductListCell(tabPaneComponent.getMainController(),productListDTO, mapController,true));
         productListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     private void initReferenceImagesListView() {
         referenceImgsList.setItems(productListDTO.getReferenceProducts());
-        referenceImgsList.setCellFactory(e -> new ProductListCell(productListDTO, mapController, false));
+        referenceImgsList.setCellFactory(e -> new ProductListCell(tabPaneComponent.getMainController(),productListDTO, mapController, false));
         referenceImgsList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
@@ -573,8 +564,8 @@ public class ListInformationController extends ProductListTabItem {
         size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
         title.textProperty().bind(productListDTO.nameProperty());
         description.textProperty().bind(productListDTO.descriptionProperty());
-        image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
-        image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));
+        //image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
+        //image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));
         showRI.visibleProperty().bind(Bindings.isEmpty(productListDTO.getReferenceProducts()).not());
     }
 
@@ -602,55 +593,65 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onProductSelectedLoadPreviewImage() {
         productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            loadPreviewImage(newValue);
+            showProductInMap(newValue.getId());
         });
     }
 
-    private void loadPreviewImage(ProductDTO newValue) {
-        if (newValue ==null)
+    private void showProductInMap(String id) {
+        if (id ==null)
             return;
 
-        if (idSelected.equals(newValue.getId()))
+        if (idSelected.equals(id))
             return;
-        idSelected = newValue.getId();
-        Task<InputStream> task = new Task<InputStream>() {
+
+        idSelected = id;
+
+        changeColorOfSelectedFeaturesInMap(Color.BLUE, Color.BLACK);
+        mapController.showProductArea(Collections.singletonList(id),"products");
+        changeColorOfSelectedFeaturesInMap(Color.MAGENTA, Color.ORANGE);
+        /*Task<InputStream> task = new Task<InputStream>() {
             @Override
             protected InputStream call() throws Exception {
-                showImageSpinner();
+                //showImageSpinner();
                 return CopernicusService.getInstance().getContentFromURL(newValue.getPreviewURL());
             }
         };
         task.setOnSucceeded(e-> {
             try {
-                loadPreviewImage(task.get());
+                //loadPreviewImage(task.get());
                 task.get().close();
             } catch (Exception ioException) {
                 ioException.printStackTrace();
             }
-            hideImageSpinner();
+            //hideImageSpinner();
         });
 
         task.setOnFailed(e->{
-            loadDefaultImage();
-            hideImageSpinner();
+            //loadDefaultImage();
+            //hideImageSpinner();
         });
-        new Thread(task).start();
+        new Thread(task).start();*/
     }
 
-    private void  loadDefaultImage() {
+    private void changeColorOfSelectedFeaturesInMap(Color blue, Color black) {
+        mapController.setSelectedFeaturesBorderColor(blue, null);
+        mapController.setNotSelectedFeaturesBorderColor(black, null);
+    }
+
+    /*private void  loadDefaultImage() {
         loadImage(new Image(DEFAULT_IMAGE));
     }
 
     private void loadPreviewImage(InputStream inputStream) throws IOException {
         loadImage(new Image(inputStream));
         inputStream.close();
-    }
+    }*/
 
-    private void loadImage(Image imageResource) {
-        image.setImage(imageResource);
-    }
+    //private void loadImage(Image imageResource) {
+        //image.setImage(imageResource);
+    //}
 
-    private void showImageSpinner() {
+    /*rivate void showImageSpinner() {
         setImageSpinnerVisible(true);
     }
 
@@ -660,7 +661,7 @@ public class ListInformationController extends ProductListTabItem {
 
     private void setImageSpinnerVisible(boolean b) {
         imageSpinner.setVisible(b);
-    }
+    }*/
 
     private void generatePreview() {
         try {

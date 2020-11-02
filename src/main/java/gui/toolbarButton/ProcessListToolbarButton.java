@@ -16,4 +16,9 @@ public class ProcessListToolbarButton extends ToolbarButton {
         setIcon(FontAwesomeIcon.ROCKET,"1.5em");
         setTooltip("Process current list");
     }
+
+    @Override
+    public void update(Object args) {
+
+    }
 }

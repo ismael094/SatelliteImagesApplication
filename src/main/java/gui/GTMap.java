@@ -31,6 +31,7 @@ import org.geotools.styling.*;
 import org.geotools.styling.Stroke;
 import org.geotools.tile.impl.osm.OSMService;
 import org.geotools.tile.util.AsyncTileLayer;
+import org.jetbrains.annotations.NotNull;
 import org.jfree.fx.FXGraphics2D;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
@@ -45,7 +46,9 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -116,9 +119,26 @@ public class GTMap extends Canvas {
     }
 
     private FileDataStore loadFileDataStore(String url) throws IOException {
-        URL resource = this.getClass().getResource(url);
-        File file = new File(resource.getPath());
+        InputStream resourceAsStream = getClass().getResourceAsStream(url);
+        String path = createShape(resourceAsStream,"bathymetry.shp");
+        String g = createShape(getClass().getResourceAsStream("/maps/bathymetry.shx"),"bathymetry.shx");
+        System.out.println(new File(g).exists());
+
+        File file = new File(path);
         return FileDataStoreFinder.getDataStore(file);
+    }
+
+    private String createShape(InputStream resourceAsStream, String file) throws IOException {
+        new File("C:\\pdftest\\").mkdirs();
+        FileOutputStream out = new FileOutputStream ("C:\\pdftest\\"+file);
+        byte[] buffer = new byte[1024];
+        int len = resourceAsStream.read(buffer);
+        while (len != -1) {
+            out.write(buffer, 0, len);
+            len = resourceAsStream.read(buffer);
+        }
+        out.close();
+        return "C:\\pdftest\\"+file;
     }
 
     /**
@@ -464,7 +484,11 @@ public class GTMap extends Canvas {
         Layer ly = getLayerByName(layer);
         if (ly != null) {
             int i = mapContent.layers().indexOf(ly);
-            doSetDisplayArea(mapContent.layers().get(i).getBounds());
+            try {
+                doSetDisplayArea(mapContent.layers().get(i).getFeatureSource().getBounds());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
