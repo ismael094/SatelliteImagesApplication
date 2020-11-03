@@ -447,6 +447,7 @@ public class ListInformationController extends ProductListTabItem {
                 if (!actionActive)
                     addAction(ListAction.DELETE_AREA_OF_WORK,FXCollections.observableArrayList(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId()))));
 
+                System.out.println(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 productListDTO.removeAreaOfWork(
                         productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 drawInMapTheAreasOfWork();
@@ -583,8 +584,10 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onAreaOfWorkChangeRefreshListView() {
         productListDTO.getAreasOfWork().addListener((ListChangeListener<String>) c -> {
+            System.out.println("refresing");
             productListView.applyCss();
             productListView.refresh();
+            productListView.setItems(productListView.getItems());
             productListView.applyCss();
             productListView.refresh();
         });

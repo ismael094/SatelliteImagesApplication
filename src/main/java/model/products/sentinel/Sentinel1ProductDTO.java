@@ -48,4 +48,14 @@ public class Sentinel1ProductDTO extends SentinelProductDTO {
                 ", polarizationMode='" + polarizationMode + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

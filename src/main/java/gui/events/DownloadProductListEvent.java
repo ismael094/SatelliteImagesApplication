@@ -36,7 +36,7 @@ public class DownloadProductListEvent extends Event {
                 list = productList.get(0);
         }
 
-        FileUtils.saveObjectToJson(list);
+        //FileUtils.saveObjectToJson(list);
 
         mainController.fireEvent(new ExecutedEvent(this, EventType.DOWNLOAD,"Downloading list "+list.getName()));
 

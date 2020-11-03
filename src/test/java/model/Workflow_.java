@@ -10,6 +10,8 @@ import model.preprocessing.workflow.WorkflowDTO;
 import model.preprocessing.workflow.WorkflowType;
 import org.junit.Before;
 import org.junit.Test;
+import services.entities.Workflow;
+import services.processing.processors.SentinelProcessor;
 
 import java.util.HashMap;
 
@@ -64,5 +66,6 @@ public class Workflow_ {
         Operation operation = new Operation(Operator.TERRAIN_FLATTENING, new HashMap<>());
         assertThat(wf.containsOperation(Operator.TERRAIN_FLATTENING)).isFalse();
     }
+
 
 }

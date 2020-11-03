@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -299,6 +300,34 @@ public class ProductList_ {
         assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(1);
         assertThat(productListDTO.getProductsAreasOfWorks().get(p1)).isNull();
         assertThat(productListDTO.getProductsAreasOfWorks().get(product).get(0)).isEqualTo(AREA_OF_WORK);
+    }
+
+    @Test
+    public void with_product_containing_area() {
+        product.setId("id");
+        product.setSize("755 MB");
+        product.setFootprint(FOOTPRINT);
+        p1.setId("id2");
+        p1.setSize("755 MB");
+        doReturn(FOOTPRINT_INVALID).when(p1).getFootprint();
+        productListDTO.addProduct(product);
+        productListDTO.addProduct(p1);
+        productListDTO.addAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.getValidProducts().size()).isEqualTo(1);
+        assertThat(productListDTO.getProductsAreasOfWorks().size()).isEqualTo(1);
+        assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(1);
+        assertThat(productListDTO.areasOfWorkOfProduct(product.getFootprint()).size()).isEqualTo(1);
+        productListDTO.removeAreaOfWork(AREA_OF_WORK);
+        assertThat(productListDTO.getAreasOfWork().size()).isEqualTo(0);
+        assertThat(productListDTO.areasOfWorkOfProduct(product.getFootprint()).size()).isEqualTo(0);
+        assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(0);
+    }
+
+    @Test
+    public void adding_repeated_reference_image() {
+        Sentinel2ProductDTO sentinel2Product = SentinelData.getSentinel2Product();
+        productListDTO.addReferenceProduct(Arrays.asList(sentinel2Product,sentinel2Product));
+        assertThat(productListDTO.getReferenceProducts().size()).isEqualTo(1);
     }
 
     @Test

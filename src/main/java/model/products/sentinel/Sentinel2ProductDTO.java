@@ -77,4 +77,14 @@ public class Sentinel2ProductDTO extends SentinelProductDTO {
                 ", waterPercentageCoverage=" + waterPercentageCoverage +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

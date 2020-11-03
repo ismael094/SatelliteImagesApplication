@@ -58,9 +58,9 @@ public class SentinelProcessor extends Processor {
         colorIndexedImage = null;
     }
 
-    private WorkflowDTO getWorkflow(WorkflowType type) {
+    public WorkflowDTO getWorkflow(WorkflowType type) {
         try {
-            Class<?> class_ =  Class.forName("model.processing.workflow.defaultWorkflow."+type.name()+"DefaultWorkflowDTO");
+            Class<?> class_ =  Class.forName("model.preprocessing.workflow.defaultWorkflow."+type.name()+"DefaultWorkflowDTO");
             return (WorkflowDTO)class_.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             return null;
@@ -106,7 +106,7 @@ public class SentinelProcessor extends Processor {
     }
 
     private boolean noDefaultWorkflow(ProductDTO product) {
-        return getWorkflow(WorkflowType.valueOf(product.getProductType())) == null;
+        return ProcessingConfiguration.getDefaultWorkflow(product.getProductType()) == null;
     }
 
     private boolean hasNotWorkflowLoadDefault(WorkflowDTO workflow) {

@@ -297,6 +297,11 @@ public class ProductListDTO {
         this.referenceProducts = referenceProducts;
     }
 
+    public void addReferenceProduct(ProductDTO productDTO) {
+        if (!this.referenceProducts.contains(productDTO))
+            this.referenceProducts.add(productDTO);
+    }
+
     public void addReferenceProduct(List<ProductDTO> referenceImages) {
         if (referenceImages.size() > 0) {
             referenceImages.forEach(i->{

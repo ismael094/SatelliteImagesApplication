@@ -20,7 +20,7 @@ public class ProcessingConfiguration {
     public static WorkflowDTO getDefaultWorkflow(String productType) {
         Class<?> class_ = null;
         try {
-            class_ = Class.forName("model.processing.workflow.defaultWorkflow."+productType+"DefaultWorkflowDTO");
+            class_ = Class.forName("model.preprocessing.workflow.defaultWorkflow."+productType+"DefaultWorkflowDTO");
             return (WorkflowDTO)class_.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             return null;
