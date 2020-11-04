@@ -1,4 +1,4 @@
-package utils.deserializer;
+package utils.deserializer.sentinel.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,7 +14,7 @@ import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 
-public abstract class OpenSearchDeserializer {
+public abstract class SentinelOpenSearchProductDeserializer {
     public static final String DOUBLE_ARRAY = "double";
     public static final String STR_ARRAY = "str";
     public static final String FOOTPRINT = "footprint";
@@ -27,6 +27,7 @@ public abstract class OpenSearchDeserializer {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String DATE_ARRAY = "date";
     public static final String INGESTION_DATE = "ingestiondate";
+
     TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
 
     public List<ProductProperties> getStringProperties(JsonNode product) {

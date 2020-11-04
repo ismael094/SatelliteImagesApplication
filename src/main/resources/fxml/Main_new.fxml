@@ -13,16 +13,16 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane id="mainPane" fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="700" maxWidth="1.7976931348623157E308" prefHeight="698.0" prefWidth="1300.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<ScrollPane id="mainPane" fx:id="rootPane" fitToHeight="true" fitToWidth="true" maxHeight="700" maxWidth="1.7976931348623157E308" prefHeight="698.0" prefWidth="1300.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
 
           <GridPane gridLinesVisible="true" GridPane.rowIndex="0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints maxHeight="181.99999237060547" minHeight="58.0" percentHeight="10.0" prefHeight="149.99999237060547" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="595.0" minHeight="471.00000762939453" percentHeight="70.0" prefHeight="503.00000762939453" vgrow="SOMETIMES" />
-            <RowConstraints percentHeight="20.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="181.99999237060547" minHeight="65.0" percentHeight="10.0" prefHeight="149.99999237060547" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="595.0" minHeight="400.0" percentHeight="70.0" prefHeight="503.00000762939453" vgrow="SOMETIMES" />
+            <RowConstraints percentHeight="25.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <children>
             <VBox fx:id="menu" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="62.0" prefWidth="1286.0" GridPane.hgrow="SOMETIMES" GridPane.vgrow="SOMETIMES" />
@@ -49,12 +49,12 @@
             </Pane>
           <SplitPane dividerPositions="0.1932629618131015, 0.6969885128841974" prefHeight="160.0" prefWidth="200.0" GridPane.rowIndex="2">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="269.0" prefHeight="160.0" prefWidth="100.0" >
+                <AnchorPane minHeight="0.0" minWidth="269.0" prefHeight="160.0" prefWidth="100.0">
                     <fx:include fx:id="processing" source="ProcessingProgressView.fxml" />
                 </AnchorPane>
 
                 <AnchorPane fx:id="console" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-                <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0" >
+                <AnchorPane fx:id="downloadPane" prefHeight="200.0" prefWidth="200.0">
                     <fx:include fx:id="download" source="DownloadView.fxml" />
                 </AnchorPane>
             </items>

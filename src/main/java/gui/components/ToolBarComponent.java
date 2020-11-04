@@ -2,6 +2,7 @@ package gui.components;
 
 import controller.MainController;
 import gui.components.listener.ComponentEvent;
+import javafx.application.Platform;
 import model.events.EventType;
 import model.listeners.ComponentChangeListener;
 import gui.toolbarButton.*;
@@ -15,7 +16,7 @@ import utils.gui.Observer;
 
 import java.util.*;
 
-public class ToolBarComponent extends ToolBar implements Component{
+public class ToolBarComponent extends ToolBar implements Component, Observer{
 
     private final MainController mainController;
     private Map<String, ToolbarButton> buttonListMap;
@@ -37,6 +38,7 @@ public class ToolBarComponent extends ToolBar implements Component{
     }
 
     private void initButtonMap() {
+        mainController.getTabComponent().addObserver(this);
         this.buttonListMap = new LinkedHashMap<>();
         this.buttonProductListMap = new LinkedHashMap<>();
         this.buttonDownloadMap = new LinkedHashMap<>();
@@ -129,5 +131,16 @@ public class ToolBarComponent extends ToolBar implements Component{
     @Override
     public void updateObservers(Object args) {
         observers.forEach(o->o.update(args));
+    }
+
+    @Override
+    public void update(Object args) {
+        Platform.runLater(()->{
+            buttonList.forEach(typeButton->{
+                typeButton.forEach((key,value)->{
+                    value.update(args);
+                });
+            });
+        });
     }
 }

@@ -12,9 +12,9 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import utils.deserializer.OpenSearchDeserializer;
-import utils.deserializer.openSearchProductDeserializer.Sentinel1OpenSearchDeserializer;
-import utils.deserializer.openSearchProductDeserializer.SentinelOpenSearchDeserializer;
+import utils.deserializer.sentinel.impl.SentinelOpenSearchProductDeserializer;
+import utils.deserializer.sentinel.impl.Sentinel1OpenSearchProductDeserializer;
+import utils.deserializer.sentinel.SentinelOpenSearchDeserializerManager;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OpenSearchDeserializer_ {
+public class SentinelOpenSearchProductDeserializer_ {
     private InputStream jsonContent,jsonContentOne;
     private JSONObject str;
     TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
@@ -55,8 +55,8 @@ public class OpenSearchDeserializer_ {
 
     @Test
     public void given_sentinel1_data_should_return_sentinel1_deserializer() throws JSONException, IOException {
-        OpenSearchDeserializer s1 = SentinelOpenSearchDeserializer.getDeserializer("S1");
-        assertThat(s1).isInstanceOf(Sentinel1OpenSearchDeserializer.class);
+        SentinelOpenSearchProductDeserializer s1 = SentinelOpenSearchDeserializerManager.getDeserializer("S1");
+        assertThat(s1).isInstanceOf(Sentinel1OpenSearchProductDeserializer.class);
     }
 
     @Test

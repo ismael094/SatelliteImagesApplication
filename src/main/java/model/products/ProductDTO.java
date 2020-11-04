@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import utils.deserializer.OpenSearchProductDeserializer;
-import utils.deserializer.openSearchProductDeserializer.SentinelOpenSearchDeserializer;
+import utils.deserializer.sentinel.SentinelOpenSearchDeserializerManager;
 
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.TimeZone;
 
-@JsonDeserialize(using = SentinelOpenSearchDeserializer.class)
+@JsonDeserialize(using = SentinelOpenSearchDeserializerManager.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ProductDTO {
     protected StringProperty id;

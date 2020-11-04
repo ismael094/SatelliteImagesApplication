@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.EditListEvent;
+import javafx.application.Platform;
 
 public class EditListToolbarButton extends ToolbarButton {
 

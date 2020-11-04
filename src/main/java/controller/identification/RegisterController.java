@@ -1,14 +1,18 @@
 package controller.identification;
 
+import com.jfoenix.controls.JFXSpinner;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetroStyleClass;
@@ -27,6 +31,11 @@ public class RegisterController implements Initializable {
     public static final String ERROR_HEADER = "Register";
     public static final String ERROR_CONTEXT = "Sorry, that email is already registered in the application";
     public static final String ERROR_FORMAT = "Email must be in yyyy@yyy.yy format";
+
+    @FXML
+    private JFXSpinner spinner;
+    @FXML
+    private AnchorPane spinnerPane;
     @FXML
     private BorderPane root;
     @FXML
@@ -58,16 +67,44 @@ public class RegisterController implements Initializable {
         register.disableProperty().bind(bindFieldsIfThereAreEmpty());
 
         register.setOnMouseClicked(this::register);
+
+        setSpinnerVisible(false);
     }
 
     private void register(MouseEvent event) {
         if (validateUserData()) {
-            if (userNotExits()) {
-                UserDBDAO.getInstance().save(userDTO);
-                logger.atInfo().log("New user {} registered successfully!",userDTO.getEmail());
-                closeWindow();
-            } else
+            setSpinnerVisible(true);
+            root.setDisable(true);
+            Task<Boolean> task = new Task<Boolean>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    if (userNotExits()) {
+                        UserDBDAO.getInstance().save(userDTO);
+                        return true;
+                    }
+                    return false;
+                }
+            };
+
+            task.setOnSucceeded(e->{
+                setSpinnerVisible(false);
+                root.setDisable(false);
+                if (task.getValue()) {
+                    AlertFactory.showSuccessDialog("User registered!","User registered","User registered successfully");
+                    closeWindow();
+                } else {
+                    showErrorAlert(ERROR_CONTEXT);
+                }
+            });
+
+            task.setOnFailed(e->{
+                setSpinnerVisible(false);
+                root.setDisable(false);
                 showErrorAlert(ERROR_CONTEXT);
+            });
+
+            new Thread(task).start();
+
         } else
             showErrorAlert(ERROR_FORMAT);
     }
@@ -104,5 +141,12 @@ public class RegisterController implements Initializable {
 
     private void closeWindow() {
         ((Stage) register.getScene().getWindow()).close();
+    }
+
+    private void setSpinnerVisible(boolean b) {
+        spinnerPane.setVisible(b);
+        spinnerPane.setManaged(b);
+        spinner.setVisible(b);
+        spinner.setManaged(b);
     }
 }

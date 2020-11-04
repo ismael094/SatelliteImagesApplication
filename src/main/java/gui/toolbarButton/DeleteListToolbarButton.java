@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DeleteListEvent;
+import javafx.application.Platform;
 
 public class DeleteListToolbarButton extends ToolbarButton {
 

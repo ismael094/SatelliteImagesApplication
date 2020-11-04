@@ -1,5 +1,6 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
@@ -7,6 +8,7 @@ import gui.components.ToolBarComponent;
 import gui.components.TabPaneComponent;
 import gui.events.AddSelectedToListEvent;
 import javafx.application.Platform;
+import services.search.SearchService;
 import utils.gui.Observer;
 
 public class AddSelectedToListToolbarButton extends ToolbarButton implements Observer {
@@ -28,12 +30,6 @@ public class AddSelectedToListToolbarButton extends ToolbarButton implements Obs
 
     @Override
     public void update(Object args) {
-        Platform.runLater(()->{
-            if (args instanceof TabPaneComponent) {
-                TabPaneComponent tabPaneComponent = (TabPaneComponent) args;
-                TabItem controllerOf = tabPaneComponent.getControllerOf(tabPaneComponent.getActive());
-                this.setDisable(!(controllerOf instanceof SearchController));
-            }
-        });
+        Platform.runLater(()-> setDisable(!(args instanceof SearchController)));
     }
 }

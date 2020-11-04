@@ -184,6 +184,7 @@ public class PreviewController implements TabItem {
         Task<BufferedImage> task = tabComponent.getMainController().getProductProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
 
         task.setOnFailed(e->{
+            e.getSource().getException().printStackTrace();
             AlertFactory.showErrorDialog("Error","","Error while setting preview image " + e.getSource().getException().getLocalizedMessage());
             logger.atError().log("Error processing preview {}",e.getSource().getException().getLocalizedMessage());
         });

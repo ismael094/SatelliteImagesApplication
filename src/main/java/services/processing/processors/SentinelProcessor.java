@@ -1,6 +1,7 @@
 package services.processing.processors;
 
 
+import com.bc.ceres.core.ProgressMonitor;
 import model.exception.NoWorkflowFoundException;
 import model.preprocessing.workflow.*;
 import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
@@ -12,6 +13,7 @@ import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -19,12 +21,15 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.ResourceInstaller;
+import org.esa.snap.core.util.SystemUtils;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import services.processing.Processor;
 import utils.DownloadConfiguration;
 import utils.FileUtils;
 import utils.ProcessingConfiguration;
+import utils.SatelliteHelper;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -32,6 +37,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 public class SentinelProcessor extends Processor {
@@ -72,6 +78,7 @@ public class SentinelProcessor extends Processor {
     }
 
     protected void saveProduct(Product product, String path, String formatName) throws IOException {
+        //GPF.writeProduct(product, new File(path),formatName, false, operationMonitor);
         ProductIO.writeProduct(product,path,formatName, operationMonitor);
     }
 
@@ -124,13 +131,16 @@ public class SentinelProcessor extends Processor {
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size()+areasOfWork.size()-1);
         String polarisations = "";
 
-        if (productDTO instanceof Sentinel1ProductDTO) {
+        boolean isRadar = SatelliteHelper.isRadar(productDTO.getPlatformName());
+        if (isRadar) {
             polarisations = ((Sentinel1ProductDTO)productDTO).getPolarizationMode().replace(" ",",");
         }
 
+
         try {
             for (Operation operation : workflow.getOperations()) {
-                operation.getParameters().put("selectedPolarisations",polarisations);
+                if (isRadar)
+                    operation.getParameters().put("selectedPolarisations",polarisations);
                 //if (snapProduct != null && productDTO.getProductType().equals("GRD"))
                     //op.getParameters().put(op)
                     //op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
@@ -175,10 +185,12 @@ public class SentinelProcessor extends Processor {
 
             }
         } catch (java.lang.OutOfMemoryError error) {
-            logger.atError().log("Error while processing. OutOfMemory Exception");
-            throw new IOException("Error while processing product");
+            error.printStackTrace();
+            logger.atError().log("Error while processing. OutOfMemory Exception {}", error.getLocalizedMessage());
+            throw new IOException("Error while processing product. OutOfMemory error");
         } catch (java.lang.IllegalStateException error) {
-            logger.atError().log("Error while processing. Product error {0}", error);
+            error.printStackTrace();
+            logger.atError().log("Error while processing. IllegalStateException error {}", error.getLocalizedMessage());
             throw new IOException("Error while processing product");
         } finally {
             clearResources(subsets, historical);
@@ -213,10 +225,11 @@ public class SentinelProcessor extends Processor {
 
     //generate rgb image for Sentinel 2 products
     private RenderedImage getRGBRenderedImage(Product product, Map<String, Object> parameters) {
+        javax.imageio.spi.IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
         Band red = product.getBand(String.valueOf(parameters.get(RED)));
         Band green = product.getBand(String.valueOf(parameters.get(GREEN)));
         Band blue = product.getBand(String.valueOf(parameters.get(BLUE)));
-
+        System.out.println(Arrays.toString(new Band[]{red, green, blue}));
         ImageInfo imageInfo = ProductUtils.createImageInfo(new Band[]{red,green,blue}, true, operationMonitor);
         return ImageManager.getInstance().createColoredBandImage(new Band[]{red,green,blue}, imageInfo, 0);
     }

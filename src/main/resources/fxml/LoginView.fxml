@@ -107,7 +107,7 @@
             </AnchorPane>
          </center>
          <bottom>
-            <HBox alignment="CENTER">
+            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="719.0">
                <children>
                   <Button fx:id="signIn" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" mnemonicParsing="false" text="Sign In" />
                </children>

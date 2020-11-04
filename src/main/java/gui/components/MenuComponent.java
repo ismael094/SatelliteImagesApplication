@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MenuComponent extends MenuBar implements Component, Observer{
+public class MenuComponent extends MenuBar implements Component, Observer {
 
     private final MainController mainController;
     static final Logger logger = LogManager.getLogger(MainController.class.getName());

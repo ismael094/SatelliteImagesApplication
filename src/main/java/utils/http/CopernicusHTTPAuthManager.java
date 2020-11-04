@@ -30,8 +30,11 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         login();
         System.setProperty("http.keepAlive", "false");
         errors = new HashMap<>();
+        System.out.println("ey");
         errors.put(429,"Too many request");
         errors.put(403,"Maximum number of 2 concurrent flows achieved");
+        errors.put(503,"Copernicus service not available");
+        System.out.println("some");
     }
 
     public static CopernicusHTTPAuthManager getNewHttpManager(String username, String password) throws AuthenticationException {
@@ -90,16 +93,25 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
     }
 
     private void isConnectionResponseOK(HttpsURLConnection connection) throws IOException, AuthenticationException {
+        int connectionCode = connection.getResponseCode();
 
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            logger.atWarn().log("URL respond with {} code, login error?",connection.getResponseCode());
+        if (connectionCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+
+            logger.atWarn().log("URL respond with {} code, login error?",connectionCode);
             closeConnection();
             throw new AuthenticationException("Incorrect username or password");
-        } else if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            logger.atWarn().log("URL respond with {} code {}",connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),""));
-            connection.getInputStream().close();
+
+        } else if (connectionCode != HttpURLConnection.HTTP_OK) {
+
+            logger.atWarn().log("URL respond with {} code {}",connectionCode,errors.getOrDefault(connectionCode,
+                    "Resource not available"));
+
+            if (connection.getInputStream() != null)
+                connection.getInputStream().close();
+
             closeConnection();
-            throw new HttpResponseException(connection.getResponseCode(),errors.getOrDefault(connection.getResponseCode(),"Resource not available"));
+            throw new HttpResponseException(connection.getResponseCode(),errors.getOrDefault(connectionCode,
+                    "Resource not available"));
         }
     }
 

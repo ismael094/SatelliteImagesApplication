@@ -373,6 +373,9 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onReferenceImagesChangeSaveChange() {
         referenceImgsList.getItems().addListener((ListChangeListener<ProductDTO>) c -> {
+            if (referenceImgsList.getItems().isEmpty()) {
+                setReferenceListVisible(!referenceImgsList.isVisible());
+            }
             if (!actionActive)
                 while (c.next()) {
                     if (c.wasRemoved())
@@ -474,7 +477,7 @@ public class ListInformationController extends ProductListTabItem {
     }
 
     private void refreshLayer(String groundTruth, Color green, String s) {
-        mapController.printProductsInLayer(groundTruth, productListDTO.getReferenceProducts(), green, Color.decode(s));
+        mapController.drawProductsInLayer(groundTruth, productListDTO.getReferenceProducts(), green, Color.decode(s));
     }
 
     private void onActionOnSearchReferenceImageLoadOpenSearcher() {
@@ -524,7 +527,8 @@ public class ListInformationController extends ProductListTabItem {
         AnchorPane.setRightAnchor(mapController.getView(),0.0);
 
         //Draw products in map
-        mapController.printProductsInMap(productListDTO.getProducts(),Color.BLACK, null);
+        if (productListDTO.getProducts().size() > 0)
+            mapController.printProductsInMap(productListDTO.getProducts(),Color.BLACK, null);
 
         //Draw reference images
         if (!productListDTO.getReferenceProducts().isEmpty())
@@ -585,29 +589,30 @@ public class ListInformationController extends ProductListTabItem {
     private void onAreaOfWorkChangeRefreshListView() {
         productListDTO.getAreasOfWork().addListener((ListChangeListener<String>) c -> {
             System.out.println("refresing");
-            productListView.applyCss();
-            productListView.refresh();
-            productListView.setItems(productListView.getItems());
-            productListView.applyCss();
-            productListView.refresh();
+            refreshListView(productListView);
+            refreshListView(referenceImgsList);
         });
 
     }
 
+    public void refreshListView(JFXListView<ProductDTO> list) {
+        list.applyCss();
+        list.refresh();
+        list.setItems(list.getItems());
+        list.applyCss();
+        list.refresh();
+    }
+
     private void onProductSelectedLoadPreviewImage() {
         productListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-            showProductInMap(newValue.getId());
+            if (newValue != null)
+                showProductInMap(newValue.getId());
         });
     }
 
     private void showProductInMap(String id) {
         if (id ==null)
             return;
-
-        if (idSelected.equals(id))
-            return;
-
-        idSelected = id;
 
         changeColorOfSelectedFeaturesInMap(Color.BLUE, Color.BLACK);
         mapController.showProductArea(Collections.singletonList(id),"products");

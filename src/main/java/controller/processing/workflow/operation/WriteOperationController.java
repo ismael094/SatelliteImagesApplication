@@ -24,7 +24,7 @@ public class WriteOperationController implements Initializable, OperationControl
     }
 
     private void initWriteFormat() {
-        ObservableList<String> items = FXCollections.observableArrayList("GeoTIFF", "PolSARPro");
+        ObservableList<String> items = FXCollections.observableArrayList("GeoTIFF","GeoTIFF-BigTIFF", "PolSARPro");
         writeFormat.setItems(items);
         writeFormat.setValue("GeoTIFF");
     }

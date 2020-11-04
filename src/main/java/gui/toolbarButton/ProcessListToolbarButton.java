@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.components.ToolBarComponent;
 import gui.events.ProcessListEvent;
+import javafx.application.Platform;
 
 public class ProcessListToolbarButton extends ToolbarButton {
     public ProcessListToolbarButton(ToolBarComponent toolBar) {
@@ -19,6 +21,6 @@ public class ProcessListToolbarButton extends ToolbarButton {
 
     @Override
     public void update(Object args) {
-
+        Platform.runLater(()-> setDisable(!(args instanceof ProductListTabItem)));
     }
 }

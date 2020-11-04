@@ -205,6 +205,10 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     public void initViewData() {
+
+        loadSearch.setVisible(false);
+        loadSearch.setManaged(false);
+
         setSpinnerVisible(false);
         setPaginationVisible(false);
         productsPerPage();
@@ -265,7 +269,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
                     .findFirst()
                     .orElse(null);
 
-            //Clear selected items in listview if control is not pushed
+            //Clear selected items in listview if control is not pressed
             if (!event.isControlDown())
                 resultProductsList.getSelectionModel().clearSelection();
 

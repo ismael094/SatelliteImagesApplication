@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.search.SearchController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.AddAllToListEvent;
+import javafx.application.Platform;
 
 public class AddAllToListToolbarButton extends ToolbarButton {
 
@@ -21,6 +23,6 @@ public class AddAllToListToolbarButton extends ToolbarButton {
 
     @Override
     public void update(Object args) {
-
+        Platform.runLater(()-> setDisable(!(args instanceof SearchController)));
     }
 }

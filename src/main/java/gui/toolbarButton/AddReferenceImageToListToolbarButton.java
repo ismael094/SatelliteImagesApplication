@@ -28,12 +28,6 @@ public class AddReferenceImageToListToolbarButton extends ToolbarButton implemen
 
     @Override
     public void update(Object args) {
-        Platform.runLater(()->{
-            if (args instanceof TabPaneComponent) {
-                TabPaneComponent tabPaneComponent = (TabPaneComponent) args;
-                TabItem controllerOf = tabPaneComponent.getControllerOf(tabPaneComponent.getActive());
-                this.setDisable(!(controllerOf instanceof SearchController));
-            }
-        });
+        Platform.runLater(()-> setDisable(!(args instanceof SearchController)));
     }
 }

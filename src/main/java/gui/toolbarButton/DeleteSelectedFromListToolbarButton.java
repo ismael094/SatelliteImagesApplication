@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DeleteSelectedFromListEvent;
+import javafx.application.Platform;
 
 public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
 
@@ -20,6 +22,6 @@ public class DeleteSelectedFromListToolbarButton extends ToolbarButton {
 
     @Override
     public void update(Object args) {
-
+        Platform.runLater(()-> setDisable(!(args instanceof ProductListTabItem)));
     }
 }

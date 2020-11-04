@@ -4,7 +4,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.GTMap;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
@@ -221,10 +219,10 @@ public class GTMapSearchController {
     }
 
     public void printProductsInMap(List<ProductDTO> products, Color borderColor, Color fillColor) {
-        printProductsInLayer("products",products,borderColor,fillColor);
+        drawProductsInLayer("products",products,borderColor,fillColor);
     }
 
-    public void printProductsInLayer(String layer, List<ProductDTO> products, Color borderColor, Color fillColor) {
+    public void drawProductsInLayer(String layer, List<ProductDTO> products, Color borderColor, Color fillColor) {
 
         geotoolsMap.clearFeatures(layer);
         products.forEach(p-> {

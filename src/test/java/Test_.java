@@ -1,5 +1,6 @@
 
 
+import main.SatInfManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
@@ -14,15 +15,23 @@ import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
 import org.apache.olingo.commons.api.edm.Edm;
 import org.apache.olingo.commons.api.format.ContentType;
+import org.esa.s2tbx.dataio.gdal.GDALLoader;
+import org.esa.s2tbx.dataio.gdal.GDALLoaderConfig;
+import org.esa.s2tbx.dataio.gdal.GDALVersion;
+import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
+import org.esa.snap.core.util.ResourceInstaller;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import static org.apache.olingo.client.core.ODataClientFactory.getClient;
+import static org.esa.snap.lib.openjpeg.utils.OpenJpegExecRetriever.getOpenJPEGAuxDataPath;
 
 public class Test_ {
 
@@ -31,7 +40,7 @@ public class Test_ {
     @Test
     public void testing() {
 
-        client.getConfiguration().setDefaultPubFormat(ContentType.APPLICATION_JSON);
+       /* client.getConfiguration().setDefaultPubFormat(ContentType.APPLICATION_JSON);
         client.getConfiguration()
                 .setHttpClientFactory(new BasicAuthHttpClientFactory("ismael096", "Test_password"));
 
@@ -45,7 +54,7 @@ public class Test_ {
         System.out.println(request.getURI().toString());
         final ODataRetrieveResponse<ClientEntity> response = request.execute();
         final ClientEntity entitySet = response.getBody();
-        System.out.println(entitySet.getProperties().get(0).getValue());
+        System.out.println(entitySet.getProperties().get(0).getValue());*/
     }
 
     @Test
@@ -60,6 +69,13 @@ public class Test_ {
 
     @Test
     public void testing3() {
+        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getInstalledVersion());
+        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getGDALVersion());
+        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getInternalVersion());
+        Path openJPEGAuxDataPath = OpenJpegExecRetriever.getOpenJPEGAuxDataPath();
+        System.out.println(openJPEGAuxDataPath.toString());
+        final Path auxdataDir = getOpenJPEGAuxDataPath();
+        System.out.println(auxdataDir.toString());
         /*String serviceUrl = "https://scihub.copernicus.eu/dhus/odata/v1/Products";
         ODataConsumer consumer = ODataConsumers.create(serviceUrl);
         OClientBehavior basicAuth = OClientBehaviors.basicAuth("ismael096", "Test_password");

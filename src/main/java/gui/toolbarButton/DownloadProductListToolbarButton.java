@@ -1,8 +1,10 @@
 package gui.toolbarButton;
 
+import controller.interfaces.ProductListTabItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.events.DownloadProductListEvent;
+import javafx.application.Platform;
 
 public class DownloadProductListToolbarButton extends ToolbarButton{
 
@@ -21,6 +23,6 @@ public class DownloadProductListToolbarButton extends ToolbarButton{
 
     @Override
     public void update(Object args) {
-
+        Platform.runLater(()-> setDisable(!(args instanceof ProductListTabItem)));
     }
 }

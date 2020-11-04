@@ -6,10 +6,12 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <GridPane fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="333.0" styleClass="productCell" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
@@ -18,19 +20,23 @@
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.20001220703125" minWidth="10.0" prefWidth="65.4000213623047" />
   </columnConstraints>
   <rowConstraints>
-    <RowConstraints maxHeight="88.60001220703126" minHeight="10.0" prefHeight="52.6" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="137.39998779296874" minHeight="10.0" prefHeight="132.6" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="88.60001220703126" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="144.0" minHeight="10.0" prefHeight="144.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Pane prefHeight="76.0" prefWidth="254.0">
+      <AnchorPane>
          <children>
-            <Label fx:id="title" layoutX="10.0" layoutY="14.0" prefHeight="25.0" prefWidth="235.0" styleClass="title" text="FILENAME">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
+            <VBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label fx:id="title" prefHeight="25.0" prefWidth="235.0" styleClass="title" text="FILENAME">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
          </children>
-      </Pane>
+      </AnchorPane>
       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
          <children>
             <Button fx:id="contextButton" alignment="CENTER" layoutX="22.0" layoutY="14.0" mnemonicParsing="false" text="?">
@@ -47,36 +53,36 @@
             </Button>
          </children>
       </Pane>
-      <Pane prefHeight="89.0" prefWidth="186.0" GridPane.rowIndex="1">
+      <AnchorPane GridPane.rowIndex="1">
          <children>
-            <Label layoutX="12.0" layoutY="15.0" styleClass="bold" text="Platform: ">
+            <Label styleClass="h4" text="Platform: " AnchorPane.leftAnchor="10.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="platformName" layoutX="113.0" layoutY="15.0" prefHeight="21.0" prefWidth="147.0" text="Label" />
-            <Label layoutX="12.0" layoutY="34.0" styleClass="bold" text="Instrument:">
+            <Label fx:id="platformName" layoutX="117.0" prefHeight="21.0" prefWidth="131.0" text="Label" AnchorPane.leftAnchor="137.0" />
+            <Label layoutY="25.0" styleClass="h4" text="Instrument:" AnchorPane.leftAnchor="10.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="instrumentName" layoutX="113.0" layoutY="34.0" prefHeight="21.0" prefWidth="147.0" text="Label" />
-            <Label layoutX="12.0" layoutY="75.0" styleClass="bold" text="Size:">
+            <Label fx:id="instrumentName" layoutX="117.0" layoutY="25.0" prefHeight="21.0" prefWidth="131.0" text="Label" AnchorPane.leftAnchor="137.0" />
+            <Label layoutY="75.0" styleClass="h4" text="Size:" AnchorPane.leftAnchor="10.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="size" layoutX="113.0" layoutY="75.0" prefHeight="21.0" prefWidth="147.0" text="Label" />
-            <Label fx:id="property" layoutX="12.0" layoutY="55.0" styleClass="bold" text="Label">
+            <Label fx:id="size" layoutX="117.0" layoutY="75.0" prefHeight="21.0" prefWidth="131.0" text="Label" AnchorPane.leftAnchor="137.0" />
+            <Label fx:id="property" layoutX="10.0" layoutY="50.0" styleClass="h4" text="Label:" AnchorPane.leftAnchor="10.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="value" layoutX="113.0" layoutY="55.0" prefHeight="21.0" prefWidth="147.0" text="Label" />
-            <Label layoutX="12.0" layoutY="94.0" styleClass="bold" text="Ingestion date" />
-            <Label fx:id="ingestionDate" layoutX="113.0" layoutY="94.0" text="Label" />
+            <Label fx:id="value" layoutX="117.0" layoutY="50.0" prefHeight="21.0" prefWidth="131.0" text="Label" AnchorPane.leftAnchor="137.0" />
+            <Label layoutY="100.0" styleClass="h4" text="Ingestion date:" AnchorPane.leftAnchor="10.0" />
+            <Label fx:id="ingestionDate" layoutX="115.0" layoutY="100.0" prefHeight="21.0" prefWidth="131.0" text="Label" AnchorPane.leftAnchor="137.0" />
          </children>
-      </Pane>
+      </AnchorPane>
       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <Button fx:id="showFootprint" disable="true" layoutX="20.0" layoutY="25.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="26.0" styleClass="workingAreaIcon" />

@@ -1,4 +1,4 @@
-package utils.deserializer.openSearchProductDeserializer;
+package utils.deserializer.sentinel.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -7,11 +7,10 @@ import javafx.beans.property.SimpleStringProperty;
 import model.products.ProductDTO;
 import model.products.ProductProperties;
 import model.products.sentinel.Sentinel2ProductDTO;
-import utils.deserializer.OpenSearchDeserializer;
 
 import java.util.List;
 
-public class Sentinel2OpenSearchDeserializer extends OpenSearchDeserializer {
+public class Sentinel2OpenSearchProductDeserializer extends SentinelOpenSearchProductDeserializer {
     public static final String CLOUD_COVER_PERCENTAGE = "cloudcoverpercentage";
     public static final String WATER_COVER_PERCENTAGE = "watercoverpercentage";
     public static final String NOT_VEGETATION_COVER_PERCENTAGE = "notvegetationcoverpercentage";

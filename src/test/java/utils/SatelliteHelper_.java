@@ -9,5 +9,6 @@ public class SatelliteHelper_ {
     @Test
     public void is_radar_sentinel1() {
         assertThat(SatelliteHelper.isRadar("Sentinel-1")).isTrue();
+        ;
     }
 }
