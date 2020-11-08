@@ -15,8 +15,6 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     @FXML
     private ChoiceBox<String> demResampling;
     @FXML
-    private ChoiceBox<String> incidenceAngle;
-    @FXML
     private ChoiceBox<String> imageResampling;
     @FXML
     private TextField pixelSpacingInMeter;
@@ -32,7 +30,6 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         initImageResamplingControl();
         initPixelSpacingInMeter();
         initDemName();
-        initIncidenceAngleControl();
         this.parameters = new HashMap<>();
     }
 
@@ -40,7 +37,6 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     public Map<String,Object> getParameters() {
         parameters.put("demResamplingMethod", demResampling.getValue());
         parameters.put("imgResamplingMethod", imageResampling.getValue());
-        parameters.put("incidenceAngleForSigma0", incidenceAngle.getValue());
         parameters.put("demName", demName.getValue());
         parameters.put("pixelSpacingInMeter", Double.parseDouble(pixelSpacingInMeter.getText()));
         parameters.put("nodataValueAtSea", noDataValueAtSea.isSelected());
@@ -53,16 +49,8 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         selectNoDataValueAtSea((Boolean)(parameters.getOrDefault("nodataValueAtSea",false)));
         demResampling.setValue(String.valueOf(parameters.getOrDefault("demResamplingMethod",demResampling.getItems().get(0))));
         imageResampling.setValue(String.valueOf(parameters.getOrDefault("imgResamplingMethod",imageResampling.getItems().get(0))));
-        incidenceAngle.setValue(String.valueOf(parameters.getOrDefault("incidenceAngleForSigma0",incidenceAngle.getItems().get(0))));
         demName.setValue(String.valueOf(parameters.getOrDefault("demName",demName.getItems().get(0))));
         pixelSpacingInMeter.setText(String.valueOf(parameters.getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getText())));
-    }
-
-    private void initIncidenceAngleControl() {
-        ObservableList<String> items = FXCollections.observableArrayList("Use incidence angle from Ellipsoid");
-        incidenceAngle.setItems(items);
-        if (incidenceAngle.getValue() == null)
-            incidenceAngle.setValue(items.get(0));
     }
 
     private void initPixelSpacingInMeter() {

@@ -38,12 +38,12 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
 
     @Override
     public List<ProductListDTO> getCollection() {
-        return toDAO(database.getDatastore().find(ProductList.class).asList());
+        return toDTO(database.getDatastore().find(ProductList.class).asList());
     }
 
     @Override
     public List<ProductListDTO> find(ProductListDTO dao) {
-        return toDAO(database.getDatastore()
+        return toDTO(database.getDatastore()
                 .find(ProductList.class)
                 .field("id")
                 .equal(dao.getId())
@@ -51,7 +51,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
     }
 
     public ProductListDTO findByName(ProductListDTO dao) {
-        return toDAO(database.getDatastore()
+        return toDTO(database.getDatastore()
                 .find(ProductList.class)
                 .field("name")
                 .equal(dao.getName())
@@ -59,7 +59,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
     }
 
     public ProductListDTO findByWorkflow(WorkflowDTO workflowDTO) {
-        return toDAO(database.getDatastore()
+        return toDTO(database.getDatastore()
                 .find(ProductList.class)
                 .field("workflows")
                 .hasThisOne(workflowDTO.getId())
@@ -68,7 +68,7 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
 
     @Override
     public ProductListDTO findFirst(ProductListDTO dao) {
-        return toDAO(database.getDatastore()
+        return toDTO(database.getDatastore()
                 .find(ProductList.class)
                 .field("id")
                 .equal(dao.getId())
@@ -78,9 +78,9 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
     @Override
     public void save(ProductListDTO dao) {
         Key<ProductList> save = database.getDatastore().save(toEntity(dao));
+        //Save id of the database in the model
         ObjectId id = (ObjectId)save.getId();
         dao.setId(id);
-        System.out.println("list saved");
     }
 
     @Override
@@ -88,26 +88,32 @@ public class ProductListDBDAO implements DAO<ProductListDTO> {
         database.getDatastore().delete(toEntity(dao));
     }
 
-    public List<ProductListDTO> toDAO(List<ProductList> toList) {
+    public List<ProductListDTO> toDTO(List<ProductList> toList) {
         if (toList == null)
             return null;
         List<ProductListDTO> result = new ArrayList<>();
-        toList.forEach(e->result.add(toDAO(e)));
+        toList.forEach(e->result.add(toDTO(e)));
         return result;
     }
 
-    public ProductListDTO toDAO(ProductList product) {
+    public ProductListDTO toDTO(ProductList product) {
         if (product == null)
             return null;
-        ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty(), new SimpleStringProperty());
+        ProductListDTO productListDTO =
+                new ProductListDTO(new SimpleStringProperty(), new SimpleStringProperty());
+
         productListDTO.setName(product.getName());
         productListDTO.setDescription(product.getDescription());
-        productListDTO.setProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getProducts())));
+        productListDTO.setProducts(
+                FXCollections.observableList(productDBDAO.getMapper().toDTO(product.getProducts())));
+
         productListDTO.setRestrictions(product.getRestrictions());
         productListDTO.setAreasOfWork(FXCollections.observableList(product.getAreasOfWork()));
-        productListDTO.setReferenceProducts(FXCollections.observableList(productDBDAO.getMapper().toDAO(product.getReferenceImages())));
+        productListDTO.setReferenceProducts(
+                FXCollections.observableList(productDBDAO.getMapper().toDTO(product.getReferenceImages())));
+
         productListDTO.setId(product.getId());
-        productListDTO.setWorkflows(workflowMapper.toDAO(product.getWorkflows()));
+        productListDTO.setWorkflows(workflowMapper.toDTO(product.getWorkflows()));
         return productListDTO;
     }
 

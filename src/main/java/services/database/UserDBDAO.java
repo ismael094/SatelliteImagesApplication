@@ -118,12 +118,12 @@ public class UserDBDAO implements DAO<UserDTO> {
             return null;
         UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
         userDTO.setSearchParameters(user.getSearchParameters());
-        userDTO.setWorkflows(FXCollections.observableArrayList(new WorkflowMapper().toDAO(user.getWorkflows())));
+        userDTO.setWorkflows(FXCollections.observableArrayList(new WorkflowMapper().toDTO(user.getWorkflows())));
         userDTO.setId(user.getId());
         if (user.getProductLists() == null)
             userDTO.setProductListsDTO(FXCollections.observableArrayList());
         else if (user.getProductLists().size()>0)
-            userDTO.setProductListsDTO(FXCollections.observableList(productListDBDAO.toDAO(user.getProductLists())));
+            userDTO.setProductListsDTO(FXCollections.observableList(productListDBDAO.toDTO(user.getProductLists())));
 
         return userDTO;
     }

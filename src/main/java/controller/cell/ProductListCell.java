@@ -237,7 +237,6 @@ public class ProductListCell extends ListCell<ProductDTO> {
     }
 
     private void invalidStyle() {
-        System.out.println("invalid");
         defaultStyle();
         root.getStyleClass().add("workingAreaInvalid");
         showFootprint.setDisable(false);
@@ -245,14 +244,12 @@ public class ProductListCell extends ListCell<ProductDTO> {
     }
 
     private void validStyle() {
-        System.out.println("valid");
         defaultStyle();
         //root.getStyleClass().add("workingAreaValid");
         verified.setVisible(true);
     }
 
     private void defaultStyle() {
-        System.out.println("default");
         root.getStyleClass().remove("workingAreaInvalid");
         verified.setVisible(false);
         showFootprint.setDisable(true);

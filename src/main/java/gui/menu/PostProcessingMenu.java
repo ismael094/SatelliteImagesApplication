@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import model.list.ProductListDTO;
+import model.postprocessing.algorithms.MedianFilterAlgorithm;
 import utils.AlgorithmsLoader;
 import utils.gui.Observer;
 import utils.gui.ProductListDTOUtil;
@@ -35,12 +36,14 @@ public class PostProcessingMenu extends Menu implements SatInfMenuItem {
         algorithm = new Menu("Algorithms");
 
         List<File> files = AlgorithmsLoader.loadAlgorithms();
-
-        files.forEach(a->{
+        MenuItem menuItem = new MenuItem("Median Filter");
+        menuItem.setOnAction(new ExecuteAlgorithmEvent(menuComponent.getMainController(), new MedianFilterAlgorithm()));
+        algorithm.getItems().add(menuItem);
+        /*files.forEach(a->{
             MenuItem menuItem = new MenuItem(a.getName().split("\\.")[0]);
             menuItem.setOnAction(new ExecuteAlgorithmEvent(menuComponent.getMainController(),a));
             algorithm.getItems().add(menuItem);
-        });
+        });*/
 
         results.setOnAction(new OpenProcessingResultsOfCurrentProductListViewEvent(menuComponent.getMainController()));
 

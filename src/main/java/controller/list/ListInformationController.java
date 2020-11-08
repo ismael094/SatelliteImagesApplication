@@ -26,6 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import model.list.ProductListDTO;
@@ -92,6 +93,8 @@ public class ListInformationController extends ProductListTabItem {
     private Button makePreview;
     @FXML
     private JFXSpinner imageSpinner;
+    @FXML
+    private HBox buttonPanel;
 
     private String idSelected;
 
@@ -349,19 +352,36 @@ public class ListInformationController extends ProductListTabItem {
 
         onActionInPreviewGeneratePreview();
 
-        addAreaOfProduct.toFront();
-        selectReferenceImage.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        setReferenceListVisible(false);
-        GlyphsDude.setIcon(showRI, FontAwesomeIcon.IMAGE);
+        initButtonPanel();
 
         //REDO AND UNDO
         onProductListChangeSaveChange();
         onReferenceImagesChangeSaveChange();
     }
 
+    private void initButtonPanel() {
+        buttonPanel.toFront();
+        selectReferenceImage.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        setReferenceListVisible(false);
+        GlyphsDude.setIcon(showRI, FontAwesomeIcon.IMAGE);
+        GlyphsDude.setIcon(makePreview, FontAwesomeIcon.ROCKET);
+        setTooltip("Make preview", makePreview);
+        GlyphsDude.setIcon(searchGroundTruth, FontAwesomeIcon.SEARCH);
+        setTooltip("Make preview", searchGroundTruth);
+        GlyphsDude.setIcon(deleteFeature, MaterialDesignIcon.ERASER);
+        setTooltip("Delete", deleteFeature);
+    }
+
+    private void setTooltip(String title, Button button) {
+        Tooltip tooltip = new Tooltip(title);
+        Tooltip.install(button, tooltip);
+    }
+
     private void onActionInAddAreaOfWorkCreateAreaOfWork() {
         addAreaOfProduct.setOnAction(event -> {
+            //If a area is marked
             if (!mapController.getWKT().isEmpty()) {
+                //Add area to productList
                 productListDTO.addAreaOfWork(mapController.getWKT());
                 drawInMapTheAreasOfWork();
                 if (!actionActive)
@@ -373,8 +393,9 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onReferenceImagesChangeSaveChange() {
         referenceImgsList.getItems().addListener((ListChangeListener<ProductDTO>) c -> {
-            if (referenceImgsList.getItems().isEmpty()) {
-                setReferenceListVisible(!referenceImgsList.isVisible());
+            if (referenceImgsList.getItems().isEmpty() && referenceImgsList.isVisible()) {
+                setReferenceListVisible(false);
+                productListView.setVisible(true);
             }
             if (!actionActive)
                 while (c.next()) {
@@ -434,8 +455,7 @@ public class ListInformationController extends ProductListTabItem {
     }
 
     private void onDeleteFeatureActionRemoveFeature() {
-        GlyphsDude.setIcon(deleteFeature, MaterialDesignIcon.ERASER);
-        deleteFeature.toFront();
+
         deleteFeature.setOnAction(e->{
             if (selectReferenceImage.isSelected()) {
                 ProductDTO productDTO = productListDTO.getReferenceProducts().stream()

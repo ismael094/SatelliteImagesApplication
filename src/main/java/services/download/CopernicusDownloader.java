@@ -115,6 +115,8 @@ public class CopernicusDownloader implements Downloader, Runnable {
                 restoreAttempts();
             }
 
+            //Set the time left
+            //Must be called in a JavaFX Thread
             Platform.runLater(()->{
                 timeLeft.set(calculateMaxTimeLeft());
             });
@@ -124,7 +126,6 @@ public class CopernicusDownloader implements Downloader, Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -196,6 +197,7 @@ public class CopernicusDownloader implements Downloader, Runnable {
         }
 
         handleError(thread.getDownloadItem(), e);
+
         removedDownloadItemFromQueues(thread.getDownloadItem());
 
         if (e.getSource().getException() instanceof HttpResponseException) {

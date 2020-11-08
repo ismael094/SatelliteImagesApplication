@@ -109,7 +109,9 @@ public class CopernicusService implements Service {
      * @throws NotAuthenticatedException no credentials setted
      */
     @Override
-    public HttpURLConnection getConnectionFromURL(URL url) throws IOException, AuthenticationException, NotAuthenticatedException {
+    public HttpURLConnection getConnectionFromURL(URL url) throws IOException,
+            AuthenticationException, NotAuthenticatedException {
+
         if (httpManager == null)
             throw new NotAuthenticatedException("Not authenticated");
         return CopernicusHTTPAuthManager.getNewHttpManager(pair.getKey(),pair.getValue()).getConnectionFromURL(url);

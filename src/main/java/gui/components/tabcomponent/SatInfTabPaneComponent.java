@@ -119,6 +119,7 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
 
     @Override
     public void load(TabItem item) {
+        //If TabItem was already loaded, print in screen
         if (loadedControllers.getOrDefault(item.getItemId(),null)!=null){
             Tab tab = get(item.getItemId());
             if (tab == null)
@@ -128,11 +129,14 @@ public class SatInfTabPaneComponent extends TabPaneComponent {
             return;
         }
 
+        //Create task to init TabItem
         Task<Parent> task = item.start();
         mainController.showWaitSpinner();
+
         task.exceptionProperty().addListener(exceptionWhileOpeningController(item.getName()));
+
         task.setOnSucceeded(e->{
-            fireEvent(new ComponentEvent(this,"Openning new tab "+item.getName()));
+            fireEvent(new ComponentEvent(this,"Opening new tab "+item.getName()));
             create(item.getName(),item.getItemId(), item.getView());
             loadedControllers.put(item.getItemId(),item);
             item.setTabPaneComponent(this);

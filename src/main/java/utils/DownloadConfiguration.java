@@ -21,7 +21,8 @@ public class DownloadConfiguration {
     }
 
     public static DownloadEnum.DownloadMode getDownloadModeLocation() {
-        return downloadPreferences.get("mode", "multiple").equals("multiple") ? DownloadEnum.DownloadMode.MULTIPLE : DownloadEnum.DownloadMode.SINGLE;
+        return downloadPreferences.get("mode", "multiple")
+                .equals("multiple") ? DownloadEnum.DownloadMode.MULTIPLE : DownloadEnum.DownloadMode.SINGLE;
     }
 
     public static boolean getAutodownload() {

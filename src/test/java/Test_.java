@@ -1,46 +1,41 @@
 
 
-import main.SatInfManager;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataPropertyRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataServiceDocumentRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientServiceDocument;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.esa.s2tbx.dataio.gdal.GDALLoader;
-import org.esa.s2tbx.dataio.gdal.GDALLoaderConfig;
-import org.esa.s2tbx.dataio.gdal.GDALVersion;
-import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
-import org.esa.snap.core.util.ResourceInstaller;
-import org.junit.Test;
 
+import com.sun.media.jai.codec.*;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
+import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.junit.Test;
+import org.opengis.coverage.grid.Format;
+import org.opengis.geometry.Envelope;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
-import static org.apache.olingo.client.core.ODataClientFactory.getClient;
 import static org.esa.snap.lib.openjpeg.utils.OpenJpegExecRetriever.getOpenJPEGAuxDataPath;
 
 public class Test_ {
 
-    public static final ODataClient client = getClient();
 
     @Test
     public void testing() {
 
-       /* client.getConfiguration().setDefaultPubFormat(ContentType.APPLICATION_JSON);
+        /* client.getConfiguration().setDefaultPubFormat(ContentType.APPLICATION_JSON);
         client.getConfiguration()
                 .setHttpClientFactory(new BasicAuthHttpClientFactory("ismael096", "Test_password"));
 
@@ -69,13 +64,31 @@ public class Test_ {
 
     @Test
     public void testing3() {
-        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getInstalledVersion());
-        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getGDALVersion());
-        System.out.println(org.esa.s2tbx.dataio.gdal.GDALVersion.getInternalVersion());
-        Path openJPEGAuxDataPath = OpenJpegExecRetriever.getOpenJPEGAuxDataPath();
-        System.out.println(openJPEGAuxDataPath.toString());
-        final Path auxdataDir = getOpenJPEGAuxDataPath();
-        System.out.println(auxdataDir.toString());
+        /*GeoTiffReader geoTiffReader = new GeoTiffReader("D:\\TFG_SatelliteImages\\Sentinel 1\\Images\\imag.tif");
+        Format format = geoTiffReader.getFormat();
+        System.out.println(geoTiffReader.getMetadata().hasModelTrasformation());
+        System.out.println(Arrays.toString(geoTiffReader.getMetadata().getGeoKeys().toArray()));
+        System.out.println(geoTiffReader.getGroundControlPoints());
+        GridCoverage2D coverage = (GridCoverage2D) geoTiffReader.read(null);
+        CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem2D();
+        Envelope env = coverage.getEnvelope();
+        System.out.println(env.toString());*/
+
+        final BufferedImage tif;
+        try {
+            FileSeekableStream stream = new FileSeekableStream("D:\\TFG_SatelliteImages\\Sentinel 1\\Images\\imag.tif");
+            TIFFDecodeParam decodeParam = new TIFFDecodeParam();
+            decodeParam.setDecodePaletteAsShorts(true);
+            ParameterBlock params = new ParameterBlock();
+            params.add(stream);
+            RenderedOp image1 = JAI.create("tiff", params);
+            BufferedImage img = image1.getAsBufferedImage();
+            System.out.println(Arrays.toString(img.getPropertyNames()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //WritableImage writableImage = SwingFXUtils.toFXImage(read, null);
         /*String serviceUrl = "https://scihub.copernicus.eu/dhus/odata/v1/Products";
         ODataConsumer consumer = ODataConsumers.create(serviceUrl);
         OClientBehavior basicAuth = OClientBehaviors.basicAuth("ismael096", "Test_password");

@@ -17,6 +17,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import model.openSearcher.SentinelProductParameters;
 import model.products.ProductDTO;
+import model.products.sentinel.Sentinel1ProductDTO;
+import model.products.sentinel.Sentinel2ProductDTO;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,6 +40,10 @@ public class ProductResultListCell extends ListCell<ProductDTO> {
     private Label instrumentName;
     @FXML
     private Label size;
+    @FXML
+    private Label optional;
+    @FXML
+    private Label optionalValue;
     @FXML
     private JFXButton details;
     @FXML
@@ -93,8 +99,26 @@ public class ProductResultListCell extends ListCell<ProductDTO> {
                 controller.search();
             });
 
+            if (product instanceof Sentinel1ProductDTO)
+                setPolarization((Sentinel1ProductDTO)product);
+            else if (product instanceof Sentinel2ProductDTO)
+                setCloudCoverage((Sentinel2ProductDTO)product);
+
         }
 
+    }
+
+    private void setCloudCoverage(Sentinel2ProductDTO product) {
+        setOptionalField("Cloud Cov. : ",product.getCloudCoverPercentage()+" %");
+    }
+
+    private void setPolarization(Sentinel1ProductDTO product) {
+        setOptionalField("Polarizations: ",product.getPolarizationMode());
+    }
+
+    public void setOptionalField(String key, String value) {
+        optional.setText(key);
+        optionalValue.setText(value);
     }
 
     public void detailsEvent(ProductDTO product) {

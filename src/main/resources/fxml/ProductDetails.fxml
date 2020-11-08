@@ -20,15 +20,15 @@
          <children>
             <GridPane layoutX="14.0" prefHeight="494.0" prefWidth="1089.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
                <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="250.0" percentWidth="24.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="73.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="377.0" percentWidth="35.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" />
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <AnchorPane>
+                  <AnchorPane prefHeight="494.0" prefWidth="313.0">
                      <children>
                         <Label layoutX="122.0" layoutY="21.0" styleClass="h2" text="Product Details">
                            <font>
@@ -128,8 +128,8 @@
                      <children>
                         <GridPane layoutX="10.0" layoutY="75.0" prefHeight="494.0" prefWidth="845.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="0.0">
                            <columnConstraints>
-                              <ColumnConstraints hgrow="ALWAYS" minWidth="310.0" percentWidth="40.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="60.0" />
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" percentWidth="52.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="48.0" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
@@ -137,7 +137,7 @@
                            <children>
                               <AnchorPane fx:id="imageContainer" prefHeight="494.0" prefWidth="340.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                  <children>
-                                    <ImageView fx:id="image" fitHeight="310.0" fitWidth="310.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true" styleClass="previewImage" AnchorPane.topAnchor="90.0">
+                                    <ImageView fx:id="image" fitHeight="400.0" fitWidth="400.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true" styleClass="previewImage" AnchorPane.bottomAnchor="94.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
                                        <image>
                                           <Image url="@../img/no_photo.jpg" />
                                        </image>
@@ -147,9 +147,9 @@
                                     </ImageView>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane prefHeight="494.0" prefWidth="368.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                              <AnchorPane fx:id="mapContainer" prefHeight="500.0" prefWidth="400.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                  <children>
-                                    <Pane fx:id="map" layoutY="222.0" prefHeight="350.0" prefWidth="700.0" style="-fx-background-color: red;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" />
+                                    <Pane fx:id="map" layoutY="222.0" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0" />
                                  </children>
                               </AnchorPane>
                            </children>

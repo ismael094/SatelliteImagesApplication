@@ -85,6 +85,12 @@ public class FileUtils {
     }
 
     public static boolean renameFile(String temporalFileLocation, String finalFileLocation) {
-        return new File(temporalFileLocation).renameTo(new File(finalFileLocation));
+        try {
+            org.apache.commons.io.FileUtils.moveFile(new File(temporalFileLocation),new File(finalFileLocation));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

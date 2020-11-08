@@ -1,7 +1,6 @@
 package services.processing.processors;
 
 
-import com.bc.ceres.core.ProgressMonitor;
 import model.exception.NoWorkflowFoundException;
 import model.preprocessing.workflow.*;
 import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
@@ -13,16 +12,15 @@ import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.core.util.ResourceInstaller;
-import org.esa.snap.core.util.SystemUtils;
+import org.jetbrains.annotations.NotNull;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import services.processing.Processor;
@@ -37,7 +35,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 public class SentinelProcessor extends Processor {
@@ -130,7 +127,7 @@ public class SentinelProcessor extends Processor {
         snapProduct = null;
         startProductMonitor(productDTO.getId()+" processing...",workflow.getOperations().size()+areasOfWork.size()-1);
         String polarisations = "";
-
+        register();
         boolean isRadar = SatelliteHelper.isRadar(productDTO.getPlatformName());
         if (isRadar) {
             polarisations = ((Sentinel1ProductDTO)productDTO).getPolarizationMode().replace(" ",",");
@@ -163,7 +160,7 @@ public class SentinelProcessor extends Processor {
                     snapProduct = readProduct(getProductPath(productDTO.getTitle()));
                 } else if (operation.getName() == Operator.WRITE) {
                     if (generateBufferedImage) {
-                        createBufferedImage(subsets.get(0),operation.getParameters());
+                        createPNG(subsets.get(0),operation.getParameters());
                     } else
                         writeOperation(productDTO, subsets, operation.getParameters(), path);
                 } else if (operation.getName() == Operator.WRITE_AND_READ) {
@@ -199,6 +196,10 @@ public class SentinelProcessor extends Processor {
         return colorIndexedImage;
     }
 
+    private void register() {
+        java.lang.System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+    }
+
     private String getProductPath(String title) {
         return DownloadConfiguration.getProductDownloadFolderLocation() + "\\" + title + ".zip";
     }
@@ -225,11 +226,9 @@ public class SentinelProcessor extends Processor {
 
     //generate rgb image for Sentinel 2 products
     private RenderedImage getRGBRenderedImage(Product product, Map<String, Object> parameters) {
-        javax.imageio.spi.IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
         Band red = product.getBand(String.valueOf(parameters.get(RED)));
         Band green = product.getBand(String.valueOf(parameters.get(GREEN)));
         Band blue = product.getBand(String.valueOf(parameters.get(BLUE)));
-        System.out.println(Arrays.toString(new Band[]{red, green, blue}));
         ImageInfo imageInfo = ProductUtils.createImageInfo(new Band[]{red,green,blue}, true, operationMonitor);
         return ImageManager.getInstance().createColoredBandImage(new Band[]{red,green,blue}, imageInfo, 0);
     }
@@ -238,15 +237,30 @@ public class SentinelProcessor extends Processor {
         return String.join(",", bandNames);
     }
 
-    private void createBufferedImage(Product product, Map<String, Object> parameters) throws IOException {
+    private void createPNG(Product product, Map<String, Object> parameters) throws IOException {
         //If generatePng is setted, generate RGB images. Sentinel2 products
         if ((Boolean)parameters.getOrDefault(GENERATE_PNG,false)) {
-            PlanarImage planarImage = (PlanarImage) getRGBRenderedImage(product,parameters);
-            colorIndexedImage = planarImage.getAsBufferedImage();
+            colorIndexedImage = generateSentinel2PNG(product, parameters);
         } else {
-            Band bandAt = product.getBandAt(0);
-            colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
+            this.colorIndexedImage = generateSentinel1PNG(product);
+            //this.colorIndexedImage = bandAt.createColorIndexedImage(operationMonitor);
         }
+    }
+
+    private BufferedImage generateSentinel2PNG(Product product, Map<String, Object> parameters) {
+        PlanarImage planarImage = (PlanarImage) getRGBRenderedImage(product, parameters);
+        return planarImage.getAsBufferedImage();
+    }
+
+    private BufferedImage generateSentinel1PNG(Product product) throws IOException {
+        if (product.getRasterDataNodes().size() > 1)
+            return createColorIndexedImage(product.getRasterDataNodes().get(1));
+        return createColorIndexedImage(product.getRasterDataNodes().get(0));
+    }
+
+    @NotNull
+    private BufferedImage createColorIndexedImage(RasterDataNode node) throws IOException {
+        return ProductUtils.createColorIndexedImage(node, operationMonitor);
     }
 
     private List<Product> subsetOperation(Product product, List<String> areasOfWork, Operation operation) throws ParseException {
@@ -291,6 +305,9 @@ public class SentinelProcessor extends Processor {
                 generateRGBImage(p,parameters, path + "\\" + productDTO.getProductType() + "_" + getDate() + "_" + x);
             } else {
                 saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
+                createPNG(p,new HashMap<>());
+                JAI.create("filestore", colorIndexedImage,
+                        DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +"x."+PNG, PNG);
             }
             x++;
         }

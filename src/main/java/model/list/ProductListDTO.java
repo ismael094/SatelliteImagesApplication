@@ -120,8 +120,8 @@ public class ProductListDTO {
             if (!this.products.contains(p) && validate(p))
                 this.products.add(p);
         });
+        //Reload sizes property
         reloadProperties();
-        save();
         return true;
     }
 

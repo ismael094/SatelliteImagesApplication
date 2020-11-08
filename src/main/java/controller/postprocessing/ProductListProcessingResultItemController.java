@@ -4,6 +4,7 @@ import controller.processing.preview.PreviewImageController;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,9 +26,15 @@ import org.apache.logging.log4j.Logger;
 import utils.AlertFactory;
 import utils.ThemeConfiguration;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.imageio.spi.IIORegistry;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 public class ProductListProcessingResultItemController implements Initializable {
@@ -68,6 +75,20 @@ public class ProductListProcessingResultItemController implements Initializable 
             @Override
             protected Image call() throws Exception {
                 root.setCursor(Cursor.WAIT);
+                if (file.getName().contains("tif")) {
+                    IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+                    Iterator<ImageWriter> readers = ImageIO.getImageWritersByFormatName("TIF");
+                    while (readers.hasNext()) {
+                        System.out.println("reader: " + readers.next());
+                    }
+                    Iterator<ImageReader> tif1 = ImageIO.getImageReadersByFormatName("TIF");
+                    tif1.next();
+                    tif1.next();
+                    ImageReader next = tif1.next();
+                    next.setInput(ImageIO.createImageInputStream(file));
+                    BufferedImage read = next.read(0);
+                    return SwingFXUtils.toFXImage(read,null);
+                }
                 return new Image(file.toURI().toString());
             }
         };
@@ -82,6 +103,7 @@ public class ProductListProcessingResultItemController implements Initializable 
         });
 
         task.setOnFailed(event->{
+            event.getSource().getException().printStackTrace();
             root.setCursor(Cursor.DEFAULT);
             AlertFactory.showErrorDialog("Error displaying image","Error displaying image","Error while trying to display image");
         });

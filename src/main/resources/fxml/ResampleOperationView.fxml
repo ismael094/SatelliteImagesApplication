@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import org.controlsfx.control.ToggleSwitch?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.ResampleOperationController">
    <children>
@@ -21,7 +20,6 @@
           <RowConstraints maxHeight="104.0" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="238.0" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="252.0" minHeight="10.0" prefHeight="58.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="252.0" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="252.0" minHeight="10.0" prefHeight="103.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
@@ -49,12 +47,6 @@
                </GridPane.margin>
             </Label>
             <ChoiceBox fx:id="flagDownsampling" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label prefHeight="21.0" prefWidth="234.0" text="Resample On Pyramid Levels" GridPane.rowIndex="4">
-               <GridPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </GridPane.margin>
-            </Label>
-            <ToggleSwitch fx:id="resampleOnPyramidLevels" prefHeight="23.0" prefWidth="29.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </children>

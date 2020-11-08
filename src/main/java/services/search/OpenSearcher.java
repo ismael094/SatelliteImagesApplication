@@ -135,10 +135,13 @@ public class OpenSearcher implements SearchService {
         }
         long start = currentTimeMillis();
         InputStream contentFromURL = service.getContentFromURL(getURL());
-        OpenSearchResponse response = (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(contentFromURL);
+        OpenSearchResponse response =
+                (OpenSearchResponse) ProductDeserializerFactory.get("OpenSearch").deserialize(contentFromURL);
         contentFromURL.close();
         long finish = currentTimeMillis() - start;
-        logger.atInfo().log("{} products loaded in {} seconds",response.getProducts().size(),finish/1000.0);
+        logger.atInfo().log("{} products loaded in {} seconds",
+                response.getProducts().size(),finish/1000.0);
+
         return response;
     }
 

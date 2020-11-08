@@ -14,16 +14,16 @@ import java.util.List;
 
 public class WorkflowMapper implements DAOMapper<WorkflowDTO, Workflow> {
     @Override
-    public ObservableList<WorkflowDTO> toDAO(List<Workflow> toList) {
+    public ObservableList<WorkflowDTO> toDTO(List<Workflow> toList) {
         if (toList == null)
             return FXCollections.observableArrayList();
         ObservableList<WorkflowDTO> result = FXCollections.observableArrayList();
-        toList.forEach(e->result.add(toDAO(e)));
+        toList.forEach(e->result.add(toDTO(e)));
         return result;
     }
 
     @Override
-    public WorkflowDTO toDAO(Workflow workflow) {
+    public WorkflowDTO toDTO(Workflow workflow) {
         if (workflow == null)
             return null;
         GeneralWorkflowDTO generalWorkflowDTO = new GeneralWorkflowDTO(new SimpleStringProperty(workflow.getName()), new SimpleObjectProperty<>(workflow.getType()));

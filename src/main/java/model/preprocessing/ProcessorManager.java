@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.processing.Processor;
 import utils.DownloadConfiguration;
+import utils.FileUtils;
 import utils.ProcessingConfiguration;
 
 import java.awt.image.BufferedImage;
@@ -61,6 +62,8 @@ public class ProcessorManager {
 
                 processingStart();
                 isCancel = false;
+
+                FileUtils.createFolderIfNotExists(productListDTO.getName());
 
                 logger.atInfo().log("====== Processing start =========");
                 logger.atInfo().log("Starting to process list {}", productListDTO.getName());
@@ -131,7 +134,9 @@ public class ProcessorManager {
 
     }
 
-    public Task<BufferedImage> process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
+    public Task<BufferedImage> process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow,
+                                       String path, boolean bufferedImage) throws Exception {
+
         if (this.task != null && this.task.isRunning())
             throw new Exception("Processing still running");
         this.task =  new Task<BufferedImage>() {
@@ -168,7 +173,8 @@ public class ProcessorManager {
             task.cancel(true);
     }
 
-    private BufferedImage processProduct(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean bufferedImage) throws Exception {
+    private BufferedImage processProduct(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow,
+                                         String path, boolean bufferedImage) throws Exception {
         Runtime.getRuntime().gc();
         return getProcessor(product).process(product, areasOfWork, workflow, path, bufferedImage);
     }

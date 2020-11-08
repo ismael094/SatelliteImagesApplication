@@ -25,14 +25,14 @@ public class WorkflowDBDAO implements DAO<WorkflowDTO> {
     }
     @Override
     public List<WorkflowDTO> getCollection() {
-        return mapper.toDAO(database.getDatastore()
+        return mapper.toDTO(database.getDatastore()
                 .find(Workflow.class)
                 .asList());
     }
 
     @Override
     public List<WorkflowDTO> find(WorkflowDTO dao) {
-        return mapper.toDAO(database.getDatastore()
+        return mapper.toDTO(database.getDatastore()
                 .find(Workflow.class)
                 .field("id")
                 .equal(dao.getId())
@@ -41,7 +41,7 @@ public class WorkflowDBDAO implements DAO<WorkflowDTO> {
 
     @Override
     public WorkflowDTO findFirst(WorkflowDTO dao) {
-        return mapper.toDAO(database.getDatastore()
+        return mapper.toDTO(database.getDatastore()
                 .find(Workflow.class)
                 .field("id")
                 .equal(dao.getId())

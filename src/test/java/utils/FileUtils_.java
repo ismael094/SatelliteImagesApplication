@@ -46,9 +46,15 @@ public class FileUtils_ {
 
     }
 
+    @Test
+    public void rename_file() throws IOException {
+        assertThat(FileUtils.renameFile(DownloadConfiguration.getProductDownloadFolderLocation() + "\\test.zip",DownloadConfiguration.getProductDownloadFolderLocation() + "\\test2.zip")).isTrue();
+        assertThat(new File(DownloadConfiguration.getProductDownloadFolderLocation() + "\\test2.zip").exists()).isTrue();
+    }
+
     @After
     public void delete_folders() throws IOException {
-        Files.delete(Paths.get(DownloadConfiguration.getListDownloadFolderLocation()+"\\test_file_no_match"));
-        Files.delete(Paths.get(DownloadConfiguration.getListDownloadFolderLocation()+"\\test_file_no_match (1)"));
+        //Files.delete(Paths.get(DownloadConfiguration.getListDownloadFolderLocation()+"\\test_file_no_match"));
+        //Files.delete(Paths.get(DownloadConfiguration.getListDownloadFolderLocation()+"\\test_file_no_match (1)"));
     }
 }

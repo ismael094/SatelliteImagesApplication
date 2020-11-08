@@ -104,7 +104,7 @@ public class ProductDBDAO_ {
                 .field("id")
                 .equal(productDTO.getId())
                 .first();
-        ProductDTO productDTO = productDAO.getMapper().toDAO(product);
+        ProductDTO productDTO = productDAO.getMapper().toDTO(product);
         assertThat(product.getId()).isEqualTo(productDTO.getId());
         assertThat(product.getFootprint()).isEqualTo(productDTO.getFootprint());
         assertThat(product.getProductType()).isEqualTo(productDTO.getProductType());

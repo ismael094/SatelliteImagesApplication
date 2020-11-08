@@ -6,6 +6,8 @@ import controller.interfaces.TabItem;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import model.postprocessing.ProcessingResults;
+import model.postprocessing.algorithms.Algorithm;
+import model.postprocessing.algorithms.MedianFilterAlgorithm;
 import org.apache.commons.io.IOUtils;
 import services.algorithms.AlgorithmsExecutor;
 import utils.AlertFactory;
@@ -14,9 +16,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 public class ExecuteAlgorithmEvent extends Event {
-    private File algorithm;
+    private Algorithm algorithm;
 
-    public ExecuteAlgorithmEvent(MainController controller, File algorithm) {
+    public ExecuteAlgorithmEvent(MainController controller, Algorithm algorithm) {
         super(controller);
         this.algorithm = algorithm;
     }
@@ -26,16 +28,10 @@ public class ExecuteAlgorithmEvent extends Event {
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(mainController.getTabComponent().getActive());
         if (controllerOf instanceof ProcessingResultsTabItem) {
             ProcessingResults processingResults = ((ProcessingResultsTabItem) controllerOf).getProcessingResults();
-            ProcessBuilder execute = new AlgorithmsExecutor().execute(algorithm, processingResults);
-            Task<String> task = new Task<String>() {
+            Task<Boolean> task = new Task<Boolean>() {
                 @Override
-                protected String call() throws Exception {
-                    Process start = execute.start();
-                    String output = IOUtils.toString(start.getInputStream(), StandardCharsets.UTF_8);
-                    int i = start.waitFor();
-                    if (i!=0)
-                        throw new Exception("Error executing algorithm");
-                    return output;
+                protected Boolean call() throws Exception {
+                    return new AlgorithmsExecutor().execute(algorithm, processingResults);
                 }
             };
 
@@ -44,9 +40,11 @@ public class ExecuteAlgorithmEvent extends Event {
             });
 
             task.setOnSucceeded(e->{
-
-                AlertFactory.showSuccessDialog("Algorithm completed","Algorithm completed",
+                if (task.getValue())
+                    AlertFactory.showSuccessDialog("Algorithm completed","Algorithm completed",
                         "Algorithm successfully executed. Output is: " + task.getValue());
+                else
+                    AlertFactory.showErrorDialog("Error","Error  with algorithm","Error while executing algorithm "+algorithm.getName().split("\\.")[0]);
             });
 
             new Thread(task).start();

@@ -28,21 +28,21 @@ public class ProductDBDAO implements DAO<ProductDTO> {
 
     @Override
     public List<ProductDTO> getCollection() {
-        return mapper.toDAO(database.getDatastore().find(Product.class).asList());
+        return mapper.toDTO(database.getDatastore().find(Product.class).asList());
     }
 
     @Override
-    public List<ProductDTO> find(ProductDTO dao) {
-        return mapper.toDAO(database.getDatastore()
+    public List<ProductDTO> find(ProductDTO dto) {
+        return mapper.toDTO(database.getDatastore()
                 .find(Product.class)
                 .field("id")
-                .equal(dao.getId())
+                .equal(dto.getId())
                 .asList());
     }
 
     @Override
     public ProductDTO findFirst(ProductDTO dao) {
-        return mapper.toDAO(database.getDatastore()
+        return mapper.toDTO(database.getDatastore()
                 .find(Product.class)
                 .field("id")
                 .equal(dao.getId())
@@ -50,18 +50,18 @@ public class ProductDBDAO implements DAO<ProductDTO> {
     }
 
     @Override
-    public void save(ProductDTO dao) {
-        database.getDatastore().save(mapper.toEntity(dao));
+    public void save(ProductDTO dto) {
+        database.getDatastore().save(mapper.toEntity(dto));
     }
 
     @Override
-    public void delete(ProductDTO dao) {
-        database.getDatastore().delete(mapper.toEntity(dao));
+    public void delete(ProductDTO dto) {
+        database.getDatastore().delete(mapper.toEntity(dto));
     }
 
     @Override
-    public void delete(List<ProductDTO> dao) {
-        dao.forEach(this::delete);
+    public void delete(List<ProductDTO> dto) {
+        dto.forEach(this::delete);
     }
 
     public DAOMapper<ProductDTO,Product> getMapper() {

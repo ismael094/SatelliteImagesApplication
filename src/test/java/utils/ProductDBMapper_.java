@@ -41,7 +41,7 @@ public class ProductDBMapper_ {
     @Test
     public void get_sentinel1_productDto() {
         Product product = mapper.toEntity(SentinelData.getSentinel1Product());
-        assertThat(mapper.toDAO(product)).isInstanceOf(Sentinel1ProductDTO.class);
+        assertThat(mapper.toDTO(product)).isInstanceOf(Sentinel1ProductDTO.class);
     }
 
     @Test

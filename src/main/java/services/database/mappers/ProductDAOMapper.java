@@ -36,16 +36,16 @@ public class ProductDAOMapper implements DAOMapper<ProductDTO, Product> {
     }
 
     @Override
-    public List<ProductDTO> toDAO(List<Product> toList) {
+    public List<ProductDTO> toDTO(List<Product> toList) {
         if (toList == null)
             return null;
         List<ProductDTO> result = new ArrayList<>();
-        toList.forEach(e->result.add(toDAO(e)));
+        toList.forEach(e->result.add(toDTO(e)));
         return result;
     }
 
     @Override
-    public ProductDTO toDAO(Product product) {
+    public ProductDTO toDTO(Product product) {
         if (product == null)
             return null;
 

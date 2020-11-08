@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import services.CopernicusService;
 import utils.FileUtils;
+import utils.ServiceFactory;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -70,7 +71,7 @@ public class DownloadItemThread extends Service<Boolean> {
                 if (FileUtils.fileExists(item.getLocation()+"\\"+item.getProductDTO().getTitle()+".zip"))
                     throw new FileAlreadyExistsException("Product already exits");
 
-                if (!CopernicusService.getInstance().isProductOnline(item.getProductDTO().getId())) {
+                if (!ServiceFactory.getService(item.getProductDTO()).isProductOnline(item.getProductDTO().getId())) {
                     throw new ProductNotAvailableException("Product not available!");
                 }
 
@@ -106,12 +107,12 @@ public class DownloadItemThread extends Service<Boolean> {
 
                 while (true) {
                     //isCommand()
-                    if (isCancelled() || command == DownloadEnum.DownloadCommand.STOP) {
+                    if (isCancelled() || isCommand(DownloadEnum.DownloadCommand.STOP)) {
                         cancel(temporalFileLocation);
                         return false;
                     }
 
-                    if (command == DownloadEnum.DownloadCommand.PAUSE) {
+                    if (isCommand(DownloadEnum.DownloadCommand.PAUSE)) {
                         if (status != DownloadEnum.DownloadStatus.PAUSED)
                             setPausedStatus();
                         Thread.sleep(1000);
@@ -137,7 +138,7 @@ public class DownloadItemThread extends Service<Boolean> {
                         if (isDownloadFinish(bytesRead)) {
                             setFinishedStatus();
                             closeStreams();
-                            if (FileUtils.renameFile(temporalFileLocation, finalFileLocation)) {
+                            if (!FileUtils.renameFile(temporalFileLocation, finalFileLocation)) {
                                 logger.atError().log("Error while renaming product {} to {}",temporalFileLocation, finalFileLocation);
                                 return false;
                             }
@@ -150,6 +151,10 @@ public class DownloadItemThread extends Service<Boolean> {
                         updateProgress(numOfBytesRead.get()/1024.0, contentLength.get());
                     }
                 }
+            }
+
+            private boolean isCommand(DownloadEnum.DownloadCommand stop) {
+                return command == stop;
             }
 
             private void openStreams(String temporalFileLocation) throws IOException {

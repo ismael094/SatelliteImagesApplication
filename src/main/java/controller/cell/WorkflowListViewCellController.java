@@ -30,6 +30,7 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
     private ChoiceBox<WorkflowType> typeBox;
     @FXML
     private TextField nameField;
+
     private WorkflowDTO workflow;
     private MyWorkflowController myWorkflowController;
 

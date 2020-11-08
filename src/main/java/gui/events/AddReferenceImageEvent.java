@@ -11,6 +11,7 @@ import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import utils.AlertFactory;
+import utils.SatelliteHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,27 +24,34 @@ public class AddReferenceImageEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
+        //Get the products selected in the SearchTabItem
         ObservableList<ProductDTO> openSearcher = getSelectedProducts();
         if (openSearcher == null || openSearcher.size() == 0) {
             event.consume();
             return;
         }
+
+        //Get the product list
         ProductListDTO productListDTO = getSingleProductList();
         List<ProductDTO> validProducts = new ArrayList<>();
-        if (productListDTO != null){
+        if (productListDTO != null) {
+
             openSearcher.forEach(p->{
-                if (p.getPlatformName().equals("Sentinel-2") && productListDTO.areasOfWorkOfProduct(p.getFootprint()).size() > 0) {
+                //If the product is an optical image and intersect an area of work, add reference image
+                if (!SatelliteHelper.isRadar(p.getPlatformName()) && productListDTO.areasOfWorkOfProduct(p.getFootprint()).size() > 0) {
                     validProducts.add(p);
                     mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Reference image added"));
-                    AlertFactory.showSuccessDialog("Ground Truth","Ground truth product successfully added","Product " + p.getTitle()+
+                    AlertFactory.showSuccessDialog("Ground Truth",
+                            "Ground truth product successfully added","Product " + p.getTitle()+
                             " successfully added as ground truth in list named " + productListDTO.getName());
                 } else {
-                    AlertFactory.showErrorDialog("Error","Error","Product not valid as a ground truth. Must be a Sentinel-2 image and contain an area of work");
+                    AlertFactory.showErrorDialog("Error","Error",
+                            "Product not valid as a ground truth. Must be a Sentinel-2 image and contain an area of work");
                 }
             });
             productListDTO.addReferenceProduct(validProducts);
         } else {
-            AlertFactory.showErrorDialog("Error","Error","ERROR");
+            AlertFactory.showErrorDialog("Error","Error","Product List not selected");
         }
     }
 

@@ -138,7 +138,7 @@ public class MainController implements Initializable {
         });
 
         copernicusDownloader.addListener(e->{
-            AlertFactory.showInfoDialog("Downloader","Downloader", String.valueOf(e.getValue()));
+            //AlertFactory.showInfoDialog("Downloader","Downloader", String.valueOf(e.getValue()));
             consoleComponent.println((String) e.getValue());
         });
     }

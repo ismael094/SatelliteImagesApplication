@@ -3,8 +3,6 @@ package services;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
 import org.junit.Test;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 import org.w3c.dom.Node;
 import utils.DownloadConfiguration;
 
@@ -44,13 +42,5 @@ public class Processor_ {
         System.out.println(numImages);
         //BufferedImage img = new BufferedImage(reader.heig)
         //WritableImage writableImage = SwingFXUtils.toFXImage(read1, null);
-    }
-
-    public Mat fromBufferedImage(BufferedImage img) {
-        System.out.println(img.getColorModel());
-        float[] pixels = ((DataBufferFloat) img.getRaster().getDataBuffer()).getData();
-        Mat mat = new Mat(img.getHeight(), img.getWidth(), CvType.CV_64F);
-        mat.put(0, 0, pixels);
-        return mat;
     }
 }

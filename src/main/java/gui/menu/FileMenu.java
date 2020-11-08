@@ -1,9 +1,11 @@
 package gui.menu;
 
 import controller.identification.UserDataEditController;
+import controller.interfaces.ProcessingResultsTabItem;
 import gui.components.MenuComponent;
 import gui.events.AppCloseEvent;
 import gui.events.OpenFileChooserDialogEvent;
+import gui.events.SaveResultImagesEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -26,6 +28,7 @@ import static utils.ThemeConfiguration.setThemeMode;
 public class FileMenu extends Menu implements SatInfMenuItem{
     private final MenuComponent menuComponent;
     static final Logger logger = LogManager.getLogger(FileMenu.class.getName());
+    private MenuItem save;
 
     public FileMenu(MenuComponent menuComponent) {
         super("File");
@@ -35,6 +38,8 @@ public class FileMenu extends Menu implements SatInfMenuItem{
 
     private void init() {
         MenuItem loadAlgorithm = new MenuItem("Load algorithm");
+        save = new MenuItem("Save images");
+        save.setOnAction(new SaveResultImagesEvent(menuComponent.getMainController()));
         loadAlgorithm.setOnAction(new OpenFileChooserDialogEvent(menuComponent.getMainController()));
         MenuItem close = new MenuItem("Exit");
         Menu theme = new Menu("Themes");
@@ -59,7 +64,7 @@ public class FileMenu extends Menu implements SatInfMenuItem{
 
         close.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
 
-        getItems().addAll(loadAlgorithm,theme,userData,close);
+        getItems().addAll(loadAlgorithm,save,theme,userData,close);
     }
 
     private void loadUserDataEdit() {
@@ -98,6 +103,6 @@ public class FileMenu extends Menu implements SatInfMenuItem{
 
     @Override
     public void update(Object args) {
-
+        save.setDisable(!(args instanceof ProcessingResultsTabItem));
     }
 }

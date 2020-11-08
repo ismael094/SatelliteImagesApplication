@@ -8,12 +8,14 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import org.locationtech.jts.io.ParseException;
+import utils.WKTUtil;
 
 import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PreviewMapController implements Initializable {
+    public static final int GRID_SIZE = 150;
     @FXML
     private AnchorPane container;
 
@@ -24,10 +26,11 @@ public class PreviewMapController implements Initializable {
     private Point2D endPoint = new Point2D(200,200);
     private Point2D clickPoint = null;
     private String wkt = null;
+    private String productFootprint;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gtMap = new GTMap(631, 548, false);
+        gtMap = new GTMap(558, 548, false);
         container.getChildren().add(gtMap);
         AnchorPane.setRightAnchor(gtMap,0.0);
         AnchorPane.setLeftAnchor(gtMap,0.0);
@@ -40,6 +43,7 @@ public class PreviewMapController implements Initializable {
     }
 
     public void setAreaOfWork(String area) throws ParseException {
+        this.productFootprint = area;
         gtMap.createFeatureFromWKT(area,"areaOfWork","areaOfWork");
         gtMap.createAndDrawLayer("areaOfWork", Color.BLACK,null);
         gtMap.focusOnLayer("areaOfWork");
@@ -58,13 +62,7 @@ public class PreviewMapController implements Initializable {
     }
 
     public void onMousePressedOnMap(MouseEvent e) {
-        Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), 200, 200);
-        if (rectangle2D.contains(new Point2D(e.getX(),e.getY())))
-            if (clickPoint!=null) {
-                calculatePoints(e);
-                createLayer();
-            }
-        clickPoint = new Point2D(e.getX(),e.getY());
+        moveGrid(e);
     }
 
     private void calculatePoints(MouseEvent e) {
@@ -73,7 +71,7 @@ public class PreviewMapController implements Initializable {
 
         if (initPoint.getX() + deltaX > gtMap.getWidth() || initPoint.getY() + deltaY > gtMap.getHeight())
             return;
-        if (endPoint.getX() + deltaX > gtMap.getWidth() || initPoint.getY() + deltaY + 200 > gtMap.getHeight())
+        if (endPoint.getX() + deltaX > gtMap.getWidth() || initPoint.getY() + deltaY + 150 > gtMap.getHeight())
             return;
         if (initPoint.getX() + deltaX < 0.0 || initPoint.getY() + deltaY < 0.0)
             return;
@@ -85,18 +83,25 @@ public class PreviewMapController implements Initializable {
     }
 
     public void onMouseDraggedOnMap(MouseEvent e) {
-        Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), 200, 200);
-        if (rectangle2D.contains(new Point2D(e.getX(),e.getY())))
+        moveGrid(e);
+    }
+
+    private void moveGrid(MouseEvent e) {
+        Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), GRID_SIZE, GRID_SIZE);
+        if (rectangle2D.contains(new Point2D(e.getX(), e.getY())))
             if (clickPoint!=null) {
                 calculatePoints(e);
                 createLayer();
             }
-        clickPoint = new Point2D(e.getX(),e.getY());
+        clickPoint = new Point2D(e.getX(), e.getY());
     }
 
     private void createGrid() {
-        initPoint = new Point2D(0,0);
-        endPoint = new Point2D(200,200);
+        System.out.println(container.getWidth()/2.0 + " - " + container.getHeight()/2.0);
+        double xCenter = container.getPrefWidth()/2.0;
+        double yCenter = container.getPrefHeight()/2.0;
+        initPoint = new Point2D(xCenter-GRID_SIZE,yCenter-GRID_SIZE);
+        endPoint = new Point2D(xCenter,yCenter);
         //gtMap.createAndDrawLayer("grid",Color.RED,Color.RED);
         createLayer();
     }

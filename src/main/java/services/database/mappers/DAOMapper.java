@@ -6,8 +6,8 @@ import services.entities.Product;
 import java.util.List;
 
 public interface DAOMapper<T,F> {
-    List<T> toDAO(List<F> toList);
-    T toDAO(F toList);
+    List<T> toDTO(List<F> toList);
+    T toDTO(F toList);
     List<F> toEntity(List<T> productDTO);
     F toEntity(T productDTO);
 }

@@ -3,21 +3,15 @@ package services.search;
 import model.filter.Filter;
 import model.filter.filterItems.FilterItemStartWith;
 import model.ProductOData;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.junit.Before;
 import org.junit.Test;
 import services.search.ODataSearcher;
 
 import java.util.List;
 
-import static org.apache.olingo.client.core.ODataClientFactory.getClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CopernicusODataSearch_ {
-    public static final ODataClient client = getClient();
     private final String iCrmServiceRoot = "https://scihub.copernicus.eu/dhus/odata/v1";
     private final String username = "ismael096";
     private final String pass = "Test_password";
@@ -29,7 +23,7 @@ public class CopernicusODataSearch_ {
         ODataSearcher = new ODataSearcher();
     }
 
-    @Test
+   /* @Test
     public void http_authentification_should_return_OK_with_valid_user() {
 
         ODataRetrieveResponse<ClientEntity> request = ODataSearcher.getEntityResponse(getClient().newURIBuilder(iCrmServiceRoot)
@@ -59,5 +53,5 @@ public class CopernicusODataSearch_ {
         for (ClientEntity c : imageAttributesById.getEntities()) {
             System.out.println(c.getProperties().get(0));
         }
-    }
+    }*/
 }

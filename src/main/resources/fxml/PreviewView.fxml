@@ -25,10 +25,13 @@
           <RowConstraints maxHeight="629.0" minHeight="10.0" prefHeight="616.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <AnchorPane prefHeight="548.0" prefWidth="421.0" GridPane.rowIndex="1">
+            <AnchorPane prefHeight="538.0" prefWidth="560.0" GridPane.rowIndex="1">
                <children>
-                  <fx:include fx:id="map" source="PreviewMapView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" />
-               </children></AnchorPane>
+                  <fx:include fx:id="map" source="PreviewMapView.fxml" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" GridPane.rowIndex="1" />
+               </children>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin></AnchorPane>
             <AnchorPane prefHeight="454.0" prefWidth="577.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <children>
                   <fx:include fx:id="image" prefHeight="548.0" prefWidth="631.0" source="PreviewImageView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

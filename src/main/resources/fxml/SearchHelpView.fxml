@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane fitToWidth="true" pannable="true" prefHeight="748.0" prefViewportHeight="425.0" prefViewportWidth="499.0" prefWidth="499.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="651.0" prefWidth="497.0">
+         <children>
+            <Text layoutX="41.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Plataform:" wrappingWidth="472.6708984375" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+            <Text layoutX="14.0" layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Product Type:" />
+            <Text layoutX="35.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GRD:" />
+            <Text layoutX="138.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SAR images wihout phase information" wrappingWidth="337.6708984375" AnchorPane.rightAnchor="21.3291015625" />
+            <Text layoutX="35.0" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SLC:" />
+            <Text layoutX="138.0" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SAR image with phase and complex information" wrappingWidth="337.6708984375" AnchorPane.rightAnchor="21.3291015625" />
+            <Text layoutX="35.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" text="OCN" />
+            <Text layoutX="138.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Oceanic SAR images" wrappingWidth="338.6708984375" AnchorPane.rightAnchor="20.3291015625" />
+            <Text layoutX="35.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="RAW" />
+            <Text layoutX="138.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="RAW SAR images. Not supported by the application" wrappingWidth="337.6708984375" AnchorPane.rightAnchor="21.3291015625" />
+            <Text layoutX="35.0" layoutY="247.0" strokeType="OUTSIDE" strokeWidth="0.0" text="S2MSI1C" />
+            <Text layoutX="137.0" layoutY="247.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Multispectral images without atmospheric correction" wrappingWidth="338.6708984375" AnchorPane.rightAnchor="21.3291015625" />
+            <Text layoutX="35.0" layoutY="329.0" strokeType="OUTSIDE" strokeWidth="0.0" text="S2MSI2A" />
+            <Text layoutX="134.0" layoutY="329.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Multispectral images with atmospheric correction" wrappingWidth="320.6708984375" />
+            <Text layoutX="35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sentinel 1" />
+            <Text layoutX="137.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Radar Satellite" wrappingWidth="338.74609375" />
+            <Text layoutX="36.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sentinel 2" />
+            <Text layoutX="138.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Multispectral satellite" wrappingWidth="338.74609375" />
+            <Text layoutX="9.0" layoutY="370.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Adquisition mode" />
+            <Text layoutX="33.0" layoutY="415.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SM" />
+            <Text layoutX="134.0" layoutY="415.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Strip Map. Acquires data with an 80 km swath at slightly better than 5 m by 5 m spatial resolution" wrappingWidth="345.6708984375" AnchorPane.rightAnchor="17.3291015625" />
+            <Text layoutX="35.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EW" />
+            <Text layoutX="136.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Extra Wide. Acquires data over a 400 km swath at 20 m by 40 m spatial resolution" wrappingWidth="343.6708984375" AnchorPane.rightAnchor="17.658203125" />
+            <Text layoutX="35.0" layoutY="611.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WV" />
+            <Text layoutX="35.0" layoutY="469.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IW" />
+            <Text layoutX="135.0" layoutY="611.0" strokeType="OUTSIDE" strokeWidth="0.0" text="RAW SAR images. Not supported by the application" wrappingWidth="343.6708984375" AnchorPane.rightAnchor="18.3291015625" />
+            <Text layoutX="132.0" layoutY="469.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Interferometric Wide. Main acquisition mode over land and satisfies the majority of service requirements. It acquires data with a 250 km swath at 5 m by 20 m spatial resolutio" wrappingWidth="347.23095703125" AnchorPane.leftAnchor="132.0" AnchorPane.rightAnchor="17.76904296875" />
+         </children>
+      </AnchorPane>
+   </content>
+</ScrollPane>

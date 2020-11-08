@@ -20,10 +20,7 @@ import model.products.ProductDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
-import utils.AlertFactory;
-import utils.ProcessingConfiguration;
-import utils.ProductBandUtils;
-import utils.SatelliteHelper;
+import utils.*;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -181,6 +178,10 @@ public class PreviewController implements TabItem {
     }
 
     private void process(String area) throws Exception {
+        if (!WKTUtil.workingAreaContains(product.getFootprint(), area)) {
+            AlertFactory.showErrorDialog("Error","","Area is not contain in product footprint");
+            return;
+        }
         Task<BufferedImage> task = tabComponent.getMainController().getProductProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
 
         task.setOnFailed(e->{

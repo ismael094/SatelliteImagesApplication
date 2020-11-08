@@ -196,6 +196,10 @@ public class GTMapSearchController {
     }
 
     private void createSearchArea(Point2D end) {
+        if (end == null || initialCoordinates == null) {
+            isSearchAreaDrawing = false;
+            return;
+        }
         geotoolsMap.createLayerFromCoordinates(initialCoordinates,end,"searchArea");
         try {
             searchArea = geotoolsMap.getWKTFromCoordinates(initialCoordinates,end);

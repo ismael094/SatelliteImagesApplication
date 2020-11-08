@@ -1,5 +1,6 @@
 package main;
 
+import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import controller.identification.LoginController;
 import controller.MainController;
 import gui.events.AppCloseEvent;
@@ -13,13 +14,6 @@ import jfxtras.styles.jmetro.JMetro;
 import model.user.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.tools.file.FileUtil;
-import org.esa.lib.gdal.activator.GDALInstallInfo;
-import org.esa.s2tbx.dataio.gdal.GDALLoader;
-import org.esa.s2tbx.dataio.gdal.GDALLoaderConfig;
-import org.esa.s2tbx.dataio.gdal.GDALVersion;
-import org.esa.s2tbx.dataio.openjpeg.OpenJpegExecRetriever;
-import org.esa.s2tbx.dataio.openjpeg.OpenJpegUtils;
 import utils.FileUtils;
 import utils.database.MongoDBConfiguration;
 import utils.database.MongoDBManager;
@@ -30,6 +24,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
@@ -49,13 +44,6 @@ public class SatInfManager extends Application {
             myConnectionPrefs.put("mode", "multiple");
         }
 
-        GDALLoaderConfig instance = GDALLoaderConfig.getInstance();
-        instance.useInstalledGDALLibrary();
-        GDALLoader instance1 = GDALLoader.getInstance();
-        instance1.initGDAL();
-        instance.setUseInstalledGDALLibrary(true);
-        GDALVersion gdalVersion = GDALVersion.getGDALVersion();
-        System.out.println(gdalVersion);
 
         jMetro = getJMetroStyled();
 
@@ -100,7 +88,6 @@ public class SatInfManager extends Application {
 
     private UserDTO getLoginUserDialog() {
         URL location = getClass().getResource("/fxml/LoginView.fxml");
-        System.out.println(location.toString());
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Scene scene = null;
         try {

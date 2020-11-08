@@ -76,16 +76,18 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
         if (workflow.getOperations().isEmpty()) {
             addGRDOperations(this.workflow);
         }
-        loadOperationsIntroControllers(this.workflow);
+        loadOperationsIntoControllers(this.workflow);
     }
 
-    private void loadOperationsIntroControllers(WorkflowDTO workflow) {
+    private void loadOperationsIntoControllers(WorkflowDTO workflow) {
         List<Operation> operations = workflow.getOperations();
         for (Operation operation : operations) {
             if (operationsMap.containsKey(operation.getName())) {
                 OperationController op = operationsMap.get(operation.getName());
                 op.setParameters(operation.getParameters());
-                if (operation.getName() == Operator.TERRAIN_FLATTENING && !accordion.getPanes().contains(flatteningPane))
+                if (operation.getName() == Operator.TERRAIN_FLATTENING &&
+                        !accordion.getPanes().contains(flatteningPane))
+
                     accordion.getPanes().add(5, flatteningPane);
             }
         }
@@ -137,7 +139,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
             operations1.add(5,operation);
             workflow.setOperations(new LinkedList<>(operations1));
             calibrationOperationController.fixOutputBeta(true);
-            loadOperationsIntroControllers(workflow);
+            loadOperationsIntoControllers(workflow);
         });
 
         removeTerrainFlatteningButton.setOnAction(e->{
@@ -146,7 +148,7 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
             calibrationOperationController.fixOutputBeta(false);
             Platform.runLater(()->{
                 workflow.getOperations().remove(5);
-                loadOperationsIntroControllers(workflow);
+                loadOperationsIntoControllers(workflow);
                 accordion.getPanes().remove(flatteningPane);
             });
         });

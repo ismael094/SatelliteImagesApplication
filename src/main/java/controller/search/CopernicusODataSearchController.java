@@ -86,7 +86,7 @@ public class CopernicusODataSearchController extends SearchController<ProductDTO
         clearListAndFilter();
         addFilters();
         //System.out.println(model.filter.evaluate());
-        list.getItems().addAll(ODataSearcher.getImages(filter));
+        //list.getItems().addAll(ODataSearcher.getImages(filter));
         addContextMenu();
     }
 

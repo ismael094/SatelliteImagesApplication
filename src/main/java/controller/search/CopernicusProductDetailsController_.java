@@ -3,6 +3,7 @@ package controller.search;
 import controller.interfaces.TabItem;
 import gui.GTMap;
 import gui.components.TabPaneComponent;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +48,8 @@ public class CopernicusProductDetailsController_ implements TabItem {
     private Pane polarisationPane;
     @FXML
     private Pane sensorModePane;
+    @FXML
+    private AnchorPane mapContainer;
     @FXML
     private Pane map;
     @FXML
@@ -180,12 +183,26 @@ public class CopernicusProductDetailsController_ implements TabItem {
     }
 
     private void setMap() throws ParseException {
-        GTMap gtMap = new GTMap((int)map.getPrefWidth(), (int)map.getPrefHeight(), false);
-        map.getChildren().add(gtMap);
-        gtMap.createFeatureFromWKT(product.getFootprint(),product.getId(),"products");
-        gtMap.createAndDrawLayer("products", Color.BLACK, null);
-        gtMap.goToSelection();
-        gtMap.scroll(-96);
-        gtMap.refresh();
+        Platform.runLater(()->{
+            try {
+                System.out.println("Pref: " + map.getPrefWidth() + " - " + map.getPrefHeight());
+                System.out.println("Actual: " + map.getWidth() + " - " + map.getWidth());
+                System.out.println("Actual: " + map.getMaxWidth() + " - " + map.getMaxHeight());
+
+                System.out.println("C. Pref: " + mapContainer.getPrefWidth() + " - " + mapContainer.getPrefHeight());
+                System.out.println("C. Actual: " + mapContainer.getWidth() + " - " + mapContainer.getWidth());
+                GTMap gtMap = new GTMap((int)map.getPrefWidth(), (int)map.getPrefHeight(), false);
+                map.getChildren().add(gtMap);
+
+                gtMap.createFeatureFromWKT(product.getFootprint(),product.getId(),"products");
+
+                gtMap.createAndDrawLayer("products", Color.BLACK, null);
+                gtMap.focusOnLayer("products");
+                gtMap.scroll(-96);
+                gtMap.refresh();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

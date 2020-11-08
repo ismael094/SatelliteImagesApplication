@@ -2,6 +2,7 @@ package gui.toolbarButton;
 
 import controller.interfaces.TabItem;
 import controller.search.SearchController;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import gui.components.ToolBarComponent;
 import gui.components.TabPaneComponent;
@@ -20,7 +21,7 @@ public class AddReferenceImageToListToolbarButton extends ToolbarButton implemen
     @Override
     public void init() {
         setOnAction(new AddReferenceImageEvent(toolBar.getMainController()));
-        setIcon(MaterialDesignIcon.IMAGE_AREA_CLOSE,"1.5em");
+        setIcon(FontAwesomeIcon.FILE_IMAGE_ALT,"1.5em");
         setTooltip("Add selected products as ground truth");
         //toolBar.getMainController().getTabComponent().addObserver(this);
         //disableProperty().bind(toolBar.getMainController().getTabComponent().getIsSearchControllerOpenProperty().not());

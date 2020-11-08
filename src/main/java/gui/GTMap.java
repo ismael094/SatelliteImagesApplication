@@ -9,6 +9,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureLockException;
 import org.geotools.data.FileDataStore;
@@ -17,9 +22,11 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.identity.FeatureIdImpl;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -29,9 +36,6 @@ import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.*;
 import org.geotools.styling.Stroke;
-import org.geotools.tile.impl.osm.OSMService;
-import org.geotools.tile.util.AsyncTileLayer;
-import org.jetbrains.annotations.NotNull;
 import org.jfree.fx.FXGraphics2D;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
@@ -41,6 +45,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -49,7 +55,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +75,8 @@ public class GTMap extends Canvas {
 
     static final Logger logger = LogManager.getLogger(GTMap.class.getName());
 
+    GridCoverage2DReader reader;
+
 
     public GTMap(int width, int height, boolean oms) {
         super(width,height);
@@ -81,6 +88,8 @@ public class GTMap extends Canvas {
             initOMSMap();
         else
             initMapFromFile();
+
+        //readTIFF();
         initPaintThread();
         drawMap(graphicsContext);
     }
@@ -105,24 +114,97 @@ public class GTMap extends Canvas {
     }
 
     private void initOMSMap() {
-        mapContent = new MapContent();
+        /*mapContent = new MapContent();
         mapContent.setTitle("Geotool map");
         OSMService service = new OSMService("OMS", "http://tile.openstreetmap.org/");
         AsyncTileLayer asyncTileLayer = new AsyncTileLayer(service);
         asyncTileLayer.setTitle("MapLayer");
         mapContent.addLayer(asyncTileLayer);
+        setScreenArea();*/
+    }
+
+    private void readTIFF() {
+        File file = new File("/maps/world.tif");
+        System.out.println();
+
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
+
+        Hints hints = new Hints();
+        if (format instanceof GeoTiffFormat) {
+            hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+        }
+        reader = format.getReader(file, hints);
+
+        mapContent = new MapContent();
+        Layer rasterLayer = new GridReaderLayer(reader, createRGBStyle());
+        rasterLayer.setTitle("MapLayer");
+        mapContent.addLayer(rasterLayer);
         setScreenArea();
+
+    }
+
+    private Style createRGBStyle() {
+        GridCoverage2D cov = null;
+        try {
+            cov = reader.read(null);
+        } catch (IOException giveUp) {
+            throw new RuntimeException(giveUp);
+        }
+        // We need at least three bands to create an RGB style
+        int numBands = cov.getNumSampleDimensions();
+        if (numBands < 3) {
+            return null;
+        }
+        // Get the names of the bands
+        String[] sampleDimensionNames = new String[numBands];
+        for (int i = 0; i < numBands; i++) {
+            GridSampleDimension dim = cov.getSampleDimension(i);
+            sampleDimensionNames[i] = dim.getDescription().toString();
+        }
+        final int RED = 0, GREEN = 1, BLUE = 2;
+        int[] channelNum = {-1, -1, -1};
+        // We examine the band names looking for "red...", "green...", "blue...".
+        // Note that the channel numbers we record are indexed from 1, not 0.
+        for (int i = 0; i < numBands; i++) {
+            String name = sampleDimensionNames[i].toLowerCase();
+            if (name != null) {
+                if (name.matches("red.*")) {
+                    channelNum[RED] = i + 1;
+                } else if (name.matches("green.*")) {
+                    channelNum[GREEN] = i + 1;
+                } else if (name.matches("blue.*")) {
+                    channelNum[BLUE] = i + 1;
+                }
+            }
+        }
+        // If we didn't find named bands "red...", "green...", "blue..."
+        // we fall back to using the first three bands in order
+        if (channelNum[RED] < 0 || channelNum[GREEN] < 0 || channelNum[BLUE] < 0) {
+            channelNum[RED] = 1;
+            channelNum[GREEN] = 2;
+            channelNum[BLUE] = 3;
+        }
+        // Now we create a RasterSymbolizer using the selected channels
+        SelectedChannelType[] sct = new SelectedChannelType[cov.getNumSampleDimensions()];
+        ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.NORMALIZE);
+        for (int i = 0; i < 3; i++) {
+            sct[i] = sf.createSelectedChannelType(String.valueOf(channelNum[i]), ce);
+        }
+        RasterSymbolizer sym = sf.getDefaultRasterSymbolizer();
+        ChannelSelection sel = sf.channelSelection(sct[RED], sct[GREEN], sct[BLUE]);
+        sym.setChannelSelection(sel);
+
+        return SLD.wrapSymbolizers(sym);
     }
 
     private void setScreenArea() {
-        mapContent.getViewport().setScreenArea(new Rectangle((int) getWidth(), (int) getHeight()));
+        mapContent.getViewport().setScreenArea(new Rectangle(1000, 500));
     }
 
     private FileDataStore loadFileDataStore(String url) throws IOException {
         InputStream resourceAsStream = getClass().getResourceAsStream(url);
         String path = createShape(resourceAsStream,"bathymetry.shp");
         String g = createShape(getClass().getResourceAsStream("/maps/bathymetry.shx"),"bathymetry.shx");
-        System.out.println(new File(g).exists());
 
         File file = new File(path);
         return FileDataStoreFinder.getDataStore(file);
@@ -159,7 +241,6 @@ public class GTMap extends Canvas {
         featureBuilder.add(readWKTString(wktCoordinates));
         if (layers.getOrDefault(layer,null) == null) {
             layers.put(layer,new ArrayList<>());
-            System.out.println("Creating layer "+layer);
         }
         layers.get(layer).add(featureBuilder.buildFeature(id));
     }
@@ -220,7 +301,8 @@ public class GTMap extends Canvas {
         List<SimpleFeature> collection = new ArrayList<>();
         collection.add(featureBuilder.buildFeature("Search"));
         Layer searchAreaLayer = createLayer(collection, getPolygonStyle(outlineColor, fillColor, opacity), title);
-        mapContent.addLayer(searchAreaLayer);
+        if (searchAreaLayer != null)
+         mapContent.addLayer(searchAreaLayer);
     }
 
     private Layer createLayer(List<SimpleFeature> featureCollection, Style pointStyle, String title) {
@@ -260,12 +342,12 @@ public class GTMap extends Canvas {
         graphics.setBackground(java.awt.Color.WHITE);
         graphics.clearRect(0, 0, (int) getWidth(), (int) getHeight());
         Rectangle rectangle = new Rectangle((int) getWidth(), (int) getHeight());
+
         try {
             draw.paint(graphics, rectangle, mapContent.getViewport().getBounds());
         } catch (java.lang.NullPointerException ex) {
             resetMap();
         }
-
     }
 
     /**
@@ -303,7 +385,9 @@ public class GTMap extends Canvas {
             return;
 
         //Find features by coordinates
-        FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates((int)point.getX(), (int)point.getY(), featureLayer);
+        System.out.println(point.toString());
+        System.out.println(getWidth());
+        FeatureIdImpl featureId = (FeatureIdImpl) findFeatureIdByCoordinates((point.getX()), (point.getY()), featureLayer);
 
         //If multiple option is false, clear selectedFeatures list
         if (!multipleSelection || featureId == null)
@@ -333,7 +417,7 @@ public class GTMap extends Canvas {
 
     }
 
-    private FeatureId findFeatureIdByCoordinates(int x, int y, FeatureLayer featureLayer) throws IOException {
+    private FeatureId findFeatureIdByCoordinates(double x, double y, FeatureLayer featureLayer) throws IOException {
         Filter filter = ff.intersects(ff.property(getLayerGeometryAttribute(featureLayer)), ff.literal(getMousePointReferencedEnvelope(x, y)));
         SimpleFeatureCollection features = featureLayer.getSimpleFeatureSource().getFeatures(filter);
         FeatureId featureId = null;
@@ -355,10 +439,16 @@ public class GTMap extends Canvas {
         return featureLayer.getSimpleFeatureSource().getSchema().getGeometryDescriptor().getLocalName();
     }
 
-    private ReferencedEnvelope getMousePointReferencedEnvelope(int x, int y) {
+    private ReferencedEnvelope getMousePointReferencedEnvelope(double x, double y) {
         AffineTransform screenToWorld = mapContent.getViewport().getScreenToWorld();
+        double[] doubles = transformSceneToWorldCoordinate(x, y);
+        System.out.println("Array" + Arrays.toString(doubles));
         Rectangle2D worldRect = screenToWorld.createTransformedShape(
-                new Rectangle((x - 2), (y - 2), 5, 5)).getBounds2D();
+                new Rectangle((int)(((x-2.0)/getWidth())*1000.0), (int)(((y-2.0)/getHeight())*500), 5, 5)).getBounds2D().getBounds2D();
+        System.out.println("rec" + worldRect.toString());
+        System.out.println("rec mod" + screenToWorld.createTransformedShape(new Rectangle((int)(x-2.0), (int)(y-2.0), 5, 5)).getBounds2D()
+                .toString());
+
         return new ReferencedEnvelope(
                 worldRect, mapContent.getCoordinateReferenceSystem());
     }
@@ -452,13 +542,15 @@ public class GTMap extends Canvas {
     }
 
     public double[] transformSceneToWorldCoordinate(double x, double y) {
-        DirectPosition2D geoCoords = new DirectPosition2D(x, y);
-        DirectPosition2D result = new DirectPosition2D();
-        mapContent.getViewport().getScreenToWorld().transform(geoCoords, result);
-        return result.getCoordinate();
+
+        DirectPosition2D sceneCoordinates = new DirectPosition2D((x/getWidth())*1000, (y/getHeight())*500);
+        DirectPosition2D worldCoordinates = new DirectPosition2D();
+        mapContent.getViewport().getScreenToWorld().transform(sceneCoordinates, worldCoordinates);
+        return worldCoordinates.getCoordinate();
     }
 
     protected void doSetDisplayArea(ReferencedEnvelope envelope) {
+        //mapContent.getViewport().setMatchingAspectRatio( true );
         mapContent.getViewport().setBounds(envelope);
         repaint = true;
     }
@@ -483,13 +575,50 @@ public class GTMap extends Canvas {
     public void focusOnLayer(String layer) {
         Layer ly = getLayerByName(layer);
         if (ly != null) {
-            int i = mapContent.layers().indexOf(ly);
-            try {
-                doSetDisplayArea(mapContent.layers().get(i).getFeatureSource().getBounds());
-            } catch (IOException e) {
-                e.printStackTrace();
+            ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope(mapContent.getCoordinateReferenceSystem());
+            referencedEnvelope.expandToInclude(ly.getBounds());
+            ReferencedEnvelope layerEnv = ly.getBounds();
+
+            if (layerEnv.getHeight() > layerEnv.getWidth()) {
+                doSetDisplayArea(getReferenceByHeight(layerEnv));
+            } else {
+                doSetDisplayArea(getReferenceByWidth(layerEnv));
             }
+
+            //doSetDisplayArea(referencedEnvelope);
         }
+    }
+
+    private ReferencedEnvelope getReferenceByHeight(ReferencedEnvelope layerEnv) {
+        DirectPosition upperCorner = layerEnv.getUpperCorner();
+        double[] coordinate = layerEnv.getLowerCorner().getCoordinate();
+        double[] coordinate1 = upperCorner.getCoordinate();
+
+        double height = coordinate1[1]-coordinate[1];
+        double width = coordinate1[0]-coordinate[0];
+
+        double ratio = getWidth()/getHeight();
+
+        double xCenter = height*ratio - layerEnv.getWidth();
+
+        return new ReferencedEnvelope(coordinate[0]-xCenter/2.0,coordinate[0]+height*ratio-xCenter/2.0,
+                coordinate[1]+height,coordinate[1],mapContent.getCoordinateReferenceSystem());
+    }
+
+    private ReferencedEnvelope getReferenceByWidth(ReferencedEnvelope layerEnv) {
+        DirectPosition upperCorner = layerEnv.getUpperCorner();
+        double[] coordinate = layerEnv.getLowerCorner().getCoordinate();
+        double[] coordinate1 = upperCorner.getCoordinate();
+
+        double height = coordinate1[1]-coordinate[1];
+        double width = coordinate1[0]-coordinate[0];
+
+
+        double ratio = getHeight()/getWidth();
+        double yCenter = width*ratio - layerEnv.getHeight();
+
+        return new ReferencedEnvelope(coordinate[0],coordinate[0]+width,
+                coordinate[1]+width*ratio-yCenter/2.0,coordinate[1]-yCenter/2.0,mapContent.getCoordinateReferenceSystem());
     }
 
     public void resetMap() {

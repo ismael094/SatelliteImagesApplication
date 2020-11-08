@@ -177,7 +177,6 @@ public class ProductListProcessingResultsController implements TabItem, Processi
                     entryModified(file);
                 }
 
-                System.out.println(processingResults.toString());
             }
 
             boolean valid = key.reset();
@@ -263,7 +262,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     }
 
     private synchronized void loadFile(File file) {
-        if (validFile(file)) {
+        if (validFile(file) && files.getOrDefault(file.getName(),null) == null) {
             this.files.put(file.getName(),file);
             processingResults.addFile(file);
             Platform.runLater(()->resultsPane.getChildren().add(loadResultItemView(file)));
