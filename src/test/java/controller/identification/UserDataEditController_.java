@@ -3,7 +3,6 @@ package controller.identification;
 import controller.processing.workflow.operation.CalibrationOperationController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
@@ -17,9 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.service.query.NodeQuery;
-
-import java.awt.*;
 
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.TextMatchers.hasText;
@@ -37,12 +33,12 @@ public class UserDataEditController_ extends ApplicationTest {
         stage.setScene(new Scene(mainNode));
         stage.show();
         stage.toFront();
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
     }
 
     @Before
     public void init() {
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
     }
 
     @After
@@ -57,8 +53,7 @@ public class UserDataEditController_ extends ApplicationTest {
     public void set_user() {
         userDTO.setPassword("oass");
         userDTO.setEmail("a@.a.com");
-        userDTO.setFirstName("Hola");
-        userDTO.setFirstName("Last");
+        userDTO.setUsername("Hola");
         interact(() -> {
             controller.setUser(userDTO);
         });
@@ -72,8 +67,8 @@ public class UserDataEditController_ extends ApplicationTest {
     public void change_password() {
         userDTO.setPassword("oass");
         userDTO.setEmail("a@.a.com");
-        userDTO.setFirstName("Hola");
-        userDTO.setFirstName("Last");
+        userDTO.setUsername("Hola");
+        userDTO.setUsername("Last");
         interact(() -> {
             controller.setUser(userDTO);
         });

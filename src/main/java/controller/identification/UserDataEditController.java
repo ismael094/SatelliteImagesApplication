@@ -1,6 +1,5 @@
 package controller.identification;
 
-import controller.download.DownloadPreferencesController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -74,7 +73,7 @@ public class UserDataEditController implements Initializable {
 
     private void setData() {
         email.setText(user.getEmail());
-        username.setText(user.getFirstName() + " " + user.getLastName());
+        username.setText(user.getUsername());
     }
 
     private boolean passwordValid() {

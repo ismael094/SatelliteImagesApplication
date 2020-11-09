@@ -29,6 +29,7 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
         setAuthenticator();
         System.setProperty("http.keepAlive", "false");
         errors = new HashMap<>();
+        login();
         errors.put(429,"Too many request");
         errors.put(403,"Maximum number of 2 concurrent flows achieved");
         errors.put(503,"Copernicus service not available");

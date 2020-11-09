@@ -113,10 +113,9 @@ public class UserDBDAO implements DAO<UserDTO> {
     }
 
     public UserDTO toDAO(User user) {
-        System.out.println(user);
         if (user == null)
             return null;
-        UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
+        UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getUsername());
         userDTO.setSearchParameters(user.getSearchParameters());
         userDTO.setWorkflows(FXCollections.observableArrayList(new WorkflowMapper().toDTO(user.getWorkflows())));
         userDTO.setId(user.getId());
@@ -133,7 +132,7 @@ public class UserDBDAO implements DAO<UserDTO> {
         if (hashedPass != null && !hashedPass.startsWith("$2a$10")) {
             hashedPass = Encryptor.hashString(hashedPass);
         }
-        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getFirstName(), userDTO.getLastName(), userDTO.getSearchParameters());
+        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getUsername(), userDTO.getSearchParameters());
         user.setWorkflows(new WorkflowMapper().toEntity(userDTO.getWorkflows()));
         if (userDTO.getProductListsDTO().size()>0) {
             user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));

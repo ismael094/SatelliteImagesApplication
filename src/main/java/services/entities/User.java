@@ -16,20 +16,18 @@ public class User {
     private ObjectId id;
     private String email;
     private String password;
-    private String lastName;
-    private String firstName;
+    private String username;
     @Reference(idOnly = true, ignoreMissing=true,lazy = true)
     private List<ProductList> productLists;
     @Reference(idOnly = true, ignoreMissing=true,lazy = true)
     private List<Workflow> workflows;
     private Map<String, Map<String, String>> searchParameters;
 
-    public User(ObjectId id, String email, String password, String firstName, String lastName, Map<String, Map<String, String>> searchParameters) {
+    public User(ObjectId id, String email, String password, String username, Map<String, Map<String, String>> searchParameters) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.lastName = lastName;
-        this.firstName = firstName;
+        this.username = username;
         this.productLists = new ArrayList<>();
         this.searchParameters = searchParameters;
         this.workflows = new ArrayList<>();
@@ -63,20 +61,12 @@ public class User {
         this.password = password;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<ProductList> getProductLists() {

@@ -65,7 +65,7 @@
                               </Label>
                               <TextField fx:id="email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <CheckBox fx:id="remember" mnemonicParsing="false" text="Remember" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <CheckBox fx:id="remember" disable="true" mnemonicParsing="false" text="Remember" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <GridPane.margin>
                                     <Insets left="50.0" />
                                  </GridPane.margin>
@@ -78,7 +78,7 @@
                                     <Insets left="75.0" />
                                  </GridPane.margin>
                               </Label>
-                              <Label text="Remember next time?" GridPane.rowIndex="3">
+                              <Label text="Remember next time?" visible="false" GridPane.rowIndex="3">
                                  <GridPane.margin>
                                     <Insets left="40.0" />
                                  </GridPane.margin>

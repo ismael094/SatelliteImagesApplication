@@ -73,18 +73,12 @@
                            </GridPane.margin>
                         </Label>
                         <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="First Name" GridPane.rowIndex="3">
+                        <Label text="Username" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="65.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextField fx:id="firstName" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Label text="Last Name" GridPane.rowIndex="4">
-                           <GridPane.margin>
-                              <Insets left="65.0" />
-                           </GridPane.margin>
-                        </Label>
-                        <TextField fx:id="lastName" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Registration" wrappingWidth="87.80310440063477">
                            <font>
                               <Font size="14.0" />

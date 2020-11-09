@@ -15,8 +15,7 @@ public class UserDTO {
     private ObjectId id;
     private StringProperty email;
     private StringProperty password;
-    private StringProperty firstName;
-    private StringProperty lastName;
+    private StringProperty username;
     private ObservableList<ProductListDTO> productListsDTO;
     private ObservableMap<String,Map<String, String>> searchParameters;
     private ObservableList<WorkflowDTO> workflows;
@@ -25,22 +24,20 @@ public class UserDTO {
         this.productListsDTO = FXCollections.observableArrayList();
     }
 
-    public UserDTO(StringProperty email, StringProperty password, StringProperty firstName, StringProperty lastName) {
+    public UserDTO(StringProperty email, StringProperty password, StringProperty username) {
         this.email = email;
         this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.username = username;
         this.id = null;
         this.productListsDTO = FXCollections.observableArrayList();
         this.workflows = FXCollections.observableArrayList();
         this.searchParameters = FXCollections.observableHashMap();
     }
 
-    public UserDTO(String email, String password, String firstName, String lastName) {
+    public UserDTO(String email, String password, String username) {
         this.email = new SimpleStringProperty(email);
         this.password = new SimpleStringProperty(password);
-        this.firstName = new SimpleStringProperty(firstName);
-        this.lastName = new SimpleStringProperty(lastName);
+        this.username = new SimpleStringProperty(username);
         this.productListsDTO = FXCollections.observableArrayList();
         this.searchParameters = FXCollections.observableHashMap();
         this.workflows = FXCollections.observableArrayList();
@@ -90,28 +87,16 @@ public class UserDTO {
         this.password.set(password);
     }
 
-    public String getFirstName() {
-        return firstName.get();
+    public String getUsername() {
+        return username.get();
     }
 
-    public StringProperty firstNameProperty() {
-        return firstName;
+    public StringProperty usernameProperty() {
+        return username;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName.set(firstName);
-    }
-
-    public String getLastName() {
-        return lastName.get();
-    }
-
-    public StringProperty lastNameProperty() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName.set(lastName);
+    public void setUsername(String firstName) {
+        this.username.set(firstName);
     }
 
     public void saveSearch(String s, Map<String, String> parameters) {

@@ -20,6 +20,7 @@ public class SubsetOperationController implements OperationController, Initializ
 
     @Override
     public Map<String,Object> getParameters() {
+        parameters.clear();
         parameters.put("copyMetadata", metadata.isSelected());
         parameters.put("outputImageScaleInDb", outputInDb.isSelected());
         return parameters;

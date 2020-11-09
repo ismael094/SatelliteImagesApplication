@@ -38,9 +38,7 @@ public class RegisterController implements Initializable {
     @FXML
     private BorderPane root;
     @FXML
-    private TextField lastName;
-    @FXML
-    private TextField firstName;
+    private TextField username;
     @FXML
     private TextField email;
     @FXML
@@ -58,7 +56,7 @@ public class RegisterController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         cancel.setOnAction(e-> closeWindow());
 
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
         bindProperties();
 
         root.getStyleClass().add(JMetroStyleClass.BACKGROUND);
@@ -115,15 +113,13 @@ public class RegisterController implements Initializable {
     private BooleanBinding bindFieldsIfThereAreEmpty() {
         return Bindings.isEmpty(email.textProperty())
                 .or(Bindings.isEmpty(password.textProperty()))
-                .or(Bindings.isEmpty(firstName.textProperty())
-                        .or(Bindings.isEmpty(lastName.textProperty())));
+                .or(Bindings.isEmpty(username.textProperty()));
     }
 
     private void bindProperties() {
         userDTO.emailProperty().bindBidirectional(email.textProperty());
         userDTO.passwordProperty().bindBidirectional(password.textProperty());
-        userDTO.firstNameProperty().bindBidirectional(firstName.textProperty());
-        userDTO.lastNameProperty().bindBidirectional(lastName.textProperty());
+        userDTO.usernameProperty().bindBidirectional(username.textProperty());
     }
 
     private boolean userNotExits() {
@@ -134,8 +130,7 @@ public class RegisterController implements Initializable {
         String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
         return userDTO.getEmail().toUpperCase().matches(regex)
                 && userDTO.getPassword().length() > 0
-                && !userDTO.getFirstName().isEmpty()
-                && !userDTO.getLastName().isEmpty();
+                && !userDTO.getUsername().isEmpty();
     }
 
     private void closeWindow() {

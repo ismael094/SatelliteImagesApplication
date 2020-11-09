@@ -59,7 +59,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
 
         bindProperties();
 
@@ -140,7 +140,7 @@ public class LoginController implements Initializable {
         task.setOnSucceeded(event->{
             if (task.getValue() != null) {
                 userDTO = task.getValue();
-                logger.atInfo().log("Login completed! User {} successfully logged",userDTO.getFirstName());
+                logger.atInfo().log("Login completed! User {} successfully logged",userDTO.getUsername());
                 closeWindow();
             } else {
                 AlertFactory.showErrorDialog("Login","Incorrect data","Email or password incorrect");

@@ -1,6 +1,7 @@
 package services.processing.processors;
 
 
+import com.bc.ceres.core.ProgressMonitor;
 import model.exception.NoWorkflowFoundException;
 import model.preprocessing.workflow.*;
 import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
@@ -252,7 +253,7 @@ public class SentinelProcessor extends Processor {
 
     @NotNull
     private BufferedImage createColorIndexedImage(RasterDataNode node) throws IOException {
-        return ProductUtils.createColorIndexedImage(node, operationMonitor);
+        return ProductUtils.createColorIndexedImage(node, ProgressMonitor.NULL);
     }
 
     private List<Product> subsetOperation(Product product, List<String> areasOfWork, Operation operation) throws ParseException {
@@ -299,7 +300,7 @@ public class SentinelProcessor extends Processor {
                 saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
                 createPNG(p,new HashMap<>());
                 JAI.create("filestore", colorIndexedImage,
-                        DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +productDTO.getProductType() + "_" + getDate() + "_" + x+PNG, PNG);
+                        DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +productDTO.getProductType() + "_" + getDate() + "_" + x+"."+PNG, PNG);
             }
             x++;
         }
