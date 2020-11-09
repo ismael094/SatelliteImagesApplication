@@ -559,6 +559,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
 
     private void onSucceedSearch(Task<OpenSearchResponse> response) {
         try {
+            tabPaneComponent.updateObservers(this);
             setResponse(response.get());
             saveSearch(response);
         } catch (ExecutionException | InterruptedException e) {
@@ -577,7 +578,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     @Override
     public String getUndo() {
         try {
-            allResponses.get(index -2);
+            allResponses.get(index - 2);
             return "Preview search";
         } catch (IndexOutOfBoundsException e) {
             return null;
@@ -592,16 +593,20 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         setSearchParameters(parametersOfAllResponses.get(index));
         index++;
         redoOrUndoOperation(true);
+        tabPaneComponent.updateObservers(this);
+        mapController.focusOnLayer("products");
     }
 
     @Override
     public void undo() {
         if (index <= 1)
             return;
-        setResponse(allResponses.get(index -2));
-        setSearchParameters(parametersOfAllResponses.get(index -2));
+        setResponse(allResponses.get(index - 2));
+        setSearchParameters(parametersOfAllResponses.get(index - 2));
         index--;
         redoOrUndoOperation(true);
+        tabPaneComponent.updateObservers(this);
+        mapController.focusOnLayer("products");
     }
 
     private void redoOrUndoOperation(boolean b) {

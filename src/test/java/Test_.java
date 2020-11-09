@@ -74,7 +74,7 @@ public class Test_ {
         Envelope env = coverage.getEnvelope();
         System.out.println(env.toString());*/
 
-        final BufferedImage tif;
+        /*final BufferedImage tif;
         try {
             FileSeekableStream stream = new FileSeekableStream("D:\\TFG_SatelliteImages\\Sentinel 1\\Images\\imag.tif");
             TIFFDecodeParam decodeParam = new TIFFDecodeParam();

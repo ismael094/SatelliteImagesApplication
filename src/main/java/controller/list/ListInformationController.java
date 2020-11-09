@@ -468,9 +468,11 @@ public class ListInformationController extends ProductListTabItem {
 
             } else {
                 if (!actionActive)
-                    addAction(ListAction.DELETE_AREA_OF_WORK,FXCollections.observableArrayList(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId()))));
+                    addAction(ListAction.DELETE_AREA_OF_WORK,
+                            FXCollections.observableArrayList(
+                                    productListDTO.getAreasOfWork().get(
+                                            Integer.parseInt(mapController.getSelectedFeatureId()))));
 
-                System.out.println(productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 productListDTO.removeAreaOfWork(
                         productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 drawInMapTheAreasOfWork();
@@ -608,7 +610,6 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onAreaOfWorkChangeRefreshListView() {
         productListDTO.getAreasOfWork().addListener((ListChangeListener<String>) c -> {
-            System.out.println("refresing");
             refreshListView(productListView);
             refreshListView(referenceImgsList);
         });
@@ -619,8 +620,6 @@ public class ListInformationController extends ProductListTabItem {
         list.applyCss();
         list.refresh();
         list.setItems(list.getItems());
-        list.applyCss();
-        list.refresh();
     }
 
     private void onProductSelectedLoadPreviewImage() {
@@ -704,14 +703,21 @@ public class ListInformationController extends ProductListTabItem {
 
                 if (areasOfWorkOfProduct.contains(getSelectedAreaOfWork())) {
                     if (noDefaultWorkflow(product)) return;
-                    tabPaneComponent.fireEvent(new ComponentEvent(this, "Opening preview for product "+product.getTitle()));
-                    tabPaneComponent.load(new PreviewController(product,getSelectedAreaOfWork(),productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())),productListDTO.getName()));
+                    tabPaneComponent.fireEvent(
+                            new ComponentEvent(this, "Opening preview for product "+product.getTitle()));
+                    tabPaneComponent.load(
+                            new PreviewController(product,getSelectedAreaOfWork(),
+                                    productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())),
+                                    productListDTO.getName()));
                 } else {
-                    AlertFactory.showErrorDialog("Product error","Product error","Product does not contain the selected area of work");
+                    AlertFactory.showErrorDialog("Product error",
+                            "Product error",
+                            "Product does not contain the selected area of work");
                 }
             } else {
-                AlertFactory.showErrorDialog("Error","Select a product and an area of work","You must select" +
-                        " a product and an area of work to generate the preview");
+                AlertFactory.showErrorDialog("Error",
+                        "Select a product and an area of work",
+                        "You must select a product and an area of work to generate the preview");
             }
         } catch (Exception e) {
             AlertFactory.showErrorDialog("Error in preview","Error","Error creating the preview");

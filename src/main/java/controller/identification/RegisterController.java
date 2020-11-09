@@ -1,7 +1,6 @@
 package controller.identification;
 
 import com.jfoenix.controls.JFXSpinner;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;

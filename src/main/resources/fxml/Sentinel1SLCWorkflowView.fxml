@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
@@ -12,20 +9,6 @@
    <children>
       <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <MenuBar>
-               <menus>
-                  <Menu fx:id="add" mnemonicParsing="false" text="Add">
-                     <items>
-                        <MenuItem fx:id="terrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatennign" />
-                     </items>
-                  </Menu>
-                  <Menu fx:id="remove" mnemonicParsing="false" text="Remove">
-                     <items>
-                        <MenuItem fx:id="removeTerrainFlatteningButton" mnemonicParsing="false" text="Terrain Flatenning" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
             <Accordion fx:id="accordion">
                <panes>
                   <TitledPane animated="false" prefHeight="464.0" prefWidth="673.0" text="Read">
@@ -53,7 +36,7 @@
                         <fx:include fx:id="writeAndReadOperation" source="WriteAndReadOperationController.fxml" />
                      </content>
                   </TitledPane>
-                  <TitledPane fx:id="topSarDeburstPane"  animated="false" text="TOPSAR-Deburst">
+                  <TitledPane fx:id="topSarDeburstPane" animated="false" text="TOPSAR-Deburst">
                     <content>
                        <fx:include fx:id="topSarDeburstOperation" source="TopSarDeburstOperationView.fxml" />
                     </content>

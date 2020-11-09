@@ -2,7 +2,6 @@ package controller.search;
 
 import controller.GTMapSearchController;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;

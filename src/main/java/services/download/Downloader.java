@@ -1,10 +1,8 @@
 package services.download;
 
 import javafx.beans.property.DoubleProperty;
-import model.events.EventType;
 import model.list.ProductListDTO;
 import model.listeners.ComponentChangeListener;
-import model.listeners.DownloadListener;
 import model.products.ProductDTO;
 
 public interface Downloader {

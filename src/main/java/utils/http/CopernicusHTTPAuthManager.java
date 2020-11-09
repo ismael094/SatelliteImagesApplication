@@ -27,7 +27,6 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
     private CopernicusHTTPAuthManager(String username, String password) throws AuthenticationException {
         setCredentials(username, password);
         setAuthenticator();
-        login();
         System.setProperty("http.keepAlive", "false");
         errors = new HashMap<>();
         errors.put(429,"Too many request");
@@ -37,13 +36,6 @@ public class CopernicusHTTPAuthManager extends Authenticator implements HTTPAuth
 
     public static CopernicusHTTPAuthManager getNewHttpManager(String username, String password) throws AuthenticationException {
         return new CopernicusHTTPAuthManager(username,password);
-    }
-
-    public static CopernicusHTTPAuthManager getHttpManager(String username, String password) throws AuthenticationException {
-
-        if (httpManager == null)
-            httpManager = new CopernicusHTTPAuthManager(username,password);
-        return httpManager;
     }
 
 

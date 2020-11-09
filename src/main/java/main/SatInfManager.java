@@ -1,6 +1,5 @@
 package main;
 
-import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import controller.identification.LoginController;
 import controller.MainController;
 import gui.events.AppCloseEvent;
@@ -18,13 +17,8 @@ import utils.FileUtils;
 import utils.database.MongoDBConfiguration;
 import utils.database.MongoDBManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import static utils.ThemeConfiguration.getJMetroStyled;
@@ -43,6 +37,8 @@ public class SatInfManager extends Application {
             myConnectionPrefs.put("listFolder", FileUtils.DEFAULT_LIST_FOLDER);
             myConnectionPrefs.put("mode", "multiple");
         }
+
+        FileUtils.createAppFolders();
 
 
         jMetro = getJMetroStyled();

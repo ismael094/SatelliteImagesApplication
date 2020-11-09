@@ -84,7 +84,9 @@ public class SentinelProcessor extends Processor {
     }
 
     @Override
-    public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception {
+    public BufferedImage process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow, String path,
+                                 boolean generateBufferedImage) throws Exception {
+
         if (!FileUtils.productExists(product.getTitle())) {
             logger.atError().log("File {}.zip doesn't exists",product.getTitle());
             return null;
@@ -146,16 +148,6 @@ public class SentinelProcessor extends Processor {
 
                 logger.atInfo().log("Operation: {}", operation);
 
-
-                /**
-                 * map<String, Object> parametros   ->
-                 * snapProduct -> Esa.Product
-                 * productDTO  -> MiProyecto.ProductDTO -> modelado
-                 * subsets -> Lista de Esa.Product ->
-                 * operation  -> Operation(Operator + Mapa de Parámetros)
-                 * path   -> String contiene nombre de carpeta destino ->> Documentos/listas/PATH/nombreProductDTO
-                 * areasOfWork   -> Lista de Strings con áreas de interés sobre el ProducDTO
-                 */
                 if (operation.getName() == Operator.READ) {
                     snapProduct = readProduct(getProductPath(productDTO.getTitle()));
                 } else if (operation.getName() == Operator.WRITE) {
@@ -307,7 +299,7 @@ public class SentinelProcessor extends Processor {
                 saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
                 createPNG(p,new HashMap<>());
                 JAI.create("filestore", colorIndexedImage,
-                        DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +"x."+PNG, PNG);
+                        DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +productDTO.getProductType() + "_" + getDate() + "_" + x+PNG, PNG);
             }
             x++;
         }

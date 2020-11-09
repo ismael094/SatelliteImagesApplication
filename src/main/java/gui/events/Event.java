@@ -8,14 +8,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import model.list.ProductListDTO;
 import model.user.UserDTO;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,5 +84,24 @@ public abstract class Event implements EventHandler<ActionEvent> {
         jMetro.setScene(alert.getDialogPane().getScene());
         alert.showAndWait();
         return productListListView.getSelectionModel().getSelectedItems();
+    }
+
+    protected void showInformationView(String fxml) {
+        URL location = getClass().getResource(fxml);
+        FXMLLoader fxmlLoader = new FXMLLoader(location);
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JMetro jMetro = getJMetroStyled();
+        jMetro.setScene(scene);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setOnCloseRequest(e->{
+            stage.hide();
+        });
+        stage.showAndWait();
     }
 }

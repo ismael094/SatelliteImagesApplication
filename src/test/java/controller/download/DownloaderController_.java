@@ -13,11 +13,9 @@ import javafx.stage.Stage;
 import model.SentinelData;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-import services.download.CopernicusDownloader;
+import services.download.ProductDownloader;
 import services.download.DownloadItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,12 +23,12 @@ import static org.mockito.Mockito.*;
 
 public class DownloaderController_ extends ApplicationTest {
     DownloadController controller;
-    private CopernicusDownloader downloader;
+    private ProductDownloader downloader;
 
     @Override
     public void start (Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(ProductListProcessingResultItemController.class.getResource("/fxml/DownloadView.fxml"));
-        downloader = mock(CopernicusDownloader.class);
+        downloader = mock(ProductDownloader.class);
         initMock();
         Parent mainNode = fxmlLoader.load();
         controller = fxmlLoader.getController();

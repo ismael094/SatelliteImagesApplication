@@ -21,7 +21,7 @@ public class FileUtils {
     public static void createFolderIfNotExists(String path) {
         File file = new File(path);
         if (!file.exists())
-            file.mkdir();
+            file.mkdirs();
     }
 
     public static boolean fileExists(String file) {
@@ -73,17 +73,6 @@ public class FileUtils {
         return !json.exists() || (productListDTO != null && productListDTO.getId().toString().equals(list.getId().toString()));
     }
 
-
-    public static boolean copyAlgorithm(File file) {
-        try {
-            FileUtils.createFolderIfNotExists(AlgorithmsLoader.getAlgorithmFolder());
-            Files.copy(file.toPath(), Paths.get(AlgorithmsLoader.getAlgorithmFolder()+"\\"+file.getName()), StandardCopyOption.REPLACE_EXISTING);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     public static boolean renameFile(String temporalFileLocation, String finalFileLocation) {
         try {
             org.apache.commons.io.FileUtils.moveFile(new File(temporalFileLocation),new File(finalFileLocation));
@@ -92,5 +81,12 @@ public class FileUtils {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void createAppFolders() {
+        FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_LIST_FOLDER);
+        FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_DOWNLOAD_FOLDER);
+        FileUtils.createFolderIfNotExists(System.getProperty("user.home")+"\\Documents\\SatInf\\Tmp");
+        FileUtils.createFolderIfNotExists("logs");
     }
 }

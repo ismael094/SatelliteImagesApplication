@@ -6,7 +6,6 @@ import controller.processing.monitors.SimpleProcessingMonitorController;
 import gui.EventExecuteListener;
 import gui.ExecutedEvent;
 import gui.components.*;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import gui.components.TabPaneComponent;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -23,9 +22,8 @@ import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.download.CopernicusDownloader;
+import services.download.ProductDownloader;
 import services.download.Downloader;
-import utils.AlertFactory;
 
 import java.net.URL;
 import java.util.*;
@@ -61,7 +59,7 @@ public class MainController implements Initializable {
     private DownloadController downloadController;
 
     static final Logger logger = LogManager.getLogger(MainController.class.getName());
-    private CopernicusDownloader copernicusDownloader;
+    private ProductDownloader productDownloader;
     private ProcessorManager processor;
     private UserManager userManager;
     private List<EventExecuteListener> listeners;
@@ -108,17 +106,17 @@ public class MainController implements Initializable {
     }
 
     private void initDownloadManager() {
-        this.copernicusDownloader = new CopernicusDownloader(2);
+        this.productDownloader = new ProductDownloader(2);
         /*copernicusDownloader.addListener(EventType.ComponentEventType.DOWNLOAD_COMPLETED, event -> {
             //if (event.getEvent().equals(EventType.DownloadEventType.COMPLETED))
                 //consoleDebug.appendText("Download completed!\n");
         });*/
-        new Thread(copernicusDownloader).start();
+        new Thread(productDownloader).start();
         AnchorPane.setRightAnchor(download,0.0);
         AnchorPane.setLeftAnchor(download,0.0);
         AnchorPane.setTopAnchor(download,0.0);
         AnchorPane.setBottomAnchor(download,0.0);
-        downloadController.setDownload(copernicusDownloader);
+        downloadController.setDownload(productDownloader);
 
     }
 
@@ -137,7 +135,7 @@ public class MainController implements Initializable {
             consoleComponent.println((String) e.getValue());
         });
 
-        copernicusDownloader.addListener(e->{
+        productDownloader.addListener(e->{
             //AlertFactory.showInfoDialog("Downloader","Downloader", String.valueOf(e.getValue()));
             consoleComponent.println((String) e.getValue());
         });
@@ -153,8 +151,7 @@ public class MainController implements Initializable {
 
     private void initTabPaneComponent() {
         logger.atInfo().log("Init TabPaneComponent...");
-        tabPaneComponent = new SatInfTabPaneComponent(this);
-        tabPaneComponent.init();
+        tabPaneComponent = new TabPaneComponent(this);
         gridPane.add(tabPaneComponent,2,0);
         logger.atInfo().log("TabPaneComponent loaded");
         tabPaneComponent.load(new InformationController());
@@ -205,7 +202,7 @@ public class MainController implements Initializable {
     }
 
     public Downloader getDownloader() {
-        return copernicusDownloader;
+        return productDownloader;
     }
 
     public Parent getRoot() {

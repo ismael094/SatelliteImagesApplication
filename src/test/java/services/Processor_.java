@@ -1,24 +1,13 @@
 package services;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.WritableImage;
 import org.junit.Test;
-import org.w3c.dom.Node;
 import utils.DownloadConfiguration;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferFloat;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class Processor_ {
 

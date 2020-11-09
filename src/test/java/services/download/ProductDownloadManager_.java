@@ -17,7 +17,5 @@ public class ProductDownloadManager_ {
             if (!mkdir)
                 System.out.println("ERROR");
         }
-        System.out.println();
-
     }
 }

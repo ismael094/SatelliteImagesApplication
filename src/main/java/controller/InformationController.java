@@ -2,7 +2,6 @@ package controller;
 
 import controller.interfaces.TabItem;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

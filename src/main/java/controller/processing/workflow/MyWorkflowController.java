@@ -96,7 +96,10 @@ public class MyWorkflowController implements Initializable {
 
     private void onAddWorkflowCreateNewWorkflow() {
         addWorkflow.setOnAction(e-> {
-            GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(new SimpleStringProperty("default"), new SimpleObjectProperty<>(WorkflowType.GRD));
+            GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(
+                    new SimpleStringProperty("default"),
+                    new SimpleObjectProperty<>(WorkflowType.GRD));
+
             workflowList.getItems().add(aDefault);
             userManager.addNewWorkflow(aDefault);
             if (productList!=null)

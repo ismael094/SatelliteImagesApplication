@@ -4,7 +4,6 @@ import controller.identification.UserDataEditController;
 import controller.interfaces.ProcessingResultsTabItem;
 import gui.components.MenuComponent;
 import gui.events.AppCloseEvent;
-import gui.events.OpenFileChooserDialogEvent;
 import gui.events.SaveResultImagesEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -37,10 +36,8 @@ public class FileMenu extends Menu implements SatInfMenuItem{
     }
 
     private void init() {
-        MenuItem loadAlgorithm = new MenuItem("Load algorithm");
         save = new MenuItem("Save images");
         save.setOnAction(new SaveResultImagesEvent(menuComponent.getMainController()));
-        loadAlgorithm.setOnAction(new OpenFileChooserDialogEvent(menuComponent.getMainController()));
         MenuItem close = new MenuItem("Exit");
         Menu theme = new Menu("Themes");
         MenuItem dark = new MenuItem("Dark mode");
@@ -64,7 +61,7 @@ public class FileMenu extends Menu implements SatInfMenuItem{
 
         close.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
 
-        getItems().addAll(loadAlgorithm,save,theme,userData,close);
+        getItems().addAll(theme,userData,save,close);
     }
 
     private void loadUserDataEdit() {

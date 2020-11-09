@@ -57,6 +57,8 @@ public class DownloadPreferencesController implements Initializable {
         multipleDownload.setToggleGroup(group);
         path.setText(getProductDownloadFolderLocation());
         pathList.setText(getListDownloadFolderLocation());
+        path.setDisable(true);
+        pathList.setDisable(true);
 
         autoDownload.setSelected(DownloadConfiguration.getAutodownload());
 

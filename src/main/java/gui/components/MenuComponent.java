@@ -33,8 +33,8 @@ public class MenuComponent extends MenuBar implements Component, Observer {
         this.menus.add(new SearcherMenu(this));
         this.menus.add(new ListMenu(this));
         this.menus.add(new DownloadMenu(this));
-        this.menus.add(new ProcessingMenu(this));
-        this.menus.add(new PostProcessingMenu(this));
+        this.menus.add(new PreProcessingMenu(this));
+        this.menus.add(new HelpMenu(this));
     }
 
     @Override
@@ -45,8 +45,6 @@ public class MenuComponent extends MenuBar implements Component, Observer {
             getMenus().add(m.getMenu());
         });
     }
-
-
 
     @Override
     public Parent getView() {

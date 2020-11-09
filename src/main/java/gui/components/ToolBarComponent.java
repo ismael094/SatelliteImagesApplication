@@ -88,13 +88,6 @@ public class ToolBarComponent extends ToolBar implements Component, Observer{
         });
     }
 
-    private void createButton(String id, String text) {
-        Button button = new Button(text);
-        button.setId(id);
-        //buttonMap.put(id,button);
-        getItems().add(button);
-    }
-
     public Button get(String id) {
         return buttonList.stream()
                 .filter(m -> m.containsKey(id))

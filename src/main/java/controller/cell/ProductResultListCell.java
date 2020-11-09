@@ -5,7 +5,6 @@ import controller.interfaces.TabItem;
 import controller.search.CopernicusOpenSearchController;
 import controller.search.CopernicusProductDetailsController_;
 import gui.components.TabPaneComponent;
-import gui.components.tabcomponent.SatInfTabPaneComponent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Control;

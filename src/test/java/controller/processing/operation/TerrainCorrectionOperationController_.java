@@ -65,7 +65,4 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
         assertThat(parameters.get("demResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");
         assertThat(parameters.get("imgResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");
     }
-
-
-
 }
