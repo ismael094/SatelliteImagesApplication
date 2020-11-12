@@ -17,16 +17,16 @@ import static java.lang.System.currentTimeMillis;
 public abstract class SentinelOpenSearchProductDeserializer {
     public static final String DOUBLE_ARRAY = "double";
     public static final String STR_ARRAY = "str";
+    public static final String DATE_ARRAY = "date";
     public static final String FOOTPRINT = "footprint";
     public static final String SIZE = "size";
     public static final String PRODUCT_TYPE = "producttype";
     public static final String PLATFORM_NAME = "platformname";
     public static final String TITLE = "title";
     public static final String ID = "id";
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-    public static final String DATE_ARRAY = "date";
     public static final String INGESTION_DATE = "ingestiondate";
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     TypeReference<List<ProductProperties>> typeRef = new TypeReference<List<ProductProperties>>() {};
 

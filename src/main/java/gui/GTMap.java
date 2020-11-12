@@ -22,7 +22,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -116,15 +115,16 @@ public class GTMap extends Canvas {
     private void initOMSMap() {
         /*mapContent = new MapContent();
         mapContent.setTitle("Geotool map");
-        OSMService service = new OSMService("OMS", "http://tile.openstreetmap.org/");
-        AsyncTileLayer asyncTileLayer = new AsyncTileLayer(service);
-        asyncTileLayer.setTitle("MapLayer");
-        mapContent.addLayer(asyncTileLayer);
+        String baseURL = "https://tile.openstreetmap.org/";
+        TileService service = new OSMService("OSM", baseURL);
+        TileLayer tileLayer = new TileLayer(service);
+        tileLayer.setTitle("map");
+        mapContent.addLayer(tileLayer);
         setScreenArea();*/
     }
 
     private void readTIFF() {
-        File file = new File("/maps/world.tif");
+        /*File file = new File("/maps/world.tif");
         System.out.println();
 
         AbstractGridFormat format = GridFormatFinder.findFormat(file);
@@ -139,7 +139,7 @@ public class GTMap extends Canvas {
         Layer rasterLayer = new GridReaderLayer(reader, createRGBStyle());
         rasterLayer.setTitle("MapLayer");
         mapContent.addLayer(rasterLayer);
-        setScreenArea();
+        setScreenArea();*/
 
     }
 

@@ -16,11 +16,9 @@ import java.util.Map;
 
 public class UserManager {
     private final UserDTO user;
-    private final List<ComponentChangeListener> listeners;
 
     public UserManager(UserDTO user) {
         this.user = user;
-        listeners = new ArrayList<>();
         init();
     }
 
@@ -38,11 +36,6 @@ public class UserManager {
                     });
 
                 }
-        });
-
-        user.getSearchParameters().addListener((MapChangeListener<String, Map<String, String>>) change -> {
-            UserDBDAO instance = UserDBDAO.getInstance();
-            instance.save(user);
         });
 
         /*user.getWorkflows().addListener((ListChangeListener<WorkflowDTO>) c -> {

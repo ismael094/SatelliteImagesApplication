@@ -48,7 +48,7 @@ public class LoginController implements Initializable {
     @FXML
     private Hyperlink signUp;
     @FXML
-    private TextField email;
+    private TextField username;
     @FXML
     private PasswordField password;
 
@@ -59,7 +59,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty());
 
         bindProperties();
 
@@ -104,16 +104,16 @@ public class LoginController implements Initializable {
     }
 
     private void bindProperties() {
-        userDTO.emailProperty().bindBidirectional(email.textProperty());
         userDTO.passwordProperty().bindBidirectional(password.textProperty());
-        Tooltip tooltip = new Tooltip("example@example.com");
+        userDTO.usernameProperty().bindBidirectional(username.textProperty());
+        Tooltip tooltip = new Tooltip("pepe98");
         //tooltip.setShowDelay(new Duration(300));
         tooltip.setFont(new Font(10));
-        email.setTooltip(tooltip);
+        username.setTooltip(tooltip);
     }
 
     private BooleanBinding bindEmailAndPasswordEmpty() {
-        return Bindings.isEmpty(email.textProperty())
+        return Bindings.isEmpty(username.textProperty())
                 .and(Bindings.isEmpty(password.textProperty()));
     }
 
@@ -121,7 +121,7 @@ public class LoginController implements Initializable {
         if (dataIsValid()) {
             loginTask();
         } else {
-            AlertFactory.showErrorDialog("Login","Incorrect data","Email must be like example@example.com");
+            AlertFactory.showErrorDialog("Login","Incorrect data","Write a valid username and password");
         }
     }
 
@@ -130,7 +130,7 @@ public class LoginController implements Initializable {
         Task<UserDTO> task = new Task<UserDTO>() {
             @Override
             protected UserDTO call() throws Exception {
-                UserDTO dbUser = UserDBDAO.getInstance().findByEmail(userDTO);
+                UserDTO dbUser = UserDBDAO.getInstance().findByUsername(userDTO);
                 if (dbUser != null && Encryptor.matchString(userDTO.getPassword(), dbUser.getPassword())) {
                     return dbUser;
                 }
@@ -161,8 +161,7 @@ public class LoginController implements Initializable {
     }
 
     private boolean dataIsValid() {
-        String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
-        return userDTO.getEmail().toUpperCase().matches(regex) && userDTO.getPassword().length() > 0;
+        return !userDTO.getUsername().isEmpty() && userDTO.getPassword().length() > 0;
     }
 
     public UserDTO getUser() {
@@ -170,6 +169,6 @@ public class LoginController implements Initializable {
     }
 
     private void closeWindow() {
-        ((Stage) email.getScene().getWindow()).close();
+        ((Stage) username.getScene().getWindow()).close();
     }
 }

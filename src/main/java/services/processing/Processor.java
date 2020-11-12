@@ -1,6 +1,6 @@
 package services.processing;
 
-import model.preprocessing.monitor.FXProgressMonitor;
+import model.preprocessing.monitor.FXProcessingMonitor;
 import model.preprocessing.monitor.ProcessingMonitor;
 import model.preprocessing.workflow.WorkflowDTO;
 import model.products.ProductDTO;
@@ -13,8 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public abstract class Processor {
-    protected FXProgressMonitor operationMonitor;
-    protected FXProgressMonitor productMonitor;
+    protected ProcessingMonitor operationMonitor;
+    protected ProcessingMonitor productMonitor;
     static final Logger logger = LogManager.getLogger(Processor.class.getName());
 
     public abstract BufferedImage process(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception;
@@ -36,19 +36,19 @@ public abstract class Processor {
         monitor.beginTask(task,total);
     }
 
-    public FXProgressMonitor getOperationMonitor() {
+    public ProcessingMonitor getOperationMonitor() {
         return operationMonitor;
     }
 
-    public FXProgressMonitor getProductMonitor() {
+    public ProcessingMonitor getProductMonitor() {
         return productMonitor;
     }
 
-    public void setOperationMonitor(FXProgressMonitor operationMonitor) {
+    public void setOperationMonitor(FXProcessingMonitor operationMonitor) {
         this.operationMonitor = operationMonitor;
     }
 
-    public void setProductMonitor(FXProgressMonitor productMonitor) {
+    public void setProductMonitor(FXProcessingMonitor productMonitor) {
         this.productMonitor = productMonitor;
     }
 

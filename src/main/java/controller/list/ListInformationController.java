@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 import org.locationtech.jts.io.ParseException;
+import services.database.ProductListDBDAO;
 import services.download.Downloader;
 import services.search.OpenSearcher;
 import utils.AlertFactory;
@@ -195,6 +196,7 @@ public class ListInformationController extends ProductListTabItem {
     @Override
     public void refreshProducts() {
         productListView.refresh();
+        referenceImgsList.refresh();
     }
 
     /**
@@ -236,8 +238,22 @@ public class ListInformationController extends ProductListTabItem {
         }else if (pair.getKey() == ListAction.DELETE_PRODUCT) {
             productListDTO.addProduct((ObservableList<ProductDTO>) pair.getValue());
         }
+
+        saveProductList();
+
         actionActive(false);
         tabPaneComponent.updateObservers(this);
+    }
+
+    private void saveProductList() {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ProductListDBDAO.getInstance().save(productListDTO);
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     private void actionActive(boolean b) {
@@ -257,13 +273,15 @@ public class ListInformationController extends ProductListTabItem {
             deleteAreaOfWork(pair);
         } else if (pair.getKey() == ListAction.ADD_REFERENCE_IMAGE) {
             addReferenceImage(pair);
-        }else if (pair.getKey() == ListAction.DELETE_REFERENCE_IMAGE) {
+        } else if (pair.getKey() == ListAction.DELETE_REFERENCE_IMAGE) {
             deleteReferenceImage(pair);
-        }else if (pair.getKey() == ListAction.ADD_PRODUCT) {
+        } else if (pair.getKey() == ListAction.ADD_PRODUCT) {
             productListDTO.addProduct((ObservableList<ProductDTO>) pair.getValue());
-        }else if (pair.getKey() == ListAction.DELETE_PRODUCT) {
+        } else if (pair.getKey() == ListAction.DELETE_PRODUCT) {
             productListDTO.remove((ObservableList<ProductDTO>) pair.getValue());
         }
+
+        saveProductList();
 
         actionActive(false);
         tabPaneComponent.updateObservers(this);
@@ -292,21 +310,25 @@ public class ListInformationController extends ProductListTabItem {
     private void deleteReferenceImage(Pair<ListAction, ObservableList<?>> pair) {
         productListDTO.removeReferenceProduct((ProductDTO) pair.getValue().get(0));
         refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9");
+        saveProductList();
     }
 
     private void addReferenceImage(Pair<ListAction, ObservableList<?>> pair) {
         productListDTO.addReferenceProduct(Collections.singletonList((ProductDTO) pair.getValue().get(0)));
         refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9");
+        saveProductList();
     }
 
     private void deleteAreaOfWork(Pair<ListAction, ObservableList<?>> pair) {
         productListDTO.removeAreaOfWork((String) pair.getValue().get(0));
         drawInMapTheAreasOfWork();
+        saveProductList();
     }
 
     private void addAreaOfWork(Pair<ListAction, ObservableList<?>> pair) {
         productListDTO.addAreaOfWork((String) pair.getValue().get(0));
         drawInMapTheAreasOfWork();
+        saveProductList();
     }
 
     private void addAction(ListAction work, ObservableList<?> list) {
@@ -384,6 +406,7 @@ public class ListInformationController extends ProductListTabItem {
                 //Add area to productList
                 productListDTO.addAreaOfWork(mapController.getWKT());
                 drawInMapTheAreasOfWork();
+                saveProductList();
                 if (!actionActive)
                     addAction(ListAction.ADD_AREA_OF_WORK,FXCollections.observableArrayList(mapController.getWKT()));
 
@@ -477,7 +500,10 @@ public class ListInformationController extends ProductListTabItem {
                         productListDTO.getAreasOfWork().get(Integer.parseInt(mapController.getSelectedFeatureId())));
                 drawInMapTheAreasOfWork();
 
+
+
             }
+            saveProductList();
         });
     }
 
@@ -698,17 +724,25 @@ public class ListInformationController extends ProductListTabItem {
 
             if (productNotDownloaded(product)) return;
 
-            if (getSelectedAreaOfWork() != null) {
+            if (productHasAreasOfWork()) {
                 List<String> areasOfWorkOfProduct = productListDTO.areasOfWorkOfProduct(product.getFootprint());
 
                 if (areasOfWorkOfProduct.contains(getSelectedAreaOfWork())) {
                     if (noDefaultWorkflow(product)) return;
-                    tabPaneComponent.fireEvent(
-                            new ComponentEvent(this, "Opening preview for product "+product.getTitle()));
-                    tabPaneComponent.load(
-                            new PreviewController(product,getSelectedAreaOfWork(),
-                                    productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())),
-                                    productListDTO.getName()));
+
+                    if (ifPreviewIsAlreadyLoaded(product)) {
+                        tabPaneComponent.select("Preview-"+product.getId());
+                        PreviewController previewController = (PreviewController) tabPaneComponent.getControllerOf("Preview-"+product.getId());
+                        previewController.setArea(getSelectedAreaOfWork());
+                    } else {
+                        tabPaneComponent.fireEvent(
+                                new ComponentEvent(this, "Opening preview for product "+product.getTitle()));
+                        tabPaneComponent.load(
+                                new PreviewController(product,getSelectedAreaOfWork(),
+                                        productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())),
+                                        productListDTO.getName()));
+                    }
+
                 } else {
                     AlertFactory.showErrorDialog("Product error",
                             "Product error",
@@ -722,6 +756,14 @@ public class ListInformationController extends ProductListTabItem {
         } catch (Exception e) {
             AlertFactory.showErrorDialog("Error in preview","Error","Error creating the preview");
         }
+    }
+
+    private boolean ifPreviewIsAlreadyLoaded(ProductDTO product) {
+        return tabPaneComponent.isLoaded("Preview-"+product.getId());
+    }
+
+    private boolean productHasAreasOfWork() {
+        return getSelectedAreaOfWork() != null;
     }
 
     private boolean noDefaultWorkflow(ProductDTO selectedItem) {

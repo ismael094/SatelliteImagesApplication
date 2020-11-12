@@ -17,14 +17,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane prefHeight="375.0" prefWidth="719.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.identification.RegisterController">
    <children>
-      <BorderPane fx:id="root" prefHeight="375.0" prefWidth="719.0">
+      <BorderPane fx:id="root" prefHeight="375.0" prefWidth="719.0" stylesheets="@../css/main.css">
          <top>
             <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="662.0" BorderPane.alignment="CENTER">
                <children>
-                  <Text layoutX="75.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Satellite Information Manager. Download, manage and proccess">
+                  <Text layoutX="-9.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="h2" text="Satellite Information Manager. Download, manage and proccess">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -50,36 +49,33 @@
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints maxHeight="137.60001220703126" minHeight="0.0" prefHeight="60.599980163574216" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="284.8" minHeight="0.0" prefHeight="60.0" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="284.8" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="317.59996948242184" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="284.8" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="284.8" minHeight="0.0" prefHeight="60.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="284.8" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="109.59995117187498" minHeight="10.0" prefHeight="61.600006103515625" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3" />
                         <AnchorPane prefHeight="200.0" prefWidth="180.0" GridPane.rowIndex="2" />
-                        <AnchorPane prefHeight="48.0" prefWidth="180.0" GridPane.rowIndex="3" />
+                        <AnchorPane prefHeight="48.0" prefWidth="180.0" GridPane.rowIndex="1" />
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4" />
-                        <Label prefHeight="18.0" prefWidth="38.0" text="Email" GridPane.rowIndex="1">
+                        <Label prefHeight="21.0" prefWidth="160.0" text="Confirm Password" GridPane.rowIndex="3">
                            <GridPane.margin>
-                              <Insets left="65.0" />
+                              <Insets left="30.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextField fx:id="email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Password" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets left="65.0" />
                            </GridPane.margin>
                         </Label>
-                        <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Username" GridPane.rowIndex="3">
+                        <Label text="Username" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets left="65.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Registration" wrappingWidth="87.80310440063477">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="h3" text="Registration" wrappingWidth="108.80310440063477">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -87,6 +83,9 @@
                               <Insets left="140.0" />
                            </GridPane.margin>
                         </Text>
+                        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <PasswordField fx:id="passwordConfirmation" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                      </children>
                      <padding>
                         <Insets right="10.0" />

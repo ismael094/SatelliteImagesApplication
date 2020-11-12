@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
+import org.controlsfx.control.ToggleSwitch;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class WriteOperationController implements Initializable, OperationController {
+    @FXML
+    private ToggleSwitch generatePNG;
     @FXML
     private ChoiceBox<String> writeFormat;
 
@@ -32,6 +35,7 @@ public class WriteOperationController implements Initializable, OperationControl
     @Override
     public Map<String, Object> getParameters() {
         parameters.put("formatName",writeFormat.getValue());
+        parameters.put("generatePNG",generatePNG.isSelected());
         return parameters;
     }
 
@@ -39,5 +43,6 @@ public class WriteOperationController implements Initializable, OperationControl
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
         writeFormat.setValue(String.valueOf(parameters.getOrDefault("formatName","GeoTIFF")));
+        generatePNG.setSelected((boolean)(parameters.getOrDefault("generatePNG",false)));
     }
 }

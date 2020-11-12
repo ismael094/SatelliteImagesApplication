@@ -19,15 +19,7 @@ public class TerrainFlatteningOperationController implements Initializable, Oper
     @FXML
     private ChoiceBox<String> demResampling;
     @FXML
-    private ChoiceBox<String> incidenceAngle;
-    @FXML
-    private ChoiceBox<String> imageResampling;
-    @FXML
-    private TextField pixelSpacingInMeter;
-    @FXML
     private ChoiceBox<String> demName;
-    @FXML
-    private CheckBox noDataValueAtSea;
     private Map<String,Object> parameters;
 
     @Override
@@ -39,20 +31,31 @@ public class TerrainFlatteningOperationController implements Initializable, Oper
         this.parameters = new HashMap<>();
     }
 
-    private void initAdditionalOverlap() {
+    private void initOversamplingMultiple() {
         oversamplingMultiple.setText("1");
+        Tooltip tp = new Tooltip("Range value: 1-4");
+        Tooltip.install(additionalOverlap,tp);
         oversamplingMultiple.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("^[1-4]$"))
+            if (!newValue.isEmpty() && !newValue.matches("^[1-4]$"))
                 oversamplingMultiple.setText(oldValue);
         });
     }
 
-    private void initOversamplingMultiple() {
+    private void initAdditionalOverlap() {
         additionalOverlap.setText("0.1");
+        Tooltip tp = new Tooltip("Range value: 0-1");
+        Tooltip.install(additionalOverlap,tp);
         additionalOverlap.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("^0.[1-9]$") || !newValue.matches("^1.0$"))
-                additionalOverlap.setText(oldValue);
+            if (!validAdditionalOverlap(newValue))
+                if (!validAdditionalOverlap(oldValue))
+                    additionalOverlap.setText("0.1");
+                else
+                    additionalOverlap.setText(oldValue);
         });
+    }
+
+    private boolean validAdditionalOverlap(String value) {
+        return value.isEmpty() || value.matches("^0.[1-9]$") || value.matches("^1.0$");
     }
 
     private void initDemName() {
@@ -80,13 +83,25 @@ public class TerrainFlatteningOperationController implements Initializable, Oper
     public Map<String,Object> getParameters() {
         parameters.put("demResamplingMethod", demResampling.getValue());
         parameters.put("demName", demName.getValue());
+        addParameterOrDefault(oversamplingMultiple,"oversamplingMultiple","1");
+        addParameterOrDefault(additionalOverlap,"additionalOverlap","0.1");
         return parameters;
      }
+
+    private void addParameterOrDefault(TextField field,String parameter, String default_) {
+        if (field.getText().isEmpty()) {
+            parameters.put(parameter, default_);
+        } else
+            parameters.put(parameter, field.getText());
+    }
 
     @Override
     public void setParameters(Map<String,Object> parameters) {
         this.parameters = parameters;
         demResampling.setValue(String.valueOf(parameters.getOrDefault("demResamplingMethod",demResampling.getItems().get(0))));
         demName.setValue(String.valueOf(parameters.getOrDefault("demName",demName.getItems().get(0))));
+        oversamplingMultiple.setText(String.valueOf(parameters.getOrDefault("oversamplingMultiple","1")));
+        additionalOverlap.setText(String.valueOf(parameters.getOrDefault("additionalOverlap","0.1")));
+
     }
 }

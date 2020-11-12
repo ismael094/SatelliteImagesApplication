@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,6 +20,8 @@ import model.list.ProductListDTO;
 import model.preprocessing.workflow.GeneralWorkflowDTO;
 import model.preprocessing.workflow.WorkflowDTO;
 import model.preprocessing.workflow.WorkflowType;
+import model.preprocessing.workflow.defaultWorkflow.GRDDefaultWorkflowDTO;
+import services.database.ProductListDBDAO;
 import utils.AlertFactory;
 import utils.gui.ProductListDTOUtil;
 
@@ -84,9 +87,10 @@ public class MyWorkflowController implements Initializable {
     private void onRemoveWorkflowDeleteWorkflow() {
         removeWorkflow.setOnAction(e->{
             if (workflowList.getSelectionModel().getSelectedItem() != null) {
-                if (productList!=null)
+                if (productList!=null) {
                     productList.removeWorkflow(workflowList.getSelectionModel().getSelectedItem());
-                else
+                    saveProductList(productList);
+                } else
                     userManager.removeWorkflow(workflowList.getSelectionModel().getSelectedItem());
 
                 workflowList.getItems().remove(workflowList.getSelectionModel().getSelectedItem());
@@ -99,12 +103,29 @@ public class MyWorkflowController implements Initializable {
             GeneralWorkflowDTO aDefault = new GeneralWorkflowDTO(
                     new SimpleStringProperty("default"),
                     new SimpleObjectProperty<>(WorkflowType.GRD));
-
+            aDefault.setOperations(new GRDDefaultWorkflowDTO().getOperations());
             workflowList.getItems().add(aDefault);
             userManager.addNewWorkflow(aDefault);
-            if (productList!=null)
+            workflowList.getSelectionModel().select(aDefault);
+            loadWorkflow(aDefault);
+            if (productList!=null) {
                 productList.addWorkflow(aDefault);
+                saveProductList(productList);
+            }
+
+
         });
+    }
+
+    private void saveProductList(ProductListDTO p) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ProductListDBDAO.getInstance().save(p);
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     private void onSaveWorkflowSaveParameters() {
@@ -112,8 +133,13 @@ public class MyWorkflowController implements Initializable {
             ObservableList<WorkflowDTO> workflows = FXCollections.observableArrayList();
             openWorkflows.forEach(w->{
                 workflows.add(w.getWorkflow());
-                if (productList != null && !productList.getWorkflows().contains(w.getWorkflow()))
+                if (productList != null &&
+                        !productList.getWorkflows().contains(w.getWorkflow())
+                        && workflowList.getItems().contains(w.getWorkflow())) {
+
                     productList.addWorkflow(w.getWorkflow());
+                    saveProductList(productList);
+                }
             });
             userManager.updateUserWorkflows(workflows);
             //mainController.getUserManager().updateUserWorkflows(workflowList.getItems());
@@ -134,7 +160,10 @@ public class MyWorkflowController implements Initializable {
                 return;
             }
 
-            productListDTOS.forEach(p->p.addWorkflow(workflows));
+            productListDTOS.forEach(p->{
+                p.addWorkflow(workflows);
+                saveProductList(p);
+            });
             AlertFactory.showSuccessDialog("Workflows added","Workflows added", "All workflows added to selected lists!");
 
         });

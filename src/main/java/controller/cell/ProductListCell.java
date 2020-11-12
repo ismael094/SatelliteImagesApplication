@@ -8,6 +8,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import gui.events.LoadTabItemEvent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -22,6 +23,7 @@ import model.list.ProductListDTO;
 import model.products.ProductDTO;
 import model.products.sentinel.Sentinel1ProductDTO;
 import model.products.sentinel.Sentinel2ProductDTO;
+import services.database.ProductListDBDAO;
 import utils.FileUtils;
 
 import java.awt.*;
@@ -168,6 +170,14 @@ public class ProductListCell extends ListCell<ProductDTO> {
     private void onActionInRemoveButtonDeleteSelectedAreaOfWork(ProductDTO product) {
         remove.setOnAction(e-> {
             productListDTO.remove(product);
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    ProductListDBDAO.getInstance().save(productListDTO);
+                    return null;
+                }
+            };
+            new Thread(task).start();
         });
     }
 

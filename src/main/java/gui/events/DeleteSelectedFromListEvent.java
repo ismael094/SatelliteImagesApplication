@@ -4,10 +4,12 @@ import controller.MainController;
 import controller.interfaces.TabItem;
 import controller.list.ListInformationController;
 import gui.ExecutedEvent;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
 import model.events.EventType;
 import model.list.ProductListDTO;
+import services.database.ProductListDBDAO;
 
 public class DeleteSelectedFromListEvent extends Event {
     public DeleteSelectedFromListEvent(MainController controller) {
@@ -24,6 +26,14 @@ public class DeleteSelectedFromListEvent extends Event {
             list = listController.getProductList();
             if (!listController.getSelectedProducts().isEmpty()) {
                 list.remove(listController.getSelectedProducts());
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        ProductListDBDAO.getInstance().save(list);
+                        return null;
+                    }
+                };
+                new Thread(task).start();
                 mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Selected products deleted from list " + list.getName()));
 
             }

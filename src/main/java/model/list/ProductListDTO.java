@@ -48,7 +48,7 @@ public class ProductListDTO {
     private void save() {
         //ProductListEvent event = new ProductListEvent(this,"change");
         //listeners.forEach(l->l.onProductListChange(event));
-        ProductListDTO p = this;
+        /*ProductListDTO p = this;
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -56,7 +56,7 @@ public class ProductListDTO {
                 return null;
             }
         };
-        new Thread(task).start();
+        new Thread(task).start();*/
     }
 
 
@@ -327,7 +327,6 @@ public class ProductListDTO {
                 .findAny()
                 .orElse(null) != null;
 
-        System.out.println(existsWorkflowForType);
         /*boolean productTypeIsAllowed = restrictions.stream()
                 .filter(r->r.getName().equals("productType") && r.getValues().contains(workflow.getType().name()))
                 .findAny()

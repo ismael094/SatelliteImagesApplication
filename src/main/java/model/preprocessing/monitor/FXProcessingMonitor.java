@@ -3,7 +3,7 @@ package model.preprocessing.monitor;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
-public class FXProgressMonitor extends ProcessingMonitor {
+public class FXProcessingMonitor extends ProcessingMonitor {
     private boolean cancel = false;
     private String taskName;
     private String subTaskName;
@@ -11,7 +11,7 @@ public class FXProgressMonitor extends ProcessingMonitor {
     private DoubleProperty progress;
     private double workDone = 0;
 
-    public FXProgressMonitor() {
+    public FXProcessingMonitor() {
         progress = new SimpleDoubleProperty(0);
     }
 

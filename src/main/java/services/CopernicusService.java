@@ -152,17 +152,4 @@ public class CopernicusService implements Service {
         connection.disconnect();
         return s;
     }
-
-    /*/**
-     * Get the image preview of a product
-     * @param id id of product
-     * @return image as InputStream
-     * @throws IOException error reading image
-     * @throws AuthenticationException if credentials are wrong
-     * @throws NotAuthenticatedException no credentials setted
-     */
-    /*public InputStream getPreview(String id) throws IOException, AuthenticationException, NotAuthenticatedException {
-        String url = "https://scihub.copernicus.eu/dhus/odata/v1/Products('"+id+"')/Products('Quicklook')/$value";
-        return getContentFromURL(new URL(url));
-    }*/
 }

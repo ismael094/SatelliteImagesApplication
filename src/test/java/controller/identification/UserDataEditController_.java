@@ -33,12 +33,12 @@ public class UserDataEditController_ extends ApplicationTest {
         stage.setScene(new Scene(mainNode));
         stage.show();
         stage.toFront();
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty());
     }
 
     @Before
     public void init() {
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty());
     }
 
     @After
@@ -52,23 +52,19 @@ public class UserDataEditController_ extends ApplicationTest {
     @Test
     public void set_user() {
         userDTO.setPassword("oass");
-        userDTO.setEmail("a@.a.com");
         userDTO.setUsername("Hola");
         interact(() -> {
             controller.setUser(userDTO);
         });
 
         verifyThat("#username", (TextField p) -> p.getText().equals("Hola"));
-        verifyThat("#email", (TextField p) -> p.getText().equals("a@.a.com"));
 
     }
 
     @Test
     public void change_password() {
         userDTO.setPassword("oass");
-        userDTO.setEmail("a@.a.com");
         userDTO.setUsername("Hola");
-        userDTO.setUsername("Last");
         interact(() -> {
             controller.setUser(userDTO);
         });

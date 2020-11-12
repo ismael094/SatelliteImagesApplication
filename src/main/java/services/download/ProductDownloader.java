@@ -15,6 +15,7 @@ import model.products.ProductDTO;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import utils.FileUtils;
+import utils.ServiceFactory;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -58,7 +59,7 @@ public class ProductDownloader implements Downloader, Runnable {
 
     @Override
     public synchronized void download(ProductListDTO productList) {
-        productList.getValidProducts().forEach(p->add(new DownloadItem(p)));
+        productList.getProducts().forEach(p->add(new DownloadItem(p)));
         productList.getReferenceProducts().forEach(p->add(new DownloadItem(p)));
     }
 

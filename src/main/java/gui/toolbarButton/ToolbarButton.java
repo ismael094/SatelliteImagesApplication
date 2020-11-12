@@ -40,8 +40,6 @@ public abstract class ToolbarButton extends Button {
 
     protected void setTooltip(String name) {
         Tooltip tooltip = new Tooltip(name);
-        //tooltip.setShowDelay(new Duration(0.1));
-        //tooltip.setHideDelay(new Duration(0.5));
         setTooltip(tooltip);
         Tooltip.install(this, tooltip);
     }

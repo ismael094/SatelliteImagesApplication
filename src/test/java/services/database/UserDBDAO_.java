@@ -38,7 +38,7 @@ public class UserDBDAO_ {
         }
         userDAO = UserDBDAO.getInstance();
         workflowDBDAO = WorkflowDBDAO.getInstance();
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty());
     }
 
     @After
@@ -54,40 +54,38 @@ public class UserDBDAO_ {
     }
 
     @Test
-    public void find_user_by_email() {
-        userDTO.setEmail("a@a.com");
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+    public void find_user_by_username() {
+        userDTO.setUsername("pepe98");
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
-        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getUsername()).isEqualTo(userDTO.getUsername());
         assertThat(dbUserDTO.getPassword()).isNotEmpty();
 
     }
 
     @Test
     public void find_user_not_in_database_by_email() {
-        userDTO.setEmail("555@a.com");
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        userDTO.setUsername("pepe98");
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
 
     }
 
     @Test
     public void save_and_delete_user_collection() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         userDAO.save(userDTO);
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
-        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getUsername()).isEqualTo(userDTO.getUsername());
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
     }
 
     @Test
     public void save_and_delete_user_collection_with_product_list() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name2"), new SimpleStringProperty("Description"));
@@ -96,20 +94,19 @@ public class UserDBDAO_ {
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
 
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
-        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getUsername()).isEqualTo(userDTO.getUsername());
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
         assertThat(dbUserDTO.getProductListsDTO().get(0).getName()).isEqualTo(productListDTO.getName());
         assertThat(dbUserDTO.getProductListsDTO().get(0).getProducts().get(0).getId()).isEqualTo(productListDTO.getProducts().get(0).getId());
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
     }
 
     @Test
     public void save_and_delete_user_collection_with_product_list_and_workflow() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         GRDDefaultWorkflowDTO workflowDTO = new GRDDefaultWorkflowDTO();
@@ -122,9 +119,9 @@ public class UserDBDAO_ {
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
 
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
-        assertThat(dbUserDTO.getEmail()).isEqualTo(userDTO.getEmail());
+        assertThat(dbUserDTO.getUsername()).isEqualTo(userDTO.getUsername());
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
         assertThat(dbUserDTO.getProductListsDTO().get(0).getName()).isEqualTo(productListDTO.getName());
         assertThat(dbUserDTO.getProductListsDTO().get(0).getProducts().get(0).getId()).isEqualTo(productListDTO.getProducts().get(0).getId());
@@ -132,19 +129,18 @@ public class UserDBDAO_ {
         assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
         assertThat(dbUserDTO.getWorkflows().get(0).getOperation(Operator.TERRAIN_CORRECTION).getParameters()).isNotNull();
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
     }
 
     @Test
     public void add_and_remove_workflow() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
 
         userDAO.save(userDTO);
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
 
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getWorkflows().size()).isNotNull();
@@ -158,7 +154,7 @@ public class UserDBDAO_ {
 
         assertThat(workflowDBDAO.find(prueba)).isNotNull();
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
 
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);
 
@@ -167,7 +163,7 @@ public class UserDBDAO_ {
 
         userDAO.removeWorkflow(userDTO,prueba);
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
 
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
 
@@ -175,17 +171,16 @@ public class UserDBDAO_ {
 
         assertThat(workflowDTOS).isNull();
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
 
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
     }
 
     @Test
     public void add_and_remove_workflow_with_product_list() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
@@ -195,7 +190,7 @@ public class UserDBDAO_ {
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
 
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getWorkflows().size()).isNotNull();
         assertThat(dbUserDTO.getWorkflows().get(0).getType()).isInstanceOf(WorkflowType.class);
@@ -208,7 +203,7 @@ public class UserDBDAO_ {
         userDAO.addNewWorkflow(userDTO,prueba);
         assertThat(workflowDBDAO.find(prueba)).isNotNull();
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
 
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);
         assertThat(workflowDBDAO.find(dbUserDTO.getWorkflows().get(0))).isNotNull();
@@ -220,16 +215,15 @@ public class UserDBDAO_ {
 
         assertThat(workflowDTOS).isNull();
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
     }
 
     @Test
     public void update_workflow() {
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         userDTO.addWorkflow(new GRDDefaultWorkflowDTO());
@@ -238,7 +232,7 @@ public class UserDBDAO_ {
         userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
 
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(1);
 
         GeneralWorkflowDTO test = new GeneralWorkflowDTO(new SimpleStringProperty("Prueba"), new SimpleObjectProperty<>(WorkflowType.SLC));
@@ -246,11 +240,11 @@ public class UserDBDAO_ {
         userDTO.addWorkflow(test);
         userDAO.addNewWorkflow(userDTO,test);
 
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO.getWorkflows().size()).isEqualTo(2);
         assertThat(dbUserDTO.getWorkflows().get(1).getType()).isEqualTo(WorkflowType.GRD);
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
 
     }
@@ -258,24 +252,23 @@ public class UserDBDAO_ {
     @Test
     public void update_user_collection_with_product_list() {
         long start = currentTimeMillis();
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name5"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getSentinel1Product());
         //userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(0);
         userDTO.addProductList(productListDTO);
         userDAO.addProductList(userDTO, productListDTO);
         assertThat(ProductListDBDAO.getInstance().find(productListDTO).size()).isEqualTo(1);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO.getProductListsDTO()).isNotNull();
         assertThat(dbUserDTO.getProductListsDTO().size()).isEqualTo(1);
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
         assertThat(currentTimeMillis()-start).isLessThan(4000);
     }
@@ -283,33 +276,32 @@ public class UserDBDAO_ {
     @Test
     public void update_user() {
         long start = currentTimeMillis();
-        userDTO.setEmail("email@mail.com");
         userDTO.setPassword("password");
         userDTO.setUsername("firstName");
         ProductListDTO productListDTO = new ProductListDTO(new SimpleStringProperty("name5"), new SimpleStringProperty("Description"));
         productListDTO.addProduct(SentinelData.getProduct());
         //userDTO.addProductList(productListDTO);
         userDAO.save(userDTO);
-        UserDTO dbUserDTO = userDAO.findByEmail(userDTO);
+        UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(Encryptor.matchString(userDTO.getPassword(),dbUserDTO.getPassword())).isTrue();
 
         userDTO.setPassword("new_password");
         userDAO.save(userDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(Encryptor.matchString(userDTO.getPassword(),dbUserDTO.getPassword())).isTrue();
         userDAO.delete(dbUserDTO);
-        dbUserDTO = userDAO.findByEmail(userDTO);
+        dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNull();
         assertThat(currentTimeMillis()-start).isLessThan(4000);
     }
 
     @Test
     public void userDTO_to_entity() {
-        UserDTO userDTO = new UserDTO("email@mail.is","pass","firstName");
+        UserDTO userDTO = new UserDTO("pass","firstName");
         User user = userDAO.toEntity(userDTO);
-        assertThat(userDTO.getEmail()).isEqualTo(user.getEmail());
+        assertThat(userDTO.getUsername()).isEqualTo(user.getUsername());
         assertThat(Encryptor.matchString ("pass", user.getPassword())).isTrue();
         assertThat(userDTO.getUsername()).isEqualTo(user.getUsername());
     }

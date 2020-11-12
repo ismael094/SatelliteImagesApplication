@@ -45,7 +45,7 @@
                                           <Insets left="120.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <AnchorPane prefHeight="35.0" prefWidth="355.0">
+                                    <AnchorPane prefHeight="35.0" prefWidth="355.0" visible="false">
                                        <VBox.margin>
                                           <Insets top="5.0" />
                                        </VBox.margin>

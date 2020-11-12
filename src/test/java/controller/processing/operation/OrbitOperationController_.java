@@ -5,6 +5,7 @@ import controller.processing.workflow.operation.OperationController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
@@ -14,6 +15,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,5 +61,19 @@ public class OrbitOperationController_ extends ApplicationTest {
         write("");
         type(KeyCode.ENTER);
         assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
+    }
+
+    @Test
+    public void empty_pixelSpacingInMeter_should_return_default() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
+
+        interact(() -> {
+            controller.setParameters(workflow.getOperation(Operator.TERRAIN_CORRECTION).getParameters());
+        });
+        TextField n = lookup("#pixelSpacingInMeter").query();
+        n.setText("");
+
+        Map<String, Object> parameters = controller.getParameters();
+        assertThat(parameters.get("pixelSpacingInMeter")).isEqualTo(10.0);
     }
 }

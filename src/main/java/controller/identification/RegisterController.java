@@ -28,8 +28,9 @@ public class RegisterController implements Initializable {
 
     public static final String ERROR_TITLE = "Error while registering user";
     public static final String ERROR_HEADER = "Register";
-    public static final String ERROR_CONTEXT = "Sorry, that email is already registered in the application";
-    public static final String ERROR_FORMAT = "Email must be in yyyy@yyy.yy format";
+    public static final String ERROR_CONTEXT = "Sorry, that username is already registered in the application";
+    public static final String ERROR_FORMAT = "Passwords doesn't match";
+
 
     @FXML
     private JFXSpinner spinner;
@@ -40,9 +41,9 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField username;
     @FXML
-    private TextField email;
-    @FXML
     private PasswordField password;
+    @FXML
+    private PasswordField passwordConfirmation;
     @FXML
     private Button register;
     @FXML
@@ -56,7 +57,7 @@ public class RegisterController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         cancel.setOnAction(e-> closeWindow());
 
-        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+        userDTO = new UserDTO(new SimpleStringProperty(),new SimpleStringProperty());
         bindProperties();
 
         root.getStyleClass().add(JMetroStyleClass.BACKGROUND);
@@ -111,24 +112,22 @@ public class RegisterController implements Initializable {
     }
 
     private BooleanBinding bindFieldsIfThereAreEmpty() {
-        return Bindings.isEmpty(email.textProperty())
-                .or(Bindings.isEmpty(password.textProperty()))
+        return Bindings.isEmpty(password.textProperty())
+                .or(Bindings.isEmpty(passwordConfirmation.textProperty()))
                 .or(Bindings.isEmpty(username.textProperty()));
     }
 
     private void bindProperties() {
-        userDTO.emailProperty().bindBidirectional(email.textProperty());
         userDTO.passwordProperty().bindBidirectional(password.textProperty());
         userDTO.usernameProperty().bindBidirectional(username.textProperty());
     }
 
     private boolean userNotExits() {
-        return UserDBDAO.getInstance().findByEmail(userDTO) == null;
+        return UserDBDAO.getInstance().findByUsername(userDTO) == null;
     }
 
     private boolean validateUserData() {
-        String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
-        return userDTO.getEmail().toUpperCase().matches(regex)
+        return userDTO.getPassword().equals(passwordConfirmation.getText())
                 && userDTO.getPassword().length() > 0
                 && !userDTO.getUsername().isEmpty();
     }

@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -28,10 +27,8 @@
             <Label text="DEM Name" GridPane.rowIndex="1" />
             <Label prefHeight="21.0" prefWidth="176.0" text="Oversampling Multiple" GridPane.rowIndex="2" />
             <Label text="Additional Overlap" GridPane.rowIndex="3" />
-            <Label text="Source Bands" GridPane.rowIndex="4" GridPane.valignment="TOP" />
             <ChoiceBox fx:id="demResampling" prefWidth="150.0" GridPane.columnIndex="1" />
             <ChoiceBox fx:id="demName" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ListView fx:id="correctionSourceBands" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <TextField fx:id="oversamplingMultiple" prefHeight="31.0" prefWidth="123.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="additionalOverlap" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>

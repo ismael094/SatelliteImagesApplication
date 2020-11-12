@@ -392,22 +392,29 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
                 .selectedItemProperty()
                 .addListener((observableValue, oldValue, newValue) -> {
                         if (newValue.equals(SENTINEL_1)) {
-                            setSentinel1Instruments();
-                            setCloudCoverageDisabled();
-                            setSentinel1ParametersEnabled();
+                            sentinel1();
                         } else if (newValue.equals(SENTINEL_2)) {
-                            setSentinel2Instruments();
-                            setSentinel1ParametersDisabled();
-                            setCloudCoverageEnabled();
+                            sentinel2();
                         }
-
                     }
                 );
 
-        if (platformList.getValue() == null)
+        if (platformList.getValue() == null) {
             platformList.setValue(SENTINEL_1);
+            setCloudCoverageDisabled();
+        }
+    }
 
+    private void sentinel2() {
+        setSentinel2Instruments();
+        setSentinel1ParametersDisabled();
+        setCloudCoverageEnabled();
+    }
+
+    private void sentinel1() {
+        setSentinel1Instruments();
         setCloudCoverageDisabled();
+        setSentinel1ParametersEnabled();
     }
 
     private void setSentinel1ParametersEnabled() {
@@ -506,7 +513,11 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     @Override
     public void setSearchParameters(Map<String, String> parametersOfAllResponses) {
         //init binds also
-        onSatelliteChangesModifyParameters();
+        if (!parametersOfAllResponses.getOrDefault("platformname","").isEmpty())
+            if (parametersOfAllResponses.get("platformname").equals(SENTINEL_1))
+                sentinel1();
+            else
+                sentinel2();
 
         parametersOfAllResponses.forEach((key, value)->{
             Control control = this.control.get(key);

@@ -5,6 +5,8 @@ import controller.processing.workflow.operation.OperationController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
@@ -64,5 +66,19 @@ public class TerrainCorrectionOperationController_ extends ApplicationTest {
         assertThat(parameters.get("demName")).isEqualTo("SRTM 1Sec HGT");
         assertThat(parameters.get("demResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");
         assertThat(parameters.get("imgResamplingMethod")).isEqualTo("NEAREST_NEIGHBOUR");
+    }
+
+    @Test
+    public void empty_pixelSpacingInMeter_should_return_default() {
+        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
+
+        interact(() -> {
+            controller.setParameters(workflow.getOperation(Operator.TERRAIN_CORRECTION).getParameters());
+        });
+        TextField n = lookup("#pixelSpacingInMeter").query();
+        n.setText("");
+
+        Map<String, Object> parameters = controller.getParameters();
+        assertThat(parameters.get("pixelSpacingInMeter")).isEqualTo(10.0);
     }
 }

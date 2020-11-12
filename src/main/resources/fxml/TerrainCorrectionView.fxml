@@ -4,7 +4,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -33,12 +32,10 @@
             <Label text="DEM Name" GridPane.rowIndex="2" />
             <Label text="Pixel Spacing in Meter" GridPane.rowIndex="3" />
             <Label text="No data value at Sea" GridPane.rowIndex="4" />
-            <Label text="Source Bands" GridPane.rowIndex="6" GridPane.valignment="TOP" />
             <ChoiceBox fx:id="demResampling" prefWidth="150.0" GridPane.columnIndex="1" />
             <ChoiceBox fx:id="imageResampling" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <ChoiceBox fx:id="demName" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <CheckBox fx:id="noDataValueAtSea" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <ListView fx:id="correctionSourceBands" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <TextField fx:id="pixelSpacingInMeter" prefHeight="31.0" prefWidth="123.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label text="Output in Complex" GridPane.rowIndex="5" />
             <JFXCheckBox fx:id="outputComplex" contentDisplay="GRAPHIC_ONLY" GridPane.columnIndex="1" GridPane.rowIndex="5" />

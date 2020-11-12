@@ -4,7 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.concurrent.Task;
 import model.exception.NoWorkflowFoundException;
 import model.list.ProductListDTO;
-import model.preprocessing.monitor.FXProgressMonitor;
+import model.preprocessing.monitor.FXProcessingMonitor;
 import model.preprocessing.workflow.WorkflowDTO;
 import model.preprocessing.workflow.WorkflowType;
 import model.products.ProductDTO;
@@ -24,9 +24,9 @@ import java.util.Map;
 public class ProcessorManager {
     private final Map<ProductType, Processor> typeProcessMap;
     static final Logger logger = LogManager.getLogger(ProcessorManager.class.getName());
-    private final FXProgressMonitor operationMonitor;
-    private final FXProgressMonitor productMonitor;
-    private final FXProgressMonitor listMonitor;
+    private final FXProcessingMonitor operationMonitor;
+    private final FXProcessingMonitor productMonitor;
+    private final FXProcessingMonitor listMonitor;
     private final BooleanProperty processing;
     private boolean isProcessing;
     private boolean isCancel;
@@ -34,11 +34,10 @@ public class ProcessorManager {
 
     public ProcessorManager(BooleanProperty processing) {
         this.processing = processing;
-        processing.set(false);
-        this.operationMonitor = new FXProgressMonitor();
-        this.productMonitor = new FXProgressMonitor();
-        this.listMonitor = new FXProgressMonitor();
-        this.isProcessing = false;
+        this.processing.set(false);
+        this.operationMonitor = new FXProcessingMonitor();
+        this.productMonitor = new FXProcessingMonitor();
+        this.listMonitor = new FXProcessingMonitor();
         this.isProcessing = false;
         this.typeProcessMap = ProcessingConfiguration.getProcessor();
 
@@ -189,15 +188,15 @@ public class ProcessorManager {
         return null;
     }
 
-    public FXProgressMonitor getOperationMonitor() {
+    public FXProcessingMonitor getOperationMonitor() {
         return operationMonitor;
     }
 
-    public FXProgressMonitor getProductMonitor() {
+    public FXProcessingMonitor getProductMonitor() {
         return productMonitor;
     }
 
-    public FXProgressMonitor getListMonitor() {
+    public FXProcessingMonitor getListMonitor() {
         return listMonitor;
     }
 

@@ -28,12 +28,4 @@ public class ServiceFactory {
     public static Service getService(String name) throws NotAuthenticatedException, AuthenticationException {
         return getMap().get(name);
     }
-
-    public static Service getDownloadService(ProductDTO productDTO) {
-        return null;
-    }
-
-    public static Service getProcessorService(ProductDTO productDTO) {
-        return null;
-    }
 }

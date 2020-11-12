@@ -5,11 +5,13 @@ import controller.interfaces.TabItem;
 import controller.search.SearchController;
 import gui.ExecutedEvent;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Tab;
 import model.events.EventType;
 import model.list.ProductListDTO;
 import model.products.ProductDTO;
+import services.database.ProductListDBDAO;
 import utils.AlertFactory;
 import utils.SatelliteHelper;
 
@@ -50,6 +52,14 @@ public class AddReferenceImageEvent extends Event {
                 }
             });
             productListDTO.addReferenceProduct(validProducts);
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    ProductListDBDAO.getInstance().save(productListDTO);
+                    return null;
+                }
+            };
+            new Thread(task).start();
         } else {
             AlertFactory.showErrorDialog("Error","Error","Product List not selected");
         }

@@ -3,10 +3,13 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.WriteOperationController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.processing.workflow.operation.WriteOperationController">
    <children>
       <Label layoutX="40.0" layoutY="41.0" text="Format" />
       <ChoiceBox fx:id="writeFormat" layoutX="225.0" layoutY="36.0" prefHeight="31.0" prefWidth="171.0" />
+      <ToggleSwitch fx:id="generatePNG" contentDisplay="GRAPHIC_ONLY" layoutX="225.0" layoutY="109.0" visible="false" />
+      <Label layoutX="40.0" layoutY="110.0" text="Generate PNG" visible="false" />
    </children>
 </AnchorPane>

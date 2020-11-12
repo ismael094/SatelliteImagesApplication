@@ -143,4 +143,25 @@ public class ProductListDBDAO_ {
         productListDTOS = productListDAO.find(productListDTO);
         assertThat(productListDTOS.size()).isEqualTo(0);
     }
+
+    @Test
+    public void save_and_delete_workflows() {
+        productListDTO.addProduct(SentinelData.getSentinel1Product());
+        WorkflowDTO slc = new SLCDefaultWorkflowDTO();
+        workflowDBDAO.save(slc);
+        productListDTO.addWorkflow(slc);
+        productListDTO.addAreaOfWork("AREA1");
+        productListDTO.addAreaOfWork("AREA2");
+
+        productListDAO.save(productListDTO);
+        ProductListDTO db = productListDAO.findFirst(productListDTO);
+        assertThat(db.getWorkflows().size()).isEqualTo(1);
+
+        productListDTO.removeWorkflow(slc);
+        productListDAO.save(productListDTO);
+        db = productListDAO.findFirst(productListDTO);
+        assertThat(db.getWorkflows().size()).isEqualTo(0);
+
+        productListDAO.delete(productListDTO);
+    }
 }

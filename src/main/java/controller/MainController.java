@@ -8,6 +8,7 @@ import gui.ExecutedEvent;
 import gui.components.*;
 import gui.components.TabPaneComponent;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -17,11 +18,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
+import model.list.ProductListDTO;
 import model.preprocessing.ProcessorManager;
 import model.user.UserDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.database.ProductListDBDAO;
 import services.download.ProductDownloader;
 import services.download.Downloader;
 
@@ -184,6 +187,20 @@ public class MainController implements Initializable {
         AnchorPane.setBottomAnchor(consoleComponent,0.0);
         logger.atInfo().log("ConsoleComponent loaded");
     }
+
+    public void saveProductList(ProductListDTO p) {
+        //ProductListEvent event = new ProductListEvent(this,"change");
+        //listeners.forEach(l->l.onProductListChange(event));
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ProductListDBDAO.getInstance().save(p);
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+
 
     public TabPaneComponent getTabComponent() {
         return tabPaneComponent;

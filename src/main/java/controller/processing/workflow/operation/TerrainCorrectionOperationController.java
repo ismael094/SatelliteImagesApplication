@@ -1,10 +1,13 @@
 package controller.processing.workflow.operation;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import utils.AlertFactory;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -53,8 +56,16 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         pixelSpacingInMeter.setText(String.valueOf(parameters.getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getText())));
     }
 
+
+
     private void initPixelSpacingInMeter() {
         pixelSpacingInMeter.setText("10.0");
+        Tooltip tp = new Tooltip("Format value: 10.5, 11,3...");
+        Tooltip.install(pixelSpacingInMeter,tp);
+        pixelSpacingInMeter.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("^[\\d*]+.[\\d*]*$"))
+                pixelSpacingInMeter.setText(oldValue);
+        });
     }
 
     private void initDemName() {

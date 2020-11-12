@@ -31,8 +31,8 @@ public class OrbitOperationController implements Initializable, OperationControl
     private void initPolyDegree() {
         plyDegree.setText("3");
         plyDegree.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.isEmpty())
-                plyDegree.setText(oldValue);
+            if (newValue.isEmpty() || !newValue.matches("^[\\d*]*$"))
+                plyDegree.setText("3");
         });
     }
 
@@ -45,7 +45,10 @@ public class OrbitOperationController implements Initializable, OperationControl
 
     @Override
     public Map<String,Object> getParameters() {
-        parameters.put("polyDegree",Integer.parseInt(plyDegree.getText()));
+        if (plyDegree.getText().isEmpty())
+            parameters.put("polyDegree",3);
+        else
+            parameters.put("polyDegree",Integer.parseInt(plyDegree.getText()));
         parameters.put("orbitType",orbitType.getValue());
         return parameters;
     }

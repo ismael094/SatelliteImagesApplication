@@ -7,6 +7,7 @@ import model.openSearcher.OpenSearchResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.CopernicusService;
+import services.Service;
 import utils.ProductDeserializerFactory;
 import utils.ServiceFactory;
 
@@ -29,7 +30,7 @@ public class OpenSearcher implements SearchService {
     public static final String ALL_FROM = "*";
     public static final String TO_NOW = "NOW";
     private final String URL = "https://scihub.copernicus.eu/dhus/search?format=json";
-    private CopernicusService service;
+    private Service service;
     private int productsPerPage;
     private int page;
     private Map<SentinelProductParameters, String> searchParameters;
@@ -39,7 +40,7 @@ public class OpenSearcher implements SearchService {
         initData();
     }
 
-    public OpenSearcher(CopernicusService service) {
+    public OpenSearcher(Service service) {
         this();
         this.service = service;
     }
@@ -151,14 +152,14 @@ public class OpenSearcher implements SearchService {
 
     public void addDateParameter(SentinelProductParameters dateParameter, LocalDate dateStart, LocalDate dateFinish) {
         if (dateStart != null || dateFinish != null)
-            addJoinRangeParameter(dateParameter,getDateFromString(dateStart),getDateToString(dateFinish));
+            addJoinRangeParameter(dateParameter, getDateBeginString(dateStart), getDateEndString(dateFinish));
     }
 
-    private String getDateFromString(LocalDate date) {
+    private String getDateBeginString(LocalDate date) {
         return getDateString(date, ALL_FROM,0,0,0,":00.001");
     }
 
-    private String getDateToString(LocalDate date) {
+    private String getDateEndString(LocalDate date) {
         return getDateString(date, TO_NOW,23,59,59,".999");
     }
 

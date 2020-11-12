@@ -7,6 +7,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -20,6 +21,7 @@ import model.restriction.ProductTypeRestriction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
+import services.database.ProductListDBDAO;
 
 import java.net.URL;
 import java.util.*;
@@ -220,6 +222,18 @@ public class ListCreateAndEditController implements Initializable {
             }
         });
         productListDTO.addRestriction(type);
+        saveProductList();
+    }
+
+    private void saveProductList() {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ProductListDBDAO.getInstance().save(productListDTO);
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     private void createPlatformRestriction() {
@@ -233,5 +247,6 @@ public class ListCreateAndEditController implements Initializable {
         }
 
         productListDTO.addRestriction(platFormRestriction);
+        saveProductList();
     }
 }

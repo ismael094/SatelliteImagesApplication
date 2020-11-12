@@ -48,8 +48,8 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .find(User.class)
                 .field("password")
                 .equal(Encryptor.hashString(dao.getPassword()))
-                .field("email")
-                .equal(dao.getEmail())
+                .field("username")
+                .equal(dao.getUsername())
                 .asList());
     }
 
@@ -59,16 +59,16 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .find(User.class)
                 .field("password")
                 .equal(Encryptor.hashString(dao.getPassword()))
-                .field("email")
-                .equal(dao.getEmail())
+                .field("username")
+                .equal(dao.getUsername())
                 .first());
     }
 
-    public UserDTO findByEmail(UserDTO userDTO) {
+    public UserDTO findByUsername(UserDTO userDTO) {
         return toDAO(database.getDatastore()
                 .find(User.class)
-                .field("email")
-                .equal(userDTO.getEmail())
+                .field("username")
+                .equal(userDTO.getUsername())
                 .first());
     }
 
@@ -115,8 +115,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     public UserDTO toDAO(User user) {
         if (user == null)
             return null;
-        UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getUsername());
-        userDTO.setSearchParameters(user.getSearchParameters());
+        UserDTO userDTO = new UserDTO(user.getPassword(), user.getUsername());
         userDTO.setWorkflows(FXCollections.observableArrayList(new WorkflowMapper().toDTO(user.getWorkflows())));
         userDTO.setId(user.getId());
         if (user.getProductLists() == null)
@@ -132,7 +131,7 @@ public class UserDBDAO implements DAO<UserDTO> {
         if (hashedPass != null && !hashedPass.startsWith("$2a$10")) {
             hashedPass = Encryptor.hashString(hashedPass);
         }
-        User user = new User(userDTO.getId(), userDTO.getEmail(), hashedPass, userDTO.getUsername(), userDTO.getSearchParameters());
+        User user = new User(userDTO.getId(), hashedPass, userDTO.getUsername());
         user.setWorkflows(new WorkflowMapper().toEntity(userDTO.getWorkflows()));
         if (userDTO.getProductListsDTO().size()>0) {
             user.setProductLists(productListDBDAO.toEntity(userDTO.getProductListsDTO()));
@@ -147,15 +146,13 @@ public class UserDBDAO implements DAO<UserDTO> {
                 productListDBDAO.save(pL);
         });
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
+
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .set("productLists", productListDBDAO.toEntity(user.getProductListsDTO()));
 
         UpdateResults update = database.getDatastore().update(email, ops);
-        System.out.println(update.getUpdatedCount());
         ;
         /*database.getDatastore().find(User.class)
                 .filter(Filters.eq("email", user.getEmail()))
@@ -166,9 +163,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void addProductList(UserDTO user, ProductListDTO productListDTO) {
         productListDBDAO.save(productListDTO);
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .addToSet("productLists", productListDBDAO.toEntity(productListDTO));
@@ -182,12 +177,16 @@ public class UserDBDAO implements DAO<UserDTO> {
                 .execute();*/
     }
 
+    private Query<User> getUsernameQuery(UserDTO user) {
+        return database.getDatastore().find(User.class)
+                .field("username")
+                .equal(user.getUsername());
+    }
+
     public void removeProductList(UserDTO user, ProductListDTO productListDTO) {
         //user.getProductListsDTO().forEach(productListDBDAO::save);
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .removeAll("productLists", productListDBDAO.toEntity(productListDTO));
@@ -204,9 +203,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void addNewWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
         workflowDBDAO.save(workflowDTO);
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .addToSet("workflows", new WorkflowMapper().toEntity(workflowDTO));
@@ -222,9 +219,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void removeWorkflow(UserDTO user, WorkflowDTO workflowDTO) {
         //user.getProductListsDTO().forEach(productListDBDAO::save);
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .removeAll("workflows", new WorkflowMapper().toEntity(workflowDTO));
@@ -241,9 +236,7 @@ public class UserDBDAO implements DAO<UserDTO> {
     public void updateWorkflow(UserDTO user) {
         //user.getProductListsDTO().forEach(productListDBDAO::save);
         //save(user);
-        Query<User> email = database.getDatastore().find(User.class)
-                .field("email")
-                .equal(user.getEmail());
+        Query<User> email = getUsernameQuery(user);
         UpdateOperations<User> ops = database.getDatastore()
                 .createUpdateOperations(User.class)
                 .set("workflows", new WorkflowMapper().toEntity(user.getWorkflows()));

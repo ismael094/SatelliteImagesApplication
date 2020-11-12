@@ -19,8 +19,6 @@ import static utils.ThemeConfiguration.getJMetroStyled;
 
 public class UserDataEditController implements Initializable {
     @FXML
-    private TextField email;
-    @FXML
     private TextField username;
     @FXML
     private PasswordField confirmPassword;
@@ -72,7 +70,6 @@ public class UserDataEditController implements Initializable {
     }
 
     private void setData() {
-        email.setText(user.getEmail());
         username.setText(user.getUsername());
     }
 

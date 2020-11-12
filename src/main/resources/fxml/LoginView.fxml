@@ -58,12 +58,12 @@
                               <RowConstraints maxHeight="330.60001983642576" minHeight="10.0" prefHeight="56.000024414062494" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label styleClass="bold" text="Password" GridPane.rowIndex="2">
+                              <Label styleClass="h4" text="Password" GridPane.rowIndex="2">
                                  <GridPane.margin>
                                     <Insets left="65.0" />
                                  </GridPane.margin>
                               </Label>
-                              <TextField fx:id="email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <CheckBox fx:id="remember" disable="true" mnemonicParsing="false" text="Remember" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <GridPane.margin>
@@ -73,11 +73,6 @@
                                     <Font size="10.0" />
                                  </font>
                               </CheckBox>
-                              <Label styleClass="bold" text="Email" GridPane.rowIndex="1">
-                                 <GridPane.margin>
-                                    <Insets left="75.0" />
-                                 </GridPane.margin>
-                              </Label>
                               <Label text="Remember next time?" visible="false" GridPane.rowIndex="3">
                                  <GridPane.margin>
                                     <Insets left="40.0" />
@@ -91,6 +86,11 @@
                                     <Insets left="65.0" />
                                  </GridPane.margin>
                               </Hyperlink>
+                              <Label prefHeight="21.0" prefWidth="77.0" styleClass="h4" text="Username" GridPane.rowIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="60.0" />
+                                 </GridPane.margin>
+                              </Label>
                            </children>
                         </GridPane>
                         <ImageView fx:id="image" fitHeight="225.0" fitWidth="318.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">

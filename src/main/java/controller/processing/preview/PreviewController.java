@@ -71,6 +71,14 @@ public class PreviewController implements TabItem {
         //JMetro jMetro = ThemeConfiguration.getJMetroStyled();
     }
 
+    public void setArea(String area) {
+        try {
+            mapController.setAreaOfWork(area);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void initData() throws ParseException {
         mapController.setAreaOfWork(area);
         GlyphsDude.setIcon(generatePreview, FontAwesomeIcon.ROCKET);
@@ -174,7 +182,7 @@ public class PreviewController implements TabItem {
 
     @Override
     public String getItemId() {
-        return "Preview+"+product.getId();
+        return "Preview-"+product.getId();
     }
 
     private void process(String area) throws Exception {
