@@ -662,60 +662,12 @@ public class ListInformationController extends ProductListTabItem {
         changeColorOfSelectedFeaturesInMap(Color.BLUE, Color.BLACK);
         mapController.showProductArea(Collections.singletonList(id),"products");
         changeColorOfSelectedFeaturesInMap(Color.MAGENTA, Color.ORANGE);
-        /*Task<InputStream> task = new Task<InputStream>() {
-            @Override
-            protected InputStream call() throws Exception {
-                //showImageSpinner();
-                return CopernicusService.getInstance().getContentFromURL(newValue.getPreviewURL());
-            }
-        };
-        task.setOnSucceeded(e-> {
-            try {
-                //loadPreviewImage(task.get());
-                task.get().close();
-            } catch (Exception ioException) {
-                ioException.printStackTrace();
-            }
-            //hideImageSpinner();
-        });
-
-        task.setOnFailed(e->{
-            //loadDefaultImage();
-            //hideImageSpinner();
-        });
-        new Thread(task).start();*/
     }
 
     private void changeColorOfSelectedFeaturesInMap(Color blue, Color black) {
         mapController.setSelectedFeaturesBorderColor(blue, null);
         mapController.setNotSelectedFeaturesBorderColor(black, null);
     }
-
-    /*private void  loadDefaultImage() {
-        loadImage(new Image(DEFAULT_IMAGE));
-    }
-
-    private void loadPreviewImage(InputStream inputStream) throws IOException {
-        loadImage(new Image(inputStream));
-        inputStream.close();
-    }*/
-
-    //private void loadImage(Image imageResource) {
-        //image.setImage(imageResource);
-    //}
-
-    /*rivate void showImageSpinner() {
-        setImageSpinnerVisible(true);
-    }
-
-    private void hideImageSpinner() {
-        setImageSpinnerVisible(false);
-    }
-
-    private void setImageSpinnerVisible(boolean b) {
-        imageSpinner.setVisible(b);
-    }*/
-
     private void generatePreview() {
         try {
             ProductDTO product = productListView.getSelectionModel().getSelectedItem();
@@ -734,6 +686,8 @@ public class ListInformationController extends ProductListTabItem {
                         tabPaneComponent.select("Preview-"+product.getId());
                         PreviewController previewController = (PreviewController) tabPaneComponent.getControllerOf("Preview-"+product.getId());
                         previewController.setArea(getSelectedAreaOfWork());
+                        previewController.setWorkflowDTO(productListDTO.getWorkflow(WorkflowType.valueOf(product.getProductType())));
+                        previewController.initData();
                     } else {
                         tabPaneComponent.fireEvent(
                                 new ComponentEvent(this, "Opening preview for product "+product.getTitle()));

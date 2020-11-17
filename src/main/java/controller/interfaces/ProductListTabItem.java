@@ -7,6 +7,9 @@ import services.download.Downloader;
 
 import java.util.prefs.Preferences;
 
+/**
+ * Class to handle productList controllers
+ */
 public abstract class ProductListTabItem implements TabItem, ModifiableTabItem {
     private final Downloader downloader;
 
@@ -20,6 +23,10 @@ public abstract class ProductListTabItem implements TabItem, ModifiableTabItem {
         Preferences.userRoot().node("downloadPreferences").addPreferenceChangeListener(event -> refreshProducts());
     }
 
+    /**
+     * Get the productList assign to the controller
+     * @return product list
+     */
     public abstract ProductListDTO getProductList();
     public abstract ObservableList<ProductDTO> getSelectedProducts();
     public abstract void setSelectedProducts(ObservableList<ProductDTO> products);

@@ -43,7 +43,7 @@ public class PreviewController implements TabItem {
     private HBox bands;
 
     private final ProductDTO product;
-    private final String area;
+    private String area;
     private WorkflowDTO workflowDTO;
     private String path;
     private TabPaneComponent tabComponent;
@@ -73,19 +73,28 @@ public class PreviewController implements TabItem {
 
     public void setArea(String area) {
         try {
+            this.area = area;
             mapController.setAreaOfWork(area);
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
+    public void setWorkflowDTO(WorkflowDTO workflowDTO) {
+        this.workflowDTO = workflowDTO;
+    }
+
     public void initData() throws ParseException {
-        mapController.setAreaOfWork(area);
+        setAreaInMap(area);
         GlyphsDude.setIcon(generatePreview, FontAwesomeIcon.ROCKET);
 
         getOutputBandsOfWorkflow();
 
         onClickOnGenerateProcessPreview();
+    }
+
+    private void setAreaInMap(String area) throws ParseException {
+        mapController.setAreaOfWork(area);
     }
 
     private void onClickOnGenerateProcessPreview() {
@@ -135,6 +144,9 @@ public class PreviewController implements TabItem {
 
     private void setRadarBands() {
         List<String> outputBands = ProductBandUtils.getOutputBands(product, workflowDTO);
+
+        bands.getChildren().clear();
+        bandsCheckout.clear();
         outputBands.forEach(b->{
             RadioButton radioButton = new RadioButton(b);
             radioButton.setId(b);

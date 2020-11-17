@@ -45,6 +45,7 @@ public class PreviewMapController implements Initializable {
     public void setAreaOfWork(String area) throws ParseException {
         this.productFootprint = area;
         gtMap.removeLayer("areaOfWork");
+        gtMap.clearFeatures("areaOfWork");
         gtMap.createFeatureFromWKT(area,"areaOfWorkID","areaOfWork");
         gtMap.createAndDrawLayer("areaOfWork", Color.BLACK,null);
         gtMap.refresh();
