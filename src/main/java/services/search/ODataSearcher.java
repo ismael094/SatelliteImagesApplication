@@ -3,7 +3,6 @@ package services.search;
 import model.exception.AuthenticationException;
 import model.exception.NotAuthenticatedException;
 import model.filter.Filter;
-import model.ProductOData;
 import org.apache.olingo.commons.api.format.ContentType;
 
 import java.io.IOException;

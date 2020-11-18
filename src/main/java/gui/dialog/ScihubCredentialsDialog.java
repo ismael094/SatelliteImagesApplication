@@ -27,7 +27,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-
+/**
+ * Copernicus Account information. Get credentials
+ */
 public class ScihubCredentialsDialog extends Dialog<Pair<String, String>> {
     public static final String SCIHUB_LOGIN = "Scihub Login";
     public static final String COPERNICUS_SCIHUB_LOGIN = "Copernicus";

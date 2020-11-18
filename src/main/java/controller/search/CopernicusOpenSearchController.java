@@ -139,9 +139,6 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         allResponses = FXCollections.observableArrayList();
         parametersOfAllResponses = FXCollections.observableArrayList();
         index = 0;
-
-        showResults.visibleProperty().bind(Bindings.isEmpty(allResponses).not());
-        showResults.setOnAction(e->undo());
     }
 
     private void setControlsMap() {
@@ -499,6 +496,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
         logger.atLevel(Level.INFO).log("Petition to OpenSearch with parameters {}",searcher.getSearchParametersAsString());
         tabPaneComponent.fireEvent(new ComponentEvent(this,"Petition to OpenSearch with parameters " + searcher.getSearchParametersAsString()));
         setSpinnerVisible(true);
+        search.setDisable(true);
         Task<OpenSearchResponse> response = getSearchTask();
         response.setOnSucceeded(event -> onSucceedSearch(response));
         response.setOnFailed(this::onFailedSearch);
@@ -561,12 +559,16 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void onFailedSearch(WorkerStateEvent workerStateEvent) {
+        search.setDisable(false);
         AlertFactory.showErrorDialog("Error while searching","An error has occurred while searching",
                 "Error while searching. " + workerStateEvent.getSource().getMessage());
         setSpinnerVisible(false);
+
     }
 
     private void onSucceedSearch(Task<OpenSearchResponse> response) {
+
+        search.setDisable(false);
         try {
             tabPaneComponent.updateObservers(this);
             setResponse(response.get());

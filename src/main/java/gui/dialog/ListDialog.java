@@ -19,6 +19,10 @@ public class ListDialog {
         this.title = title;
     }
 
+    /**
+     * Load CreateListController
+     * @return ListCreateAndEditController
+     */
     public ListCreateAndEditController load() {
         URL location = getClass().getResource("/fxml/CreateListView.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);

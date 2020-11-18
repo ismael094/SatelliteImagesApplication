@@ -49,6 +49,12 @@ public class ProcessorManager {
 
     }
 
+    /**
+     * Process productList
+     * @param productListDTO productList to process
+     * @return task with process operations
+     * @throws Exception Error while processing products
+     */
     public Task<Boolean> process(ProductListDTO productListDTO) throws Exception {
         if (this.task != null && this.task.isRunning())
             throw new Exception("Processing still running");
@@ -62,7 +68,7 @@ public class ProcessorManager {
                 processingStart();
                 isCancel = false;
 
-                FileUtils.createFolderIfNotExists(productListDTO.getName());
+                //FileUtils.createFolderIfNotExists(productListDTO.getName());
 
                 logger.atInfo().log("====== Processing start =========");
                 logger.atInfo().log("Starting to process list {}", productListDTO.getName());
@@ -133,6 +139,16 @@ public class ProcessorManager {
 
     }
 
+    /**
+     * Process single product
+     * @param product product to process
+     * @param areasOfWork areaOfWork of the product
+     * @param workflow workflow of the product
+     * @param path path where save processing results
+     * @param bufferedImage true if must return bufferedImage
+     * @return bufferedImage
+     * @throws Exception Error while processing product
+     */
     public Task<BufferedImage> process(ProductDTO product, List<String> areasOfWork, WorkflowDTO workflow,
                                        String path, boolean bufferedImage) throws Exception {
 
@@ -164,6 +180,9 @@ public class ProcessorManager {
         productMonitor.getProgress().set(0);
     }
 
+    /**
+     * cancel processing
+     */
     public void cancel() {
         typeProcessMap.forEach((key,value)->{
             value.stop();
@@ -178,6 +197,11 @@ public class ProcessorManager {
         return getProcessor(product).process(product, areasOfWork, workflow, path, bufferedImage);
     }
 
+    /**
+     * Get processor for product
+     * @param productDTO Product
+     * @return processor for product
+     */
     public Processor getProcessor(ProductDTO productDTO) {
         return typeProcessMap.getOrDefault(getProductType(productDTO),null);
     }
@@ -188,14 +212,26 @@ public class ProcessorManager {
         return null;
     }
 
+    /**
+     * Get Operation monitor
+     * @return operation monitor
+     */
     public FXProcessingMonitor getOperationMonitor() {
         return operationMonitor;
     }
 
+    /**
+     * Get Product monitor
+     * @return Product monitor
+     */
     public FXProcessingMonitor getProductMonitor() {
         return productMonitor;
     }
 
+    /**
+     * Get List monitor
+     * @return List monitor
+     */
     public FXProcessingMonitor getListMonitor() {
         return listMonitor;
     }
@@ -204,6 +240,10 @@ public class ProcessorManager {
         return processing;
     }
 
+    /**
+     * Check if a processing has started
+     * @return true is there is a processing active; false otherwise
+     */
     public boolean isProcessing() {
         return isProcessing;
     }

@@ -66,6 +66,10 @@ public class ConsoleComponent extends ListView<String> implements Component {
         observers.forEach(o->o.update(args));
     }
 
+    /**
+     * Print message in console
+     * @param message Message to print
+     */
     public void println(String message) {
         this.getItems().add(getTime() + " > " + message);
     }

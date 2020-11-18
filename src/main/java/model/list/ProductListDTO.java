@@ -48,32 +48,60 @@ public class ProductListDTO {
         this.referenceProducts = FXCollections.observableArrayList();
     }
 
-
+    /**
+     * Get ProductListDTO ID
+     * @return Id of productList
+     */
     public ObjectId getId() {
         return id;
     }
 
+    /**
+     * Set id of product List
+     * @param id id of ProductList
+     */
     public void setId(ObjectId id) {
         this.id = id;
     }
 
+    /**
+     * Set products of productList
+     * @param products products
+     */
     public void setProducts(ObservableList<ProductDTO> products) {
         this.products = products;
         reloadProperties();
     }
 
+    /**
+     * Set restrictions of productList
+     * @param restrictions restrictions
+     */
     public void setRestrictions(List<Restriction> restrictions) {
         this.restrictions = restrictions;
     }
 
+    /**
+     * Set areasOfWork of productList
+     * @param areasOfWork areasOfWork
+     */
     public void setAreasOfWork(ObservableList<String> areasOfWork) {
         this.areasOfWork = areasOfWork;
     }
 
+    /**
+     * Get products of list
+     * @return list of products
+     */
     public ObservableList<ProductDTO> getProducts() {
         return products;
     }
 
+    /**
+     * get product by id
+     * @param id id of product
+     * @return product with the same id
+     */
     public ProductDTO getProductById(String id) {
         return products.stream()
                 .filter(p -> p.getId().equals(id))
@@ -81,10 +109,19 @@ public class ProductListDTO {
                 .orElse(null);
     }
 
+    /**
+     * count number of products in the list
+     * @return number of products
+     */
     public int count() {
         return products.size();
     }
 
+    /**
+     * Add new product to the list
+     * @param product product to add
+     * @return true if was added; false otherwise
+     */
     public boolean addProduct(ProductDTO product) {
         if (product == null || products.contains(product) || !validate(product))
             return false;
@@ -93,6 +130,11 @@ public class ProductListDTO {
         return true;
     }
 
+    /**
+     * Add list of products to the productList
+     * @param products products to add
+     * @return true if was added; false otherwise
+     */
     public boolean addProduct(List<ProductDTO> products) {
         products.forEach(p->{
             if (!this.products.contains(p) && validate(p))
@@ -103,26 +145,50 @@ public class ProductListDTO {
         return true;
     }
 
+    /**
+     * Get name of product list
+     * @return name of product list
+     */
     public String getName() {
         return name.get();
     }
 
+    /**
+     * Get name property of product list
+     * @return name property of product list
+     */
     public StringProperty nameProperty() {
         return name;
     }
 
+    /**
+     * set name  of product list
+     * @param name name of product list
+     */
     public void setName(String name) {
         this.name.set(name);
     }
 
+    /**
+     * Get description of product list
+     * @return description of product list
+     */
     public String getDescription() {
         return description.get();
     }
 
+    /**
+     * Get description property of product list
+     * @return description property of product list
+     */
     public StringProperty descriptionProperty() {
         return description;
     }
 
+    /**
+     * set description of product list
+     * @param description  description of product list
+     */
     public void setDescription(String description) {
         this.description.set(description);
     }
@@ -132,13 +198,21 @@ public class ProductListDTO {
         return name.getValue();
     }
 
+    /**
+     * Remove product from list
+     * @param product product to remove
+     */
     public void remove(ProductDTO product) {
         products.remove(product);
         reloadProperties();
     }
 
-    public void remove(Collection<ProductDTO> product) {
-        products.removeAll(product);
+    /**
+     * Remove list of products from list
+     * @param products products to remove
+     */
+    public void remove(Collection<ProductDTO> products) {
+        products.removeAll(products);
         reloadProperties();
     }
 
@@ -147,16 +221,28 @@ public class ProductListDTO {
         count.setValue(products.size());
     }
 
+    /**
+     * Get sum of sizes in GB of all products in list
+     * @return GB size of products
+     */
     public double productSize() {
         return getProducts().stream()
                 .mapToDouble(ProductDTO::getSizeAsDouble)
                 .sum();
     }
 
+    /**
+     * Get sum of sizes in GB of all products in list
+     * @return GB size of products
+     */
     public double getSizeAsDouble() {
         return sizeAsDouble.get();
     }
 
+    /**
+     * Get sum of sizes property in GB of all products in list
+     * @return size property
+     */
     public DoubleProperty sizeAsDoubleProperty() {
         return sizeAsDouble;
     }

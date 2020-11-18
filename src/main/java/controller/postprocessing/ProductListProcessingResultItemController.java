@@ -66,9 +66,10 @@ public class ProductListProcessingResultItemController implements Initializable 
 
         GlyphsDude.setIcon(options, FontAwesomeIcon.BARS);
         deleteFile.setOnAction(event -> delete());
+
+
         openFile.setOnAction(e-> {
             loadImageTask();
-
             e.consume();
         });
     }
@@ -126,6 +127,9 @@ public class ProductListProcessingResultItemController implements Initializable 
             name.setText(file.getName());
         if (file.getName().contains("PNG")) {
             image.setImage(new Image("/img/image.jpg"));
+        }
+        if (file.getName().contains("tif")) {
+            openFile.setVisible(false);
         }
         Tooltip tooltip = new Tooltip(file.getName());
         Tooltip.install(name,tooltip);

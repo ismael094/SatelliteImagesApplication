@@ -30,14 +30,30 @@ public abstract class ToolbarButton extends Button {
         //getStyleClass().add("toolbarIcon");
     }
 
+    /**
+     * Init button data
+     */
     public abstract void init();
 
+    /**
+     * Update button state
+     * @param args Element changed
+     */
     public abstract void update(Object args);
 
+    /**
+     * Set button icon
+     * @param icon Icon
+     * @param size Icon size
+     */
     protected void setIcon(GlyphIcons icon, String size) {
         GlyphsDude.setIcon(this,icon,size);
     }
 
+    /**
+     * Set tooltip
+     * @param name Tooltip name
+     */
     protected void setTooltip(String name) {
         Tooltip tooltip = new Tooltip(name);
         setTooltip(tooltip);

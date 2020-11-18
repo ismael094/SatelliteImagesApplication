@@ -520,7 +520,7 @@ public class ListInformationController extends ProductListTabItem {
     private void onActionOnSearchReferenceImageLoadOpenSearcher() {
         searchGroundTruth.setOnAction(e->{
             //If there are not areas of work, or there are not selected, return
-            if (mapController.getSelectedFeatureId() == null || mapController.getSelectedFeatureId().isEmpty()) {
+            if (mapController.getSelectedFeatureId() == null || mapController.getSelectedFeatureId().isEmpty() || selectReferenceImage.isSelected()) {
                 AlertFactory.showErrorDialog("No area of work selected","","Select an area of work!");
                 return;
             }

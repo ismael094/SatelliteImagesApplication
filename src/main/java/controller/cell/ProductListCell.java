@@ -151,15 +151,16 @@ public class ProductListCell extends ListCell<ProductDTO> {
     }
 
     private void onActionShowFootprintButtonShowProductFootprintInMap(ProductDTO product) {
-        showFootprint.setOnAction(e->{
-            ArrayList<String> id = new ArrayList<>();
-            id.add(product.getId());
-            mapController.setSelectedFeaturesBorderColor(Color.BLUE,null);
-            mapController.setNotSelectedFeaturesBorderColor(Color.BLACK,null);
-            mapController.showProductArea(id,"products");
-            mapController.setSelectedFeaturesBorderColor(Color.MAGENTA,null);
-            mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE,null);
-        });
+        if (showContextMenu)
+            showFootprint.setOnAction(e->{
+                ArrayList<String> id = new ArrayList<>();
+                id.add(product.getId());
+                mapController.setSelectedFeaturesBorderColor(Color.BLUE,null);
+                mapController.setNotSelectedFeaturesBorderColor(Color.BLACK,null);
+                mapController.showProductArea(id,"products");
+                mapController.setSelectedFeaturesBorderColor(Color.MAGENTA,null);
+                mapController.setNotSelectedFeaturesBorderColor(Color.ORANGE,null);
+            });
     }
 
     private void onActionContextButtonShowContextButton() {
@@ -174,6 +175,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
                 @Override
                 protected Void call() throws Exception {
                     ProductListDBDAO.getInstance().save(productListDTO);
+                    mainController.getListTreeViewComponent().reload();
                     return null;
                 }
             };
