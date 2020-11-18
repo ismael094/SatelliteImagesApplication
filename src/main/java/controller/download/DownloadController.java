@@ -100,10 +100,8 @@ public class DownloadController implements Initializable {
 
     public void setTooltip(String text, Button button) {
         Tooltip t = new Tooltip(text);
-        //t.setHideDelay(new Duration(300));
-        //t.setShowDelay(new Duration(300));
         t.setFont(new Font(10));
-        button.setTooltip(t);
+        Tooltip.install(button,t);
     }
 
     private void clearQueue(ProductDownloader productDownloader) {

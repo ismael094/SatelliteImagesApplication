@@ -31,6 +31,9 @@ import services.download.Downloader;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * MAIN APP CONTROLLER
+ */
 public class MainController implements Initializable {
     private TabPaneComponent tabPaneComponent;
     private MenuComponent menuComponent;
@@ -75,15 +78,26 @@ public class MainController implements Initializable {
         listeners = new ArrayList<>();
     }
 
+    /**
+     * Fire events to components
+     * @param e event to be fired
+     */
     public void fireEvent(ExecutedEvent e) {
         listeners.forEach(l->l.onEventExecute(e));
         consoleComponent.println((String) e.getValue());
     }
 
+    /**
+     * Add listener in main Controller
+     * @param l listener
+     */
     public void addListener(EventExecuteListener l) {
         listeners.add(l);
     }
 
+    /**
+     * Init components
+     */
     public void initComponents() {
         initTabPaneComponent();
         initListTreeViewComponent();
@@ -95,6 +109,10 @@ public class MainController implements Initializable {
         initComponentListeners();
     }
 
+    /**
+     * Set user account
+     * @param user User account
+     */
     public void setUser(UserDTO user) {
         this.userManager = new UserManager(user);
     }
@@ -188,48 +206,64 @@ public class MainController implements Initializable {
         logger.atInfo().log("ConsoleComponent loaded");
     }
 
-    public void saveProductList(ProductListDTO p) {
-        //ProductListEvent event = new ProductListEvent(this,"change");
-        //listeners.forEach(l->l.onProductListChange(event));
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                ProductListDBDAO.getInstance().save(p);
-                return null;
-            }
-        };
-        new Thread(task).start();
-    }
-
-
+    /**
+     * Get TabPaneComponent
+     * @return TabPaneComponent
+     */
     public TabPaneComponent getTabComponent() {
         return tabPaneComponent;
     }
 
+    /**
+     * Get ToolBarComponent
+     * @return ToolBarComponent
+     */
     public ToolBarComponent getToolBarComponent() {
         return toolBarComponent;
     }
 
+    /**
+     * Get ListTreeViewComponent
+     * @return ListTreeViewComponent
+     */
     public ListTreeViewComponent getListTreeViewComponent() {
         return listTreeViewComponent;
     }
 
+    /**
+     * Get UserManager
+     * @return UserManager
+     */
     public UserManager getUserManager() {
         return userManager;
     }
 
+    /**
+     * Get Downloader
+     * @return Downloader
+     */
     public Downloader getDownloader() {
         return productDownloader;
     }
 
+    /**
+     * Get TabPaneComponent
+     * @return TabPaneComponent
+     */
     public Parent getRoot() {
         return rootPane;
     }
 
+    /**
+     * Show wait spinner
+     */
     public void showWaitSpinner() {
         toggleSpinner(true);
     }
 
+    /**
+     * Hide wait spinner
+     */
     public void hideWaitSpinner() {
         toggleSpinner(false);
     }
@@ -240,11 +274,11 @@ public class MainController implements Initializable {
         spinnerWait.setVisible(b);
         spinnerWait.setManaged(b);}
 
+    /**
+     * Get ProcessorManager
+     * @return ProcessorManager
+     */
     public ProcessorManager getProductProcessor() {
         return processor;
-    }
-
-    public AnchorPane getProcessingView() {
-        return processing;
     }
 }

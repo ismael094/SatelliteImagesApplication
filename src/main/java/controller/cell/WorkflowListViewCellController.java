@@ -102,6 +102,9 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
         }
     }
 
+    /**
+     * Start edit cell event
+     */
     @Override
     public void startEdit() {
         nameField.setText(workflow.getName());
@@ -110,6 +113,9 @@ public class WorkflowListViewCellController extends ListCell<WorkflowDTO>  {
         startEdit.set(true);
     }
 
+    /**
+     * Cancel edit cell event
+     */
     @Override
     public void cancelEdit() {
         System.out.println("CANCEL");

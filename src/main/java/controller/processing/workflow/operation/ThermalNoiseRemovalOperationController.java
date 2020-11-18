@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to ThermalNoiseRemoval operation
+ */
 public class ThermalNoiseRemovalOperationController implements OperationController, Initializable {
 
     @Override

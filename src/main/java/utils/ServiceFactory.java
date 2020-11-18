@@ -21,10 +21,24 @@ public class ServiceFactory {
         return map;
     }
 
+    /**
+     * get service of product
+     * @param productDTO product
+     * @return service of product
+     * @throws NotAuthenticatedException not login in service
+     * @throws AuthenticationException not login in service
+     */
     public static Service getService(ProductDTO productDTO) throws NotAuthenticatedException, AuthenticationException {
         return getMap().get(getProgramName(productDTO.getPlatformName()));
     }
 
+    /**
+     * get service with name
+     * @param name name of service
+     * @return service
+     * @throws NotAuthenticatedException not login in service
+     * @throws AuthenticationException not login in service
+     */
     public static Service getService(String name) throws NotAuthenticatedException, AuthenticationException {
         return getMap().get(name);
     }

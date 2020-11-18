@@ -6,6 +6,9 @@ import javafx.scene.control.ButtonType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Used to confirm the user account deleted
+ */
 public class ConfirmDeleteAccountController implements Initializable {
     public static final ButtonType YES = new ButtonType("Yes");
     public static final ButtonType CANCEL_CLOSE = new ButtonType("Cancel");

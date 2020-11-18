@@ -17,6 +17,9 @@ import model.preprocessing.workflow.operation.Operator;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to show GRD Sentinel 1 operations
+ */
 public class Sentinel1GRDWorkflowController implements Initializable, WorkflowController {
     @FXML
     private TitledPane flatteningPane;
@@ -159,6 +162,10 @@ public class Sentinel1GRDWorkflowController implements Initializable, WorkflowCo
         flatteningPane.setManaged(b);
     }
 
+    /**
+     * Get operations of GRD workflow
+     * @return Map with operations
+     */
     public Map<Operator, OperationController> getOperationsMap() {
         return operationsMap;
     }

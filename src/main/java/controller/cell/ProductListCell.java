@@ -1,6 +1,6 @@
 package controller.cell;
 
-import controller.GTMapSearchController;
+import controller.GTMapController;
 import controller.MainController;
 import controller.search.CopernicusProductDetailsController_;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -36,7 +36,7 @@ import java.util.List;
 public class ProductListCell extends ListCell<ProductDTO> {
     private MainController mainController;
     private final ProductListDTO productListDTO;
-    private final GTMapSearchController mapController;
+    private final GTMapController mapController;
     private final boolean showContextMenu;
     private FXMLLoader loader;
 
@@ -78,7 +78,7 @@ public class ProductListCell extends ListCell<ProductDTO> {
 
     private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    public ProductListCell(MainController mainController, ProductListDTO productListDTO, GTMapSearchController controller, boolean showContextMenu) {
+    public ProductListCell(MainController mainController, ProductListDTO productListDTO, GTMapController controller, boolean showContextMenu) {
         this.mainController = mainController;
         this.productListDTO = productListDTO;
         this.mapController = controller;

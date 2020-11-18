@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to WriteAndRead operation
+ */
 public class WriteAndReadOperationController implements Initializable, OperationController {
 
 

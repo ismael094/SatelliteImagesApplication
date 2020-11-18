@@ -10,6 +10,9 @@ import org.controlsfx.control.ToggleSwitch;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to WriteSentinel2 operation
+ */
 public class WriteSentinel2OperationController implements OperationController, Initializable {
     @FXML
     private ChoiceBox<String> writeFormat;

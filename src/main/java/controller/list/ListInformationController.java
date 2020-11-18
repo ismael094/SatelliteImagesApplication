@@ -2,7 +2,7 @@ package controller.list;
 
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSpinner;
-import controller.GTMapSearchController;
+import controller.GTMapController;
 import controller.cell.ProductListCell;
 import controller.interfaces.ProductListTabItem;
 import controller.processing.preview.PreviewController;
@@ -49,16 +49,18 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Main ListController to show all the productList information
+ */
 public class ListInformationController extends ProductListTabItem {
-    public static final String REFERENCE_IMAGES = "groundTruth";
-    public static final String DEFAULT_IMAGE = "/img/no_photo.jpg";
+    public static final String REFERENCE_IMAGES = "referenceImages";
     public static final String AREA_OF_WORK_LAYER = "default";
     public static final String PRODUCTS_LAYER = "products";
     public static final String COPERNICUS_OPEN_SEARCH_ID = "Copernicus Open Search";
     private final FXMLLoader loader;
     private Parent parent;
     private final ProductListDTO productListDTO;
-    private GTMapSearchController mapController;
+    private GTMapController mapController;
     private TabPaneComponent tabPaneComponent;
     private List<Pair<ListAction,ObservableList<?>>> actions;
     private int actionIndex = 0;
@@ -144,16 +146,9 @@ public class ListInformationController extends ProductListTabItem {
             @Override
             protected Parent call() throws Exception {
                 initData();
-                /*try {*/
-                    if (productListDTO.count() > 0) {
-                        idSelected = productListDTO.getProducts().get(0).getId();
-                        //InputStream preview = CopernicusService.getInstance().getContentFromURL(productListDTO.getProducts().get(0).getPreviewURL());
-                        //loadImage(new Image(preview));
-                    }// else
-                        //loadImage(new Image(DEFAULT_IMAGE));
-                /*} catch (IOException e) {
-                    //loadImage(new Image(DEFAULT_IMAGE));
-                }*/
+                if (productListDTO.count() > 0) {
+                    idSelected = productListDTO.getProducts().get(0).getId();
+                }
                 return getView();
             }
         };
@@ -307,6 +302,8 @@ public class ListInformationController extends ProductListTabItem {
         }
     }
 
+    //UNDO AND REDO OPERATIONS
+
     private void deleteReferenceImage(Pair<ListAction, ObservableList<?>> pair) {
         productListDTO.removeReferenceProduct((ProductDTO) pair.getValue().get(0));
         refreshLayer(REFERENCE_IMAGES, Color.GREEN, "#C3FFE9");
@@ -340,6 +337,9 @@ public class ListInformationController extends ProductListTabItem {
     }
 
 
+    /**
+     * Init all components and events
+     */
     private void initData() {
 
         bindProperties();
@@ -355,8 +355,6 @@ public class ListInformationController extends ProductListTabItem {
         onProductSelectedLoadPreviewImage();
 
         onAreaOfWorkChangeRefreshListView();
-
-        ifIsARadarProductListShowSearchReferenceButton();
 
         onActionOnSearchReferenceImageLoadOpenSearcher();
 
@@ -374,6 +372,7 @@ public class ListInformationController extends ProductListTabItem {
 
         onActionInPreviewGeneratePreview();
 
+        //Controls to generate preview, add area of work, delete, etc
         initButtonPanel();
 
         //REDO AND UNDO
@@ -444,16 +443,6 @@ public class ListInformationController extends ProductListTabItem {
 
     private void onActionInPreviewGeneratePreview() {
         makePreview.setOnAction(e->this.generatePreview());
-    }
-
-    private void ifIsARadarProductListShowSearchReferenceButton() {
-        /*Restriction collect = productListDTO.getRestrictions().stream()
-                .filter(r -> r instanceof PlatformRestriction)
-                .findAny()
-                .orElse(null);
-        //if (collect == null)
-            //hideSearchReference();
-        if (SatelliteData.RadarSatellite.valueOf(productListDTO.getRestrictions().get()))*/
     }
 
     private void onReferenceListCellSelectLoadPreviewImage() {
@@ -561,7 +550,7 @@ public class ListInformationController extends ProductListTabItem {
     }
 
     private void initMapController() {
-        mapController = new GTMapSearchController(mapPane.getPrefWidth(),mapPane.getPrefHeight(),true);
+        mapController = new GTMapController(mapPane.getPrefWidth(),mapPane.getPrefHeight(),true);
         //Set the layer that will be selected in mouse events
         mapController.addSelectedAreaEvent(AREA_OF_WORK_LAYER);
 
@@ -617,8 +606,6 @@ public class ListInformationController extends ProductListTabItem {
         size.textProperty().bind(Bindings.format("%.2f", productListDTO.sizeAsDoubleProperty()).concat(" GB"));
         title.textProperty().bind(productListDTO.nameProperty());
         description.textProperty().bind(productListDTO.descriptionProperty());
-        //image.fitWidthProperty().bind(multimediaPane.widthProperty().subtract(8));
-        //image.fitHeightProperty().bind(multimediaPane.heightProperty().subtract(8));
         showRI.visibleProperty().bind(Bindings.isEmpty(productListDTO.getReferenceProducts()).not());
     }
 

@@ -8,6 +8,9 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to manager calibration parameters
+ */
 public class CalibrationOperationController implements Initializable, OperationController {
     public static final String BETA_0 = "Beta0_";
     public static final String GAMMA_0 = "Gamma0_";
@@ -29,19 +32,6 @@ public class CalibrationOperationController implements Initializable, OperationC
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.parameters = new HashMap<>();
-    }
-
-
-    public BooleanProperty getOutputSigma() {
-        return outputSigma.selectedProperty();
-    }
-
-    public BooleanProperty getOutputBeta() {
-        return outputBeta.selectedProperty();
-    }
-
-    public BooleanProperty getOutputGamma() {
-        return outputGamma.selectedProperty();
     }
 
     @Override
@@ -70,6 +60,5 @@ public class CalibrationOperationController implements Initializable, OperationC
 
     public void fixOutputBeta(boolean b) {
         outputBeta.setDisable(false);
-        //outputBeta.setDisable(b);
     }
 }

@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to Write operation
+ */
 public class WriteOperationController implements Initializable, OperationController {
     @FXML
     private ToggleSwitch generatePNG;

@@ -28,6 +28,9 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Controller to manage the preview of a product
+ */
 public class PreviewController implements TabItem {
     @FXML
     private Button generatePreview;
@@ -71,6 +74,10 @@ public class PreviewController implements TabItem {
         //JMetro jMetro = ThemeConfiguration.getJMetroStyled();
     }
 
+    /**
+     * Set area of work to show in the map
+     * @param area Area of work
+     */
     public void setArea(String area) {
         try {
             this.area = area;
@@ -80,10 +87,18 @@ public class PreviewController implements TabItem {
         }
     }
 
+    /**
+     * Set workflow to be used during the preview process
+     * @param workflowDTO Workflow of the product
+     */
     public void setWorkflowDTO(WorkflowDTO workflowDTO) {
         this.workflowDTO = workflowDTO;
     }
 
+    /**
+     * Init all the components
+     * @throws ParseException Error while reading area of work
+     */
     public void initData() throws ParseException {
         setAreaInMap(area);
         GlyphsDude.setIcon(generatePreview, FontAwesomeIcon.ROCKET);
@@ -202,6 +217,8 @@ public class PreviewController implements TabItem {
             AlertFactory.showErrorDialog("Error","","Area is not contain in product footprint");
             return;
         }
+
+        //Get the task to process the product
         Task<BufferedImage> task = tabComponent.getMainController().getProductProcessor().process(product, Collections.singletonList(area), workflowDTO, path, true);
 
         task.setOnFailed(e->{
@@ -210,6 +227,7 @@ public class PreviewController implements TabItem {
             logger.atError().log("Error processing preview {}",e.getSource().getException().getLocalizedMessage());
         });
 
+        //Show preview if succeeded
         task.setOnSucceeded(e-> {
             try {
                 BufferedImage bufferedImage = task.get();
@@ -223,10 +241,9 @@ public class PreviewController implements TabItem {
                 interruptedException.printStackTrace();
             }
         });
+        new Thread(task).start();
 
         AlertFactory.showSuccessDialog("Preview","Preview","Preview has been made! Wait until" +
                 " the product is processed. This could last several minutes...");
-
-        new Thread(task).start();
     }
 }

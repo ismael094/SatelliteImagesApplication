@@ -11,12 +11,21 @@ import java.util.Map;
 public class ProcessingConfiguration {
     public static String tmpDirectory = System.getProperty("user.home")+"\\Documents\\SatInf\\Tmp";
 
+    /**
+     * Get processors
+     * @return map with processors
+     */
     public static Map<ProductType, Processor> getProcessor() {
         Map<ProductType, Processor> productTypeProcessHashMap = new HashMap<>();
         productTypeProcessHashMap.put(ProductType.SENTINEL,new SentinelProcessor());
         return productTypeProcessHashMap;
     }
 
+    /**
+     * get default workflow
+     * @param productType workflow type
+     * @return default workflow for type
+     */
     public static WorkflowDTO getDefaultWorkflow(String productType) {
         Class<?> class_ = null;
         try {

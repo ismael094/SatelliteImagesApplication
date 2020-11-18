@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to login users in the application
+ */
 public class LoginController implements Initializable {
     @FXML
     private BorderPane loginPane;
@@ -127,6 +130,7 @@ public class LoginController implements Initializable {
 
     private void loginTask() {
         toggleSpinner(true);
+        //Create task and check if user exists
         Task<UserDTO> task = new Task<UserDTO>() {
             @Override
             protected UserDTO call() throws Exception {
@@ -137,6 +141,7 @@ public class LoginController implements Initializable {
                 return null;
             }
         };
+        //If exists, get user data and close windows
         task.setOnSucceeded(event->{
             if (task.getValue() != null) {
                 userDTO = task.getValue();
@@ -148,8 +153,9 @@ public class LoginController implements Initializable {
 
             toggleSpinner(false);
         });
+        //If an error occurred, show error message
         task.setOnFailed(event -> {
-            AlertFactory.showErrorDialog("Login","Incorrect data","Email or password incorrect");
+            AlertFactory.showErrorDialog("Login","A problem has occurred","An error has occurred during the login");
             toggleSpinner(false);
         });
         new Thread(task).start();

@@ -14,6 +14,9 @@ import model.preprocessing.ProcessorManager;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to show the processing progress
+ */
 public class SimpleProcessingMonitorController implements Initializable {
     @FXML
     private AnchorPane root;
@@ -40,22 +43,42 @@ public class SimpleProcessingMonitorController implements Initializable {
         GlyphsDude.setIcon(cancel, FontAwesomeIcon.CLOSE);
     }
 
+    /**
+     * Set progress monitor for the productList progress bar
+     * @param doubleProperty Double property of the property
+     */
     public void setProductListProgressBar(DoubleProperty doubleProperty) {
         numProductProgress.progressProperty().bind(doubleProperty);
     }
 
+    /**
+     * Set progress monitor for the product progress bar
+     * @param doubleProperty Double property of the property
+     */
     public void setProductProgressBar(DoubleProperty doubleProperty) {
         productProcess.progressProperty().bind(doubleProperty);
     }
 
+    /**
+     * Set progress monitor for the operation progress bar
+     * @param doubleProperty Double property of the property
+     */
     public void setOperationProcessingProgressBar(DoubleProperty doubleProperty) {
         operationProgress.progressProperty().bind(doubleProperty);
     }
 
+    /**
+     * Set the current operation name
+     * @param operation Name of the operation
+     */
     public void setOperation(String operation) {
         this.operation.setText(operation);
     }
 
+    /**
+     * Set the processor to bind properties
+     * @param processor ProcessorManager of the application
+     */
     public void setProcessorManager(ProcessorManager processor) {
         this.processManager = processor;
         bindProperties();

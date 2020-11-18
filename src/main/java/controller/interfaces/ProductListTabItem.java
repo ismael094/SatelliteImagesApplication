@@ -18,7 +18,6 @@ public abstract class ProductListTabItem implements TabItem, ModifiableTabItem {
 
         downloader.addListener(l->{
             refreshProducts();
-            System.out.println("REFRESHING");
         });
         Preferences.userRoot().node("downloadPreferences").addPreferenceChangeListener(event -> refreshProducts());
     }
@@ -32,7 +31,9 @@ public abstract class ProductListTabItem implements TabItem, ModifiableTabItem {
     public abstract void setSelectedProducts(ObservableList<ProductDTO> products);
     public abstract void refreshProducts();
 
-
+    /**
+     * Enumeration to identified operations to handle modificabletabitem
+     */
     protected enum ListAction {
         ADD_PRODUCT("Add product"),
         DELETE_PRODUCT("Delete product"),

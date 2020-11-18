@@ -1,6 +1,11 @@
 package utils;
 
 public class SatelliteHelper {
+    /**
+     * Check if a platform name is a radar satellite
+     * @param platform name of platform
+     * @return true if is a radar; false otherwise
+     */
     public static boolean isRadar(String platform) {
         try{
             RadarSatellite[] values = RadarSatellite.values();
@@ -14,6 +19,11 @@ public class SatelliteHelper {
         }
     }
 
+    /**
+     * Get satellite name as enum
+     * @param platform platform name
+     * @return normalized name
+     */
     public static Satellite getSatellite(String platform) {
         try{
             return Satellite.valueOf(platform);

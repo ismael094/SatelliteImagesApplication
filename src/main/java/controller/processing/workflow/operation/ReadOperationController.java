@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Not parameters in this operation
+ */
 public class ReadOperationController implements OperationController, Initializable {
 
     @Override

@@ -1,19 +1,19 @@
 package controller.processing.workflow.operation;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import utils.AlertFactory;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to TerrainCorrection operation
+ */
 public class TerrainCorrectionOperationController implements Initializable, OperationController {
     @FXML
     private ChoiceBox<String> demResampling;
@@ -55,8 +55,6 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
         demName.setValue(String.valueOf(parameters.getOrDefault("demName",demName.getItems().get(0))));
         pixelSpacingInMeter.setText(String.valueOf(parameters.getOrDefault("pixelSpacingInMeter",pixelSpacingInMeter.getText())));
     }
-
-
 
     private void initPixelSpacingInMeter() {
         pixelSpacingInMeter.setText("10.0");
@@ -105,6 +103,4 @@ public class TerrainCorrectionOperationController implements Initializable, Oper
     private void selectNoDataValueAtSea(boolean select) {
         noDataValueAtSea.setSelected(select);
     }
-
-
 }

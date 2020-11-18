@@ -26,6 +26,9 @@ import services.database.ProductListDBDAO;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to create and edit a list
+ */
 public class ListCreateAndEditController implements Initializable {
 
     @FXML
@@ -80,6 +83,7 @@ public class ListCreateAndEditController implements Initializable {
 
         logger.atInfo().log("CreateListView initiated...");
 
+        //Add productTypes restrictions
         productTypes = new ArrayList<>();
         productTypes.add(grdStringProperty);
         productTypes.add(slcStringProperty);
@@ -122,6 +126,10 @@ public class ListCreateAndEditController implements Initializable {
         return listWasCreated;
     }
 
+    /**
+     * Set productList to edit
+     * @param productList ProductListDTO to edit
+     */
     public void setProductList(ProductListDTO productList) {
         productListDTO = productList;
         name.setText(productListDTO.getName());
@@ -190,6 +198,10 @@ public class ListCreateAndEditController implements Initializable {
         stringProperty.bind(Bindings.when(checkBox.selectedProperty()).then(value).otherwise(""));
     }
 
+    /**
+     * Get product list with the new data (name, description and restrictions)
+     * @return New ProductListDTO
+     */
     public ProductListDTO getProductList() {
         if (!listWasCreated) return null;
 

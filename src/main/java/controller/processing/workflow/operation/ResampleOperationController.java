@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to resample operation
+ */
 public class ResampleOperationController implements Initializable,OperationController {
     @FXML
     private ChoiceBox<String> targetedBand;

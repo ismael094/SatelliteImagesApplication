@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to TerrainFlattening operation
+ */
 public class TerrainFlatteningOperationController implements Initializable, OperationController {
     @FXML
     private TextField oversamplingMultiple;

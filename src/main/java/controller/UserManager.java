@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controls workflows information of user
+ */
 public class UserManager {
     private final UserDTO user;
 
@@ -58,17 +61,29 @@ public class UserManager {
         return user;
     }
 
+    /**
+     * Add workflows to user
+     * @param workflowsDTO list of workflows
+     */
     public void updateUserWorkflows(ObservableList<WorkflowDTO> workflowsDTO) {
         WorkflowDBDAO instance = WorkflowDBDAO.getInstance();
         workflowsDTO.forEach(instance::save);
     }
 
+    /**
+     * Add workflow to user
+     * @param workflowsDTO Workflow
+     */
     public void addNewWorkflow(WorkflowDTO workflowsDTO) {
         UserDBDAO instance = UserDBDAO.getInstance();
         instance.addNewWorkflow(user,workflowsDTO);
         user.addWorkflow(workflowsDTO);
     }
 
+    /**
+     * Remove workflow
+     * @param workflowsDTO workflow
+     */
     public void removeWorkflow(WorkflowDTO workflowsDTO) {
         UserDBDAO instance = UserDBDAO.getInstance();
         instance.removeWorkflow(user,workflowsDTO);

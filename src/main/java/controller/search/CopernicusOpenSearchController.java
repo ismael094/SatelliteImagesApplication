@@ -4,7 +4,7 @@ import com.jfoenix.controls.*;
 import controller.cell.ProductResultListCell;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import controller.GTMapSearchController;
+import controller.GTMapController;
 import gui.components.TabPaneComponent;
 import gui.components.listener.ComponentEvent;
 import javafx.application.Platform;
@@ -36,10 +36,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.io.ParseException;
-import services.CopernicusService;
 import services.search.OpenSearcher;
 import utils.AlertFactory;
-import utils.ServiceFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -117,7 +115,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     @FXML
     private JFXButton show;
 
-    private GTMapSearchController mapController;
+    private GTMapController mapController;
 
     static final Logger logger = LogManager.getLogger(CopernicusOpenSearchController.class.getName());
     private boolean isRedoOrUndo;
@@ -244,7 +242,7 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void geotoolsController() {
-        mapController = new GTMapSearchController(1000,600, true);
+        mapController = new GTMapController(1000,600, true);
         mapController.addSelectedAreaEvent("products");
 
         onMouseClickInMapHighlightSelectedProductsEvent();

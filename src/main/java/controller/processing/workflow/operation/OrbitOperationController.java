@@ -10,6 +10,9 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to ApplyOrbitFile operation
+ */
 public class OrbitOperationController implements Initializable, OperationController {
     @FXML
     private ChoiceBox<String> orbitType;

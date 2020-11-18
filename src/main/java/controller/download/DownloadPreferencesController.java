@@ -48,6 +48,15 @@ public class DownloadPreferencesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         ToggleGroup group = new ToggleGroup();
 
+        setDownloadConfigurationData(group);
+
+        openProductFileChooser.setOnAction(e->path.setText(getFileChooser("Product Folder",path.getText())));
+        openListFileChooser.setOnAction(e->pathList.setText(getFileChooser("List Folder",pathList.getText())));
+
+        delete.setOnAction(e->confirmDeleteProducts());
+    }
+
+    private void setDownloadConfigurationData(ToggleGroup group) {
         if (getDownloadModeLocation() == DownloadEnum.DownloadMode.MULTIPLE)
             multipleDownload.setSelected(true);
         else
@@ -61,11 +70,6 @@ public class DownloadPreferencesController implements Initializable {
         pathList.setDisable(true);
 
         autoDownload.setSelected(DownloadConfiguration.getAutodownload());
-
-        openProductFileChooser.setOnAction(e->path.setText(getFileChooser("Product Folder",path.getText())));
-        openListFileChooser.setOnAction(e->pathList.setText(getFileChooser("List Folder",pathList.getText())));
-
-        delete.setOnAction(e->confirmDeleteProducts());
     }
 
     private String getFileChooser(String title, String defaultFolder) {
@@ -76,6 +80,9 @@ public class DownloadPreferencesController implements Initializable {
         return file != null ? file.getAbsolutePath() : defaultFolder;
     }
 
+    /**
+     * Save the download preferences changes
+     */
     public void applyChanges() {
         setListDownloadFolderLocation(pathList.getText());
         setProductDownloadFolderLocation(path.getText());

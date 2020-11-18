@@ -5,6 +5,11 @@ import utils.deserializer.ProductDeserializer;
 
 public class ProductDeserializerFactory {
 
+    /**
+     * Get deserializer with name
+     * @param name name of deserializer
+     * @return deserializer
+     */
     public static ProductDeserializer get(String name) {
         try {
             Class<?> class_ = Class.forName("utils.deserializer."+name+"ProductDeserializer");

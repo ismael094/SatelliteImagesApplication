@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to TopSarDeburst operation
+ */
 public class TopSarDeburstOperationController implements OperationController, Initializable {
 
 

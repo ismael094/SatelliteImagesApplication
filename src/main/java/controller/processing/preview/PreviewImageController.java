@@ -13,6 +13,9 @@ import javafx.scene.layout.AnchorPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to visualize preview image
+ */
 public class PreviewImageController implements Initializable {
     @FXML
     private AnchorPane root;
@@ -25,11 +28,19 @@ public class PreviewImageController implements Initializable {
 
     }
 
+    /**
+     * Set image
+     * @param image WritableImage
+     */
     public void setImage(WritableImage image) {
         this.image.setImage(image);
         initEvents();
     }
 
+    /**
+     * Set image
+     * @param image JavaFX Image
+     */
     public void setImage(Image image) {
         this.image.setImage(image);
         initEvents();
@@ -48,6 +59,9 @@ public class PreviewImageController implements Initializable {
         this.image.setFitHeight(755);
     }
 
+    /**
+     * Init scroll event
+     */
     public void onScrollInImageViewZoomImage() {
         image.setOnScroll(event -> {
             Rectangle2D viewport = image.getViewport();
@@ -61,10 +75,16 @@ public class PreviewImageController implements Initializable {
         });
     }
 
+    /**
+     * Init dragEvent
+     */
     public void onDragInImageViewMoveImage() {
         image.setOnMousePressed(this::setBaseDraggedPosition);
     }
 
+    /**
+     * Init drag event
+     */
     public void onDragMoveDragImage() {
         image.setOnMouseDragged(event -> {
             Rectangle2D viewport = image.getViewport();

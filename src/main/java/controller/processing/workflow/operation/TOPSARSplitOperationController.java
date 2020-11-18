@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to TopSarSplit operation
+ */
 public class TOPSARSplitOperationController implements OperationController, Initializable {
     @FXML
     private ChoiceBox<String> subswath;

@@ -38,6 +38,7 @@ public class UserDataEditController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         userDeleted = false;
         userChange = false;
+        //When user save new password, saved it in the database
         saveChanges.setOnAction(e->{
             userChange = true;
             if (passwordValid()) {
@@ -92,6 +93,7 @@ public class UserDataEditController implements Initializable {
         dialog.setOnCloseRequest(e->{
             dialog.hide();
         });
+        //Confirm deletion of the user by a model
         Optional<ButtonType> buttonType = dialog.showAndWait();
         buttonType.filter(ConfirmDeleteAccountController.YES::equals).ifPresent(e-> deleteUserAccount());
     }
@@ -105,9 +107,5 @@ public class UserDataEditController implements Initializable {
 
     public boolean isUserDeleted() {
         return userDeleted;
-    }
-
-    public boolean isUserChange() {
-        return userChange;
     }
 }

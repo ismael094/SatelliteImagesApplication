@@ -8,7 +8,7 @@ import model.postprocessing.ProcessingResults;
 public interface ProcessingResultsTabItem {
     /**
      * Return list of processing images
-     * @return ProcessinResults with the processing images
+     * @return ProcessingResults with the processing images
      */
     ProcessingResults getProcessingResults();
 }

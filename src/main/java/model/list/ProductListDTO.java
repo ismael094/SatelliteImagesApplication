@@ -16,7 +16,6 @@ import utils.WKTUtil;
 import java.util.*;
 
 public class ProductListDTO {
-    private List<ProductListDTOChangeListener> listeners;
     private ObjectId id;
     private StringProperty name;
     private StringProperty description;
@@ -29,7 +28,6 @@ public class ProductListDTO {
     private ObservableList<WorkflowDTO> workflows;
 
     public ProductListDTO(StringProperty name, StringProperty description) {
-        this.listeners = new ArrayList<>();
         this.name = name;
         this.description = description;
         this.products = FXCollections.observableArrayList();
@@ -40,25 +38,6 @@ public class ProductListDTO {
         this.referenceProducts = FXCollections.observableArrayList();
         this.workflows = FXCollections.observableArrayList();
     }
-
-    public void addListener(ProductListDTOChangeListener listener) {
-        listeners.add(listener);
-    }
-
-    private void save() {
-        //ProductListEvent event = new ProductListEvent(this,"change");
-        //listeners.forEach(l->l.onProductListChange(event));
-        /*ProductListDTO p = this;
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                ProductListDBDAO.getInstance().save(p);
-                return null;
-            }
-        };
-        new Thread(task).start();*/
-    }
-
 
     public ProductListDTO() {
         this.products = FXCollections.observableArrayList();
@@ -111,7 +90,6 @@ public class ProductListDTO {
             return false;
         this.products.add(product);
         reloadProperties();
-        save();
         return true;
     }
 
@@ -157,13 +135,11 @@ public class ProductListDTO {
     public void remove(ProductDTO product) {
         products.remove(product);
         reloadProperties();
-        save();
     }
 
     public void remove(Collection<ProductDTO> product) {
         products.removeAll(product);
         reloadProperties();
-        save();
     }
 
     private void reloadProperties() {
@@ -185,22 +161,41 @@ public class ProductListDTO {
         return sizeAsDouble;
     }
 
+    /**
+     * Set size property
+     * @param sizeAsDouble size
+     */
     public void setSizeAsDouble(double sizeAsDouble) {
         this.sizeAsDouble.set(sizeAsDouble);
     }
-
+    /**
+     * get count
+     * @return number of products
+     */
     public int getCount() {
         return count.get();
     }
 
+    /**
+     * get count property
+     * @return count property
+     */
     public IntegerProperty countProperty() {
         return count;
     }
 
+    /**
+     * Set number of products
+     * @param count number of products in the list
+     */
     public void setCount(int count) {
         this.count.set(count);
     }
 
+    /**
+     * Add restriction to list
+     * @param restriction restriction
+     */
     public void addRestriction(Restriction restriction) {
         restrictions.add(restriction);
         List<ProductDTO> productDTOS = new ArrayList<>();
@@ -209,9 +204,13 @@ public class ProductListDTO {
                 productDTOS.add(e);
         });
         products.removeAll(productDTOS);
-        save();
     }
 
+    /**
+     * Check all products verify restrictions
+     * @param product product
+     * @return true if match the restricions; false otherwise
+     */
     private boolean validate(ProductDTO product) {
         if (restrictions.size() == 0)
             return true;
@@ -221,6 +220,10 @@ public class ProductListDTO {
         return true;
     }
 
+    /**
+     * Get all areas of work
+     * @return areas of work
+     */
     public ObservableList<String> getAreasOfWork() {
         return areasOfWork;
     }
@@ -273,48 +276,76 @@ public class ProductListDTO {
         return areas;
     }
 
+    /**
+     * add new area of work
+     * @param area area
+     */
     public void addAreaOfWork(String area) {
         if (!areasOfWork.contains(area)){
             this.areasOfWork.add(area);
-            save();
         }
     }
 
+    /**
+     * remove area of work
+     * @param area area of work
+     */
     public void removeAreaOfWork(String area) {
         this.areasOfWork.remove(area);
-        save();
     }
 
+    /**
+     * Get product list restrictions
+     * @return list of restrictions
+     */
     public List<Restriction> getRestrictions() {
         return restrictions;
     }
 
+    /**
+     * Get all reference images
+     * @return List of reference images
+     */
     public ObservableList<ProductDTO> getReferenceProducts() {
         return referenceProducts;
     }
 
+    /**
+     * Set references images
+     * @param referenceProducts reference images
+     */
     public void setReferenceProducts(ObservableList<ProductDTO> referenceProducts) {
         this.referenceProducts = referenceProducts;
     }
 
+    /**
+     * Add new reference image
+     * @param productDTO reference image
+     */
     public void addReferenceProduct(ProductDTO productDTO) {
         if (!this.referenceProducts.contains(productDTO))
             this.referenceProducts.add(productDTO);
     }
 
+    /**
+     * Add products as reference images
+     * @param referenceImages list of reference images
+     */
     public void addReferenceProduct(List<ProductDTO> referenceImages) {
         if (referenceImages.size() > 0) {
             referenceImages.forEach(i->{
                 if (!this.referenceProducts.contains(i))
                     this.referenceProducts.add(i);
             });
-            save();
         }
     }
 
+    /**
+     * Remove reference image
+     * @param productDTO reference image
+     */
     public void removeReferenceProduct(ProductDTO productDTO) {
         this.referenceProducts.remove(productDTO);
-        save();
     }
 
     /**
@@ -327,24 +358,26 @@ public class ProductListDTO {
                 .findAny()
                 .orElse(null) != null;
 
-        /*boolean productTypeIsAllowed = restrictions.stream()
-                .filter(r->r.getName().equals("productType") && r.getValues().contains(workflow.getType().name()))
-                .findAny()
-                .orElse(null) == null;*/
-
 
         if (!existsWorkflowForType) {
             this.workflows.add(workflow);
-            save();
         }
 
     }
 
+    /**
+     * Add new workflow
+     * @param workflow Workflow
+     */
     public void addWorkflow(List<WorkflowDTO> workflow) {
         workflow.forEach(this::addWorkflow);
-        //save();
     }
 
+    /**
+     * Get workflow of workflowtype
+     * @param type WorkFlowType
+     * @return workflow
+     */
     public WorkflowDTO getWorkflow(WorkflowType type) {
         return workflows.stream()
                 .filter(w->w.getType() == type)
@@ -352,16 +385,27 @@ public class ProductListDTO {
                 .orElse(null);
     }
 
+    /**
+     * get workflows
+     * @return list of workflows
+     */
     public ObservableList<WorkflowDTO> getWorkflows() {
         return workflows;
     }
 
+    /**
+     * Set workflows
+     * @param workflows worflows
+     */
     public void setWorkflows(ObservableList<WorkflowDTO> workflows) {
         this.workflows = workflows;
     }
 
+    /**
+     * Remove workflow
+     * @param workflowDTO workflow
+     */
     public void removeWorkflow(WorkflowDTO workflowDTO) {
         workflows.remove(workflowDTO);
-        save();
     }
 }

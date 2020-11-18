@@ -23,7 +23,11 @@ import java.util.List;
 import static utils.ThemeConfiguration.getJMetroStyled;
 
 public class ProductListDTOUtil {
-
+    /**
+     * get current product list
+     * @param tabPaneComponent TabPaneComponent
+     * @return current product list
+     */
     public static ProductListDTO getCurrentList(TabPaneComponent tabPaneComponent) {
         Tab active = tabPaneComponent.getActive();
         TabItem controller = tabPaneComponent.getControllerOf(active);
@@ -34,6 +38,12 @@ public class ProductListDTOUtil {
         return null;
     }
 
+    /**
+     * Get product list active
+     * @param productListDTOS product list to select
+     * @param window window to show modal
+     * @return selected product list
+     */
     public static List<ProductListDTO> getProductLists(ObservableList<ProductListDTO> productListDTOS, Window window) {
         List<ProductListDTO> productListDTO = new ArrayList<>();
         if (productListDTOS.size() == 0) {
@@ -48,6 +58,14 @@ public class ProductListDTOUtil {
         return productListDTO;
     }
 
+    /**
+     * Select product list
+     * @param productListDTOS product list to select
+     * @param window window to show modal
+     * @param selectionMode selection mode
+     * @param title title of modal
+     * @return selected product list
+     */
     public static List<ProductListDTO> dialogToSelectList(ObservableList<ProductListDTO> productListDTOS, Window window, SelectionMode selectionMode, String title) {
         ListView<ProductListDTO> productListListView = new ListView<>(productListDTOS);
         productListListView.getSelectionModel().setSelectionMode(selectionMode);

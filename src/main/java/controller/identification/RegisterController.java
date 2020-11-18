@@ -24,6 +24,9 @@ import utils.AlertFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Used to register a new user in the application
+ */
 public class RegisterController implements Initializable {
 
     public static final String ERROR_TITLE = "Error while registering user";
@@ -73,6 +76,7 @@ public class RegisterController implements Initializable {
         if (validateUserData()) {
             setSpinnerVisible(true);
             root.setDisable(true);
+            //Save user
             Task<Boolean> task = new Task<Boolean>() {
                 @Override
                 protected Boolean call() throws Exception {
@@ -84,6 +88,7 @@ public class RegisterController implements Initializable {
                 }
             };
 
+            //If user is already registered in the app, show error message
             task.setOnSucceeded(e->{
                 setSpinnerVisible(false);
                 root.setDisable(false);

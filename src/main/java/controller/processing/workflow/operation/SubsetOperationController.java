@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to Subset operation
+ */
 public class SubsetOperationController implements OperationController, Initializable {
 
     @FXML

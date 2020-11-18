@@ -1,9 +1,11 @@
 package gui.components.listener;
 
-import model.events.EventType;
 
 import java.util.EventObject;
 
+/**
+ * Component event
+ */
 public class ComponentEvent extends EventObject {
     private Object value;
     public ComponentEvent(Object source, Object value) {
@@ -11,6 +13,10 @@ public class ComponentEvent extends EventObject {
         this.value = value;
     }
 
+    /**
+     * Get change value
+     * @return Change value
+     */
     public Object getValue() {
         return value;
     }

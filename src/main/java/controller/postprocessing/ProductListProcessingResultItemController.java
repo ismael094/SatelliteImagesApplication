@@ -37,6 +37,9 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
+/**
+ * Controller to show the processing results of a productList
+ */
 public class ProductListProcessingResultItemController implements Initializable {
     static final Logger logger = LogManager.getLogger(ProductListProcessingResultItemController.class.getName());
 
@@ -128,6 +131,11 @@ public class ProductListProcessingResultItemController implements Initializable 
         Tooltip.install(name,tooltip);
     }
 
+    /**
+     * Load new processing file
+     * @param img JavaFX image loaded
+     * @throws IOException Error while loading FXML view
+     */
     private void loadImage(Image img) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PreviewImageView.fxml"));
         Scene scene = null;
@@ -139,8 +147,6 @@ public class ProductListProcessingResultItemController implements Initializable 
         JMetro jMetro = ThemeConfiguration.getJMetroStyled();
 
         PreviewImageController controller = fxmlLoader.getController();
-        //BufferedImage read = ImageIO.read(file);
-        //controller.setImage(SwingFXUtils.toFXImage(read,null));
 
         controller.setImage(img);
 

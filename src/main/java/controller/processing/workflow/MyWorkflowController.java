@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller to manage user workflows
+ */
 public class MyWorkflowController implements Initializable {
     @FXML
     private ListView<WorkflowDTO> workflowList;
@@ -177,6 +180,10 @@ public class MyWorkflowController implements Initializable {
         workflowControllerMap.put(WorkflowType.S2MSI2A, "/fxml/Sentinel2MSILWorkflowView.fxml");
     }
 
+    /**
+     * Load workflow operations into the view
+     * @param workflow Workflow to laod
+     */
     public void loadWorkflow(WorkflowDTO workflow) {
         accordion.getChildren().clear();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(workflowControllerMap.get(workflow.getType())));
@@ -196,6 +203,9 @@ public class MyWorkflowController implements Initializable {
         openWorkflows.add(activeWorkflowController);
     }
 
+    /**
+     * Load workflows of user if no productList setted. Otherwise, load productList workflows
+     */
     public void loadWorkflows() {
         if (productList == null)
             workflowList.setItems(FXCollections.observableArrayList(userManager.getUser().getWorkflows()));
@@ -208,14 +218,22 @@ public class MyWorkflowController implements Initializable {
         }
     }
 
+    /**
+     * Set userManager for workflows database control
+     * @param userManager UserManager
+     */
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;
     }
 
-    public void setVisibleAssignToList(boolean b) {
+    private void setVisibleAssignToList(boolean b) {
         assignToList.setVisible(b);
     }
 
+    /**
+     * Set productList to show workflows
+     * @param productListDTO ProductListDTO
+     */
     public void setProductListDTO(ProductListDTO productListDTO) {
         this.productList = productListDTO;
         setVisibleAssignToList(productList==null);

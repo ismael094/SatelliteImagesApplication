@@ -42,6 +42,11 @@ public class PreviewMapController implements Initializable {
         gtMap.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleasedOnMap);
     }
 
+    /**
+     * Set area of work in map
+     * @param area Area of Work
+     * @throws ParseException Error reading area of work
+     */
     public void setAreaOfWork(String area) throws ParseException {
         this.productFootprint = area;
         gtMap.removeLayer("areaOfWork");
@@ -53,18 +58,18 @@ public class PreviewMapController implements Initializable {
         createGrid();
     }
 
-    public void onMouseClickedOnMap(MouseEvent e) {
+    private void onMouseClickedOnMap(MouseEvent e) {
         Rectangle2D rectangle2D = new Rectangle2D(initPoint.getX(), initPoint.getY(), endPoint.getX(), endPoint.getY());
         if (rectangle2D.contains(new Point2D(e.getX(),e.getY())) && clickPoint == null)
             clickPoint = new Point2D(e.getSceneX(),e.getSceneY());
 
     }
 
-    public void onMouseReleasedOnMap(MouseEvent e) {
+    private void onMouseReleasedOnMap(MouseEvent e) {
         clickPoint = null;
     }
 
-    public void onMousePressedOnMap(MouseEvent e) {
+    private void onMousePressedOnMap(MouseEvent e) {
         moveGrid(e);
     }
 
@@ -85,7 +90,7 @@ public class PreviewMapController implements Initializable {
         endPoint = endPoint.add(deltaX, deltaY);
     }
 
-    public void onMouseDraggedOnMap(MouseEvent e) {
+    private void onMouseDraggedOnMap(MouseEvent e) {
         moveGrid(e);
     }
 
@@ -115,6 +120,10 @@ public class PreviewMapController implements Initializable {
         gtMap.createLayerFromCoordinates(new Point2D(init[0],init[1]),new Point2D(end[0],end[1]),"grid");
     }
 
+    /**
+     * Get grid area selected in map
+     * @return Grid area in WKT
+     */
     public String getArea() {
         init = gtMap.transformSceneToWorldCoordinate(initPoint.getX(), initPoint.getY());
         end = gtMap.transformSceneToWorldCoordinate(endPoint.getX(), endPoint.getY());

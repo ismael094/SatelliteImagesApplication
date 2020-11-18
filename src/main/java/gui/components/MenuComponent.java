@@ -76,10 +76,6 @@ public class MenuComponent extends MenuBar implements Component, Observer {
         observers.forEach(o->o.update(args));
     }
 
-    public void initSearchView(String id) {
-        ;
-    }
-
     @Override
     public void update(Object args) {
         menus.forEach(m->m.update(args));

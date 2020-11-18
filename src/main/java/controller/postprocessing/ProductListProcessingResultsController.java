@@ -29,6 +29,9 @@ import java.util.concurrent.ExecutionException;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
+/**
+ * ProcessingResultItem for each file of the processing result of a productList
+ */
 public class ProductListProcessingResultsController implements TabItem, ProcessingResultsTabItem {
     static final Logger logger = LogManager.getLogger(ProductListProcessingResultsController.class.getName());
 
@@ -131,6 +134,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
 
                     watcher = FileSystems.getDefault().newWatchService();
                     dir = Paths.get(DownloadConfiguration.getListDownloadFolderLocation() + "\\" + productListDTO.getName());
+                    //Register WatchService events in path
                     WatchKey key = dir.register(watcher,
                             ENTRY_CREATE,
                             ENTRY_DELETE,
@@ -187,6 +191,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     }
 
     private void entryModified(File file) {
+        //Reload file and update it
         if (file.isDirectory()) {
             reload(file.listFiles());
         } else {
@@ -196,6 +201,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     }
 
     private void entryCreated(File file) {
+        //Add file to view
         if (file.isDirectory()) {
             for (File listFile : file.listFiles()) {
                 loadFile(listFile);
@@ -205,6 +211,7 @@ public class ProductListProcessingResultsController implements TabItem, Processi
     }
 
     private void entryDelete(File file) {
+        //Delete file from view
         if (file.isDirectory()) {
             reload(file.listFiles());
         } else {

@@ -103,6 +103,9 @@ public class ListTreeViewComponent extends TreeView<TreeViewNode> implements Com
         observers.forEach(o->o.update(args));
     }
 
+    /**
+     * Reload treeListView
+     */
     public void reload() {
         Platform.runLater(this::reloadTree);
     }
