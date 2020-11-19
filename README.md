@@ -8,7 +8,7 @@ First download the [SNAP library](https://drive.google.com/file/d/1xo7aO16SWUprf
 
 ## Installer
 
-Otherwise, if you want to install the app as a program, download the installer [HERE](https://drive.google.com/file/d/1OLY7UDZMGN9-Ncw2GULaonIky39CR134/view?usp=sharing)
+Otherwise, if you want to install the app as a program, download the installer [HERE](https://drive.google.com/file/d/1Cdq5WNaZRU03Fxw6D9WRCu_S-M8K6eZW/view?usp=sharing)
 
 ## Manual
 
