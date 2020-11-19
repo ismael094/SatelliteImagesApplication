@@ -20,6 +20,7 @@ public class DownloadSelectedProductEvent extends Event {
     public void handle(ActionEvent event) {
         Tab active = mainController.getTabComponent().getActive();
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
+        //Download selected products
         if (controllerOf instanceof ProductListTabItem) {
             ObservableList<ProductDTO> selectedProducts = ((ProductListTabItem) controllerOf).getSelectedProducts();
             if (!selectedProducts.isEmpty()) {
@@ -29,7 +30,5 @@ public class DownloadSelectedProductEvent extends Event {
                 mainController.fireEvent(new ExecutedEvent(this, EventType.DOWNLOAD,"Added selected products to Downloader Queue"));
             }
         }
-
-        //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"Products deleted from list"));
     }
 }

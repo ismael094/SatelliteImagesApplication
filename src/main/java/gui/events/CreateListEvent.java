@@ -29,15 +29,18 @@ public class CreateListEvent extends Event {
         ProductListDTO productListDTO = controller.getProductList();
         if (productListDTO !=null) {
             mainController.getListTreeViewComponent().setDisable(true);
+
+            //Save list in database
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
                     long start = currentTimeMillis();
                     mainController.getUserManager().getUser().getProductListsDTO().add(productListDTO);
-                    System.out.println((currentTimeMillis()-start)/1000.0 + "s");
                     return null;
                 }
             };
+
+            //On succeed, reload treview of list
             task.setOnSucceeded(event1 -> {
                 long start = currentTimeMillis();
                 mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List "+productListDTO.getName()+" created"));
@@ -47,6 +50,7 @@ public class CreateListEvent extends Event {
                 System.out.println((currentTimeMillis()-start)/1000.0 + "s reload treeview");
 
             });
+            //On failed, error show alert
             task.setOnFailed(event1 -> {
                 Platform.runLater(()-> AlertFactory.showErrorDialog("Create list","Error when creatin list","An error has occurred while creating list named" + productListDTO.getName()));
                 mainController.getListTreeViewComponent().setDisable(false);

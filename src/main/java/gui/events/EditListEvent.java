@@ -25,6 +25,7 @@ public class EditListEvent extends Event {
         Tab active = mainController.getTabComponent().getActive();
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         ProductListDTO list;
+        //Select product list to edit
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
             list = listController.getProductList();
@@ -36,6 +37,8 @@ public class EditListEvent extends Event {
             else
                 list = productList.get(0);
         }
+
+        //Edit list
         ListDialog edit_list = new ListDialog("Edit list");
         ListCreateAndEditController load = edit_list.load();
         load.setProductList(list);
@@ -45,6 +48,5 @@ public class EditListEvent extends Event {
             mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"List successfully edited " + list.getName()));
         }
 
-        //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED,"List succesfully edited " + list.getName()));
-    }
+     }
 }

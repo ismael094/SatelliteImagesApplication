@@ -17,6 +17,7 @@ public class DeleteListEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
+        //Select product list and delete it from database
         List<ProductListDTO> productList = showAndGetList(SelectionMode.MULTIPLE,"Delete list");
         if (!productList.isEmpty()) {
             ProductListDBDAO.getInstance().delete(productList);

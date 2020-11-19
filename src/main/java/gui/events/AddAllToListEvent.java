@@ -23,12 +23,14 @@ public class AddAllToListEvent extends Event{
 
     @Override
     public void handle(ActionEvent event) {
+        //Get products from searcher
         ObservableList<ProductDTO> openSearcher = getAllProducts();
         if (openSearcher == null || openSearcher.size() == 0) {
             event.consume();
             return;
         }
 
+        //Select product list and add products
         List<ProductListDTO> productListDTO = getProductLists();
         if (!productListDTO.isEmpty()){
             productListDTO.forEach(pL-> {

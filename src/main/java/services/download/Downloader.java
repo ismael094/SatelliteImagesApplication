@@ -13,15 +13,47 @@ public interface Downloader {
     void addListener(ComponentChangeListener listener);
 
     /**
-     * Download new 
-     * @param productList
+     * Download productList
+     * @param productList productList to download
      */
     void download(ProductListDTO productList);
+
+    /**
+     * Download product
+     * @param productDTO productDTO to download
+     */
     void download(ProductDTO productDTO);
+
+    /**
+     * Time left to finish the download
+     * @return double property
+     */
     DoubleProperty timeLeftProperty();
+
+    /**
+     * Cancel the downloads
+     */
     void cancel();
+
+    /**
+     * Pause the downloads
+     */
     void pause();
+
+    /**
+     * Resume the downloads
+     */
     void resume();
+
+    /**
+     * Cancel product download
+     * @param productDTO product to cancel download
+     */
     void remove(ProductDTO productDTO);
+
+    /**
+     * Verify is products are been downloading
+     * @return true if downloading; false otherwise
+     */
     boolean isDownloading();
 }

@@ -21,6 +21,7 @@ public class ProcessListEvent extends Event {
     public void handle(ActionEvent event) {
         Tab active = mainController.getTabComponent().getActive();
         TabItem tabItem = mainController.getTabComponent().getControllerOf(active);
+        //If active tab is ProductListTabItem, process list
         if (tabItem instanceof ProductListTabItem) {
             ProductListDTO productList = ((ProductListTabItem) tabItem).getProductList();
             Task<Boolean> task = null;
@@ -44,9 +45,6 @@ public class ProcessListEvent extends Event {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
-
             mainController.getTabComponent().load(new ProductListProcessingResultsController(productList));
 
 

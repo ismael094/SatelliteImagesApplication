@@ -21,9 +21,11 @@ public class DeleteSelectedFromListEvent extends Event {
         Tab active = mainController.getTabComponent().getActive();
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         ProductListDTO list;
+        //If the active tab is a ListInformationController
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
             list = listController.getProductList();
+            //Remove selected products from list
             if (!listController.getSelectedProducts().isEmpty()) {
                 list.remove(listController.getSelectedProducts());
                 Task<Void> task = new Task<Void>() {

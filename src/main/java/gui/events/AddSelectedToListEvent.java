@@ -24,11 +24,14 @@ public class AddSelectedToListEvent extends Event {
 
     @Override
     public void handle(ActionEvent event) {
+        //Get the products selected in the SearchTabItem
         ObservableList<ProductDTO> openSearcher = getSelectedProducts();
         if (openSearcher == null || openSearcher.size() == 0) {
             event.consume();
             return;
         }
+
+        //Select product list and add products
         List<ProductListDTO> productListDTO = getProductLists();
         if (productListDTO.size()>0){
             productListDTO.forEach(pL->{
@@ -44,7 +47,8 @@ public class AddSelectedToListEvent extends Event {
             });
 
             mainController.fireEvent(new ExecutedEvent(this, EventType.LIST,"Products added to lists"));
-            //mainController.getToolBarComponent().fireEvent(new ToolbarComponentEvent<>(this, EventType.ComponentEventType.LIST_UPDATED, "Products added to list"));
+
+            //If autodownload is enabled, download product
             if (DownloadConfiguration.getAutodownload())
                 openSearcher.forEach(p->{
                     mainController.getDownloader().download(p);

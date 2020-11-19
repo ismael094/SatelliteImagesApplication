@@ -223,6 +223,7 @@ public class SentinelProcessor extends Processor {
                 DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path+"."+PNG, PNG);
     }
 
+    //Generate RGB image for sentinel 2 products
     private RenderedImage getBandsFromSentinel2Image(Product product, Map<String, Object> parameters) {
         Band red = product.getBand(String.valueOf(parameters.get(RED)));
         Band green = product.getBand(String.valueOf(parameters.get(GREEN)));
@@ -243,11 +244,13 @@ public class SentinelProcessor extends Processor {
         }
     }
 
+    //Generate buffered image of sentinel 2 product
     private BufferedImage generateSentinel2BufferedImage(Product product, Map<String, Object> parameters) {
         PlanarImage planarImage = (PlanarImage) getBandsFromSentinel2Image(product, parameters);
         return planarImage.getAsBufferedImage();
     }
 
+    //Generate buffered image of sentinel 1 product
     private BufferedImage generateSentinel1BufferedImage(Product product) throws IOException {
         if (product.getRasterDataNodes().size() > 1)
             return createColorIndexedImage(product.getRasterDataNodes().get(1));

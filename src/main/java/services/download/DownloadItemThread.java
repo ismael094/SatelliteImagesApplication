@@ -93,7 +93,7 @@ public class DownloadItemThread extends Service<Boolean> {
                 //Init download bytes data
                 initDownloadBytesData();
 
-                //Open streams and init buffer -> method
+                //Open streams and init buffer
                 openStreams(temporalFileLocation);
                 byte buffer[] = new byte[1024];
 
@@ -106,7 +106,7 @@ public class DownloadItemThread extends Service<Boolean> {
                 startTime = currentTimeMillis();
 
                 while (true) {
-                    //isCommand()
+                    //if command cancel active, cancel downloads
                     if (isCancelled() || isCommand(DownloadEnum.DownloadCommand.STOP)) {
                         cancel(temporalFileLocation);
                         return false;
@@ -138,10 +138,12 @@ public class DownloadItemThread extends Service<Boolean> {
                         if (isDownloadFinish(bytesRead)) {
                             setFinishedStatus();
                             closeStreams();
+                            //Rename downloaded file to final path
                             if (!FileUtils.renameFile(temporalFileLocation, finalFileLocation)) {
                                 logger.atError().log("Error while renaming product {} to {}",temporalFileLocation, finalFileLocation);
                                 return false;
                             }
+                            //check checksum
                             return checkfileMD5(md);
                         }
 

@@ -24,11 +24,13 @@ public class DownloadProductListEvent extends Event {
         Tab active = mainController.getTabComponent().getActive();
         TabItem controllerOf = mainController.getTabComponent().getControllerOf(active);
         ProductListDTO list;
+        //If the active tab is a ListInformationController
         if (controllerOf instanceof ListInformationController) {
             ListInformationController listController = (ListInformationController)controllerOf;
             list = listController.getProductList();
 
         } else {
+            //Select list to download
             List<ProductListDTO> productList = showAndGetList(SelectionMode.SINGLE,"Select list to edit");
             if (productList.size() == 0)
                 return;
@@ -36,10 +38,9 @@ public class DownloadProductListEvent extends Event {
                 list = productList.get(0);
         }
 
-        //FileUtils.saveObjectToJson(list);
-
         mainController.fireEvent(new ExecutedEvent(this, EventType.DOWNLOAD,"Downloading list "+list.getName()));
 
+        //download list
         mainController.getDownloader().download(list);
     }
 }

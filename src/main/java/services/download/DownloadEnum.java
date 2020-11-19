@@ -1,5 +1,8 @@
 package services.download;
 
+/**
+ * Download status and commands
+ */
 public class DownloadEnum {
     public enum DownloadCommand {
         PAUSE,STOP,START

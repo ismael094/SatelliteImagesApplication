@@ -36,6 +36,10 @@ public abstract class Event implements EventHandler<ActionEvent> {
         user = mainController.getUserManager().getUser();
     }
 
+    /**
+     * Get product list
+     * @return productList to add products
+     */
     protected List<ProductListDTO> getProductLists() {
         List<ProductListDTO> productListDTO = new ArrayList<>();
         if (mainController.getUserManager().getUser().getProductListsDTO().size() == 0) {
@@ -52,6 +56,10 @@ public abstract class Event implements EventHandler<ActionEvent> {
         return productListDTO;
     }
 
+    /**
+     * Get one product list
+     * @return productList
+     */
     protected ProductListDTO getSingleProductList() {
         if (user.getProductListsDTO().size() > 0) {
             if (mainController.getListTreeViewComponent().getSelected() != null)
@@ -64,6 +72,10 @@ public abstract class Event implements EventHandler<ActionEvent> {
         return null;
     }
 
+    /**
+     * Show dialog to get productList
+     * @return productLists selected
+     */
     protected ObservableList<ProductListDTO> showAndGetList(SelectionMode selectionMode,String title) {
         ListView<ProductListDTO> productListListView = new ListView<>(user.getProductListsDTO());
         productListListView.getSelectionModel().setSelectionMode(selectionMode);

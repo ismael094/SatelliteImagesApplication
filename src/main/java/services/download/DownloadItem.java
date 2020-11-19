@@ -3,7 +3,9 @@ package services.download;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import model.products.ProductDTO;
 
-
+/**
+ * Class to save product and path
+ */
 public class DownloadItem {
     private final ProductDTO productDTO;
     private String location;

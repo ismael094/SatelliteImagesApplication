@@ -23,7 +23,6 @@ public class SelectProductInProductListEvent extends Event {
     @Override
     public void handle(ActionEvent event) {
         TabItem controller = mainController.getTabComponent().getControllerOf(list.getId().toString());
-        System.out.println(list.getId().toString());
         if (controller != null) {
             ((ProductListTabItem) controller).setSelectedProducts(products);
         }

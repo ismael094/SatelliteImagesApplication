@@ -32,6 +32,7 @@ public class SaveResultImagesEvent extends Event {
     public void handle(ActionEvent event) {
         Tab active = mainController.getTabComponent().getActive();
         TabItem tabItem = mainController.getTabComponent().getControllerOf(active);
+        //Save results if the current tab is a ProcessingResultsTabItem
         if (tabItem instanceof ProcessingResultsTabItem) {
 
 
