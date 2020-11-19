@@ -14,6 +14,11 @@ import java.io.IOException;
 
 public class WorkflowUtil {
 
+    /**
+     * Load MyWorkflow view
+     * @param userManager UserManager to control user workflows
+     * @param productListDTO If not null, load product list workflows
+     */
     public static void loadMyWorkflowView(UserManager userManager, ProductListDTO productListDTO) {
         FXMLLoader fxmlLoader = new FXMLLoader(WorkflowUtil.class.getResource("/fxml/MyWorkflowsView.fxml"));
         Scene scene = null;

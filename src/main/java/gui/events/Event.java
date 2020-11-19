@@ -86,6 +86,10 @@ public abstract class Event implements EventHandler<ActionEvent> {
         return productListListView.getSelectionModel().getSelectedItems();
     }
 
+    /**
+     * Show view without controller
+     * @param fxml Name of the view to load
+     */
     protected void showInformationView(String fxml) {
         URL location = getClass().getResource(fxml);
         FXMLLoader fxmlLoader = new FXMLLoader(location);

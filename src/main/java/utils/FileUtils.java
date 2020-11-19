@@ -18,16 +18,29 @@ public class FileUtils {
     public static String DEFAULT_DOWNLOAD_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Products";
     public static String DEFAULT_LIST_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Lists";
 
+    /**
+     * Create folder if not exists
+     * @param path folder to create
+     */
     public static void createFolderIfNotExists(String path) {
         File file = new File(path);
         if (!file.exists())
             file.mkdirs();
     }
-
+    /**
+     * Verify if a file exists
+     * @param file filename
+     * @return true if exists; false otherwise
+     */
     public static boolean fileExists(String file) {
         return new File(file).exists();
     }
 
+    /**
+     * Verify if a product exists
+     * @param title title of product
+     * @return true if exists; false otherwise
+     */
     public static boolean productExists(String title) {
         return fileExists(getProductDownloadFolderLocation()+"\\"+title+".zip");
     }
@@ -73,6 +86,12 @@ public class FileUtils {
         return !json.exists() || (productListDTO != null && productListDTO.getId().toString().equals(list.getId().toString()));
     }
 
+    /**
+     * Rename file
+     * @param temporalFileLocation File to rename
+     * @param finalFileLocation New file
+     * @return true if renamed; false otherwise
+     */
     public static boolean renameFile(String temporalFileLocation, String finalFileLocation) {
         try {
             org.apache.commons.io.FileUtils.moveFile(new File(temporalFileLocation),new File(finalFileLocation));
@@ -83,6 +102,9 @@ public class FileUtils {
         }
     }
 
+    /**
+     * Create application folders
+     */
     public static void createAppFolders() {
         FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_LIST_FOLDER);
         FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_DOWNLOAD_FOLDER);

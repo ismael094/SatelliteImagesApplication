@@ -28,6 +28,12 @@ public class MongoDBManager {
         return instance;
     }
 
+    /**
+     * Set database credentials
+     * @param username username
+     * @param password pass
+     * @param database database
+     */
     public void setCredentialsAndDatabase(String username, String password, String database) {
         serverURL = serverURL.replace("<user>", username).replace("<password>",password).replace("<database>",database);
         this.database = database;
@@ -42,6 +48,9 @@ public class MongoDBManager {
         return this.database;
     }
 
+    /**
+     * Connect to database
+     */
     public void connect() {
         MongoClientSettings build = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(serverURL))
@@ -71,10 +80,17 @@ public class MongoDBManager {
             datastore.getMapper().map(javaClass);*/
     }
 
+    /**
+     * Get database datastore
+     * @return morphia datastore
+     */
     public Datastore getDatastore() {
         return datastore;
     }
 
+    /**
+     * Close connection with database
+     */
     public void close() {
         //client.close();
         datastore = null;

@@ -65,10 +65,19 @@ public class OpenSearcher implements SearchService {
         this.searchParameters = new LinkedHashMap<>();
     }
 
+    /**
+     * Set product per page
+     * @param productsPerPage product per page
+     */
     public void setProductPerPage(int productsPerPage) {
         this.productsPerPage = productsPerPage;
     }
 
+    /**
+     * Get URL of the petition
+     * @return URL with the parameters
+     * @throws MalformedURLException Error while building URL
+     */
     public URL getURL() throws MalformedURLException {
         return new URL(URL + startPage() + rowsPerPage() + searchParameter());
     }
@@ -77,6 +86,10 @@ public class OpenSearcher implements SearchService {
         return "&q=("+ getSearchParametersAsString()+")";
     }
 
+    /**
+     * Get parameters as string
+     * @return String with the parameters
+     */
     public String getSearchParametersAsString() {
         if (this.searchParameters.size() == 0)
             return ALL;
@@ -93,14 +106,27 @@ public class OpenSearcher implements SearchService {
         return "&start=" + getStartProductIndex();
     }
 
+    /**
+     * Set start product index
+     * @param page index
+     */
     public void setStartProductIndex(int page) {
         this.page = page;
     }
 
+    /**
+     * Get start product index
+     * @return index
+     */
     public int getStartProductIndex() {
         return page;
     }
 
+    /**
+     * Add parameter
+     * @param parameterName parameter name
+     * @param value Value
+     */
     public void addSearchParameter(SentinelProductParameters parameterName, String value) {
         this.searchParameters.put(parameterName, value);
     }
@@ -109,6 +135,10 @@ public class OpenSearcher implements SearchService {
         return parameterName.getParameterName()+":"+value;
     }
 
+    /**
+     * Get search parameters
+     * @return Map with the parameters
+     */
     public Map<SentinelProductParameters,String> getSearchParameters() {
         return this.searchParameters;
     }
@@ -172,6 +202,12 @@ public class OpenSearcher implements SearchService {
         return localDateTimeFinish.toString()+nano+"Z";
     }
 
+    /**
+     * Add range parameter ([X TO Y])
+     * @param parameter Name of the parameter
+     * @param from value from
+     * @param to value to
+     */
     public void addJoinRangeParameter(SentinelProductParameters parameter, String from, String to) {
         addSearchParameter(parameter,"["+ from+ " TO " + to + "]");
     }

@@ -18,7 +18,7 @@ public class DownloadManualEvent extends Event{
     public void handle(ActionEvent event) {
         if(Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("https://scihub.copernicus.eu/dhus/#/forgot-password"));
+                Desktop.getDesktop().browse(new URI("https://drive.google.com/file/d/1BYSYXYKC7QjYrK75oL5vnEyX-cZ9iXGK/view?usp=sharing"));
             } catch (IOException | URISyntaxException e1) {
                 e1.printStackTrace();
             }

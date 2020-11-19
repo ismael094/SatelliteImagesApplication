@@ -59,10 +59,4 @@ public abstract class ToolbarButton extends Button {
         setTooltip(tooltip);
         Tooltip.install(this, tooltip);
     }
-
-
-
-
-
-
 }
