@@ -17,6 +17,16 @@ public abstract class Processor {
     protected ProcessingMonitor productMonitor;
     static final Logger logger = LogManager.getLogger(Processor.class.getName());
 
+    /**
+     * Process product with workaflows and areas of work
+     * @param productDTO product
+     * @param areasOfWork areasOfWork
+     * @param workflow workflow
+     * @param path path to save the results
+     * @param generateBufferedImage true for generate buffered image
+     * @return buffered image
+     * @throws Exception Error while processing product
+     */
     public abstract BufferedImage process(ProductDTO productDTO, List<String> areasOfWork, WorkflowDTO workflow, String path, boolean generateBufferedImage) throws Exception;
 
     protected void startProductMonitor(String task, int total) {

@@ -61,6 +61,11 @@ public class SentinelProcessor extends Processor {
         colorIndexedImage = null;
     }
 
+    /**
+     * Get default workflow for type
+     * @param type Workflow type
+     * @return workflow
+     */
     public WorkflowDTO getWorkflow(WorkflowType type) {
         try {
             Class<?> class_ =  Class.forName("model.preprocessing.workflow.defaultWorkflow."+type.name()+"DefaultWorkflowDTO");
@@ -70,16 +75,16 @@ public class SentinelProcessor extends Processor {
         }
     }
 
-    protected Product readProduct(String path) throws IOException {
+    private Product readProduct(String path) throws IOException {
         return ProductIO.readProduct(path);
     }
 
-    protected void saveProduct(Product product, String path, String formatName) throws IOException {
+    private void saveProduct(Product product, String path, String formatName) throws IOException {
         //GPF.writeProduct(product, new File(path),formatName, false, operationMonitor);
         ProductIO.writeProduct(product,path,formatName, operationMonitor);
     }
 
-    protected Product createProduct(Product product, Operation operation) {
+    private Product createProduct(Product product, Operation operation) {
         return GPF.createProduct(operation.getName().getName(),operation.getParameters(),product);
     }
 
@@ -131,6 +136,7 @@ public class SentinelProcessor extends Processor {
         String polarisations = "";
         register();
         boolean isRadar = SatelliteHelper.isRadar(productDTO.getPlatformName());
+        //If Radar, select all polarisations
         if (isRadar) {
             polarisations = ((Sentinel1ProductDTO)productDTO).getPolarizationMode().replace(" ",",");
         }
@@ -140,14 +146,11 @@ public class SentinelProcessor extends Processor {
             for (Operation operation : workflow.getOperations()) {
                 if (isRadar)
                     operation.getParameters().put("selectedPolarisations",polarisations);
-                //if (snapProduct != null && productDTO.getProductType().equals("GRD"))
-                    //op.getParameters().put(op)
-                    //op.getParameters().put("sourceBands",getBandNames(snapProduct.getBandNames()));
 
                 showMemory();
 
                 logger.atInfo().log("Operation: {}", operation);
-
+                //Execute all operations
                 if (operation.getName() == Operator.READ) {
                     snapProduct = readProduct(getProductPath(productDTO.getTitle()));
                 } else if (operation.getName() == Operator.WRITE) {
@@ -295,35 +298,13 @@ public class SentinelProcessor extends Processor {
             if ((boolean)parameters.getOrDefault("generatePNG",false)) {
                 if (productDTO.getPlatformName().equals("Sentinel-1")) {
                     saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
-                    //System.out.println("Hello");
-                    //colorIndexedImage = generateSentinel1BufferedImage(p);
-                    //System.out.println("End");
                 } else {
                     colorIndexedImage = generateSentinel2BufferedImage(p,parameters);
                     createPNGFromBufferedImage(colorIndexedImage,DownloadConfiguration.getListDownloadFolderLocation() + "\\" +path + "\\" +productDTO.getProductType() + "_" + getDate() + "_" + x);
-                    //createPNGFromBufferedImage(colorIndexedImage,DownloadConfiguration.getListDownloadFolderLocation() + "\\" + path + "\\" + productDTO.getProductType() + "_" + getDate() + "_" + x);
-                    //generateRGBImage(p,parameters, path + "\\" + productDTO.getProductType() + "_" + getDate() + "_" + x);
                 }
             } else {
                 saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
             }
-
-
-            //if sentinel2 product, save png
-            /*if (productDTO.getPlatformName().equals("Sentinel-1")) {
-                if ((boolean)parameters.getOrDefault("generatePNG",false)) {
-                    createPNG(productDTO,p,new HashMap<>());
-                    JAI.create("filestore", colorIndexedImage,
-                            DownloadConfiguration.getListDownloadFolderLocation() + "\\"+path + "\\" +productDTO.getProductType() + "_" + getDate() + "_" + x+"."+PNG, PNG);
-
-                }
-                saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
-            } else {
-                if ((boolean)parameters.getOrDefault("generatePNG",false)) {
-                       } else {
-                    saveProduct(p, temporalName + x, String.valueOf(parameters.get("formatName")));
-                }
-            }*/
             x++;
         }
 
