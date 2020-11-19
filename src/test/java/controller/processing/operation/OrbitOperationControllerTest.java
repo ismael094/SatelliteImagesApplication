@@ -62,18 +62,4 @@ public class OrbitOperationControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
         assertThat(controller.getParameters().get("polyDegree")).isEqualTo(5);
     }
-
-    @Test
-    public void empty_pixelSpacingInMeter_should_return_default() {
-        GRDDefaultWorkflowDTO workflow = new GRDDefaultWorkflowDTO();
-
-        interact(() -> {
-            controller.setParameters(workflow.getOperation(Operator.TERRAIN_CORRECTION).getParameters());
-        });
-        TextField n = lookup("#pixelSpacingInMeter").query();
-        n.setText("");
-
-        Map<String, Object> parameters = controller.getParameters();
-        assertThat(parameters.get("pixelSpacingInMeter")).isEqualTo(10.0);
-    }
 }

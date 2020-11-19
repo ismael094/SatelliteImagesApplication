@@ -54,7 +54,7 @@ public class Sentinel2ProductTest {
         assertThat(product.getFootprint()).isEqualTo(SentinelData.FOOTPRINT);
         assertThat(product.getSize()).isEqualTo(SentinelData.SIZE);
         assertThat(product.getProductType()).isEqualTo(SentinelData.PRODUCT_TYPE);
-        assertThat(product.getPlatformName()).isEqualTo(SentinelData.PLATFORM_NAME);
+        assertThat(product.getPlatformName()).isEqualTo("Sentinel-2");
         assertThat(product.getStatus()).isEqualTo(SentinelData.STATUS);
     }
 

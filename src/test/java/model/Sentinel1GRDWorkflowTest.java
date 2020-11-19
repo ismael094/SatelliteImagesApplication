@@ -24,11 +24,6 @@ public class Sentinel1GRDWorkflowTest {
         List<Operation> operations = this.grdWorkflow.getOperations();
         assertThat(operations.size()).isEqualTo(8);
         assertThat(operations.get(0).getName()).isEqualTo(Operator.READ);
-        assertThat(operations.get(1).getName()).isEqualTo(Operator.APPLY_ORBIT_FILE);
-    }
-
-    @Test
-    public void test() {
-        System.out.println(grdWorkflow);
+        assertThat(operations.get(2).getName()).isEqualTo(Operator.APPLY_ORBIT_FILE);
     }
 }

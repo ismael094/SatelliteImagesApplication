@@ -56,10 +56,13 @@ public class UserDBDAOTest {
     @Test
     public void find_user_by_username() {
         userDTO.setUsername("pepe98");
+        userDTO.setPassword("password");
+        userDAO.save(userDTO);
         UserDTO dbUserDTO = userDAO.findByUsername(userDTO);
         assertThat(dbUserDTO).isNotNull();
         assertThat(dbUserDTO.getUsername()).isEqualTo(userDTO.getUsername());
         assertThat(dbUserDTO.getPassword()).isNotEmpty();
+        userDAO.delete(userDTO);
 
     }
 

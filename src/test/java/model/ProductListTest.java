@@ -319,8 +319,8 @@ public class ProductListTest {
         assertThat(productListDTO.areasOfWorkOfProduct(product.getFootprint()).size()).isEqualTo(1);
         productListDTO.removeAreaOfWork(AREA_OF_WORK);
         assertThat(productListDTO.getAreasOfWork().size()).isEqualTo(0);
-        assertThat(productListDTO.areasOfWorkOfProduct(product.getFootprint()).size()).isEqualTo(0);
-        assertThat(productListDTO.getProductsAreasOfWorks().get(product).size()).isEqualTo(0);
+        assertThat(productListDTO.areasOfWorkOfProduct(product.getFootprint())).isNull();
+        assertThat(productListDTO.getProductsAreasOfWorks().size()).isEqualTo(0);
     }
 
     @Test

@@ -56,9 +56,9 @@ public class CalibrationOperationControllerTest extends ApplicationTest {
         clickOn("#outputSigma");
         clickOn("#outputGamma");
 
-        assertThat(controller.getParameters().size()).isEqualTo(5);
+        assertThat(controller.getParameters().size()).isEqualTo(6);
         assertThat((boolean)controller.getParameters().get("outputBetaBand")).isTrue();
         assertThat((boolean)controller.getParameters().get("outputGammaBand")).isTrue();
-        assertThat((boolean)controller.getParameters().get("outputSigmaBand")).isTrue();
+        assertThat((boolean)controller.getParameters().get("outputSigmaBand")).isFalse();
     }
 }

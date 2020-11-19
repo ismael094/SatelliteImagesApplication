@@ -212,7 +212,7 @@ public class ProductListDTO {
      * @param products products to remove
      */
     public void remove(Collection<ProductDTO> products) {
-        products.removeAll(products);
+        this.products.removeAll(products);
         reloadProperties();
     }
 
@@ -336,7 +336,7 @@ public class ProductListDTO {
         Map<ProductDTO, List<String>> areas = new HashMap<>();
         products.forEach(p->{
             List<String> strings = areasOfWorkOfProduct(p.getFootprint());
-            if (!strings.isEmpty())
+            if (strings != null && !strings.isEmpty())
                 areas.put(p, areasOfWorkOfProduct(p.getFootprint()));
         });
         return areas;

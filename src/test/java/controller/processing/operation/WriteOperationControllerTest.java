@@ -55,6 +55,6 @@ public class WriteOperationControllerTest extends ApplicationTest {
         clickOn("#writeFormat");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
-        assertThat(controller.getParameters().get("formatName")).isEqualTo("PolSARPro");
+        assertThat(controller.getParameters().get("formatName")).isEqualTo("GeoTIFF-BigTIFF");
     }
 }

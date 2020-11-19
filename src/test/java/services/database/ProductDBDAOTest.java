@@ -34,7 +34,7 @@ public class ProductDBDAOTest {
         }
         productDAO = ProductDBDAO.getInstance();
 
-        productDTO = SentinelData.getProduct();
+        productDTO = SentinelData.getSentinel1Product();
         productDTO.setId(SentinelData.ID);
         productDTO.setTitle(SentinelData.TITLE);
         productDTO.setFootprint(SentinelData.FOOTPRINT);
@@ -51,16 +51,16 @@ public class ProductDBDAOTest {
 
     @Test
     public void get_collection() {
-        Query<Product> email = mongodb.getDatastore().find(Product.class)
-                .field("_t")
+        /*Query<Product> email = mongodb.getDatastore().find(Product.class)
+                .field("className")
                 .equal("Sentinel1Product");
         UpdateOperations<Product> ops = mongodb.getDatastore()
                 .createUpdateOperations(Product.class)
-                .push("className", "services.entities.Sentinel1Product");
+                .push("className", "services.entities.Sentinel1Product");*/
 
-        mongodb.getDatastore().update(email,ops);
+        //mongodb.getDatastore().update(email,ops);
         List<ProductDTO> dbProductDTO = productDAO.getCollection();
-        dbProductDTO.forEach(p-> System.out.println(p.getClass()));
+        assertThat(dbProductDTO.size()).isGreaterThan(0);
     }
 
     @Test

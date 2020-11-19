@@ -55,7 +55,7 @@ public class ProductBandsUtilsTest {
         List<String> outputBands = ProductBandUtils.getOutputBands(productDTO, workflow);
         assertThat(outputBands).isNotNull();
         assertThat(outputBands.size()).isGreaterThan(0);
-        assertThat(outputBands).contains("Sigma0_VH","Sigma0_VV","Beta0_VV","Beta0_VH");
+        assertThat(outputBands).contains("Intensity_IW1_VH", "Intensity_IW1_VV");
     }
 
     @Test

@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Sentinel2MSILDefaultWorkflowTest {
+public class Sentinel2S2MSILDefaultWorkflowTest {
     private S2MSI1CDefaultWorkflowDTO msilDefaultWorkflowDTO;
 
     @Before

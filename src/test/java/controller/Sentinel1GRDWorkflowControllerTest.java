@@ -135,56 +135,5 @@ public class Sentinel1GRDWorkflowControllerTest extends ApplicationTest {
         assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_CORRECTION);
     }
 
-    @Test
-    public void flat_operation_beta_activated() {
-        interact(() -> controller.setWorkflow(new GRDDefaultWorkflowDTO()));
-        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
-
-        clickOn("#add");
-        clickOn("#terrainFlatteningButton");
-
-        assertThat(controller.getWorkflow().getOperations().size()).isEqualTo(9);
-        assertThat(controller.getWorkflow().getOperations().get(5).getName()).isEqualTo(Operator.TERRAIN_FLATTENING);
-
-
-        clickOn("#calibrationPane");
-        clickOn("#outputBeta");
-
-        OperationController operationController1 = controller.getOperationsMap().get(Operator.CALIBRATION);
-
-        assertThat(operationController1.getParameters().get("outputBetaBand")).isEqualTo(true);
-
-        clickOn("#outputBeta");
-        assertThat(operationController1.getParameters().get("outputBetaBand")).isEqualTo(true);
-
-
-    }
-
-    @Test
-    public void flat_operation_beta_deactivated() {
-        interact(() -> controller.setWorkflow(new GRDDefaultWorkflowDTO()));
-        OperationController operationController = controller.getOperationsMap().get(Operator.CALIBRATION);
-
-        clickOn("#add");
-        clickOn("#terrainFlatteningButton");
-
-        clickOn("#calibrationPane");
-        clickOn("#outputBeta");
-
-        clickOn("#outputBeta");
-
-        clickOn("#remove");
-        clickOn("#removeTerrainFlatteningButton");
-
-        OperationController operationController1 = controller.getOperationsMap().get(Operator.CALIBRATION);
-
-        assertThat(operationController1.getParameters().get("outputBetaBand")).isEqualTo(true);
-
-        clickOn("#outputBeta");
-
-        assertThat(operationController1.getParameters().get("outputBetaBand")).isEqualTo(false);
-
-
-    }
 
 }
