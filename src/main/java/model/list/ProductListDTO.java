@@ -353,7 +353,7 @@ public class ProductListDTO {
         List<String> areas = new ArrayList<>();
         areasOfWork.forEach(a->{
             try {
-                if (WKTUtil.workingAreaIntersects(footprint,a))
+                if (WKTUtil.workingAreaContains(footprint,a))
                     areas.add(a);
             } catch (ParseException e) {
                 e.printStackTrace();

@@ -313,6 +313,14 @@ public class GTMapController {
     }
 
     /**
+     * Set searchArea by WKT
+     * @param wkt Search area
+     */
+    public void setWKT(String wkt) {
+        this.searchArea = wkt;
+    }
+
+    /**
      * Remove layer @layer
      * @param layer Name of the layer to remove
      */

@@ -24,6 +24,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -98,6 +99,8 @@ public class ListInformationController extends ProductListTabItem {
     private JFXSpinner imageSpinner;
     @FXML
     private HBox buttonPanel;
+    @FXML
+    private TextArea wktArea;
 
     private String idSelected;
 
@@ -401,13 +404,19 @@ public class ListInformationController extends ProductListTabItem {
     private void onActionInAddAreaOfWorkCreateAreaOfWork() {
         addAreaOfProduct.setOnAction(event -> {
             //If a area is marked
-            if (!mapController.getWKT().isEmpty()) {
+            String wkt = "";
+            if (mapController.getWKT() != null && !mapController.getWKT().isEmpty()) {
+                wkt = mapController.getWKT();
+            } else if (!wktArea.getText().isEmpty())
+                wkt = wktArea.getText();
+
+            if (!wkt.isEmpty()) {
                 //Add area to productList
-                productListDTO.addAreaOfWork(mapController.getWKT());
+                productListDTO.addAreaOfWork(wkt);
                 drawInMapTheAreasOfWork();
                 saveProductList();
                 if (!actionActive)
-                    addAction(ListAction.ADD_AREA_OF_WORK,FXCollections.observableArrayList(mapController.getWKT()));
+                    addAction(ListAction.ADD_AREA_OF_WORK,FXCollections.observableArrayList(wkt));
 
             }
         });

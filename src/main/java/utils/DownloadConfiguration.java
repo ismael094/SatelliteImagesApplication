@@ -33,6 +33,14 @@ public class DownloadConfiguration {
     }
 
     /**
+     * Get temporal file folder
+     * @return temporal file folder
+     */
+    public static String getTemporalFileFolderLocation() {
+        return downloadPreferences.get("temporalFolder", FileUtils.TEMPORAL_FILE_FOLDER);
+    }
+
+    /**
      * Get download mode, sequential or multiple
      * @return Download mode
      */
@@ -79,6 +87,14 @@ public class DownloadConfiguration {
      */
     public static void setProductDownloadFolderLocation(String location) {
         setDownloadPreference("productFolder",location);
+    }
+
+    /**
+     * Set temporal files folder
+     * @param location Product download folder
+     */
+    public static void setTemporalFilesFolderLocation(String location) {
+        setDownloadPreference("temporalFolder",location);
     }
 
     private static void setDownloadPreference(String key, String value) {

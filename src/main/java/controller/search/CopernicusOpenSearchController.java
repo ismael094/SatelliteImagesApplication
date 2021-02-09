@@ -22,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -114,6 +115,8 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     private Button saveSearch;
     @FXML
     private JFXButton show;
+    @FXML
+    private TextArea wktArea;
 
     private GTMapController mapController;
 
@@ -751,6 +754,11 @@ public class CopernicusOpenSearchController extends SearchController<ProductDTO>
     }
 
     private void addWKTParameter() {
+        if (wktArea.getText().length()>0) {
+            mapController.setWKT(wktArea.getText());
+            mapController.setSearchArea(wktArea.getText());
+        }
+
         if (mapController.getWKT() !=null && mapController.getWKT().length()>0)
             searcher.addSearchParameter(SentinelProductParameters.FOOTPRINT,"\"Intersects("+ mapController.getWKT()+")\"");
     }

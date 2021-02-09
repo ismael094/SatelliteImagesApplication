@@ -17,6 +17,7 @@ import static utils.DownloadConfiguration.getProductDownloadFolderLocation;
 public class FileUtils {
     public static String DEFAULT_DOWNLOAD_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Products";
     public static String DEFAULT_LIST_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Lists";
+    public static String TEMPORAL_FILE_FOLDER = System.getProperty("user.home")+"\\Documents\\SatInf\\Tmp";
 
     /**
      * Create folder if not exists
@@ -108,7 +109,7 @@ public class FileUtils {
     public static void createAppFolders() {
         FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_LIST_FOLDER);
         FileUtils.createFolderIfNotExists(FileUtils.DEFAULT_DOWNLOAD_FOLDER);
-        FileUtils.createFolderIfNotExists(System.getProperty("user.home")+"\\Documents\\SatInf\\Tmp");
+        FileUtils.createFolderIfNotExists(FileUtils.TEMPORAL_FILE_FOLDER);
         FileUtils.createFolderIfNotExists("logs");
     }
 }

@@ -25,6 +25,10 @@ import static utils.ThemeConfiguration.getJMetroStyled;
 
 public class DownloadPreferencesController implements Initializable {
     @FXML
+    private Button pathTmpButton;
+    @FXML
+    private TextField pathTmp;
+    @FXML
     private CheckBox autoDownload;
     @FXML
     private TextField path;
@@ -52,6 +56,7 @@ public class DownloadPreferencesController implements Initializable {
 
         openProductFileChooser.setOnAction(e->path.setText(getFileChooser("Product Folder",path.getText())));
         openListFileChooser.setOnAction(e->pathList.setText(getFileChooser("List Folder",pathList.getText())));
+        pathTmpButton.setOnAction(e->pathTmp.setText(getFileChooser("Temporal File Folder",pathTmp.getText())));
 
         delete.setOnAction(e->confirmDeleteProducts());
     }
@@ -66,8 +71,10 @@ public class DownloadPreferencesController implements Initializable {
         multipleDownload.setToggleGroup(group);
         path.setText(getProductDownloadFolderLocation());
         pathList.setText(getListDownloadFolderLocation());
+        pathTmp.setText(getTemporalFileFolderLocation());
         path.setDisable(true);
         pathList.setDisable(true);
+        pathTmp.setDisable(true);
 
         autoDownload.setSelected(DownloadConfiguration.getAutodownload());
     }
@@ -86,6 +93,7 @@ public class DownloadPreferencesController implements Initializable {
     public void applyChanges() {
         setListDownloadFolderLocation(pathList.getText());
         setProductDownloadFolderLocation(path.getText());
+        setTemporalFilesFolderLocation(pathTmp.getText());
         if (singleDownload.isSelected())
             setDownloadMode("single");
         else

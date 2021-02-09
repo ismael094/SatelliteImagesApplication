@@ -110,6 +110,8 @@ public class SentinelProcessor extends Processor {
             workflow = getWorkflow(WorkflowType.valueOf(product.getProductType()));
         }
 
+        FileUtils.createFolderIfNotExists(DownloadConfiguration.getTemporalFileFolderLocation());
+
         logger.atInfo().log("====== Processing product {}",product.getTitle());
         BufferedImage bufferedImage = startProcess(product, areasOfWork, workflow, path, generateBufferedImage);
         logger.atInfo().log("====== Processing ended! =========");
@@ -286,7 +288,7 @@ public class SentinelProcessor extends Processor {
      * @throws IOException if processing generate error
      */
     private Product writeAndReadOperation(Product product, ProductDTO productDTO, Operation op) throws IOException {
-        saveProduct(product,ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId()+".dim", String.valueOf(op.getParameters().get("formatName")));
+        saveProduct(product,DownloadConfiguration.getTemporalFileFolderLocation()+"\\"+ productDTO.getId()+".dim", String.valueOf(op.getParameters().get("formatName")));
         closeProduct(product);
         return readProduct(ProcessingConfiguration.tmpDirectory+"\\"+ productDTO.getId() + ".dim");
     }

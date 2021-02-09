@@ -106,6 +106,7 @@ public class LoginController implements Initializable {
         stage.show();
     }
 
+    //Bind components to user model
     private void bindProperties() {
         userDTO.passwordProperty().bindBidirectional(password.textProperty());
         userDTO.usernameProperty().bindBidirectional(username.textProperty());
